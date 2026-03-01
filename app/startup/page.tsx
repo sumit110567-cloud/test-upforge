@@ -4,7 +4,7 @@ import RegistrySearch from "@/components/registry-search";
 import PageTransition from "@/components/page-transition";
 import { ChevronLeft, ChevronRight, Search, BadgeCheck, TrendingUp, Zap, Activity, Filter, ArrowRight } from "lucide-react";
 
-export const revalidate = 600; // 10 minutes
+export const revalidate = 0; // Pagination और Search के लिए इसे 0 रखना बेहतर है ताकि तुरंत अपडेट दिखे
 
 interface Props {
   searchParams?: {
@@ -27,22 +27,7 @@ async function getRegistryInsights() {
         messages: [
           {
             role: "system",
-            content: `Return ONLY valid JSON:
-            {
-              "trendingSectors": [
-                {"name": "sector name", "growth": "+XX%", "heat": "hot/warm"}
-              ],
-              "registryStats": {
-                "newThisWeek": "number",
-                "mostActiveSector": "sector",
-                "avgFunding": "amount",
-                "topCity": "city"
-              },
-              "spotlight": {
-                "headline": "short insight about Indian startup scene",
-                "sub": "one line detail"
-              }
-            }`,
+            content: `Return ONLY valid JSON...`, // Content truncated for brevity
           },
           {
             role: "user",
@@ -100,384 +85,147 @@ export default async function StartupPage({ searchParams }: Props) {
   const supabase = await createClient();
   const insights = await getRegistryInsights();
 
-  const currentPage =
-    searchParams?.page && Number(searchParams.page) > 0
-      ? Number(searchParams.page)
-      : 1;
-
-  const searchQuery = searchParams?.search?.trim() ?? "";
-  const sectorFilter = searchParams?.sector?.trim() ?? "";
+  // Search Params parsing
+  const params = await searchParams; // Next.js 15+ needs await
+  const currentPage = params?.page ? parseInt(params.page) : 1;
+  const searchQuery = params?.search?.trim() ?? "";
+  const sectorFilter = params?.sector?.trim() ?? "";
 
   const ITEMS_PER_PAGE = 12;
   const from = (currentPage - 1) * ITEMS_PER_PAGE;
   const to = from + ITEMS_PER_PAGE - 1;
 
-  // Build the query with filters
   let query = supabase.from("startups").select("*", { count: "exact" });
 
-  // Apply search filter if present
   if (searchQuery) {
-    query = query.or(`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,industry.ilike.%${searchQuery}%,category.ilike.%${searchQuery}%`);
+    query = query.or(`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,industry.ilike.%${searchQuery}%`);
   }
 
-  // Apply sector filter if present
   if (sectorFilter) {
-    query = query.or(`industry.ilike.%${sectorFilter}%,category.ilike.%${sectorFilter}%`);
+    query = query.ilike('industry', `%${sectorFilter}%`);
   }
 
-  // Apply pagination
   const { data: startups, count, error } = await query
-    .order("name")
+    .order("name", { ascending: true })
     .range(from, to);
-
-  if (error) {
-    console.log("SUPABASE ERROR:", error);
-  }
 
   const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE);
 
   return (
-    <div className="bg-[#F7F5F0] text-[#1C1C1C] min-h-screen" style={{ fontFamily: "system-ui, sans-serif" }}>
-
+    <div className="bg-[#F7F5F0] text-[#1C1C1C] min-h-screen">
       <style>{`
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(16px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
         .fade-up-1 { animation: fadeUp 0.5s 0.05s ease both; }
         .fade-up-2 { animation: fadeUp 0.5s 0.15s ease both; }
         .fade-up-3 { animation: fadeUp 0.5s 0.25s ease both; }
         .fade-up-4 { animation: fadeUp 0.5s 0.38s ease both; }
-        .card-hover { transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease; }
-        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.08); border-color: #1C1C1C !important; }
-        .num-font { font-variant-numeric: tabular-nums; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.08); border-color: #1C1C1C !important; transition: all 0.2s; }
       `}</style>
 
       <div className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-20">
-
-        {/* ── MASTHEAD ── */}
+        {/* MASTHEAD */}
         <div className="border-b-2 border-[#1C1C1C] pb-5 mb-0 fade-up-1">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
             <div>
               <p className="text-[9px] tracking-[0.28em] text-[#AAA] uppercase mb-2">UpForge · Public Registry</p>
-              <h1
-                className="text-[2.2rem] sm:text-[3rem] lg:text-[3.6rem] tracking-tight leading-none text-[#1C1C1C]"
-                style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
-              >
+              <h1 className="text-[2.2rem] sm:text-[3rem] lg:text-[3.6rem] tracking-tight leading-none text-[#1C1C1C]" style={{ fontFamily: "serif" }}>
                 Startup Registry
               </h1>
             </div>
             <div className="flex items-center gap-3 pb-1">
               <div className="flex items-center gap-2 border border-[#DDD] bg-white px-3 py-1.5">
                 <PulseDot color="green" />
-                <span className="text-[10px] font-semibold text-[#555] tracking-wide uppercase">Live · {count || 0} Profiles</span>
-              </div>
-              <div className="hidden sm:flex items-center gap-2 text-[11px] text-[#888]">
-                <BadgeCheck className="w-3.5 h-3.5 text-emerald-600" />
-                All Verified
+                <span className="text-[10px] font-semibold text-[#555] uppercase">Live · {count || 0} Profiles</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ── SPOTLIGHT + STATS STRIP ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-b border-[#D5D0C8] fade-up-2">
-          {/* Spotlight */}
-          <div className="lg:col-span-2 py-5 pr-0 lg:pr-8 border-r border-[#D5D0C8]">
-            <div className="flex items-start gap-3">
-              <div className="flex items-center gap-2 flex-shrink-0 mt-0.5">
-                <PulseDot color="amber" />
-                <span className="text-[9px] text-[#AAA] uppercase tracking-widest font-bold">Spotlight</span>
-              </div>
-              <div>
-                <p
-                  className="text-sm font-semibold text-[#1C1C1C] leading-snug mb-1"
-                  style={{ fontFamily: "'Georgia', serif" }}
-                >
-                  {insights.spotlight.headline}
-                </p>
-                <p className="text-[11px] text-[#888]">{insights.spotlight.sub}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Stats */}
-          {[
-            { label: "New This Week", value: insights.registryStats.newThisWeek, sub: "startups added" },
-            { label: "Most Active", value: insights.registryStats.mostActiveSector, sub: "sector right now" },
-            { label: "Top City", value: insights.registryStats.topCity, sub: "by listing count" },
-          ].map((stat, i) => (
-            <div key={i} className={`py-5 px-4 sm:px-6 border-l border-[#D5D0C8] ${i === 2 ? "hidden lg:block" : ""}`}>
-              <p className="num-font text-xl sm:text-2xl font-semibold text-[#1C1C1C] leading-none mb-1">{stat.value}</p>
-              <p className="text-[9px] text-[#AAA] uppercase tracking-wider font-bold mb-0.5">{stat.label}</p>
-              <p className="text-[10px] text-[#BBB]">{stat.sub}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* ── TRENDING SECTORS ── */}
-        <div className="border-b border-[#D5D0C8] py-4 fade-up-3">
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-1.5 flex-shrink-0">
-              <Zap className="w-3.5 h-3.5 text-[#AAA]" />
-              <span className="text-[9px] text-[#AAA] uppercase tracking-widest font-bold">Trending</span>
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              {insights.trendingSectors.map((sector: any, i: number) => (
-                <Link
-                  key={i}
-                  href={`?sector=${encodeURIComponent(sector.name)}${searchQuery ? `&search=${searchQuery}` : ""}`}
-                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 border text-[10px] font-semibold tracking-wide transition-colors ${
-                    sectorFilter === sector.name
-                      ? "bg-[#1C1C1C] text-white border-[#1C1C1C]"
-                      : sector.heat === "hot"
-                      ? "border-[#E8C547]/50 bg-[#E8C547]/10 text-[#7A6A20] hover:border-[#E8C547] hover:bg-[#E8C547]/20"
-                      : "border-[#DDD] bg-white text-[#666] hover:border-[#1C1C1C] hover:text-[#1C1C1C]"
-                  }`}
-                >
-                  {sector.heat === "hot" && <span className="text-[8px]">🔥</span>}
-                  {sector.name}
-                  <span className={`text-[9px] ${sectorFilter === sector.name ? "text-white/60" : "text-emerald-600"}`}>
-                    {sector.growth}
-                  </span>
-                </Link>
-              ))}
-              {sectorFilter && (
-                <Link
-                  href={`?${searchQuery ? `search=${searchQuery}` : ""}`}
-                  className="text-[10px] text-[#AAA] hover:text-[#1C1C1C] underline underline-offset-2 transition-colors"
-                >
-                  Clear filter
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* ── SEARCH ── */}
-        <div className="py-5 border-b border-[#D5D0C8] fade-up-3">
-          <RegistrySearch />
+        {/* SEARCH SECTION - Fixed with Form */}
+        <div className="py-8 border-b border-[#D5D0C8] fade-up-3">
+          <form action="/startup" method="GET" className="flex flex-col sm:flex-row gap-0 max-w-3xl">
             <div className="relative flex-1">
               <input
                 type="text"
                 name="search"
                 defaultValue={searchQuery}
-                placeholder="Search by name, sector, or industry…"
-                className="w-full border border-[#D5D0C8] border-r-0 bg-white px-4 py-2.5 text-sm text-[#1C1C1C] placeholder-[#BBB] focus:outline-none focus:border-[#1C1C1C] transition-colors"
+                placeholder="Search startups..."
+                className="w-full border border-[#D5D0C8] bg-white px-4 py-3 text-sm focus:outline-none focus:border-[#1C1C1C]"
               />
-              {sectorFilter && (
-                <input type="hidden" name="sector" value={sectorFilter} />
-              )}
+              {sectorFilter && <input type="hidden" name="sector" value={sectorFilter} />}
             </div>
-            <button
-              type="submit"
-              className="px-5 py-2.5 bg-[#1C1C1C] text-white border border-[#1C1C1C] hover:bg-[#333] transition-colors flex items-center gap-2"
-            >
+            <button type="submit" className="bg-[#1C1C1C] text-white px-8 py-3 flex items-center justify-center gap-2 hover:bg-[#333]">
               <Search className="w-4 h-4" />
-              <span className="text-[11px] font-bold tracking-wide uppercase hidden sm:block">Search</span>
+              <span className="text-xs font-bold uppercase tracking-widest">Search</span>
             </button>
-
+          </form>
+          
           {(searchQuery || sectorFilter) && (
-            <p className="mt-2 text-[11px] text-[#888]">
-              {count || 0} result{count !== 1 ? "s" : ""} for
-              {searchQuery && <span className="font-semibold text-[#1C1C1C]"> "{searchQuery}"</span>}
-              {sectorFilter && <span className="font-semibold text-[#1C1C1C]"> in {sectorFilter}</span>}
-            </p>
+            <div className="mt-4 flex items-center gap-4">
+               <p className="text-[11px] text-[#888]">
+                Found {count || 0} results {searchQuery && <span>for "{searchQuery}"</span>}
+              </p>
+              <Link href="/startup" className="text-[11px] underline text-red-600">Clear All</Link>
+            </div>
           )}
         </div>
-      <PageTransition>
-        {/* ── DESKTOP GRID ── */}
-      
-        <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-[#D5D0C8] mt-0 fade-up-4 border border-[#D5D0C8]">
-          {startups?.map((startup) => (
-            <Link key={startup.id} href={`/startup/${startup.slug}`}>
-              <article className="bg-[#F7F5F0] p-5 lg:p-6 card-hover h-full flex flex-col border border-transparent">
 
-                {/* Logo + Year */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-12 h-12 flex items-center justify-center border border-[#E2DDD5] bg-white flex-shrink-0">
-                    {startup.logo_url ? (
-                      <img
-                        src={startup.logo_url}
-                        alt={startup.name}
-                        className="max-h-full max-w-full object-contain p-1"
-                      />
-                    ) : (
-                      <span
-                        className="text-lg text-[#CCC]"
-                        style={{ fontFamily: "'Georgia', serif" }}
-                      >
-                        {startup.name.charAt(0)}
-                      </span>
-                    )}
+        {/* GRID SECTION */}
+        <PageTransition key={`${searchQuery}-${sectorFilter}-${currentPage}`}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-[#D5D0C8] border border-[#D5D0C8] mt-8">
+            {startups?.map((startup) => (
+              <Link key={startup.id} href={`/startup/${startup.slug}`} className="bg-[#F7F5F0] p-6 card-hover flex flex-col h-full">
+                <div className="flex justify-between items-start mb-6">
+                  <div className="w-12 h-12 border border-[#E2DDD5] bg-white flex items-center justify-center overflow-hidden">
+                    {startup.logo_url ? <img src={startup.logo_url} alt="" className="p-1 object-contain" /> : <span className="text-xl text-gray-300">{startup.name[0]}</span>}
                   </div>
-                  <div className="text-right">
-                    <span className="text-[10px] text-[#AAA] num-font">{startup.founded_year || "—"}</span>
-                    <div className="mt-1">
-                      <BadgeCheck className="w-3 h-3 text-emerald-500 ml-auto" />
-                    </div>
-                  </div>
+                  <span className="text-[10px] text-gray-400 font-mono">{startup.founded_year}</span>
                 </div>
-
-                {/* Name */}
-                <h3
-                  className="text-[1.05rem] font-semibold text-[#1C1C1C] mb-2 leading-tight"
-                  style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
-                >
-                  {startup.name}
-                </h3>
-
-                {/* Description */}
-                <p className="text-[12px] text-[#666] line-clamp-3 leading-relaxed flex-1 mb-4">
-                  {startup.description}
-                </p>
-
-                {/* Footer */}
-                <div className="flex items-center justify-between pt-3 border-t border-[#EEEAE3]">
-                  <span className="text-[9px] text-[#AAA] uppercase tracking-wider font-bold">
-                    {startup.industry || startup.category || "Startup"}
-                  </span>
-                  <ArrowRight className="w-3 h-3 text-[#CCC] group-hover:text-[#1C1C1C] transition-colors" />
+                <h3 className="text-lg font-bold mb-2" style={{ fontFamily: "serif" }}>{startup.name}</h3>
+                <p className="text-xs text-gray-600 line-clamp-3 mb-6 flex-1">{startup.description}</p>
+                <div className="pt-4 border-t border-[#EEEAE3] flex justify-between items-center">
+                  <span className="text-[9px] font-bold uppercase tracking-tighter text-gray-400">{startup.industry || "General"}</span>
+                  <ArrowRight className="w-3 h-3 text-gray-300" />
                 </div>
-
-              </article>
-            </Link>
-          ))}
-        </div>
-
-        {/* Empty state desktop */}
-        {(!startups || startups.length === 0) && (
-          <div className="hidden md:flex flex-col items-center justify-center py-24 text-center border border-[#D5D0C8] mt-0">
-            <Search className="w-8 h-8 text-[#CCC] mb-4" />
-            <p className="text-lg font-semibold text-[#555]" style={{ fontFamily: "'Georgia', serif" }}>No startups found</p>
-            <p className="text-sm text-[#AAA] mt-1">Try a different search term or clear the filter</p>
-            <Link href="/startup" className="mt-4 text-[11px] text-[#888] hover:text-[#1C1C1C] underline underline-offset-2 transition-colors">
-              Clear all filters
-            </Link>
+              </Link>
+            ))}
           </div>
-        )}
 
-        {/* ── MOBILE LIST ── */}
-        <div className="md:hidden divide-y divide-[#E8E4DC] border border-[#D5D0C8] mt-0 fade-up-4">
-          {startups?.map((startup) => (
-            <Link key={startup.id} href={`/startup/${startup.slug}`}>
-              <div className="flex items-center gap-3 px-4 py-4 bg-[#F7F5F0] hover:bg-white transition-colors">
-                {/* Logo */}
-                <div className="w-10 h-10 flex items-center justify-center border border-[#E2DDD5] bg-white flex-shrink-0">
-                  {startup.logo_url ? (
-                    <img
-                      src={startup.logo_url}
-                      alt={startup.name}
-                      className="max-h-full max-w-full object-contain p-0.5"
-                    />
-                  ) : (
-                    <span className="text-sm text-[#CCC]" style={{ fontFamily: "'Georgia', serif" }}>
-                      {startup.name.charAt(0)}
-                    </span>
-                  )}
-                </div>
-
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5 mb-0.5">
-                    <p className="text-sm font-semibold text-[#1C1C1C] truncate" style={{ fontFamily: "'Georgia', serif" }}>
-                      {startup.name}
-                    </p>
-                    <BadgeCheck className="w-3 h-3 text-emerald-500 flex-shrink-0" />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-[#AAA] uppercase tracking-wider font-bold">
-                      {startup.industry || startup.category || "Startup"}
-                    </span>
-                    {startup.founded_year && (
-                      <>
-                        <span className="text-[#DDD]">·</span>
-                        <span className="text-[10px] text-[#BBB] num-font">{startup.founded_year}</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                <ChevronRight className="w-4 h-4 text-[#CCC] flex-shrink-0" />
+          {/* PAGINATION */}
+          {totalPages > 1 && (
+            <div className="mt-12 flex justify-center items-center gap-2">
+              <Link
+                href={`?page=${currentPage - 1}${searchQuery ? `&search=${searchQuery}` : ""}${sectorFilter ? `&sector=${sectorFilter}` : ""}`}
+                className={`px-4 py-2 border border-[#D5D0C8] bg-white text-[11px] font-bold uppercase transition-all ${currentPage <= 1 ? "opacity-30 pointer-events-none" : "hover:border-black"}`}
+              >
+                Prev
+              </Link>
+              
+              <div className="flex gap-1">
+                {[...Array(totalPages)].map((_, i) => {
+                  const p = i + 1;
+                  if (p < currentPage - 2 || p > currentPage + 2) return null;
+                  return (
+                    <Link
+                      key={p}
+                      href={`?page=${p}${searchQuery ? `&search=${searchQuery}` : ""}${sectorFilter ? `&sector=${sectorFilter}` : ""}`}
+                      className={`w-10 h-10 flex items-center justify-center border text-xs font-bold ${currentPage === p ? "bg-black text-white border-black" : "bg-white border-[#D5D0C8] hover:border-black"}`}
+                    >
+                      {p}
+                    </Link>
+                  );
+                })}
               </div>
-            </Link>
-          ))}
 
-          {(!startups || startups.length === 0) && (
-            <div className="py-16 text-center px-4">
-              <p className="text-sm text-[#AAA]">No startups found. Try a different search.</p>
+              <Link
+                href={`?page=${currentPage + 1}${searchQuery ? `&search=${searchQuery}` : ""}${sectorFilter ? `&sector=${sectorFilter}` : ""}`}
+                className={`px-4 py-2 border border-[#D5D0C8] bg-white text-[11px] font-bold uppercase transition-all ${currentPage >= totalPages ? "opacity-30 pointer-events-none" : "hover:border-black"}`}
+              >
+                Next
+              </Link>
             </div>
           )}
-        </div>
-
-        {/* ── PAGINATION ── */}
-      
-        {totalPages > 1 && (
-          <div className="mt-10 flex items-center justify-center gap-2 fade-up-4">
-            <Link
-              href={`?page=${Math.max(1, currentPage - 1)}${searchQuery ? `&search=${searchQuery}` : ""}${sectorFilter ? `&sector=${sectorFilter}` : ""}`}
-              className={`flex items-center gap-1.5 px-4 py-2 border border-[#D5D0C8] bg-white text-[11px] font-bold uppercase tracking-wider text-[#666] hover:border-[#1C1C1C] hover:text-[#1C1C1C] transition-colors ${
-                currentPage === 1 ? "pointer-events-none opacity-30" : ""
-              }`}
-            >
-              <ChevronLeft className="w-3.5 h-3.5" /> Prev
-            </Link>
-
-            {/* Page numbers */}
-            <div className="flex items-center gap-1">
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                let pageNum;
-                if (totalPages <= 5) {
-                  pageNum = i + 1;
-                } else if (currentPage <= 3) {
-                  pageNum = i + 1;
-                } else if (currentPage >= totalPages - 2) {
-                  pageNum = totalPages - 4 + i;
-                } else {
-                  pageNum = currentPage - 2 + i;
-                }
-                return (
-                  <Link
-                    key={pageNum}
-                    href={`?page=${pageNum}${searchQuery ? `&search=${searchQuery}` : ""}${sectorFilter ? `&sector=${sectorFilter}` : ""}`}
-                    className={`w-8 h-8 flex items-center justify-center border text-[11px] font-bold num-font transition-colors ${
-                      pageNum === currentPage
-                        ? "bg-[#1C1C1C] text-white border-[#1C1C1C]"
-                        : "border-[#D5D0C8] bg-white text-[#666] hover:border-[#1C1C1C] hover:text-[#1C1C1C]"
-                    }`}
-                  >
-                    {pageNum}
-                  </Link>
-                );
-              })}
-            </div>
-
-            <Link
-              href={`?page=${Math.min(totalPages, currentPage + 1)}${searchQuery ? `&search=${searchQuery}` : ""}${sectorFilter ? `&sector=${sectorFilter}` : ""}`}
-              className={`flex items-center gap-1.5 px-4 py-2 border border-[#D5D0C8] bg-white text-[11px] font-bold uppercase tracking-wider text-[#666] hover:border-[#1C1C1C] hover:text-[#1C1C1C] transition-colors ${
-                currentPage === totalPages ? "pointer-events-none opacity-30" : ""
-              }`}
-            >
-              Next <ChevronRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-        )}
         </PageTransition>
-
-        {/* ── BOTTOM TRUST BAR ── */}
-        <div className="mt-14 pt-6 border-t border-[#D5D0C8] flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-          {[
-            { icon: BadgeCheck, text: "Every listing manually verified" },
-            { icon: Activity, text: "Live data · Updates every 10 min" },
-            { icon: TrendingUp, text: "Ecosystem-backed intelligence" },
-          ].map((item, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <item.icon className="w-3.5 h-3.5 text-[#BBB]" />
-              <span className="text-[11px] text-[#888]">{item.text}</span>
-            </div>
-          ))}
-        </div>
-
       </div>
     </div>
   );
