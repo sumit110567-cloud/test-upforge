@@ -20,6 +20,7 @@ export function Navbar() {
   useEffect(() => setIsOpen(false), [pathname]);
 
   const links = [
+    { name: "Home", href: "/" },
     { name: "Registry", href: "/startup" },
     { name: "Reports", href: "/reports" },
     { name: "Valuation", href: "/valuation" },
