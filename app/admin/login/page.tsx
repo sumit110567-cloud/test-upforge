@@ -1,11 +1,10 @@
+// app/admin/login/page.tsx
 "use client"
 
 import { createClient } from "@/lib/supabase/client"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { Shield } from "lucide-react"
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("")
@@ -35,46 +34,83 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-6">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <h1 className="text-xl font-bold tracking-tight text-foreground">
-            UPFORGE Admin
+    <div className="bg-[#FCFCFC] text-[#1A1A1A] font-sans antialiased min-h-screen flex items-center justify-center">
+      <div className="max-w-[400px] w-full px-6 py-12">
+        {/* Header */}
+        <div className="text-center mb-10">
+          <div className="flex justify-center mb-4">
+            <div className="w-12 h-12 bg-[#1A1A1A] text-white flex items-center justify-center text-xl font-serif">
+              UF
+            </div>
+          </div>
+          <h1 className="font-serif text-3xl tracking-tight mb-2">
+            Admin Access
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Sign in to manage startups
+          <p className="text-sm text-gray-500">
+            Sign in to manage the startup registry
           </p>
+          <div className="flex items-center justify-center gap-2 mt-4">
+            <Shield className="w-4 h-4 text-gray-400" />
+            <span className="text-xs text-gray-400">Secure · Authorized only</span>
+          </div>
         </div>
 
-        <form onSubmit={handleLogin} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
+        {/* Form */}
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div className="space-y-2">
+            <label 
+              htmlFor="email" 
+              className="block text-xs uppercase tracking-wider text-gray-500"
+            >
+              Email
+            </label>
+            <input
               id="email"
               type="email"
               placeholder="admin@upforge.com"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 bg-white border border-gray-200 text-[#1A1A1A] text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#1A1A1A] transition-colors"
             />
           </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
+
+          <div className="space-y-2">
+            <label 
+              htmlFor="password" 
+              className="block text-xs uppercase tracking-wider text-gray-500"
+            >
+              Password
+            </label>
+            <input
               id="password"
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3 bg-white border border-gray-200 text-[#1A1A1A] text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#1A1A1A] transition-colors"
             />
           </div>
+
           {error && (
-            <p className="text-sm text-destructive">{error}</p>
+            <div className="p-3 bg-red-50 border border-red-200">
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
           )}
-          <Button type="submit" className="w-full" disabled={isLoading}>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full px-4 py-3 bg-[#1A1A1A] text-white text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             {isLoading ? "Signing in..." : "Sign In"}
-          </Button>
+          </button>
         </form>
+
+        {/* Footer note */}
+        <p className="text-center text-xs text-gray-400 mt-8">
+          Authorized personnel only · UpForge Registry
+        </p>
       </div>
     </div>
   )
