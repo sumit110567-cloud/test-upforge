@@ -3,41 +3,47 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 
 interface Props {
-  searchParams: {
+  searchParams?: {
     page?: string;
     search?: string;
   };
 }
 
-const ITEMS_PER_PAGE = 12;
+export const dynamic = "force-dynamic";
 
 export default async function StartupsPage({ searchParams }: Props) {
   const supabase = await createClient();
 
-  const currentPage = Number(searchParams.page) > 0 ? Number(searchParams.page) : 1;
-  const searchQuery = searchParams.search ?? "";
+  const ITEMS_PER_PAGE_DESKTOP = 12;
+  const ITEMS_PER_PAGE_MOBILE = 10;
+
+  const pageParam = Number(searchParams?.page);
+  const currentPage = pageParam && pageParam > 0 ? pageParam : 1;
+
+  const searchQuery = searchParams?.search?.trim() ?? "";
+
+  const ITEMS_PER_PAGE = 12; // backend constant (pagination same for all)
 
   const from = (currentPage - 1) * ITEMS_PER_PAGE;
   const to = from + ITEMS_PER_PAGE - 1;
 
   let query = supabase
     .from("startups")
-    .select("id, name, slug, logo_url", { count: "exact" })
-    .order("created_at", { ascending: false });
+    .select(
+      "id, name, slug, logo_url, founded_year, founders",
+      { count: "exact" }
+    )
+    .order("name", { ascending: true });
 
   if (searchQuery) {
     query = query.ilike("name", `%${searchQuery}%`);
   }
 
-  const { data: startups, count, error } = await query.range(from, to);
-
-  if (error) {
-    console.error(error);
-  }
+  const { data: startups, count } = await query.range(from, to);
 
   const totalPages = Math.ceil((count ?? 0) / ITEMS_PER_PAGE);
 
-  function createPageLink(page: number) {
+  function buildURL(page: number) {
     const params = new URLSearchParams();
     if (searchQuery) params.set("search", searchQuery);
     if (page > 1) params.set("page", page.toString());
@@ -45,49 +51,55 @@ export default async function StartupsPage({ searchParams }: Props) {
   }
 
   return (
-    <div className="bg-white min-h-screen pt-24 pb-24">
-      <div className="max-w-4xl mx-auto px-6">
+    <div className="bg-[#FCFCFC] min-h-screen pt-24 pb-24">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
 
         {/* HEADER */}
-        <div className="text-center mb-16">
-          <h1 className="font-serif text-4xl sm:text-5xl tracking-tight mb-4">
+        <div className="text-center mb-12">
+          <h1 className="font-serif text-4xl sm:text-5xl tracking-tight mb-3">
             Startup Registry
           </h1>
-          <p className="text-neutral-500">
-            India’s structured startup archive.
+          <p className="text-gray-500 text-sm sm:text-base">
+            India’s structured startup database
           </p>
-          <div className="mt-3 text-xs tracking-widest uppercase text-neutral-400">
+          <div className="mt-2 text-xs text-gray-400 tracking-widest uppercase">
             {count ?? 0} Results
           </div>
         </div>
 
         {/* SEARCH */}
-        <form method="GET" className="mb-20">
+        <form method="GET" className="max-w-xl mx-auto mb-14">
           <div className="relative">
             <input
               type="text"
               name="search"
               defaultValue={searchQuery}
-              placeholder="Search by startup name..."
-              className="w-full border-b border-neutral-300 py-3 pr-10 text-lg focus:outline-none focus:border-black"
+              placeholder="Search startup name..."
+              className="w-full border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:border-black"
             />
-            <Search className="absolute right-0 top-3 text-neutral-400 w-5 h-5" />
+            <Search className="absolute right-3 top-2.5 text-gray-400 w-4 h-4" />
           </div>
         </form>
 
-        {/* LIST */}
-        <div className="space-y-12">
-          {startups && startups.length > 0 ? (
-            startups.map((startup) => (
-              <Link
-                key={startup.id}
-                href={`/startup/${startup.slug}`}
-                className="group block"
-              >
-                <div className="flex items-center justify-between pb-6 border-b border-neutral-200">
+        {/* GRID */}
+        {startups && startups.length > 0 ? (
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+              {startups.map((startup) => (
+                <Link
+                  key={startup.id}
+                  href={`/startup/${startup.slug}`}
+                  className="group"
+                >
+                  <article className="bg-white border border-gray-200 p-4 sm:p-6 hover:border-black transition-all h-full">
 
-                  <div className="flex items-center gap-6">
-                    <div className="w-12 h-12 flex items-center justify-center bg-neutral-50 border border-neutral-200">
+                    {/* Year */}
+                    <div className="text-xs text-gray-400 mb-2">
+                      {startup.founded_year ?? ""}
+                    </div>
+
+                    {/* Logo */}
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 mb-4 flex items-center justify-center border bg-gray-50">
                       {startup.logo_url ? (
                         <img
                           src={startup.logo_url}
@@ -95,53 +107,71 @@ export default async function StartupsPage({ searchParams }: Props) {
                           className="max-h-full max-w-full object-contain"
                         />
                       ) : (
-                        <span className="font-serif text-xl text-neutral-400">
+                        <span className="text-lg font-serif text-gray-300">
                           {startup.name.charAt(0)}
                         </span>
                       )}
                     </div>
 
-                    <h2 className="font-serif text-2xl tracking-tight group-hover:underline">
+                    {/* Name */}
+                    <h2 className="font-serif text-base sm:text-lg line-clamp-1 mb-1">
                       {startup.name}
                     </h2>
-                  </div>
 
-                </div>
-              </Link>
-            ))
-          ) : (
-            <div className="text-center py-20 text-neutral-400">
-              No startups found.
+                    {/* Founder */}
+                    <p className="text-xs text-gray-500 line-clamp-1">
+                      {Array.isArray(startup.founders)
+                        ? startup.founders.join(", ")
+                        : startup.founders ?? ""}
+                    </p>
+
+                  </article>
+                </Link>
+              ))}
             </div>
-          )}
-        </div>
 
-        {/* PAGINATION */}
-        {totalPages > 1 && (
-          <div className="mt-20 flex items-center justify-center gap-8">
+            {/* PAGINATION */}
+            {totalPages > 1 && (
+              <div className="mt-16 flex items-center justify-center gap-6">
 
-            <Link
-              href={createPageLink(currentPage - 1)}
-              className={`p-2 border rounded-full ${
-                currentPage === 1 ? "pointer-events-none opacity-30" : ""
-              }`}
-            >
-              <ChevronLeft size={18} />
-            </Link>
+                <Link
+                  href={
+                    currentPage > 1
+                      ? buildURL(currentPage - 1)
+                      : buildURL(1)
+                  }
+                  className={`p-2 border rounded-full ${
+                    currentPage === 1 ? "opacity-30 pointer-events-none" : ""
+                  }`}
+                >
+                  <ChevronLeft size={18} />
+                </Link>
 
-            <span className="text-sm tracking-wide">
-              Page {currentPage} of {totalPages}
-            </span>
+                <span className="text-sm">
+                  Page {currentPage} of {totalPages}
+                </span>
 
-            <Link
-              href={createPageLink(currentPage + 1)}
-              className={`p-2 border rounded-full ${
-                currentPage === totalPages ? "pointer-events-none opacity-30" : ""
-              }`}
-            >
-              <ChevronRight size={18} />
-            </Link>
+                <Link
+                  href={
+                    currentPage < totalPages
+                      ? buildURL(currentPage + 1)
+                      : buildURL(totalPages)
+                  }
+                  className={`p-2 border rounded-full ${
+                    currentPage === totalPages
+                      ? "opacity-30 pointer-events-none"
+                      : ""
+                  }`}
+                >
+                  <ChevronRight size={18} />
+                </Link>
 
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center py-20 text-gray-400">
+            No startups found.
           </div>
         )}
 
