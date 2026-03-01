@@ -328,7 +328,6 @@ export default async function Home() {
                 { icon: CheckCircle2, text: "100% Free to List", color: "text-emerald-600" },
                 { icon: BadgeCheck, text: "Manually Verified", color: "text-blue-600" },
                 { icon: Sparkles, text: "AI Growth Reports", color: "text-amber-600" },
-                { icon: Globe, text: "Publicly Indexed", color: "text-purple-600" },
               ].map((p, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <p.icon className={`w-4 h-4 ${p.color}`} />
