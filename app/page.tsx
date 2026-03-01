@@ -4,49 +4,52 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { BadgeCheck, ChevronLeft, ChevronRight, Search } from "lucide-react";
 
-interface Props {
-  searchParams: {
-    page?: string;
-    search?: string;
-  };
-}
-
 const ITEMS_PER_PAGE = 12;
 
-export default async function StartupsPage({ searchParams }: Props) {
+export default async function StartupsPage({
+  searchParams,
+}: {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
   const supabase = await createClient();
 
-  const currentPage = Number(searchParams.page) || 1;
-  const searchQuery = searchParams.search?.toLowerCase() || "";
+  const pageParam = searchParams?.page;
+  const searchParam = searchParams?.search;
+
+  const currentPage =
+    typeof pageParam === "string" ? parseInt(pageParam) || 1 : 1;
+
+  const searchQuery =
+    typeof searchParam === "string" ? searchParam.toLowerCase() : "";
 
   const from = (currentPage - 1) * ITEMS_PER_PAGE;
   const to = from + ITEMS_PER_PAGE - 1;
 
-  // Base query
   let query = supabase
     .from("startups")
-    .select("id, name, slug, logo_url, description, founded_year, category", {
-      count: "exact",
-    })
+    .select(
+      "id, name, slug, logo_url, description, founded_year, category",
+      { count: "exact" }
+    )
     .order("founded_year", { ascending: false });
 
-  // Search filter
   if (searchQuery) {
     query = query.or(
       `name.ilike.%${searchQuery}%,category.ilike.%${searchQuery}%`
     );
   }
 
-  // Pagination range
-  const { data: startups, count } = await query.range(from, to);
+  const { data: startups, count, error } = await query.range(from, to);
+
+  if (error) {
+    console.error(error);
+  }
 
   const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE);
 
   return (
     <div className="bg-[#FCFCFC] min-h-screen pt-24 pb-20">
       <div className="max-w-[1440px] mx-auto px-6">
-
-        {/* Header */}
         <div className="text-center mb-16">
           <h1 className="font-serif text-5xl tracking-tight mb-4">
             Startup Registry
@@ -73,14 +76,16 @@ export default async function StartupsPage({ searchParams }: Props) {
           </div>
         </form>
 
-        {/* Grid */}
         {startups && startups.length > 0 ? (
           <>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {startups.map((startup) => (
-                <Link key={startup.id} href={`/startup/${startup.slug}`} className="group">
+                <Link
+                  key={startup.id}
+                  href={`/startup/${startup.slug}`}
+                  className="group"
+                >
                   <article className="bg-white border border-gray-200 p-6 hover:border-black transition-all h-full flex flex-col items-center text-center relative">
-
                     <span className="absolute top-2 right-2 text-xs font-bold text-gray-400">
                       {startup.founded_year || "N/A"}
                     </span>
@@ -113,18 +118,18 @@ export default async function StartupsPage({ searchParams }: Props) {
                     <span className="text-[10px] border border-gray-200 px-2 py-1 uppercase tracking-widest text-gray-400">
                       {startup.category || "General"}
                     </span>
-
                   </article>
                 </Link>
               ))}
             </div>
 
-            {/* Pagination */}
             {totalPages > 1 && (
               <div className="mt-16 flex justify-center items-center gap-4">
-
                 <Link
-                  href={`?page=${Math.max(1, currentPage - 1)}&search=${searchQuery}`}
+                  href={`?page=${Math.max(
+                    1,
+                    currentPage - 1
+                  )}&search=${searchQuery}`}
                   className={`p-2 border rounded-full ${
                     currentPage === 1 ? "pointer-events-none opacity-30" : ""
                   }`}
@@ -137,14 +142,18 @@ export default async function StartupsPage({ searchParams }: Props) {
                 </span>
 
                 <Link
-                  href={`?page=${Math.min(totalPages, currentPage + 1)}&search=${searchQuery}`}
+                  href={`?page=${Math.min(
+                    totalPages,
+                    currentPage + 1
+                  )}&search=${searchQuery}`}
                   className={`p-2 border rounded-full ${
-                    currentPage === totalPages ? "pointer-events-none opacity-30" : ""
+                    currentPage === totalPages
+                      ? "pointer-events-none opacity-30"
+                      : ""
                   }`}
                 >
                   <ChevronRight size={20} />
                 </Link>
-
               </div>
             )}
           </>
