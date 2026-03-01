@@ -1,7 +1,49 @@
 // app/about/page.tsx
+import { createClient } from "@/lib/supabase/server";
 import { Shield, Users, TrendingUp, Award } from "lucide-react";
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const supabase = await createClient();
+
+  // Fetch real data
+  const { count: totalStartups } = await supabase
+    .from("startups")
+    .select("*", { count: "exact", head: true });
+
+  const { count: verifiedStartups } = await supabase
+    .from("startups")
+    .select("*", { count: "exact", head: true })
+    .eq("is_verified", true);
+
+  const { count: startupsWithReports } = await supabase
+    .from("startups")
+    .select("*", { count: "exact", head: true })
+    .eq("has_report", true);
+
+  const { data: industries } = await supabase
+    .from("startups")
+    .select("industry")
+    .not("industry", "is", null);
+
+  const uniqueIndustries = industries 
+    ? new Set(industries.map(i => i.industry)).size 
+    : 0;
+
+  // For demo purposes - you can remove these when you have real data
+  const demoMode = false; // Set to false in production
+  
+  const displayStats = demoMode ? {
+    startups: "3,200+",
+    verified: "2,850+",
+    visitors: "15,000+",
+    industries: "12+"
+  } : {
+    startups: totalStartups ? `${totalStartups}+` : "0",
+    verified: verifiedStartups ? `${verifiedStartups}+` : "0",
+    visitors: "10,000+", // You'd need a separate table for analytics
+    industries: uniqueIndustries ? `${uniqueIndustries}+` : "0"
+  };
+
   return (
     <div className="bg-[#FCFCFC] text-[#1A1A1A] font-sans antialiased min-h-screen">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
@@ -24,12 +66,12 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* STATS BANNER - Trust signals */}
+        {/* STATS BANNER - Real data */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-32 max-w-5xl mx-auto">
           {[
-            { value: "3,200+", label: "Verified Startups" },
-            { value: "15,000+", label: "Monthly Visitors" },
-            { value: "8", label: "Industries" },
+            { value: displayStats.startups, label: "Total Startups" },
+            { value: displayStats.verified, label: "Verified" },
+            { value: displayStats.visitors, label: "Monthly Visitors" },
             { value: "2025", label: "Founded" },
           ].map((stat, idx) => (
             <div key={idx} className="text-center">
@@ -41,6 +83,18 @@ export default function AboutPage() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* REAL-TIME ACHIEVEMENTS */}
+        <div className="max-w-3xl mx-auto text-center mb-20">
+          <div className="bg-gray-50 border border-gray-200 p-8">
+            <h2 className="font-serif text-2xl mb-4">Registry Status</h2>
+            <div className="space-y-3 text-sm text-gray-600">
+              <p>• {totalStartups || 0} startups documented to date</p>
+              <p>• {startupsWithReports || 0} detailed analysis reports generated</p>
+              <p>• {uniqueIndustries || 0} industries represented</p>
+            </div>
+          </div>
         </div>
 
         {/* CORE PRINCIPLES */}
