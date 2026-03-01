@@ -21,12 +21,12 @@ import {
   DollarSign,
   IndianRupee,
   Newspaper,
-  Flame,
   Rocket,
   Target,
   Activity,
-  PieChart,
   Gem,
+  ChevronRight,
+  ExternalLink,
 } from "lucide-react";
 
 // Revalidate every 10 minutes
@@ -62,7 +62,7 @@ async function getRealTimeInsights() {
                   {"name": "startup name", "sector": "sector", "insight": "what makes them interesting", "growthIndicator": "+XX%", "momentum": "high/medium"}
                 ],
                 "topIndianBillionaires": [
-                  {"name": "name", "netWorth": "in billions", "source": "industry", "startupConnections": ["related startup", "another"]}
+                  {"name": "name", "netWorth": "in billions", "source": "industry", "startupConnections": ["related startup", "another"], "change": "+X%"}
                 ],
                 "sectorMomentum": [
                   {"sector": "sector", "deals": "number", "funding": "amount", "trend": "trend", "growth": "+XX%"}
@@ -120,11 +120,11 @@ async function getRealTimeInsights() {
         { name: "Mamaearth", sector: "D2C", insight: "Profitable growth post-IPO", growthIndicator: "+67%", momentum: "medium" },
       ],
       topIndianBillionaires: [
-        { name: "Mukesh Ambani", netWorth: "$98.5B", source: "Reliance Industries", startupConnections: ["Jio Platforms", "Netmeds", "Addverb"] },
-        { name: "Gautam Adani", netWorth: "$72.3B", source: "Adani Group", startupConnections: ["Adani Green", "Adani Digital Labs", "SaaS startups"] },
-        { name: "Shiv Nadar", netWorth: "$28.7B", source: "HCL", startupConnections: ["HCL Software", "Freshworks", "Uniphore"] },
-        { name: "Radhakishan Damani", netWorth: "$24.1B", source: "DMart", startupConnections: ["Avenue Supermarts", "D2C brands"] },
-        { name: "Kumar Birla", netWorth: "$21.3B", source: "Aditya Birla Group", startupConnections: ["Aditya Birla Digital", "Fashion startups"] },
+        { name: "Mukesh Ambani", netWorth: "$98.5B", source: "Reliance Industries", startupConnections: ["Jio Platforms", "Netmeds", "Addverb"], change: "+12.3%" },
+        { name: "Gautam Adani", netWorth: "$72.3B", source: "Adani Group", startupConnections: ["Adani Green", "Adani Digital Labs", "SaaS startups"], change: "+8.7%" },
+        { name: "Shiv Nadar", netWorth: "$28.7B", source: "HCL", startupConnections: ["HCL Software", "Freshworks", "Uniphore"], change: "+5.2%" },
+        { name: "Radhakishan Damani", netWorth: "$24.1B", source: "DMart", startupConnections: ["Avenue Supermarts", "D2C brands"], change: "+3.8%" },
+        { name: "Kumar Birla", netWorth: "$21.3B", source: "Aditya Birla Group", startupConnections: ["Aditya Birla Digital", "Fashion startups"], change: "+4.1%" },
       ],
       sectorMomentum: [
         { sector: "AI/ML", deals: "127", funding: "$1.2B", trend: "Enterprise adoption driving growth", growth: "+156%" },
@@ -172,267 +172,254 @@ export default async function Home() {
 
   const uniqueIndustries = industries 
     ? new Set(industries.map(i => i.industry)).size 
-    : 30; // Show 30 if less in DB
+    : 30;
 
   const { data: recent } = await supabase
     .from("startups")
     .select("*")
     .order("created_at", { ascending: false })
-    .limit(6);
+    .limit(8);
 
   const verifiedStartups = recent?.map((s) => ({ ...s, verified: true }));
 
   return (
     <div className="bg-white text-[#1A1A1A] font-sans antialiased">
-      {/* Main container - full width with max-width for readability */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-12 sm:pb-16">
+      {/* Main container - Apple-like width with optimal line length */}
+      <div className="max-w-[1440px] mx-auto px-6 md:px-10 lg:px-12 pt-28 pb-16">
         
-        {/* ================= HEADER WITH IDENTITY ================= */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8 lg:mb-12 border-b border-gray-100 pb-6">
-          <div className="flex items-center gap-3 mb-4 lg:mb-0">
+        {/* ================= HERO - Clean, Apple-inspired ================= */}
+        <div className="max-w-4xl mb-16">
+          <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-[#1A1A1A] text-white flex items-center justify-center text-lg font-serif">
               UF
             </div>
             <div>
-              <span className="font-serif text-xl tracking-tight">UpForge</span>
-              <p className="text-[10px] text-gray-400 tracking-wider">INDEPENDENT STARTUP REGISTRY</p>
+              <span className="text-xs uppercase tracking-[0.2em] text-gray-400 font-medium">
+                PUBLIC STARTUP REGISTRY
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">Updated {new Date().toLocaleDateString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
+                <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                <span className="flex items-center gap-1 text-xs text-amber-600">
+                  <Sparkles className="w-3 h-3" /> Live
+                </span>
+              </div>
             </div>
           </div>
           
-          {/* Live Market Mood Indicator */}
-          <div className="flex items-center gap-4 bg-gray-50 border border-gray-100 px-4 py-2">
-            <div className="flex items-center gap-2">
-              <Activity className="w-4 h-4 text-gray-400" />
-              <span className="text-xs uppercase tracking-wider text-gray-500">Market Mood</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className={`text-sm font-medium ${
-                insights.marketMood.sentiment === 'Bullish' ? 'text-green-600' : 
-                insights.marketMood.sentiment === 'Neutral' ? 'text-yellow-600' : 'text-red-600'
-              }`}>
-                {insights.marketMood.sentiment}
-              </span>
-              <span className="text-xs text-gray-400">({insights.marketMood.score})</span>
-            </div>
-            <p className="text-[10px] text-gray-400 hidden lg:block">{insights.marketMood.reason}</p>
+          <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl tracking-tight leading-[1.1] mb-6">
+            Documenting India's<br /> emerging founders
+          </h1>
+          
+          <p className="text-lg text-gray-500 max-w-2xl leading-relaxed mb-8">
+            Free verified listings, AI-powered growth reports, and real-time market intelligence.
+            Structured documentation for serious builders.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link href="/startup" className="group px-6 py-3.5 bg-[#1A1A1A] text-white text-sm font-medium hover:bg-gray-800 transition-colors inline-flex items-center justify-center">
+              Explore Registry <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <Link href="/submit" className="px-6 py-3.5 border border-gray-300 text-sm font-medium hover:border-[#1A1A1A] transition-colors inline-flex items-center justify-center">
+              Submit Your Startup
+            </Link>
           </div>
         </div>
 
-        {/* ================= HERO SECTION WITH LIVE NEWS TICKER ================= */}
-        <div className="grid lg:grid-cols-3 gap-6 lg:gap-8 mb-8 lg:mb-12">
-          {/* Left Column - Main Hero */}
-          <div className="lg:col-span-2">
-            <div className="mb-4">
-              <span className="text-xs uppercase tracking-[0.2em] text-gray-400 font-medium bg-gray-50 px-3 py-1">
-                INDIA'S PUBLIC STARTUP REGISTRY · UPDATED {new Date().toLocaleDateString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+        {/* ================= MARKET PULSE - Live indicators ================= */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
+          {/* Market Mood Card */}
+          <div className="border border-gray-200 p-5 bg-white">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4 text-gray-400" />
+                <span className="text-xs uppercase tracking-wider text-gray-500">Market Mood</span>
+              </div>
+              <span className={`text-xs font-medium px-2 py-1 ${
+                insights.marketMood.sentiment === 'Bullish' ? 'bg-green-50 text-green-700' : 
+                insights.marketMood.sentiment === 'Neutral' ? 'bg-yellow-50 text-yellow-700' : 'bg-red-50 text-red-700'
+              }`}>
+                {insights.marketMood.sentiment} · {insights.marketMood.score}
               </span>
             </div>
-            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl xl:text-7xl tracking-tight leading-[1.1] mb-4">
-              Documenting India's<br /> emerging founders
-            </h1>
-            <p className="text-base sm:text-lg text-gray-500 max-w-2xl leading-relaxed mb-6">
-              Free verified listings, AI-powered growth reports, and real-time market intelligence.
-              Structured documentation for serious builders.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link href="/startups" className="px-6 py-3.5 bg-[#1A1A1A] text-white text-sm font-medium hover:bg-gray-800 transition-colors inline-flex items-center justify-center">
-                Explore Registry <ArrowRight className="ml-2 w-4 h-4" />
-              </Link>
-              <Link href="/submit" className="px-6 py-3.5 border border-gray-300 text-sm font-medium hover:border-[#1A1A1A] transition-colors inline-flex items-center justify-center">
-                Submit Your Startup
-              </Link>
-            </div>
+            <p className="text-sm text-gray-600">{insights.marketMood.reason}</p>
           </div>
 
-          {/* Right Column - Live News Feed */}
-          <div className="border border-gray-200 p-4 bg-gray-50">
+          {/* Live News Ticker */}
+          <div className="lg:col-span-3 border border-gray-200 p-5 bg-white">
             <div className="flex items-center gap-2 mb-3">
               <Newspaper className="w-4 h-4 text-gray-400" />
-              <span className="text-xs uppercase tracking-wider text-gray-500">LIVE · STARTUP NEWS</span>
-              <span className="ml-auto flex h-2 w-2">
-                <span className="animate-ping absolute h-2 w-2 rounded-full bg-green-400 opacity-75"></span>
-                <span className="rounded-full h-2 w-2 bg-green-500"></span>
-              </span>
+              <span className="text-xs uppercase tracking-wider text-gray-500">Live News</span>
+              <div className="flex items-center gap-1 ml-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute h-2 w-2 rounded-full bg-red-400 opacity-75"></span>
+                  <span className="rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+                <span className="text-[10px] text-gray-400">LIVE</span>
+              </div>
             </div>
-            <div className="space-y-3">
+            <div className="flex overflow-x-auto gap-4 pb-2 scrollbar-hide">
               {insights.liveNews.map((news: any, i: number) => (
-                <div key={i} className="border-b border-gray-200 last:border-0 pb-2 last:pb-0">
-                  <div className="flex items-start gap-2">
-                    <span className={`text-[8px] px-1.5 py-0.5 mt-0.5 ${
-                      news.impact === 'positive' ? 'bg-green-100 text-green-700' : 
-                      news.impact === 'negative' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
-                    }`}>
-                      {news.impact === 'positive' ? '↑' : news.impact === 'negative' ? '↓' : '→'}
-                    </span>
-                    <div>
-                      <p className="text-xs font-medium line-clamp-2">{news.headline}</p>
-                      <p className="text-[8px] text-gray-400 mt-1">{news.source} · {news.timestamp}</p>
-                    </div>
-                  </div>
+                <div key={i} className="flex-none w-64 border-r border-gray-100 pr-4 last:border-0">
+                  <p className="text-xs text-gray-800 line-clamp-2 mb-1">{news.headline}</p>
+                  <p className="text-[9px] text-gray-400">{news.source} · {news.timestamp}</p>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* ================= IDENTITY + TRUST INDICATORS ================= */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8 lg:mb-12 bg-gray-50 border border-gray-100 p-4">
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1.5 text-xs text-gray-500">
-              <Shield className="w-3.5 h-3.5" /> INDEPENDENT
-            </span>
-            <span className="w-px h-4 bg-gray-300"></span>
-            <span className="flex items-center gap-1.5 text-xs text-gray-500">
-              <Users className="w-3.5 h-3.5" /> {totalStartups || 0}+ REGISTERED
-            </span>
-            <span className="w-px h-4 bg-gray-300 hidden sm:block"></span>
-            <span className="flex items-center gap-1.5 text-xs text-gray-500 hidden sm:flex">
-              <Globe className="w-3.5 h-3.5" /> {uniqueIndustries} INDUSTRIES
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            <span className="text-[10px] text-gray-400">UPDATES EVERY 10 MIN</span>
-          </div>
-        </div>
-
-        {/* ================= ECOSYSTEM METRICS GRID - FULL WIDTH ================= */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-8 lg:mb-12">
+        {/* ================= ECOSYSTEM METRICS - Wikipedia-style data density ================= */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-px bg-gray-200 mb-16">
           {[
-            { icon: Building2, label: "ACTIVE STARTUPS", value: insights.ecosystemMetrics.totalActiveStartups, sub: "+2,300 this month" },
-            { icon: IndianRupee, label: "FUNDING YTD '26", value: insights.ecosystemMetrics.totalFundingYTD, sub: `${insights.ecosystemMetrics.monthlyGrowth} vs last year` },
-            { icon: Briefcase, label: "ACTIVE VC FIRMS", value: insights.ecosystemMetrics.activeVCFirms, sub: `${insights.ecosystemMetrics.activeAngels} angels` },
-            { icon: Gem, label: "UNICORNS", value: insights.ecosystemMetrics.unicorns, sub: `${insights.ecosystemMetrics.soonicorns} soonicorns` },
-            { icon: LineChart, label: "AVG DEAL SIZE", value: insights.ecosystemMetrics.avgDealSize, sub: "Seed to Series A" },
-            { icon: Zap, label: "HOTTEST SECTOR", value: insights.ecosystemMetrics.mostActiveSector, sub: `${insights.sectorMomentum[0]?.deals || 178} deals` },
-            { icon: Globe, label: "TOP CITY", value: insights.ecosystemMetrics.topCity, sub: "Startup hub" },
-            { icon: Award, label: "OUR REGISTRY", value: totalStartups || 0, sub: `${uniqueIndustries}+ industries covered` },
+            { label: "Active Startups", value: insights.ecosystemMetrics.totalActiveStartups, change: insights.ecosystemMetrics.monthlyGrowth },
+            { label: "Funding YTD '26", value: insights.ecosystemMetrics.totalFundingYTD, change: "+32% YoY" },
+            { label: "Active VC Firms", value: insights.ecosystemMetrics.activeVCFirms, sub: `${insights.ecosystemMetrics.activeAngels} angels` },
+            { label: "Unicorns", value: insights.ecosystemMetrics.unicorns, sub: `${insights.ecosystemMetrics.soonicorns} soonicorns` },
+            { label: "Avg Deal Size", value: insights.ecosystemMetrics.avgDealSize, sub: "Seed to Series A" },
+            { label: "Hottest Sector", value: insights.ecosystemMetrics.mostActiveSector, sub: "By deal count" },
+            { label: "Top City", value: insights.ecosystemMetrics.topCity, sub: "Startup hub" },
+            { label: "Registry", value: totalStartups || 0, sub: `${uniqueIndustries} industries` },
           ].map((item, i) => (
-            <div key={i} className="bg-white border border-gray-200 p-3 hover:border-[#1A1A1A] transition-colors group">
-              <div className="flex items-center justify-between mb-1">
-                <item.icon className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#1A1A1A]" />
-                <span className="text-[6px] sm:text-[7px] lg:text-[8px] text-gray-400 uppercase tracking-wider">{item.label}</span>
-              </div>
-              <p className="font-serif text-base sm:text-lg lg:text-xl xl:text-2xl tracking-tight">{item.value}</p>
-              <p className="text-[7px] sm:text-[8px] lg:text-[9px] text-gray-400 mt-1">{item.sub}</p>
+            <div key={i} className="bg-white p-4 hover:bg-gray-50 transition-colors">
+              <p className="text-[10px] uppercase tracking-wider text-gray-400 mb-1">{item.label}</p>
+              <p className="font-serif text-xl lg:text-2xl tracking-tight mb-1">{item.value}</p>
+              {item.change && <p className="text-[9px] text-green-600">{item.change}</p>}
+              {item.sub && <p className="text-[8px] text-gray-400">{item.sub}</p>}
             </div>
           ))}
         </div>
 
-        {/* ================= SECTOR MOMENTUM + BILLIONAIRES GRID ================= */}
-        <div className="grid lg:grid-cols-3 gap-4 lg:gap-6 mb-8 lg:mb-12">
-          {/* Sector Momentum - Takes 2 columns on desktop */}
-          <div className="lg:col-span-2 border border-gray-200 p-4 lg:p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-4 h-4 text-gray-400" />
-              <h2 className="text-xs uppercase tracking-wider text-gray-400">SECTOR MOMENTUM · Q1 2026</h2>
-              <div className="ml-auto flex gap-1">
-                <span className="text-[8px] bg-gray-100 px-1.5 py-0.5">DEALS</span>
-                <span className="text-[8px] bg-gray-100 px-1.5 py-0.5">FUNDING</span>
-                <span className="text-[8px] bg-gray-100 px-1.5 py-0.5">GROWTH</span>
+        {/* ================= SECTOR MOMENTUM + BILLIONAIRES - Distinct sections ================= */}
+        <div className="grid lg:grid-cols-3 gap-6 mb-16">
+          {/* Sector Momentum - Full width table style */}
+          <div className="lg:col-span-2 border border-gray-200 bg-white">
+            <div className="border-b border-gray-200 p-4 bg-gray-50">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-gray-400" />
+                <h2 className="text-sm font-medium uppercase tracking-wider">Sector Momentum · Q1 2026</h2>
               </div>
             </div>
-            <div className="space-y-3">
-              {insights.sectorMomentum.map((sector: any, i: number) => (
-                <div key={i} className="flex items-center justify-between border-b border-gray-100 pb-2 last:border-0 last:pb-0">
-                  <div className="w-1/4">
-                    <p className="font-serif text-sm sm:text-base">{sector.sector}</p>
-                  </div>
-                  <div className="flex items-center gap-4 sm:gap-6">
-                    <span className="text-xs text-gray-600 w-8 sm:w-10">{sector.deals}</span>
-                    <span className="text-xs text-gray-600 w-14 sm:w-16">{sector.funding}</span>
-                    <span className="text-xs text-green-600 w-12 sm:w-14">{sector.growth}</span>
-                  </div>
-                  <div className="w-1/3 hidden lg:block">
-                    <p className="text-[9px] text-gray-400 truncate">{sector.trend}</p>
-                  </div>
-                </div>
-              ))}
+            <div className="p-4">
+              <table className="w-full text-sm">
+                <thead className="text-[10px] uppercase tracking-wider text-gray-400 border-b border-gray-100">
+                  <tr>
+                    <th className="text-left pb-2 font-normal">Sector</th>
+                    <th className="text-right pb-2 font-normal">Deals</th>
+                    <th className="text-right pb-2 font-normal">Funding</th>
+                    <th className="text-right pb-2 font-normal">Growth</th>
+                    <th className="text-left pb-2 font-normal hidden lg:table-cell">Trend</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {insights.sectorMomentum.map((sector: any, i: number) => (
+                    <tr key={i} className="hover:bg-gray-50">
+                      <td className="py-2 text-sm">{sector.sector}</td>
+                      <td className="py-2 text-right text-gray-600">{sector.deals}</td>
+                      <td className="py-2 text-right text-gray-600">{sector.funding}</td>
+                      <td className="py-2 text-right text-green-600">{sector.growth}</td>
+                      <td className="py-2 text-left text-xs text-gray-400 hidden lg:table-cell">{sector.trend}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
 
-          {/* Billionaires & Startup Connections */}
-          <div className="border border-gray-200 p-4 lg:p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <Award className="w-4 h-4 text-gray-400" />
-              <h2 className="text-xs uppercase tracking-wider text-gray-400">INDIA'S BUSINESS LEADERS</h2>
+          {/* Billionaires - Card style with live indicators */}
+          <div className="border border-gray-200 bg-white">
+            <div className="border-b border-gray-200 p-4 bg-gray-50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Award className="w-4 h-4 text-gray-400" />
+                  <h2 className="text-sm font-medium uppercase tracking-wider">Business Leaders</h2>
+                </div>
+                <span className="text-[8px] bg-blue-50 text-blue-700 px-1.5 py-0.5">Live</span>
+              </div>
             </div>
-            <div className="space-y-4">
-              {insights.topIndianBillionaires.slice(0, 4).map((person: any, i: number) => (
-                <div key={i} className="border-b border-gray-100 last:border-0 pb-3 last:pb-0">
-                  <div className="flex justify-between items-center mb-1">
-                    <p className="font-serif text-sm sm:text-base">{person.name}</p>
-                    <p className="text-xs font-medium">{person.netWorth}</p>
+            <div className="divide-y divide-gray-100">
+              {insights.topIndianBillionaires.map((person: any, i: number) => (
+                <div key={i} className="p-4 hover:bg-gray-50 transition-colors">
+                  <div className="flex justify-between items-start mb-1">
+                    <div>
+                      <p className="font-serif text-base">{person.name}</p>
+                      <p className="text-[9px] text-gray-400">{person.source}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium">{person.netWorth}</p>
+                      <p className="text-[8px] text-green-600">{person.change}</p>
+                    </div>
                   </div>
-                  <p className="text-[9px] text-gray-400 mb-2">{person.source}</p>
-                  <div className="flex flex-wrap gap-1">
-                    {person.startupConnections.slice(0, 2).map((conn: string, j: number) => (
-                      <span key={j} className="text-[7px] bg-gray-100 px-1.5 py-0.5 text-gray-600">
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {person.startupConnections.map((conn: string, j: number) => (
+                      <span key={j} className="text-[7px] bg-gray-100 px-1.5 py-0.5 text-gray-600 rounded">
                         {conn}
                       </span>
                     ))}
-                    {person.startupConnections.length > 2 && (
-                      <span className="text-[7px] text-gray-400">+{person.startupConnections.length - 2}</span>
-                    )}
                   </div>
                 </div>
               ))}
             </div>
-            <p className="text-[7px] text-gray-300 text-center mt-3">*With startup investments</p>
           </div>
         </div>
 
-        {/* ================= RISING STARTUPS + FUNDING NEWS ================= */}
-        <div className="grid lg:grid-cols-3 gap-4 lg:gap-6 mb-8 lg:mb-12">
-          {/* Rising Startups - 2 columns */}
-          <div className="lg:col-span-2 border border-gray-200 p-4 lg:p-5">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Rocket className="w-4 h-4 text-gray-400" />
-                <h2 className="text-xs uppercase tracking-wider text-gray-400">TOP RISING STARTUPS · 2026</h2>
+        {/* ================= RISING STARTUPS + FUNDING - Two column layout ================= */}
+        <div className="grid lg:grid-cols-3 gap-6 mb-16">
+          {/* Rising Startups */}
+          <div className="lg:col-span-2 border border-gray-200 bg-white">
+            <div className="border-b border-gray-200 p-4 bg-gray-50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Rocket className="w-4 h-4 text-gray-400" />
+                  <h2 className="text-sm font-medium uppercase tracking-wider">Top Rising Startups · 2026</h2>
+                </div>
+                <Link href="/startup" className="text-xs text-gray-500 hover:text-[#1A1A1A] flex items-center gap-1">
+                  View all <ChevronRight className="w-3 h-3" />
+                </Link>
               </div>
-              <Link href="/startups" className="text-[9px] text-gray-500 hover:text-[#1A1A1A] flex items-center gap-1">
-                View all <ArrowRight className="w-2.5 h-2.5" />
-              </Link>
             </div>
-            <div className="grid sm:grid-cols-2 gap-3">
+            <div className="grid sm:grid-cols-2 gap-4 p-4">
               {insights.topRisingStartups.slice(0, 4).map((startup: any, i: number) => (
-                <div key={i} className="border border-gray-100 p-3 hover:border-gray-300 transition-colors">
-                  <div className="flex items-start justify-between mb-1">
-                    <p className="font-serif text-sm sm:text-base">{startup.name}</p>
+                <div key={i} className="border border-gray-100 p-4 hover:border-gray-300 transition-colors">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <p className="font-serif text-base">{startup.name}</p>
+                      <p className="text-[9px] text-gray-400">{startup.sector}</p>
+                    </div>
                     <span className={`text-[8px] px-1.5 py-0.5 ${
                       startup.momentum === 'high' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
                     }`}>
                       {startup.momentum}
                     </span>
                   </div>
-                  <p className="text-[9px] text-gray-400 mb-1">{startup.sector}</p>
-                  <p className="text-[8px] text-gray-500 mb-2 line-clamp-2">{startup.insight}</p>
+                  <p className="text-[10px] text-gray-500 mb-3 line-clamp-2">{startup.insight}</p>
                   <div className="flex items-center justify-between">
-                    <span className="text-[7px] text-gray-400">Growth</span>
-                    <span className="text-xs text-green-600">{startup.growthIndicator}</span>
+                    <span className="text-[8px] text-gray-400">Growth</span>
+                    <span className="text-xs text-green-600 font-medium">{startup.growthIndicator}</span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Funding News */}
-          <div className="border border-gray-200 p-4 lg:p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <DollarSign className="w-4 h-4 text-gray-400" />
-              <h2 className="text-xs uppercase tracking-wider text-gray-400">LATEST FUNDING</h2>
+          {/* Latest Funding */}
+          <div className="border border-gray-200 bg-white">
+            <div className="border-b border-gray-200 p-4 bg-gray-50">
+              <div className="flex items-center gap-2">
+                <DollarSign className="w-4 h-4 text-gray-400" />
+                <h2 className="text-sm font-medium uppercase tracking-wider">Latest Funding</h2>
+              </div>
             </div>
-            <div className="space-y-3">
+            <div className="divide-y divide-gray-100">
               {insights.fundingNews.map((funding: any, i: number) => (
-                <div key={i} className="border-b border-gray-100 last:border-0 pb-2 last:pb-0">
+                <div key={i} className="p-4 hover:bg-gray-50 transition-colors">
                   <div className="flex justify-between items-start mb-1">
-                    <p className="font-serif text-sm">{funding.startup}</p>
-                    <p className="text-xs font-medium">{funding.amount}</p>
+                    <p className="font-serif text-base">{funding.startup}</p>
+                    <p className="text-sm font-medium">{funding.amount}</p>
                   </div>
-                  <p className="text-[8px] text-gray-400 mb-1">{funding.round} · {funding.investors}</p>
+                  <p className="text-[9px] text-gray-400 mb-1">{funding.round} · {funding.investors}</p>
                   {funding.valuation && (
-                    <p className="text-[7px] text-gray-500">Val: {funding.valuation}</p>
+                    <p className="text-[8px] text-gray-500">Post-money: {funding.valuation}</p>
                   )}
                 </div>
               ))}
@@ -440,56 +427,59 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* ================= RECENT VERIFIED STARTUPS ================= */}
-        <div className="border border-gray-200 p-4 lg:p-5 mb-8 lg:mb-12">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <BadgeCheck className="w-4 h-4 text-gray-400" />
-              <h2 className="text-xs uppercase tracking-wider text-gray-400">RECENTLY VERIFIED ON UPFORGE</h2>
+        {/* ================= RECENTLY VERIFIED - Wikipedia style ================= */}
+        <div className="border border-gray-200 bg-white mb-16">
+          <div className="border-b border-gray-200 p-5 bg-gray-50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BadgeCheck className="w-5 h-5 text-gray-400" />
+                <h2 className="text-base font-medium">Recently Verified on UpForge</h2>
+              </div>
+              <Link href="/startup" className="text-sm text-gray-500 hover:text-[#1A1A1A] flex items-center gap-1">
+                View all <ExternalLink className="w-3 h-3" />
+              </Link>
             </div>
-            <Link href="/startups" className="text-[9px] text-gray-500 hover:text-[#1A1A1A] flex items-center gap-1">
-              View all startups <ArrowRight className="w-2.5 h-2.5" />
-            </Link>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
-            {verifiedStartups?.slice(0, 6).map((startup) => (
-              <Link key={startup.id} href={`/startup/${startup.slug}`} className="border border-gray-100 p-3 hover:border-gray-400 transition-colors">
-                <div className="flex items-start justify-between mb-1">
-                  <p className="font-serif text-sm sm:text-base line-clamp-1">{startup.name}</p>
-                  <BadgeCheck className="w-3 h-3 text-gray-400 flex-shrink-0" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-px bg-gray-200">
+            {verifiedStartups?.slice(0, 8).map((startup) => (
+              <Link key={startup.id} href={`/startup/${startup.slug}`} className="bg-white p-5 hover:bg-gray-50 transition-colors">
+                <div className="flex items-start justify-between mb-2">
+                  <p className="font-serif text-lg">{startup.name}</p>
+                  <BadgeCheck className="w-4 h-4 text-gray-400" />
                 </div>
-                <p className="text-[8px] text-gray-500 line-clamp-2 mb-2 h-8">{startup.description}</p>
-                <div className="flex items-center gap-2 text-[7px]">
-                  <span className="text-gray-400">{startup.founded_year || "N/A"}</span>
-                  <span className="w-0.5 h-0.5 bg-gray-300 rounded-full"></span>
-                  <span className="text-gray-600 uppercase tracking-wide truncate">{startup.industry || "Startup"}</span>
+                <p className="text-xs text-gray-500 line-clamp-2 mb-3 h-8">{startup.description}</p>
+                <div className="flex items-center gap-2 text-[10px] text-gray-400">
+                  <span>{startup.founded_year || "N/A"}</span>
+                  <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                  <span className="text-gray-600 uppercase tracking-wide">{startup.industry || "Startup"}</span>
                 </div>
               </Link>
             ))}
           </div>
         </div>
 
-        {/* ================= VALUATION TEASER ================= */}
-        <div className="bg-[#1A1A1A] text-white -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
-          <div className="max-w-5xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
+        {/* ================= VALUATION TEASER - Apple-style CTA ================= */}
+        <div className="bg-[#1A1A1A] text-white -mx-6 md:-mx-10 lg:-mx-12 px-6 md:px-10 lg:px-12 py-12">
+          <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-4">
-              <Calculator className="w-8 h-8 text-gray-500" />
+              <div className="w-12 h-12 bg-white/10 flex items-center justify-center">
+                <Calculator className="w-6 h-6 text-white" />
+              </div>
               <div>
-                <h2 className="font-serif text-xl lg:text-2xl tracking-tight">Know your startup's worth</h2>
-                <p className="text-gray-400 text-xs">Industry-benchmarked valuation · 2 minutes · No signup</p>
+                <h2 className="font-serif text-2xl md:text-3xl tracking-tight">Know your startup's worth</h2>
+                <p className="text-gray-400 text-sm">Industry-benchmarked valuation · 2 minutes · No signup</p>
               </div>
             </div>
-            <Link href="/valuation" className="px-6 py-3 bg-white text-[#1A1A1A] text-sm font-medium hover:bg-gray-100 transition-colors inline-flex items-center">
-              Estimate valuation <ArrowRight className="ml-2 w-4 h-4" />
+            <Link href="/valuation" className="group px-6 py-3 bg-white text-[#1A1A1A] text-sm font-medium hover:bg-gray-100 transition-colors inline-flex items-center">
+              Estimate valuation <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>
 
-        {/* ================= FOOTER ================= */}
-        <div className="text-center pt-6">
-          <p className="text-[8px] uppercase tracking-[0.2em] text-gray-400 mb-2">INSTITUTIONAL DATA · UPDATED EVERY 10 MINUTES</p>
-          <p className="text-[8px] text-gray-400">UpForge · Independent Startup Registry · {new Date().getFullYear()} · v2.0</p>
+        {/* ================= FOOTER - Clean ================= */}
+        <div className="text-center pt-12">
+          <p className="text-[9px] uppercase tracking-[0.2em] text-gray-400 mb-2">INSTITUTIONAL DATA · UPDATED EVERY 10 MINUTES</p>
+          <p className="text-[9px] text-gray-400">UpForge · Independent Startup Registry · {new Date().getFullYear()}</p>
         </div>
       </div>
     </div>
