@@ -1,159 +1,300 @@
 // app/contact/page.tsx
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Mail, MessageSquare, MapPin, ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
+import { useState } from "react";
+import Link from "next/link";
+import emailjs from "@emailjs/browser";
+import { Loader2, CheckCircle2, Mail, ChevronRight, ArrowRight } from "lucide-react";
+
+// ─── Same EmailJS config as submit page ──────────────────────────────────────
+const WORKING_SERVICE_ID  = "service_jwpk5li";
+const WORKING_TEMPLATE_ID = "template_ah89eas";
+const WORKING_PUBLIC_KEY  = "2N6-20rWXZApcyd_K";
+
+// ─── Field ────────────────────────────────────────────────────────────────────
+
+function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#666] mb-1.5">
+        {label} {required && <span className="text-red-400">*</span>}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+const inputCls =
+  "w-full border border-[#D5D0C8] bg-white px-4 py-3 text-[14px] text-[#1C1C1C] placeholder-[#AAA] focus:outline-none focus:border-[#1C1C1C] transition-all hover:border-[#BBB]";
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ContactPage() {
+  const [form, setForm] = useState({ name: "", email: "", title: "", message: "" });
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent]       = useState(false);
+  const [error, setError]     = useState("");
+
+  const update = (f: keyof typeof form) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+      setForm((p) => ({ ...p, [f]: e.target.value }));
+
+  const isValid = form.name && form.email && form.message;
+
+  const handleSubmit = async () => {
+    if (!isValid) return;
+    setLoading(true);
+    setError("");
+    try {
+      await emailjs.send(
+        WORKING_SERVICE_ID,
+        WORKING_TEMPLATE_ID,
+        {
+          name:    form.name,
+          title:   form.title || "Contact Form",
+          email:   form.email,
+          phone:   "N/A",
+          message: form.message,
+        },
+        WORKING_PUBLIC_KEY
+      );
+      setSent(true);
+    } catch (err) {
+      console.error("EmailJS error:", err);
+      setError("Something went wrong. Email us directly at contact@upforge.in");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ── Success ────────────────────────────────────────────────────────────────
+
+  if (sent) {
+    return (
+      <div className="bg-[#F7F5F0] min-h-screen flex items-center justify-center px-4" style={{ fontFamily: "system-ui, sans-serif" }}>
+        <div className="max-w-md w-full bg-white border border-[#D5D0C8] p-12 text-center">
+          <CheckCircle2 className="w-10 h-10 text-[#A89060] mx-auto mb-6" />
+          <h2
+            className="text-2xl text-[#1C1C1C] mb-3"
+            style={{ fontFamily: "'Georgia', serif" }}
+          >
+            Message received.
+          </h2>
+          <p className="text-sm text-[#888] leading-relaxed mb-8">
+            We'll get back to you at <span className="text-[#1C1C1C] font-medium">{form.email}</span> within 1–2 business days.
+          </p>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[#555] hover:text-[#1C1C1C] transition-colors"
+          >
+            Back to UpForge <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Form ───────────────────────────────────────────────────────────────────
+
   return (
-    <div className="relative bg-white text-black min-h-screen">
-      <Navbar />
-      <main className="relative pt-20">
-        <section className="py-16 sm:py-20 px-4 sm:px-6">
-          <div className="max-w-7xl mx-auto">
-            {/* Header */}
-            <div className="max-w-3xl mb-16">
-              <div className="flex items-center gap-3 mb-6">
-                <span className="h-px w-10 bg-black/20 hidden sm:block"></span>
-                <span className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-40">
-                  CONTACT · UPFORGE
-                </span>
-              </div>
-              <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-bold tracking-tighter leading-[0.9] mb-6">
-                Let’s talk about <br />
-                <span className="text-gray-500 italic font-medium">the next big thing.</span>
+    <div className="bg-[#F7F5F0] min-h-screen" style={{ fontFamily: "system-ui, sans-serif" }}>
+      <style>{`
+        @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+        .fu { animation: fadeUp 0.45s ease both; }
+        .fu-2 { animation: fadeUp 0.45s 0.1s ease both; }
+        .fu-3 { animation: fadeUp 0.45s 0.2s ease both; }
+      `}</style>
+
+      <div className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-20">
+
+        {/* ── MASTHEAD ── */}
+        <div className="border-b-2 border-[#1C1C1C] pb-6 mb-0 fu">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+            <div>
+              <p className="text-[9px] tracking-[0.28em] text-[#AAA] uppercase mb-3">UpForge · Get in Touch</p>
+              <h1
+                className="text-[2.4rem] sm:text-[3.2rem] lg:text-[4rem] tracking-tight leading-[1.0] text-[#1C1C1C]"
+                style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
+              >
+                Contact <em className="text-[#A89060] not-italic">Us</em>
               </h1>
-              <p className="text-base sm:text-lg text-gray-400 max-w-2xl">
-                Have questions about the registry? Want to partner with us? Or just want to share what you're building? We're all ears.
+            </div>
+            <div className="pb-1">
+              <p className="text-[11px] text-[#888] lg:text-right">
+                We respond within 1–2 business days.
               </p>
             </div>
+          </div>
+        </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-              {/* Contact Form */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="bg-white border border-black/5 rounded-2xl shadow-sm p-6 sm:p-8"
-              >
-                <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest font-bold text-gray-400 ml-1">
-                        Full Name
-                      </label>
-                      <Input
-                        placeholder="John Doe"
-                        className="h-12 border-black/10 focus:border-[#1e3a5f] rounded-xl text-sm"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest font-bold text-gray-400 ml-1">
-                        Work Email
-                      </label>
-                      <Input
-                        placeholder="john@startup.com"
-                        type="email"
-                        className="h-12 border-black/10 focus:border-[#1e3a5f] rounded-xl text-sm"
-                      />
-                    </div>
-                  </div>
+        {/* ── MAIN GRID ── */}
+        <div className="grid lg:grid-cols-3 gap-0 fu-2">
 
-                  <div className="space-y-2">
-                    <label className="text-[10px] uppercase tracking-widest font-bold text-gray-400 ml-1">
-                      Subject
-                    </label>
-                    <Input
-                      placeholder="Listing Inquiry / Partnership / Feedback"
-                      className="h-12 border-black/10 focus:border-[#1e3a5f] rounded-xl text-sm"
-                    />
-                  </div>
+          {/* ── FORM ── */}
+          <div className="lg:col-span-2 py-10 pr-0 lg:pr-12 border-r border-[#D5D0C8]">
+            <div className="space-y-5 max-w-xl">
+              <div className="grid sm:grid-cols-2 gap-5">
+                <Field label="Your Name" required>
+                  <input
+                    value={form.name}
+                    onChange={update("name")}
+                    placeholder="Rahul Sharma"
+                    className={inputCls}
+                  />
+                </Field>
+                <Field label="Email Address" required>
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={update("email")}
+                    placeholder="you@startup.in"
+                    className={inputCls}
+                  />
+                </Field>
+              </div>
 
-                  <div className="space-y-2">
-                    <label className="text-[10px] uppercase tracking-widest font-bold text-gray-400 ml-1">
-                      Message
-                    </label>
-                    <Textarea
-                      placeholder="Tell us more..."
-                      className="min-h-[150px] border-black/10 focus:border-[#1e3a5f] rounded-xl resize-none p-4 text-sm"
-                    />
-                  </div>
+              <Field label="Subject">
+                <select value={form.title} onChange={update("title")} className={`${inputCls} appearance-none cursor-pointer`}>
+                  <option value="">Select a topic…</option>
+                  {[
+                    "Listing my startup",
+                    "Verification query",
+                    "Update my profile",
+                    "Report / analysis question",
+                    "Partnership or press",
+                    "Data / API access",
+                    "Other",
+                  ].map((o) => (
+                    <option key={o} value={o}>{o}</option>
+                  ))}
+                </select>
+              </Field>
 
-                  <Button className="w-full h-14 bg-[#1e3a5f] hover:bg-[#14304a] text-white rounded-full uppercase text-[10px] font-black tracking-[0.3em] transition-all mt-2">
-                    Send Message
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </form>
-              </motion.div>
+              <Field label="Message" required>
+                <textarea
+                  value={form.message}
+                  onChange={update("message")}
+                  placeholder="How can we help you?"
+                  rows={6}
+                  className={`${inputCls} resize-none`}
+                />
+              </Field>
 
-              {/* Contact Info */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="space-y-8"
-              >
-                {/* Email */}
-                <div className="bg-white border border-black/5 rounded-2xl shadow-sm p-6 flex gap-6 hover:shadow-lg transition">
-                  <div className="h-12 w-12 shrink-0 rounded-xl bg-[#1e3a5f]/10 border border-black/5 flex items-center justify-center text-[#1e3a5f]">
-                    <Mail className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold uppercase tracking-wider mb-1">Email us</h4>
-                    <p className="text-gray-400 text-sm mb-2">Our team usually responds within 24 hours.</p>
-                    <a
-                      href="mailto:info@upforge.in"
-                      className="text-lg font-medium text-black hover:text-[#1e3a5f] transition-colors"
-                    >
-                      info@upforge.in
-                    </a>
-                  </div>
-                </div>
+              {error && (
+                <p className="text-[11px] text-red-500">{error}</p>
+              )}
 
-                {/* Support */}
-                <div className="bg-white border border-black/5 rounded-2xl shadow-sm p-6 flex gap-6 hover:shadow-lg transition">
-                  <div className="h-12 w-12 shrink-0 rounded-xl bg-[#1e3a5f]/10 border border-black/5 flex items-center justify-center text-[#1e3a5f]">
-                    <MessageSquare className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold uppercase tracking-wider mb-1">Founder Support</h4>
-                    <p className="text-gray-400 text-sm mb-2">
-                      Are you a registered founder? Reach out via our priority line.
-                    </p>
-                    <span className="text-black font-medium">Available 10 AM — 6 PM IST</span>
-                  </div>
-                </div>
+              <div className="flex items-center justify-between pt-2">
+                <p className="text-[10px] text-[#BBB]">
+                  Or email directly:{" "}
+                  <a
+                    href="mailto:contact@upforge.in"
+                    className="text-[#888] hover:text-[#1C1C1C] underline underline-offset-2 transition-colors"
+                  >
+                    contact@upforge.in
+                  </a>
+                </p>
 
-                {/* Location */}
-                <div className="bg-white border border-black/5 rounded-2xl shadow-sm p-6 flex gap-6 hover:shadow-lg transition">
-                  <div className="h-12 w-12 shrink-0 rounded-xl bg-[#1e3a5f]/10 border border-black/5 flex items-center justify-center text-[#1e3a5f]">
-                    <MapPin className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold uppercase tracking-wider mb-1">Headquarters</h4>
-                    <p className="text-gray-400 text-sm leading-relaxed">
-                      Delhi, India
-                    </p>
-                  </div>
-                </div>
-
-                {/* Quiet Branding */}
-                <div className="pt-8 border-t border-black/5">
-                  <p className="text-[10px] uppercase tracking-[0.4em] text-gray-400">
-                    Upforge India · Building in Public
-                  </p>
-                </div>
-              </motion.div>
+                <button
+                  onClick={handleSubmit}
+                  disabled={!isValid || loading}
+                  className={`flex items-center gap-2 px-7 py-3 text-[11px] font-bold uppercase tracking-wider transition-colors ${
+                    isValid && !loading
+                      ? "bg-[#1C1C1C] text-white hover:bg-[#333]"
+                      : "bg-[#EEEAE3] text-[#BBB] cursor-not-allowed"
+                  }`}
+                >
+                  {loading ? (
+                    <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Sending…</>
+                  ) : (
+                    <><Mail className="w-3.5 h-3.5" /> Send Message</>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
-        </section>
-      </main>
-      <Footer />
+
+          {/* ── SIDEBAR ── */}
+          <div className="py-10 lg:pl-10 fu-3">
+            <div className="space-y-6">
+
+              {/* Direct contact */}
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#AAA] mb-4">Direct Contact</p>
+                <a
+                  href="mailto:contact@upforge.in"
+                  className="flex items-center gap-3 group mb-2"
+                >
+                  <div className="w-8 h-8 border border-[#E2DDD5] bg-white flex items-center justify-center group-hover:bg-[#1C1C1C] transition-colors">
+                    <Mail className="w-3.5 h-3.5 text-[#AAA] group-hover:text-white transition-colors" />
+                  </div>
+                  <span className="text-sm text-[#555] group-hover:text-[#1C1C1C] transition-colors">
+                    contact@upforge.in
+                  </span>
+                </a>
+                <p className="text-[10px] text-[#BBB] ml-11">Response within 1–2 business days</p>
+              </div>
+
+              <div className="h-px bg-[#E8E4DC]" />
+
+              {/* Quick links */}
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#AAA] mb-4">Quick Links</p>
+                <div className="space-y-1">
+                  {[
+                    { label: "List your startup",   href: "/submit" },
+                    { label: "Verification info",   href: "/verification" },
+                    { label: "Free analysis report",href: "/reports" },
+                    { label: "Browse the registry", href: "/startup" },
+                    { label: "FAQ",                 href: "/faq" },
+                  ].map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="flex items-center justify-between py-2.5 border-b border-[#EEEAE3] last:border-0 group"
+                    >
+                      <span className="text-[12px] text-[#666] group-hover:text-[#1C1C1C] transition-colors">
+                        {item.label}
+                      </span>
+                      <ChevronRight className="w-3 h-3 text-[#CCC] group-hover:text-[#888] transition-colors" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="h-px bg-[#E8E4DC]" />
+
+              {/* Sister products */}
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#AAA] mb-4">Our Platforms</p>
+                <div className="space-y-3">
+                  {[
+                    { name: "InternAdda", sub: "India's internship platform", href: "https://internadda.com" },
+                    { name: "Arjuna AI",  sub: "AI mock interview platform",  href: "https://arjunaai.in"   },
+                  ].map((p) => (
+                    <a
+                      key={p.name}
+                      href={p.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between group"
+                    >
+                      <div>
+                        <p className="text-[12px] font-semibold text-[#555] group-hover:text-[#1C1C1C] transition-colors" style={{ fontFamily: "'Georgia', serif" }}>
+                          {p.name}
+                        </p>
+                        <p className="text-[10px] text-[#BBB]">{p.sub}</p>
+                      </div>
+                      <ChevronRight className="w-3 h-3 text-[#CCC] group-hover:text-[#888] transition-colors flex-shrink-0" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
