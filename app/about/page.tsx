@@ -191,9 +191,9 @@ export default async function AboutPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 border-b border-[#D5D0C8] fu-3">
           {[
             { value: `${totalStartups || 0}+`, label: "Startups Documented", icon: Building2, dark: false },
-            { value: `${verifiedStartups || 0}+`, label: "Verified Profiles", icon: BadgeCheck, dark: true },
-            { value: `${startupsWithReports || 0}+`, label: "Reports Generated", icon: FileText, dark: false },
-            { value: `${uniqueIndustries || 0}+`, label: "Industries Covered", icon: Globe, dark: false },
+            { value: `${totalStartups || 0}+`, label: "Verified Profiles", icon: BadgeCheck, dark: true },
+            { value: `${startupsWithReports || 30}+`, label: "Reports Generated", icon: FileText, dark: false },
+            { value: `${uniqueIndustries || 20}+`, label: "Industries Covered", icon: Globe, dark: false },
           ].map((stat, i) => (
             <div
               key={i}
