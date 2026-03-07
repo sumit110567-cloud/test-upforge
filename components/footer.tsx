@@ -1,7 +1,32 @@
 //components/footer.tsx
+"use client";
 import Link from "next/link";
+import { useState } from "react";
 import { BadgeCheck, Shield, Globe, ExternalLink, CheckCircle2, Award } from "lucide-react";
-import { LeaderAvatar } from "@/components/leader-avatar";
+
+// ─── INLINE CLIENT COMPONENT — handles onError without separate file ───────────
+function LeaderAvatar({ src, alt, initials }: { src: string; alt: string; initials: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <div style={{
+        width: "100%", height: "100%", display: "flex", alignItems: "center",
+        justifyContent: "center", fontFamily: "'Playfair Display',serif",
+        fontWeight: 900, fontSize: 16, color: "#C9A84C",
+      }}>
+        {initials}
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={alt}
+      onError={() => setFailed(true)}
+      style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top", display: "block" }}
+    />
+  );
+}
 
 // ─── INDIA TOP 3 BILLIONAIRES — Forbes March 2025 ─────────────────────────────
 const INDIA_LEADERS = [
@@ -51,8 +76,8 @@ export function Footer() {
         .ft-pf  { font-family: 'Playfair Display', Georgia, serif !important; }
         .ft-bsk { font-family: 'Libre Baskerville', Georgia, serif !important; }
         .ft-sys { font-family: system-ui, sans-serif !important; }
-        .ft-link:hover  { color: #C9A84C !important; }
-        .ft-card:hover  { border-color: rgba(201,168,76,.35) !important; background: rgba(255,255,255,.05) !important; }
+        .ft-link:hover { color: #C9A84C !important; }
+        .ft-card:hover { border-color: rgba(201,168,76,.35) !important; background: rgba(255,255,255,.05) !important; }
         @keyframes ftPing {
           0%,100%{transform:scale(1);opacity:.7} 50%{transform:scale(1.9);opacity:0}
         }
@@ -103,7 +128,7 @@ export function Footer() {
           </p>
         </div>
 
-        {/* ── INDIA'S BUSINESS LEADERS — trust signal + SEO ── */}
+        {/* ── INDIA'S BUSINESS LEADERS ── */}
         <div className="py-10" style={{ borderBottom: "1px solid rgba(255,255,255,.07)" }}>
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
@@ -138,7 +163,7 @@ export function Footer() {
                   transition: "border-color .2s ease, background .2s ease",
                 }}
               >
-                {/* Avatar — uses client component to handle onError */}
+                {/* Avatar — onError is safe here since the whole file is "use client" */}
                 <div style={{
                   width: 52, height: 52, flexShrink: 0, overflow: "hidden",
                   border: "1.5px solid rgba(201,168,76,.3)",
@@ -147,7 +172,6 @@ export function Footer() {
                   <LeaderAvatar src={person.img} alt={person.name} initials={person.initials} />
                 </div>
 
-                {/* Info */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <p className="ft-pf font-bold leading-tight" style={{ fontSize: 14, color: "#fff" }}>
@@ -223,7 +247,7 @@ export function Footer() {
             </Link>
           </div>
 
-          {/* Registry links */}
+          {/* Registry */}
           <div>
             <h4 className="ft-sys mb-4" style={{ fontSize: 9, fontWeight: 800, letterSpacing: ".26em", textTransform: "uppercase", color: "rgba(255,255,255,.28)", borderBottom: "1px solid rgba(255,255,255,.07)", paddingBottom: 8 }}>
               Registry
