@@ -6,12 +6,13 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X, Search, ChevronRight } from "lucide-react";
 
-const NAV_LINKS = [
-  { label: "Directory",  href: "/startup" },
-  { label: "Reports",    href: "/reports" },
-  { label: "Insights",   href: "/insights" },
-  { label: "Tools",      href: "/tools" },
-];
+  const links = [
+    { name: "Home", href: "/" },
+    { name: "Registry", href: "/startup" },
+    { name: "Founders", href: "/founder-stories" },
+    { name: "Reports", href: "/reports" },
+    { name: "About", href: "/about" },
+  ];
 
 export function Header() {
   const [menuOpen,    setMenuOpen]    = useState(false);
