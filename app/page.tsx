@@ -360,7 +360,7 @@ export default async function Home() {
               <span className="uf-m" style={{ fontSize: "12px", fontWeight: 600, color: sentColor }}>{eco.marketMood.sentiment} {eco.marketMood.score}/100</span>
             </div>
           </div>
-        </div
+        </div>
 
         <div className="uf-wrap">
 
