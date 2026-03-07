@@ -105,7 +105,7 @@ export default async function StartupPage({ searchParams }: Props) {
     query = query.or(`industry.ilike.%${sectorFilter}%,category.ilike.%${sectorFilter}%`);
   }
 
-  const { data: startups, count, error } = await query
+  const { data: startups, count } = await query
     .order("name", { ascending: true })
     .range(from, to);
 
@@ -127,13 +127,11 @@ export default async function StartupPage({ searchParams }: Props) {
         
         .uf-wrap{max-width:1400px;margin:0 auto;padding:0 clamp(16px,3vw,32px)}
 
-        /* Fix for overlapping header */
         .page-masthead {
-          padding-top: 80px; /* This ensures it stays below fixed Navbar */
+          padding-top: 80px;
           margin-bottom: 20px;
         }
 
-        /* animations */
         @keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
         .a0{animation:up .5s .00s cubic-bezier(.16,1,.3,1) both}
         .a1{animation:up .5s .08s cubic-bezier(.16,1,.3,1) both}
@@ -147,7 +145,7 @@ export default async function StartupPage({ searchParams }: Props) {
         .srch{display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--ink);padding:4px 2px}
         .srch input{flex:1;font-size:14px;background:transparent;border:none;outline:none;padding:8px 0}
         
-        .sec-pill{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:600;padding:5px 12px;border:1px solid var(--rule);background:#fff;transition:all .15s;cursor:pointer}
+        .sec-pill{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:600;padding:5px 12px;border:1px solid var(--rule);background:#fff;transition:all .15s;cursor:pointer;text-decoration:none;color:inherit}
         .sec-pill.hot{border-color:var(--gold);background:rgba(184,134,11,.06);color:var(--gold)}
         .sec-pill.active{background:var(--ink);color:#fff;border-color:var(--ink)}
 
@@ -155,13 +153,13 @@ export default async function StartupPage({ searchParams }: Props) {
         .s-card:hover{border-color:#bbb;box-shadow:0 4px 20px rgba(0,0,0,.08)}
         .logo-box{width:40px;height:40px;border:1px solid var(--rule);background:var(--off);display:flex;align-items:center;justify-content:center}
 
-        .pg-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 18px;border:1px solid var(--rule);background:#fff;font-size:11px;font-weight:600;text-transform:uppercase;transition:all .15s}
+        .pg-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 18px;border:1px solid var(--rule);background:#fff;font-size:11px;font-weight:600;text-transform:uppercase;transition:all .15s;text-decoration:none;color:inherit}
         .pg-btn.active{background:var(--ink);color:#fff}
         .pg-btn.disabled{opacity:.3;pointer-events:none}
 
         @media(max-width:768px){
           .page-masthead { padding-top: 70px; }
-          .spotlight-box { display: none !important; } /* Hide Spotlight on Mobile */
+          .spotlight-box { display: none !important; }
           .stats-g { grid-template-columns: repeat(3, 1fr) !important; }
           .hide-mob { display: none !important; }
         }
@@ -170,7 +168,6 @@ export default async function StartupPage({ searchParams }: Props) {
       <div className="uf">
         <div className="uf-wrap">
 
-          {/* ── MASTHEAD ── */}
           <header className="a0 page-masthead">
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid var(--rule)", flexWrap: "wrap", gap: "8px" }}>
               <span className="uf-lbl" style={{ color: "var(--ink2)", fontWeight: 700 }}>{todayStr} · Vol. II</span>
@@ -195,10 +192,8 @@ export default async function StartupPage({ searchParams }: Props) {
             </div>
           </header>
 
-          {/* ── INSIGHTS STRIP ── */}
           <section className="a1">
             <div className="stats-g" style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 1fr", borderBottom: "1px solid var(--rule)" }}>
-              {/* Spotlight (Hidden on Mobile) */}
               <div className="spotlight-box" style={{ padding: "18px 24px 18px 0", borderRight: "1px solid var(--rule)" }}>
                 <div style={{ display: "flex", gap: "10px" }}>
                   <span className="uf-lbl" style={{ color: "var(--gold)", whiteSpace: "nowrap" }}>★ Spotlight</span>
@@ -208,7 +203,6 @@ export default async function StartupPage({ searchParams }: Props) {
                   </div>
                 </div>
               </div>
-              {/* Stats */}
               {[
                 { label: "New Entries", v: insights.registryStats.newThisWeek, sub: "this week" },
                 { label: "Hot Sector", v: insights.registryStats.mostActiveSector, sub: "high volume" },
@@ -223,11 +217,9 @@ export default async function StartupPage({ searchParams }: Props) {
             </div>
           </section>
 
-          {/* ── FILTERS & SEARCH ── */}
           <section className="a2" style={{ padding: "20px 0", borderBottom: "1px solid var(--rule)" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-              {/* Trending Pills */}
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", overflowX: "auto" }} className="noscroll">
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", overflowX: "auto" }}>
                 <Zap style={{ width: "12px", color: "var(--ink4)", flexShrink: 0 }} />
                 <div style={{ display: "flex", gap: "8px" }}>
                   {insights.trendingSectors.map((s: any, i: number) => (
@@ -238,23 +230,23 @@ export default async function StartupPage({ searchParams }: Props) {
                 </div>
               </div>
 
-              {/* Search Bar */}
               <form style={{ maxWidth: "500px" }}>
                 <div className="srch">
                   <Search style={{ width: "14px", color: "var(--ink4)" }} />
-                  <input type="text" name="search" defaultValue={searchQuery} placeholder="Search startups, founders or industries..." />
+                  <input type="text" name="search" defaultValue={searchQuery} placeholder="Search startups..." />
                   {sectorFilter && <input type="hidden" name="sector" value={sectorFilter} />}
-                  <button type="submit"><ArrowRight style={{ width: "16px" }} /></button>
+                  <button type="submit" style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
+                    <ArrowRight style={{ width: "16px" }} />
+                  </button>
                 </div>
               </form>
             </div>
           </section>
 
-          {/* ── GRID ── */}
           <PageTransition key={`${searchQuery}-${sectorFilter}-${currentPage}`}>
             <div className="a3" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px", marginTop: "30px" }}>
               {startups?.map((s) => (
-                <Link key={s.id} href={`/startup/${s.slug}`}>
+                <Link key={s.id} href={`/startup/${s.slug}`} style={{ textDecoration: 'none' }}>
                   <div className="s-card">
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
                       <div className="logo-box">
@@ -262,11 +254,12 @@ export default async function StartupPage({ searchParams }: Props) {
                       </div>
                       <BadgeCheck style={{ width: "16px", color: "var(--pos)" }} />
                     </div>
-                    <h3 className="uf-d" style={{ fontSize: "1.2rem", fontWeight: 700, marginBottom: "8px" }}>{s.name}</h3>
+                    <h3 className="uf-d" style={{ fontSize: "1.2rem", fontWeight: 700, marginBottom: "8px", color: 'var(--ink)' }}>{s.name}</h3>
                     <p style={{ fontSize: "13px", color: "var(--ink3)", lineHeight: 1.6, flex: 1, marginBottom: "16px" }}>
                       {s.description?.substring(0, 120)}...
                     </p>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", pt: "12px", borderTop: "1px solid var(--rl)" }}>
+                    {/* FIXED LINE BELOW: pt to paddingTop */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "12px", borderTop: "1px solid var(--rl)" }}>
                       <span className="uf-lbl" style={{ fontSize: "9px" }}>{s.industry || "General"}</span>
                       <ArrowUpRight style={{ width: "12px", color: "var(--ink4)" }} />
                     </div>
@@ -275,7 +268,6 @@ export default async function StartupPage({ searchParams }: Props) {
               ))}
             </div>
 
-            {/* Pagination */}
             {totalPages > 1 && (
               <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "50px" }}>
                 <Link href={`?page=${currentPage - 1}`} className={`pg-btn ${currentPage === 1 ? "disabled" : ""}`}>Prev</Link>
@@ -285,7 +277,6 @@ export default async function StartupPage({ searchParams }: Props) {
             )}
           </PageTransition>
 
-          {/* ── FOOTER STRIP ── */}
           <div style={{ marginTop: "60px", padding: "20px 0", borderTop: "1px solid var(--ink)", textAlign: "center" }}>
             <div style={{ display: "flex", justifyContent: "center", gap: "30px", flexWrap: "wrap" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
