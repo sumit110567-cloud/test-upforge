@@ -11,46 +11,10 @@ import { ChevronLeft, ChevronRight, ArrowRight, ArrowUpRight } from "lucide-reac
 
 // ─── FOUNDER DATA ─────────────────────────────────────────────────────────────
 const FOUNDERS = [
-  {
+
+
+    {
     no: "01", edition: "No. 01",
-    category: "QUICK COMMERCE",
-    name: "Aadit Palicha & Kaivalya Vohra",
-    nameShort: "Palicha & Vohra",
-    initials: "Z",
-    company: "Zepto", slug: "zepto",
-    role: "Co-Founders — CEO & CTO",
-    city: "Bengaluru", context: "Dropped out of Stanford at 19",
-    valuation: "$5.9B", funding: "$2.5B+", founded: "2021",
-    imgSrc: "https://i.ytimg.com/vi/HBSOii00H68/maxresdefault.jpg",
-    accent: "#D97706", accentBg: "#FFFBEB", accentBorder: "#FDE68A",
-    headline: "Two Stanford dropouts. One failed startup. Then a $5.9 billion answer to India's grocery problem.",
-    deck: "Aadit Palicha and Kaivalya Vohra built India's fastest unicorn by failing first, then solving the logistics math nobody else wanted to.",
-    cols: [
-      {
-        h: "The Failed First Act",
-        b: "In 2020, Palicha and Vohra were Stanford freshmen who flew back to India to build KiranaKart — a 45-minute grocery app. It failed in months. Most founders would have returned to California. These two stayed in Bengaluru, rented a room, and dissected every mistake with unusual discipline.\n\nThe pivot they arrived at was specific: dark stores placed within 1.5km of dense demand made 10-minute delivery a pure logistics equation, not a gimmick. Every competitor called it insane. The founders called it math."
-      },
-      {
-        h: "The $5.9B Math Problem",
-        b: "Zepto launched in 2021. By August 2023, India had its first unicorn of the year — at $1.4B. The $350M Series H in 2025 brought the valuation to $5.9B, making them the youngest founders in India to build a business at that scale.\n\nKaivalya Vohra, at 22, became India's youngest billionaire. Zepto now operates 350+ dark stores across 10 cities, fulfilling orders in under 10 minutes — a logistics equation, solved."
-      },
-      {
-        h: "What the Story Really Is",
-        b: "The Zepto story isn't about being young or lucky. It is about the discipline to treat failure as data. KiranaKart showed them what didn't work. Zepto was the answer once they knew the right question.\n\nIndia's quick commerce market crossed $3.3B in 2025. Zepto commands its second-largest share — earned not by being first, but by being most precise about what '10 minutes' actually requires behind the scenes."
-      }
-    ],
-    pull: "We failed with KiranaKart in months. Most people would have gone back to Stanford. We stayed in Bengaluru and figured out what we got wrong.",
-    pullBy: "Aadit Palicha",
-    lesson: "The first startup teaches you the question. The second one lets you answer it.",
-    stats: [
-      { l: "Valuation", v: "$5.9B" },
-      { l: "Founded", v: "2021" },
-      { l: "Dark Stores", v: "350+" },
-      { l: "Total Raised", v: "$2.5B+" },
-    ],
-  },
-  {
-    no: "02", edition: "No. 02",
     category: "EDTECH",
     name: "Alakh Pandey",
     nameShort: "Alakh Pandey",
@@ -85,6 +49,44 @@ const FOUNDERS = [
       { l: "Students", v: "10M+" },
       { l: "Annual Fee", v: "₹2,000" },
       { l: "Founded", v: "2014" },
+    ],
+  },
+  {
+    no: "02", edition: "No. 02",
+    category: "QUICK COMMERCE",
+    name: "Aadit Palicha & Kaivalya Vohra",
+    nameShort: "Palicha & Vohra",
+    initials: "Z",
+    company: "Zepto", slug: "zepto",
+    role: "Co-Founders — CEO & CTO",
+    city: "Bengaluru", context: "Dropped out of Stanford at 19",
+    valuation: "$5.9B", funding: "$2.5B+", founded: "2021",
+    imgSrc: "https://i.ytimg.com/vi/HBSOii00H68/maxresdefault.jpg",
+    accent: "#D97706", accentBg: "#FFFBEB", accentBorder: "#FDE68A",
+    headline: "Two Stanford dropouts. One failed startup. Then a $5.9 billion answer to India's grocery problem.",
+    deck: "Aadit Palicha and Kaivalya Vohra built India's fastest unicorn by failing first, then solving the logistics math nobody else wanted to.",
+    cols: [
+      {
+        h: "The Failed First Act",
+        b: "In 2020, Palicha and Vohra were Stanford freshmen who flew back to India to build KiranaKart — a 45-minute grocery app. It failed in months. Most founders would have returned to California. These two stayed in Bengaluru, rented a room, and dissected every mistake with unusual discipline.\n\nThe pivot they arrived at was specific: dark stores placed within 1.5km of dense demand made 10-minute delivery a pure logistics equation, not a gimmick. Every competitor called it insane. The founders called it math."
+      },
+      {
+        h: "The $5.9B Math Problem",
+        b: "Zepto launched in 2021. By August 2023, India had its first unicorn of the year — at $1.4B. The $350M Series H in 2025 brought the valuation to $5.9B, making them the youngest founders in India to build a business at that scale.\n\nKaivalya Vohra, at 22, became India's youngest billionaire. Zepto now operates 350+ dark stores across 10 cities, fulfilling orders in under 10 minutes — a logistics equation, solved."
+      },
+      {
+        h: "What the Story Really Is",
+        b: "The Zepto story isn't about being young or lucky. It is about the discipline to treat failure as data. KiranaKart showed them what didn't work. Zepto was the answer once they knew the right question.\n\nIndia's quick commerce market crossed $3.3B in 2025. Zepto commands its second-largest share — earned not by being first, but by being most precise about what '10 minutes' actually requires behind the scenes."
+      }
+    ],
+    pull: "We failed with KiranaKart in months. Most people would have gone back to Stanford. We stayed in Bengaluru and figured out what we got wrong.",
+    pullBy: "Aadit Palicha",
+    lesson: "The first startup teaches you the question. The second one lets you answer it.",
+    stats: [
+      { l: "Valuation", v: "$5.9B" },
+      { l: "Founded", v: "2021" },
+      { l: "Dark Stores", v: "350+" },
+      { l: "Total Raised", v: "$2.5B+" },
     ],
   },
   {
