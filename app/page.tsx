@@ -376,7 +376,6 @@ export default async function Home() {
               </p>
               <div className="flex items-center justify-center flex-wrap gap-2 sm:gap-3">
                 <span className="trust-chip"><BadgeCheck className="w-3 h-3 text-emerald-600" />{totalStartups || 0}+ Verified</span>
-                <span className="trust-chip"><Globe className="w-3 h-3 text-blue-600" />{uniqueIndustries} Sectors</span>
                 <span className="trust-chip"><Shield className="w-3 h-3 text-amber-600" />100% Independent</span>
                 <span className="trust-chip"><Sparkles className="w-3 h-3 text-purple-600" />AI Reports</span>
               </div>
@@ -461,7 +460,7 @@ export default async function Home() {
                 {/* Hero image */}
                 <div className="relative w-full overflow-hidden mb-5" style={{ aspectRatio: "16/9" }}>
                   <img
-                    src="https://images.unsplash.com/photo-1568992687947-868a62a9f521?w=900&q=80&fit=crop"
+                    src="https://www.ifourtechnolab.com/pics/startup_india.webp"
                     alt="India startup ecosystem — Bengaluru tech hub office"
                     className="w-full h-full object-cover"
                     style={{ filter: "sepia(15%) contrast(108%)" }}
