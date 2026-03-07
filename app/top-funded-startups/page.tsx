@@ -1,780 +1,713 @@
+"use client"
+
 // app/top-funded-startups/page.tsx
-// CAPITAL REPORT — Broadsheet newspaper style, matching The Founder Chronicle aesthetic
-// Image URLs set to "https://www.sample.com/..." — replace with real direct image links
+// THE CAPITAL REPORT — Broadsheet newspaper slide navigator (like The Founder Chronicle)
+//
+// ─── HOW TO ADD IMAGES ───────────────────────────────────────────────────────
+// Each startup has imgSrc — currently set to real Unsplash URLs as placeholders.
+// Replace any URL with your own direct image link (JPG/WebP, ideally 1200×800px).
+// Images use plain <img> tag — any public URL works, no Next.js config needed.
+// ─────────────────────────────────────────────────────────────────────────────
 
-import type { Metadata } from "next"
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ChevronRight, ArrowRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, ArrowRight, ArrowUpRight } from "lucide-react"
 
-export const metadata: Metadata = {
-  title: "India's Most Funded Startups 2026 — Capital Report | UpForge",
-  description:
-    "The 10 Indian startups that raised the most capital — Ola ($3.8B), OYO ($3.7B), Zepto ($2.5B). Funding rounds, lead investors, and what the money tells us about India's decade ahead. Verified March 2026.",
-  keywords:
-    "top funded startups India 2026, most funded Indian startups, startup funding India, India unicorn funding, Zepto funding, OYO funding, Meesho valuation, VC India 2026, startup capital India, highest funded startups India, recently funded startups India, startup investment India 2026",
-  alternates: { canonical: "https://upforge.in/top-funded-startups" },
-  openGraph: {
-    title: "India's Most Funded Startups 2026 — Capital Report | UpForge",
-    description: "10 Indian startups. $17B+ combined. What the capital says about India's next decade. Verified March 2026.",
-    url: "https://upforge.in/top-funded-startups",
-    siteName: "UpForge",
-    locale: "en_IN",
-    type: "article",
-    images: [{ url: "https://upforge.in/og/top-funded-startups.png", width: 1200, height: 630 }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    site: "@upforge_in",
-    title: "India's Most Funded Startups 2026 | UpForge",
-    images: ["https://upforge.in/og/top-funded-startups.png"],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large" },
-  },
-}
-
-// ─── DATA ─────────────────────────────────────────────────────────────────────
-// imgSrc: replace "https://www.sample.com/..." with a real direct image URL
-// Recommended: office/product/city photo relevant to the startup (800×500px minimum)
 const STARTUPS = [
   {
-    rank: "01",
+    no: "01",
     name: "Ola Cabs",
     slug: "ola-cabs",
+    sector: "MOBILITY",
+    hq: "Bengaluru",
+    founded: "2010",
     total: "$3.8B",
     totalRaw: 3.8,
-    sector: "Mobility",
-    hq: "Bengaluru",
-    founded: "2010",
     valuation: "$7.3B",
     lastRound: "Series J · 2023",
-    investors: "SoftBank · Tiger Global · Accel",
-    // ▼ Replace with real image — suggest: Bengaluru traffic / ride-hailing cityscape
-    imgSrc: "data:image/jpeg;base64,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",
-    accentColor: "#7C3AED",
-    tag: "Ride-Hailing",
-    headline: "India's largest ride-hailing fleet. SoftBank's biggest India bet.",
-    body: "ANI Technologies, the parent of Ola Cabs, has raised more capital than any other mobility company in India. With SoftBank as its anchor investor and operations spanning 250+ cities, Ola is the infrastructure layer of India's urban transport — a position that makes it difficult to disrupt and even harder to ignore.",
-    pull: "Built in India for India. Ola's scale is the moat.",
+    investors: "SoftBank · Tiger Global · Accel · DST Global",
+    accent: "#7C3AED",
+    accentBg: "#F5F3FF",
+    accentBorder: "#DDD6FE",
+    tag: "Market Leader",
+    // Real image: Indian ride-hailing / city traffic / Ola cab
+    imgSrc: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=85",
+    imgAlt: "Ola Cabs — India's largest ride-hailing company, Bengaluru",
+    headline: "India's largest ride-hailing fleet. SoftBank's single biggest India bet.",
+    deck: "From a single city to 250+ — ANI Technologies absorbed more capital than any mobility company in India and still commands the road.",
+    col1: {
+      h: "The Infrastructure Play",
+      b: "Ola is not just a taxi app. It is the reason 250 Indian cities have reliable, priced, on-demand urban transport. SoftBank's $2B+ commitment was not a bet on Ola alone — it was a bet that India's urbanisation curve would make this infrastructure irreplaceable.\n\nWhen Uber arrived with US capital and Silicon Valley muscle, Ola did not retreat. It deepened into Tier 2 cities where Uber found no economics, building a moat through geography rather than product."
+    },
+    col2: {
+      h: "The Number That Matters",
+      b: "$3.8B raised. $7.3B valuation. 250+ cities. But the number that matters most is not financial — it is the 1 million driver-partners whose entire livelihood runs on Ola's platform.\n\nThat dependency is both the company's greatest asset and its greatest responsibility. The IPO, when it comes, will be one of the most watched listings in Indian market history — not for the returns, but for what it says about India's gig economy."
+    },
+    pull: "Geography is a moat. Ola built in cities nobody else wanted, then owned them.",
+    lesson: "Infrastructure is not glamorous. It is permanent.",
+    stats: [
+      { l: "Total Raised", v: "$3.8B" },
+      { l: "Valuation",    v: "$7.3B" },
+      { l: "Cities",       v: "250+"  },
+      { l: "Founded",      v: "2010"  },
+    ],
   },
   {
-    rank: "02",
+    no: "02",
     name: "OYO Rooms",
     slug: "oyo",
-    total: "$3.7B",
-    totalRaw: 3.7,
-    sector: "Hospitality",
+    sector: "HOSPITALITY",
     hq: "Delhi",
     founded: "2013",
+    total: "$3.7B",
+    totalRaw: 3.7,
     valuation: "$9B",
     lastRound: "Series G · $807M · 2021",
-    investors: "SoftBank · Airbnb · Sequoia",
-    // ▼ Replace with real image — suggest: OYO hotel interior / lobby / brand signage
-    imgSrc: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlIrYGz_P3PfH2C_tfoY30WPwaYOyP0ZZ4FA&s",
-    accentColor: "#DC2626",
-    tag: "Hospitality",
+    investors: "SoftBank · Airbnb · Sequoia · Lightspeed",
+    accent: "#DC2626",
+    accentBg: "#FFF1F2",
+    accentBorder: "#FECDD3",
+    tag: "IPO Bound",
+    // Real image: hotel lobby / hospitality / India budget hotel
+    imgSrc: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&q=85",
+    imgAlt: "OYO Rooms — hospitality startup, India's standardised hotel chain",
     headline: "A 19-year-old from Odisha built the world's third-largest hotel chain.",
-    body: "Ritesh Agarwal had no legacy, no IIT degree, and no VC network when he started OYO from a single budget hotel in Gurugram. His insight was standardisation: India's budget accommodation was a fragmented, quality-inconsistent mess. One brand, one standard, at scale. SoftBank agreed to the tune of $3.7B. COVID nearly ended it. OYO survived, restructured, and now prepares for IPO.",
-    pull: "Geography is not destiny. Ritesh Agarwal proved that.",
+    deck: "No IIT degree. No VC network. One insight: India's budget accommodation was fragmented, inconsistent, and waiting for a single brand to impose order on it.",
+    col1: {
+      h: "One Standard. Every City.",
+      b: "Ritesh Agarwal's thesis was deceptively simple: brand standardisation in a fragmented market creates disproportionate value. Indian budget hotels were invisible online, inconsistent in quality, and impossible to trust from a distance.\n\nOYO imposed a standard — clean linen, working WiFi, a predictable check-in experience — across thousands of properties it did not own. The asset-light model attracted SoftBank's Vision Fund at a scale that shocked the hospitality industry."
+    },
+    col2: {
+      h: "Survived. Restructured. Standing.",
+      b: "COVID nearly ended OYO. Occupancy collapsed overnight. Thousands of hotel partners demanded exits. Ritesh Agarwal bought back shares at personal cost, restructured the balance sheet, and rebuilt revenue city by city.\n\nThe OYO that filed its DRHP for IPO is a leaner company than the one that was valued at $10B in 2019 — but it is a real company, with real revenue, and a founder who proved that conviction is not destroyed by a pandemic."
+    },
+    pull: "He bought back his own shares during COVID. That is what conviction looks like.",
+    lesson: "The company that survives a near-death experience is harder to kill than the one that never faced one.",
+    stats: [
+      { l: "Total Raised", v: "$3.7B" },
+      { l: "Valuation",    v: "$9B"   },
+      { l: "Properties",   v: "157K+" },
+      { l: "Founded",      v: "2013"  },
+    ],
   },
   {
-    rank: "03",
+    no: "03",
     name: "Zepto",
     slug: "zepto",
-    total: "$2.5B",
-    totalRaw: 2.5,
-    sector: "Quick Commerce",
+    sector: "QUICK COMMERCE",
     hq: "Mumbai",
     founded: "2021",
+    total: "$2.5B",
+    totalRaw: 2.5,
     valuation: "$5.9B",
     lastRound: "Series H · $350M · 2025",
-    investors: "StepStone · Nexus · Y Combinator",
-    // ▼ Replace with real image — suggest: dark store interior / delivery bikes / warehouse
-    imgSrc: "https://cdn.slidesharecdn.com/ss_thumbnails/zeptodarkstores-221114094542-1975c63a-thumbnail.jpg?width=640&height=640&fit=bounds",
-    accentColor: "#D97706",
-    tag: "Quick Commerce",
-    headline: "Failed once at 19. Rebuilt. Now worth $5.9 billion.",
-    body: "KiranaKart failed in months. Aadit Palicha and Kaivalya Vohra stayed in Bengaluru, ran the numbers, and concluded that 10-minute delivery was a logistics equation — not a promise. Zepto launched in 2021. By 2025, it had 350+ dark stores, $2.5B raised, and the valuation to match. Kaivalya is India's youngest billionaire. The lesson: failure is research.",
-    pull: "They called it impossible. The founders called it math.",
+    investors: "StepStone · Nexus · Y Combinator · Contrary",
+    accent: "#D97706",
+    accentBg: "#FFFBEB",
+    accentBorder: "#FDE68A",
+    tag: "Fastest Growing",
+    // Real image: grocery delivery / warehouse / quick commerce dark store
+    imgSrc: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&q=85",
+    imgAlt: "Zepto — 10-minute grocery delivery startup India, quick commerce",
+    headline: "They failed at 19. Rebuilt. Worth $5.9 billion by 22.",
+    deck: "KiranaKart failed in months. Aadit Palicha and Kaivalya Vohra treated it as data — and built the fastest-scaling startup in Indian history from its ruins.",
+    col1: {
+      h: "Failure as Research",
+      b: "In 2020, two Stanford freshmen flew back to India to build KiranaKart, a 45-minute grocery app. It failed. Most founders would have returned to California.\n\nThese two stayed in Bengaluru, rented a room, and dissected every mistake. The conclusion: 10-minute delivery was not a gimmick — it was a logistics equation. Dark stores within 1.5km of dense demand. Inventory science. Route optimisation. Every competitor called it insane. The founders called it math."
+    },
+    col2: {
+      h: "The $5.9B Proof",
+      b: "Zepto launched in 2021. By August 2023, it was India's first unicorn of the year — at $1.4B. The $350M Series H in 2025 brought the valuation to $5.9B, and Kaivalya Vohra became India's youngest billionaire at 22.\n\n350+ dark stores. 10 cities. Sub-10-minute average delivery. India's quick commerce market crossed $3.3B in 2025. Zepto commands its second-largest share — built not on being first, but on being most precise about what 10 minutes actually requires."
+    },
+    pull: "We failed with KiranaKart. Most founders go home. We stayed and figured out what we got wrong.",
+    lesson: "The first startup teaches you the question. The second lets you answer it.",
+    stats: [
+      { l: "Total Raised", v: "$2.5B" },
+      { l: "Valuation",    v: "$5.9B" },
+      { l: "Dark Stores",  v: "350+"  },
+      { l: "Founded",      v: "2021"  },
+    ],
   },
   {
-    rank: "04",
-    name: "Lenskart",
-    slug: "lenskart",
-    total: "$1.8B",
-    totalRaw: 1.8,
-    sector: "D2C Retail",
-    hq: "Delhi",
-    founded: "2010",
-    valuation: "$4.5B",
-    lastRound: "Series H · $200M · 2023",
-    investors: "SoftBank · KKR · Temasek",
-    // ▼ Replace with real image — suggest: Lenskart store interior / eyewear display
-    imgSrc: "data:image/jpeg;base64,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",
-    accentColor: "#059669",
-    tag: "Eyewear / D2C",
-    headline: "2,000 stores. 3 countries. The D2C brand that built real retail.",
-    body: "While most D2C companies in India stayed digital, Lenskart built physical. 2,000+ stores across India, Singapore, and UAE — each one an argument for why eyewear is a category that requires touch and try. SoftBank, KKR, and Temasek agreed. Lenskart is now preparing for a 2026 IPO that will be one of the defining D2C listings in Indian market history.",
-    pull: "Every store is proof that omnichannel was never optional.",
-  },
-  {
-    rank: "05",
+    no: "04",
     name: "Meesho",
     slug: "meesho",
-    total: "$1.6B",
-    totalRaw: 1.6,
-    sector: "Social Commerce",
+    sector: "SOCIAL COMMERCE",
     hq: "Bengaluru",
     founded: "2015",
+    total: "$1.6B",
+    totalRaw: 1.6,
     valuation: "$3.9B",
     lastRound: "Secondary · $275M · 2024",
-    investors: "SoftBank · Naspers · Prosus",
-    // ▼ Replace with real image — suggest: Meesho seller/reseller / rural India e-commerce
-    imgSrc: "data:image/jpeg;base64,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",
-    accentColor: "#E11D48",
-    tag: "Social Commerce",
-    headline: "Built for the 500 million Indians no other e-commerce platform serves.",
-    body: "Flipkart and Amazon serve urban India. Meesho was built for everyone else: the reseller in Rajasthan, the small shop owner in Assam, the first-time buyer in a Tier 3 city. 150M+ transacting users later, it is the largest social commerce platform in India — and one of the few that actually grew its user base through WhatsApp, not Instagram.",
-    pull: "India's real e-commerce revolution happened in towns nobody named.",
+    investors: "SoftBank · Naspers · Prosus · Y Combinator",
+    accent: "#E11D48",
+    accentBg: "#FFF1F5",
+    accentBorder: "#FECDD3",
+    tag: "IPO Bound",
+    // Real image: small business / e-commerce / India market / seller
+    imgSrc: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200&q=85",
+    imgAlt: "Meesho — social commerce platform, Indian small business sellers",
+    headline: "Built for the 500 million Indians that Flipkart and Amazon never served.",
+    deck: "IIT Delhi founders who saw what every VC missed: India's real e-commerce market was not in Mumbai or Bengaluru. It was everywhere else.",
+    col1: {
+      h: "The Invisible Market",
+      b: "Vidit Aatrey and Sanjeev Barnwal built Meesho for the reseller in Rajasthan, the small shop owner in Assam, the first-time online buyer in a Tier 3 city. Every product decision — zero commission, WhatsApp-first, vernacular-first — was made for someone Flipkart's product team had never met.\n\nThe insight was not technology. It was empathy for a segment of Indian commerce that was invisible to everyone building from Bengaluru's upmarket neighbourhoods."
+    },
+    col2: {
+      h: "150 Million Transacting Users",
+      b: "150M+ transacting users. $3.9B valuation. A pending IPO that will be one of the most important listings in Indian commerce history — not for the number, but for what it validates.\n\nMeesho proved that India's real digital commerce revolution would happen in towns nobody named in pitch decks, through a messaging app everybody already had, for sellers who wanted to start with zero investment. SoftBank, Naspers, and Y Combinator all agreed."
+    },
+    pull: "India's real e-commerce revolution happened on WhatsApp, in towns nobody put in a pitch deck.",
+    lesson: "Empathy for the underserved is not altruism. It is a billion-dollar competitive advantage.",
+    stats: [
+      { l: "Total Raised", v: "$1.6B" },
+      { l: "Valuation",    v: "$3.9B" },
+      { l: "Users",        v: "150M+" },
+      { l: "Founded",      v: "2015"  },
+    ],
   },
   {
-    rank: "06",
+    no: "05",
     name: "Razorpay",
     slug: "razorpay",
-    total: "$1.4B",
-    totalRaw: 1.4,
-    sector: "Payments Infrastructure",
+    sector: "PAYMENTS INFRASTRUCTURE",
     hq: "Bengaluru",
     founded: "2014",
+    total: "$1.4B",
+    totalRaw: 1.4,
     valuation: "$7.5B",
     lastRound: "Series F · $375M · 2021",
-    investors: "Sequoia · GIC · Tiger Global",
-    // ▼ Replace with real image — suggest: payments UI / fintech office / dashboard
-    imgSrc: "data:image/png;base64,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",
-    accentColor: "#0891B2",
-    tag: "Payments Infra",
-    headline: "8 million businesses process payments through Razorpay. It's infrastructure.",
-    body: "Harshil Mathur and Shashank Kumar built Razorpay for Indian developers who were tired of integrating broken, outdated payment APIs. Clean documentation. Honest pricing. Reliable uptime. 8M+ businesses now depend on it. Razorpay reverse-flipped its domicile back to India in 2023 — a bet on a domestic IPO and a signal that the founders believe India's capital markets are ready for it.",
-    pull: "The invisible rails that power Indian digital commerce.",
-  },
-  {
-    rank: "07",
-    name: "CRED",
-    slug: "cred",
-    total: "$1.4B",
-    totalRaw: 1.4,
-    sector: "Fintech",
-    hq: "Bengaluru",
-    founded: "2018",
-    valuation: "$6.4B",
-    lastRound: "Series F · $140M · 2023",
-    investors: "DST Global · Tiger Global · Sequoia",
-    // ▼ Replace with real image — suggest: premium card / fintech lifestyle / CRED UI
-    imgSrc: "data:image/jpeg;base64,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",
-    accentColor: "#2563EB",
-    tag: "Premium Fintech",
-    headline: "Kunal Shah built a luxury brand for people who pay their credit card bills on time.",
-    body: "CRED's thesis was counterintuitive: build for India's most creditworthy segment and make them feel rewarded for financial discipline. The product worked. The brand worked harder. $6.4B later, CRED is expanding into personal lending, commerce, and investing — all products designed for the 30M+ Indians who use credit responsibly. Serial founder. Patient capital. Unusual bet.",
-    pull: "Reward the creditworthy. That was the whole idea.",
-  },
-  {
-    rank: "08",
-    name: "Groww",
-    slug: "groww",
-    total: "$1.2B",
-    totalRaw: 1.2,
-    sector: "WealthTech",
-    hq: "Bengaluru",
-    founded: "2017",
-    valuation: "$7B",
-    lastRound: "Series F · $251M · 2022",
-    investors: "Tiger Global · Sequoia · Ribbit",
-    // ▼ Replace with real image — suggest: stock market / investment app / financial growth
-    imgSrc: "data:image/jpeg;base64,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",
-    accentColor: "#16A34A",
-    tag: "WealthTech",
-    headline: "12 million Indians now invest because Groww made it feel simple.",
-    body: "Lalit Keshre and his co-founders built Groww when investing in India meant confusing paperwork and opaque fees. Groww removed both. A clean app, zero commission on mutual funds, and a user experience that felt like a consumer product rather than a financial institution. 12M+ active investors later, Groww is planning to raise ₹8,500 crore via IPO in 2026 — having already reverse-flipped from the US.",
-    pull: "Simplicity was the product. Trust was the result.",
-  },
-  {
-    rank: "09",
-    name: "PhysicsWallah",
-    slug: "physicswallah",
-    total: "$700M",
-    totalRaw: 0.7,
-    sector: "EdTech",
-    hq: "Noida",
-    founded: "2014",
-    valuation: "$2.8B",
-    lastRound: "Series B · $210M · 2024",
-    investors: "GSV Ventures · WestBridge · Hornbill",
-    // ▼ Replace with real image — suggest: classroom / students / PW app / Alakh Pandey teaching
-    imgSrc: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMTEhUTExIVFhUXGBcVFxcVFxUWGBgWFRUXFhcVFxgYHSggGB0lHRUVITEhJSkrLi4uFx8zODMtNygtLisBCgoKDg0OGhAQGy0mHyUtLS0tLSstLS0tLS8tLS0tLS0tLi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIALcBEwMBIgACEQEDEQH/xAAcAAAABwEBAAAAAAAAAAAAAAAAAQMEBQYHAgj/xABEEAACAQIDBQYDBQYEBAcBAAABAgMAEQQSIQUGMUFREyJhcYGRBzKhFEJSscEjYnLR4fAzkqKyFkOCwhUkRFNj0vE0/8QAGgEAAgMBAQAAAAAAAAAAAAAAAQIAAwQFBv/EAC4RAAICAQMDAQcEAwEAAAAAAAABAhEDBBIhEzFBIgUUUWFxgfAykaHBI9HhQv/aAAwDAQACEQMRAD8A6jp1EaaR05Q1tMBo+D3ugYd7Oh8VLC/ml7DztUvhcfFJ/hyI/wDCwJHmBwqp7Nw6SRIWUHu21HTT9KVk2JG3I/n/ALr2qp4l4LVnfkuFCqmmAmT5J2t0YkjTUaNmA9qdx7QxSfMiOPDQ+4P/AG1W8TLFmiyw0yxbMPlamSbwKP8AEjdPqPrYn2pQ7ShbhIB/FdD/AKrXqRTT5BkkmuBo+NlB1sfpTrB4rNx0866aG9KQQ2q11RQPVjrsCiThXVZ2bIpJcBEUm8V6VojUTI4p9xhNs9TrwPUaH+tMsNES7Ruyll1sAflsCCTa19eFTTHyqKjR0leTKrZuAz6geq68udOpMqcIoWGyxURPL2bSCSKQKlyrpG8iMuUMDmXUHkbroQePGpqPaVzYxup8bEe6k1H7X2mc8USA/tG7xFrKqd83PRgpXS/zDhRTkBqCIfe3dQTxFQjK18yvGV4rqMwYWsbdKqO7+xnieZQwbKYxmQZc4aMSBiupXRxoD+daPj8cxUjXXmtwfE6cKq+7eHeOXEpI4di6uGC5bgrfXxFx05WpufIvHgbGDQi56XqqbYwM8TNJGWGY5mK3Kk2Auy8tAOHStPlwytxHrTaTZ/SxHTnTC2Y6sky9zsJZJNCbKSO8AwuRfkRRzSY1+7liiH77qG9r3/01puJ2SrjKRmP/AMlyp81vYe1RX2CVTkQIp6J2a+xFjSNsdJFdwmwZmylmjXrkike/kz2A58jWgbvRxCDJFbMmj24lrfMV+6bcrVE4TY+IDBs9j+8SfQ30PvVhg2QQ6yRrd/vFSyrrx0AN7+3PiAQY2LKnwBcNbia70FMN6drR4JQ2IlVWYd2NBmke34U6fvGw6msw2xv3PPmSFVjjym5chmt1Zj3U8hfW2tNuRFFmibrYr/y4DG5DzDhbQTPbS5tpb3vzqTOJB4XPlWQ/Drb1sV3yO8trG5zAa6Fuelx69a26IAgEcCAR5GjF2gTVMjsrngnvXa4NzxYDyqTCV0EpqEshsRs75e817jprqAeIPWnq4VRyH513jdLH8IZvZT/IVm0++uOf5RDED+6zEepNvpQbrwMlZpHZ0KzM7bxJ/wDWn3jH0yD8qFL1fz8Q3TF46cR02SnCVYVl53We8A8Cw+t/1qdVBVX3Rk7jr0YH3H9Kn5cRlUm1zyF7fkD+VBoA9EIo+xqPwm1syq3ZvZgDpl59QxVgfSnkWOQ6ag/vKw+pFj6VW1JDKjsw0g+z0P3B6Cx9xTtZVPBgfUV1S7g0RQ2Oo+Qsh/dJHuRqfellw86/LKG8HH6jU+9SFGBQcgpDVMVKPmiB8VP5Lr+dKptFOBDKehH8r04AoytI6L47gRzK3BgfIg0UwuKKTDqeIB9KRbDW4Mw8ibex0qKgybrlDOaEjgTTV8w51ISo44EHzFvy/lTOVmHFD/0kH87VenZmGrzEVEwY0PO737saiJf4ms8n0EVOttYxY4ZXJIyRu3Cx7qk6XFr6ViUW8WJjn7VJdbniAwIJOjX4jX+tBjJWbicRcaXPkCfypjgY3afEMBYgouulj2am/Hyt/Wqpu/8AEpnPZz4exFryRZmUC4BJjOttQNGJ14Vbt08bFiJsRIhIJZLlkZC1olQDvE6d06eF+tTglMk4sHITqwA9TUjFscc3J8rCkcTj8NHcSYmJCNO+6Lr07x19KidpbXmiciOzXYAd0mwK3uLHXUc6F32IuO5OzbBicWYZh46/U0MNu7hk+WFR5AD8rVHwbVxbrZYdbcShW58LkCn+yBiijGeytm0Aynu2H4fG9I78stW3wiQjwqL8qKPQfnSjOBxIpD7OebmgMGvO5pePLGuXhGC/GGJF2jI4J70cbG9rXy5RY/8AT/fLNZ5L6Dh/etb/AL//AAxlx+KE0eIjij7NEsVZmJVnN7AgW7w51BwfAY/f2h/lw/6mX9KdtAUWY5hMQ0ciyIbMpDDzHI+B4eteiPhleTBdrraSWRlub2UWjA8LZCLVCr8B4OeNmv4Rxir7ufuuuz8P9nWV5FzM4LhRlzWuBlHC9zr+I1IyoE4NodCKj7OnzJXBjp1kM7jREYrDByyngUZTbQ2aw0PLnUXDuhhE/wCQrfxln/3MR9KsPZ98+Qrpkp0yEQux4ALCGIDwjj/+tCpPLQpgGTJThKZpTiO9LuDRZt037zjqAfYn+dWHFN3fIg/WqpuzJabzUj8j+lWubVT5GmTFYcTVS5MVioWkzPmmkkYIMxKotxkWzWVOvMEHU1ay7fdK+oPHzHCm0kiMwLxwsV4FibggX+8ngefKjNWSDoltnSl4o3ZcrMisV/CSoJHpUrD8oqGw+KLW7oKn7ysrCpTDP3ff86rnHgifI5FdUmDXQNUtFqYoKYbwPIMPL2V8+R8tjY3ymxB609BoHWgu5ZfBSfhfHiocPL9tMoJlBTtWdyFYBQBcki7cvGrss6ngdeh0PsdaIqLcKica0/bdwEoViynkGWQ9qG15oV9tNalWTe0qJLFSBVzEi1wCT0JArmWOlezBBBAIPEHWqH8aWZcFGyMVYTrYjiP2clFOhdtjr4iJJ9gmEaM7NkTKqlms8iK1gBc90tWO4XdDHue7hJL8QHKRn1EjA00TfLaENsuKlPgXYj2YkfStV+GG38Ri4XbEPnZXyg5VBAyg/dAvTp2yOLirOt0/h+iw3xIIldszqr6BQbLGSvzaXvY/e8Aaa7ubhBsZP9rwrGFCWgLurIT2zlciqe6AmQWa5POtKgWlnmVfmZR5kD86WclHuCLbGuD2JBGLJCijwAqQhhVRYADyrmCdG+Vlb+Eg/lRT4tUGZ7gXtwJufADWq1Lf+l39C+MEu4vQrPt695nGIVIJysZizd0KLv2kiHVlv9y3IaVUsZvLPcg4ib0lcf7SKdYn5FllSdG3VxJKq8WA8yBWCna7NfNK5/jeRvzJpPEyqAhJQlwSAAbgKbG9xbj48qbpfMXrPwjcJ9vYVPmxMC+ciD9ab4berBSSLEmJiZ2NlAa9z0B4E+FYW+JqT3c2nLJisHDmGWKR2QAC4JDFiTxPGp0kDrP4G9UKIVV8ZvhleVEgZzE/Zk5soJtc2NiNNL3/ABC19bUtpK2aCzMKTIqjY/4gzJ/6EWsxu2IUaKCx0y66Amrjs3EmSKORgFLqrEDW2YA2vztemi01aZTkVOgIO8398qJxRwfePUmg9WozsRIoUCaFWAMgSl0NNkNLq1IMSuxZLTIfG3uCP1q5q461n2ExSh1OYaMOfjUrPvvgUkMbTaqbEqjst/4lBB9KKlQNrZPEKbXJ06Fl/KjKKoJ7QgcyXbS56k6Unh9qRMoZZVKsLggjUU7GOj/9xf8AMKbe/JOwlHi49D9oXyzxkf3/ADqYwMwZbqQRc6gg/lUcmOjP/MX3FOo3B4W9KjlYCSVqUU0wU1Vt5PiVgcExjZ2llGhjhAYqQbEMxIVT4Xv4VW6Ck32L2DXQqg7tfFLBYpxGc8Dte3bZQhsLkBwxANhztV3gxCuoZGVlPAqQwPkRpSUPyu4tINDTIqw5t6A/pTzjXLIp0N78dGIP0N6idB/UDDXsb39TeqZ8XgPskOYXX7TGD5GOW9WbG7XwuGNpsTHGTyllAOnQM1UP4mbzYPEYaOOHExyOJ42yqfuhXBPQjUUrLYKuDMJ9nxtxX6kflWl/CeJRHMEUqO0XQtm1yC+thTLezDYBBOsHZZv2ZjyOX45c9jcj8WlPvhRKDHMAwJ7RSQCCbFAAfofY00eGCfMWaVCKitsgEsNQSLKwA7pIsCCeetSkJop8DHJbOoaxDC/IrwNYvaGmlqIKMXXKYdNkUJWxrsmQAKNTYWubam1ib0e8WAbERCNeBa7a27uRhp43Ip7hcDGgsiBRcmw4XJuTbzpwFFD2dgnpYtN83ZoySU3aMZ39Lx4wBsub7PHfKNO9NiDfzsKqMr3q5fEvDSy7SfsopJMsEKtkRmsS0zAGw6EVQMU5IYBspsbHoRXTUuLMLVyoOSeRJB3gE58L3IOl/rXe0NsRsuHRWLMplzsQbWkKWAudbZAb6cTTePeeb7E+Ayx9mz52exz6MG43t8yjW1+IqNlwUkMwSaN42sGyupU5TezWPI2PtSLks7E4W0qa+H6X2jB4CQ/QD9ahdn4OaYlYYnkIFyEUtYcLm1WjcDZs0W0YhLE8f7NyM4IuMyg29bU7KTdBVB/4exPaTMY755pZAQV+Vm7vEg3ygcRV9U0RNZMmNTjtZr3VyjNtrbq4qRSFjH+HIguyizPkAOh4Zc/09NBgTKijooHsKOWQjgL0jLMbG628binxY1CCguxROVuwsMe6PHX3onYdaRjbujypJ2q8pFSw60KZmT+9aFNuIYLtbetI7qmrfQVVsRt6dzcuR4DSoomiDVncjYoJD041+Odvc1yMW3WmwNC1QI6+2P1NH9sf8Te5poDSgS9Agv8AbX/Efc1M7H3yxcB7kzW6E5vo16gOzrplA40QNJmx7i75yl2bF4oNCRpmVQQxtlAK6kk6W15VlG80iHFTtGWKPI7oWtchmJubHqTTzZe0VjhVQHSbtATKjEEwZTmjAOgObIQbH9Cnt6aNyuTMTqzF0VXJNtXZXObhpoOHiaPgCSUuAbuYNZG/aNZTcWGpBI7rW5i4OmnKpzc7eLGYfEBIJckRlGdW1Qi4BOU8SVAF+PDWq/gMTEAMyyArcgxMAb6a5WBzc9L+tPN1dsNFOc0ImikBjkSyhsraF43P+HIOIIIpVY9XxR6A+J2LKbOmEc5hlYfs8pIdyvfaNbajMqkX8fSsDjneBziEmftALKSTmAZeF+dr6EG1iKtu+W2cRi48NIJkCQJklJZxnkZwCWRQbgqi925OrCqLvBMrtmj+UKoY5nN31zHvKCBwAHQL1p32sqitvpY0xW0GkYs5JJ4km5PmTSaS0zJrpKSyyiyRbRJgYX1ABFz46irB8INsOu0FQt3ZVZCOptnU+Nip9zVW2RhL/PkCkhS0hcKt9cxya6ZT7053S2xFhsQkjxO6o4cdi+V7owZR3gbrpYjTRjrR+ZGk00y//GXeHEQYmOOHFMqGO5SKRlKsCb5whB1BFr8hS3wX31xc2K+yTStNGY2dWkOZ0KW4OdWBvaxv/Oo/ETbGExrrJDGYnu7uz/NIXyhQVUELlCAceZ8zHbv7dxGypVmiVGZhlYuuZCps2UMDoeBuDUvkHTaiaB8dN5n7aPBxSFRGBLLlYqTI3yAkfhXW3Vh0q/fCbaj4jZkLySmVwZEZm1buyMFVieJC5dededtq4s4ySbFSSIsksgYZnCgCxBXLl71h2YB00U31NXD4Xb7fYcLj42ObIFmiAsQWMiwyWNwCLvE1udmNFK+AeC1fF2TBQzKZI2ad0BuGYDKCwUtrrrmFhY6ceFZO214cwtAPHvuL+XeNvrU18X9vHE7Qf8EapGg6aZmv45mb0A6VRs1RskYoseFeEd6V3EZvbs0DMbEXQFmAuARck9OOlSu8WEw0UME8CtKJs1mkLgLky5gcpHeu1rX0sdKqYzGH9xXYkdC4QE+uRR6CnMWJzwCJ5XCxl5ViNyjM1gbWPcaw8b68Oc3XwTZ5NB2fu9gezhaXExwvLGknZvOEYBxcaMb26X41f90Nzo8NKJkubiwYuWBB1uOXMcOlebsTiSzFibk/ToNeQGnpWh7mb7yQYNIpLdnBN2kJLZTcXYxDunMLk9LBz4Co50K4fMt3xg38xOFxCYTDydlaNZXcAFmzFgFFwbAZfrUTsz41TJhSskQmxCsArMcqlCPmfKNWBFtAL38Nab8Qt548fMk4iCSZMktizDuscmUk9L3sBxHGqrHrcam45ULGS4Npw3xjmlguMPGsoYhrl2QqACGUXB5kWJqKf4qY2V1UCBA5VD3HNrsRmBL6aMPas72biVVcoXU3uc1r9BYjT+tT+xNgz9rBNljyZ0kP7fDhlCvfvIXzDh0p0xXFI9CQ4hWVSrBlIFiCCCORBHGuXeqBA8c7qM0gMbtYFCqk573QuvRD3lPPjrVvTE06ZTKKQ7LUKa9vRURDyqaKiJoCsxvDBoXojQFQh2GoZ65o6gBRZTRx6nWkhSiHWiQsf/hh7MFUFzqJC1lXhoeo9KQkwMzRpHniIRnNw5uTIV4m1vu2qQweI7TCPEWy3sA3IX438OtVnEYErc3VgDa6m/r5U3FcC83yczKUZkPzKSpsb6qbGx58KtGwNs4WOMdtCrPwueep1IAufUkaVVoYQba2ubVZ9j7AwsuXtsYkGp7rLqw01DlsoHp1qRW6VIaXojuZztjaOGk0hkkjLsC6LEBEWAKoypmGVgCRfx4DW8ZLKFjMORDe5Lkd++lrG+g7o96059xNkLAZWxTWFj2iSQtryCgIb+WprNNupAsrdg0rx30aQIGNuOi8v7tV2WG0pxZVJPuQ2WnGGjuQKRI8afbNnCt3ra86zOy5USMOPaLDsUdlOYAEGx+ckjx4HTwFJwYgToTNisr3sMyEgrxuWWwGpPG9LttBoi1obp1cMoNuam1v/wBqI2njBI+ZVC6AWBBF9eY/vSrVGKhd8/Cv7K5Scp1XHxJvF4AyJGsT4UhAReMkSOSdTJcanQc7Cq9IxUlWHAkEGxsQbH1460kTUjsfZ8MkhWbEiBQt82RpLtcWXKpB66+HjS93wMlSsk93FxADPBGJE4OpMZBH4WBIPPlrzqw4uJGwckcWyp8NfIHeJ3nVv2ikB80mq6cAPmCnThUfG0OFYw9qJcPJ/wA6AlJBcWOjao48bg/lYNqbN2fBAWh23ii7oGjjvnIa11MqoLgD36Xq7E4Rl6ou/wA/O4mVza9EuPv+fwZ1tjtGJMivmDOzFlIvnfNmJtxJNRqAnhUzJtR2DrNOzgggFVBub8WzhTl+tIxRwrZlxALXGhhYAddb1Vk2p+i/uW44zkvVX7/7odwRRohhlcAvxs2qkZSCfUcD08qGztnGN0mlCvCjKZFSQqzIWswDDUEg2uLU8beYEkSYHDSeIXW3W5B/SkdpbWwUkDKmEMWIzAhlKZMoOqkWvqKsUMUYt3b/AGKnPJKSVV/P9kftFopHJVMl37gz91YyTZGzDMzC475bgDpzrrbGFaCQwyOjlQDeNy6jMAbA6a8Liuodt5VVRh8MbAC7RZmay2uxvqed9Na6G8LDhh8KPKEC2t7ceHH3NUllsZYUoTZ1OUg3y/NwNrddbU0KlfmBB8QR+dP/ALT2kisQkdrDuAIDYk5iL/MSdT5V1iY3jysZc5Hy3u1r89SbUyi2rBaTSYziXOGtcsBm05gcSfIa+lTGwNnnFDKmXOOOYhRlPBix06iw6VHYTaLxvnUjMCD01BvfSpjBbyqtxJg8PLmbOS4JN9dfqfepFRf6mSTaXpRYth7BkglZXcxHKCGhkDEgnnxUag8gdBVuO8kUXdLl2A9W1sNb2v8A1rPthDuM62Ul30UWFrjugdNKdbu7u58Qkkj5gxkJBHLXnfhqBTxSctsSmfbdIsWP3sk7RsjsF0sOyVraDTMSL+1Cl/8AwfDf+2f80g/WhWv3LJ8UZfesfwMSoA0DRVzTphmhQo6hAUKFCoAMV2K4FdAVCF12LFZUAt1J/WnW0NjQK4eOTtVP+J3bKp0zZevPSo/YGJsgBtcjT9KYYXbyo79pFe5ObIxAuDxynifWrtP03Kplefeo+gd7V3fRT/5eRmW5PfQJbmALMT11IFPMDuvNKmZsNJMq30hkRWPDSxBJ4ch60vhds4WTg+Q9H0+vD61e9lbRigwc0udQMtg3DvN3VF+tzXTyaTT7N8H2OctZqNyhNGO7YxEWciCLskFhlJLNccSxJOt76cKkF3fAwLYqRyrGxRdLEM1lB53PG9Fi93VN2hkFhmzBzcDIASc6jhrbnrprqQzxuExgjVJFkMa2ygWZRodO7zFmFjwsa5b82dFeKZFXoBq4Jor0g4+we0pYriOR0B1IViAfEgcaf4LaSObYhQ1/vsASPPThUETQDVZjzSg7T+3gryYozVP9/JdX3eiOoTTjcE2+htSce6cTv3pJFBHEZW15aEfrUfu5tDhEQWDMvCwax0azDvA24flTzbM2KwbX7QSRliFZhdh0V+Avbp0rf73pZ8Tx0/l+Ixe66uC9GS18/wAY5wvw1nkJ7KZPAupW/S+XNVWxgaN3jY95GZDbhdDlNjzGlWrZHxMmhsDDGw58QT6g6VDYfeQq0hMYdZJXlsSNC5uVNwQRxBFuZrLn6N3jNGDrU+qDdNcK05+2EdmFJALMoLZl0uCOWbS9Rm0Gj7WTsgezztkubnJmOW58rVJrjsE4HaQlWFici2DWjYFe6wtdyGvppYcBr0+zMK1uzmYXKjVka10zMxXQ2B04jgazl/kgs1WLYG8WVGw+IDSQtYqPnZHHDIG5G+o8qh9obP7NVfOCGta1g2qK/eUE5SA66U0KsjAMGU6MLgqbEBlYc9QQQaMJuErRJRU1TLPjEwwYq4MbC3dkQxsBbS48qRXZ2Gbg49GP6mrHjsEdoYOGQy/tlNmBUaDgbWsTfQ6k38Kj3+GmKKh0eFgeTZlPtY1uhqHkjfTizJkwrHLb1Ghj/wAOxH7zAean9KfYPdAOCFmI1PFQb3FuRFv6VET7qY2M27En+Bx/MGkxgcbEf8PEJpxyyW49bdKEnj/9YmiR6idxyp/sKbb2GcG6I06vnBY6WKgEC5BPPX2o5cLFJPEsEoZW+bMuQL3l0OUte/hekocae1SV5v2iMrDPZtUIK3DcRdeFX/d/HJjdrQYrLFGI4mukdiGIWQZjYDnIvEH5RrVE4d2u31LlPhJ9/oSsW5EiIFsvM6E8T50gmHODGeVGK3CDJZjmkYBRa9zqbaDnWiSTAjQiqpvCc02Ej5GYyN/DFFIw/wBZjqmMnF2gtblTIb/iGH8E/Mf/AM83EGxHy0KqO1N4njnmRY3IEsliBp87GhWn3zJ8ir3SHzM/oUviIbMQPOkaxG0KjoqFQAdHRUYqBHWAiub9NakEjV1zc6aYLQ+FSjBVVQvrSsdDrZS2t4VFbVMDFyqSJLmNxcMja6nUBlPhqKtOwtgzy6qmVfxOCB6czVe27sLE4di0yaE3zp3k9+XqBV0Mc1HdXBRPJBy23yQTR2NuB8aVR2ClbtlNja5sSOBt71KSbSj+zNG0StJcZJLC6C92F+J4aeZqNdQEUhwWbNmUfdsbC/nqaF0Hud4THSR/I5A6X7pBBBBXgRZj71KxbyvkIcFntJZ82uaS2puLiwGXQjTyqBoialsjSZZRtPDy9ybNlvGilgAyoigszPYkl2FrXquTOCxIGUEkgdAToPSuKFBsKVAoXoqApQikbkEEXBGoI4gjmK0fd6BNpYR45ZMkiMoJyliRcHOFUeh1H1rN4oyTYVcd25vs+qmzHiR+VLKVFkI2nZGbQ3TxKFsuHkkQEhXjF8yg6MUBYrccjwqGkgKrcgi7EWYWNwBfT1FbZuvtgM75zoBmsOPQ/p71UcYgcnMoYEk2IvxPjXUwaNaiG6Lr6nMzat4JuMlf04M7zUVW+bYsLfcyn90kfThTCfdz8Mh/6hf6i1Cfs3NHtT+n/Qw1+GXfgg4UufAa11JiSSM2uXui97gDgPIdKko9iyjTQg2vY6+xrnEbGIOuYfxD9RVC0mbm4mt6nCoqpc/IebJ3hMRU2zWI7t8twPHlV5wnxKwxADxSJy0yke5y1l7bOblY+R/nSLQMOIIo41lwqqKsix5nbZs+H3pwch0mA/iBH1It9aeY/eCKOF5VkRsqkjKym55DQ9bVhkcd2UdWA9zTuRSmhOh1tc6C40+oq5apvhozvSRTtMZ42YvJI7G7M7MT4liTV4+FoCyyORwQID4u1z/sFUO9z5n861f4dYHLh81vmOb04D8ifWsHdm5uolwaYkd01VtrbRaPGKSHPZwt8is9u2dRchQSNIjVs+z3qKxmzwXLcyALjQ2HAE8xxosqTKVDtfKCC1iWdiCrA3Zy2oI8aFWR9iAm9/oKFAe0ZHnuwPhY0nPCeIoO16JGIqNDoRoUGoClCCulFGq0qgoWGh7gUrXvhBudDNG+KmTOQxSNTwFgLtbmdbVlOy4izBVFySAB1JNgK9Tbq7I+yYSKHS6r3rc2OpPuaeHHImZ8URm2MNl5CwqrYuAMDzBq2bxODzt1HOqk1gT/ADrs6dvbZxMqVlYxm4mHnJ4xE/ejAtfqUOh9LHxqmb3bi4jZ6CR2SSJ2yK6HXNZmsyHVTZT1GnGtYimsaZb/ABWXCojKLZ7n/KR+tJm00ckuOGXYdTLGueUYYKFXLB/DzET9+MBI+OaW4Fv3ebf3rTTaG4eMjBIEci9UkX8msa52TDODpnShljNWir0VP12NOf8AlkfxEL+Zrt9kyoMxUMP3dbW43qhyRfGLbGyJYW50hKtjTigMOSFOa2YEgP3QbG3dY6H6UEXZqSSQ2SQjgae4baBHGm7w2JBOUjSx4deI0rh4GHLTqNR7incLM6nRb9gbyRRFs5PeUrcC9uHGnsOKR/ldT66+3Gs/tRhiOdbdJrHgW2rRj1OkWd7rpmilK5KmqVhtsTJwc26HUfWpTD7zH76jzGldXH7RwT/Vwc2egzR7cliEdO8LHmcL1qGw22YW+9l/iH6irRu/GjnPcEDmCDWl5YuNxaZmWOUXU00TON2RA6jPGjm3zEDN/mGtQOJ3Ww5+Qunhe4/1a1YpZfOuEb1rOl8S7c/DKLi9wpA+dJo2AN8rAofAXFx0pAbpS2AlQ3sSWUggkkG+nry5VoUgqN21ixHHodWZUUeLm1/TU1jy6bHTka8epyWkZ/jt2SikqGY2NlUZiTy0Gtadu/H2Uara1gB7C1Q8OFIOlTezi3A1yEdCTsmEnpkz3uetLgC1cPFTMRDc0K7KGioBMB4UTNcVyTXINKaEHRUdFQIGDTqEg01o1qBTNA+GUEZx8HaMqqGzDMQAWHyrrzv+Vehsfi7KdSP74V5DXFGwF60DdH4gTLaCfNIg0VtWZR/3Dz1q/DtXEjNqIylzE0raM2YnU+pqFmAprjt4YgdWJ8v68Kj5N7Cv+Eir+8e83udB6Ctr1WPHxdmOOkyZPFFpweyHIzMRGvV9D7fzpHae3MBhxx7ZxqB8wv1/CKzza23JZfnkY+ZNREEEkrZUBY/QeZ5Vkya2c36TZj0MIcyLbtf4jTvcRARjw1PueHpVdD4qQZxHKwY/MFcgk9DbWrTu/sPDwWeYdtJxAt+zU+R+Y+Jqdxu9DjuomvIKCSP5VX03LmbLOrGPEEZ3isNMqkyQyIBxLBgPUmm+zpSZFCZiWJUBWNzfQj2qc2s+JlP7XOB+GxpxsrASKB2YYceA66HXlS9FXwP1nXJWZNgM8mcKY4H4PxGg1AtxNwaX+yL9mPZ3VkzKA9iJACC2ZSMpvawNuVW7b4KYSCJlKhGKga8LaHx51WpTp4VVkW2VIujLqRtlI+0HWxsG4hdB7DSkjVp2tuRi1UTxw54nAcdlqVBF7FOPteqsykGxFiNCDoQfGnaa7lNp9gga6DVzRVLZBXs+mtcladS4f9jHIFsMzIzZgQWGoGXipy+nCkhNbQ/XWmtA5EaWgxTobqxB6gkH3GtdDIfDy/kaJ4ehvTRtdgOvJNYLfDEpxfMP3u99eP1qy7P+IEZ0liI8VN/obfrWe5aFaIanLHyUS0+KXg2LC7w4WTVZgPBu7/uqA2njxPjsPCCCquGJHM2J+gH1qnbDw+YrckDNy8cqqPc/Q1ctkbu9liEm7QsBc2Ya3KkfMPPpTz1TnGmVR00YStFw+yinWHTLSUMwNL1iRexYtwH99aDNSIbWiZqaxRa9Cm2ejqWEwfE4MooJppUltfEhjlHAVHVWzSgUVChQIHQFChUIdqaf4DaEkV8p0PEVGilY3IokJddo5tbn1pQY7xqMuCOlcBypBGttbGl2DvIWHA4OSY2RSavmzNkNEgEjLGOijUn9TUPutvnEyiJkWFtBnAunmeYrRsJstNHJ7QnUMdR6VqxwilaMmXJJ9yIwuBL8FyJ+I/OR4dKlMLgUj+UeZ50/aMUMtXFLY27EHiBSiIo4Cl71wagLK7vkueAi3ykMPC3T0vVBxCk2HWw960bellXDyFulh5k2rNJMUqsrHUKwJA52N7VlzRuaRswuoM1bDY+PD4VGmbKsaqBrqbCwAHMnpWW7zwpjpmnK9mzWAt0GgzDgTS2P2jJiGDyHQfKo+VR4ePjXCtXbwaOO3/IrONm1Mr9DK/i93QsTFczONQfLiLDrVcFaODTPG7Lil+ZRfquh/rVGb2Wu+J/Zl2H2i+2RfdFLWdsojJ7oYsByzEAE+wFSm7mxhi8QsJkMYIJL5c+UAX1W48Bx5ihjd3pF1jOcdODf1png5jHICQQRx4g/0NczJhnjdTR0YZYZFcGari/hcYIHkw0kGKTQvHKg7TQalHTVNLm1Z1jcEi65JIx1BEsfvxHrardgtrYhUDJIXRl0zXzZWHC/H86jHlF72KH++dI38CK/JWlgB4WcfuHX/KdfYGmM51IF7eNWXF4KNtSoJ/EvdPrbQ+tVVjqajm+wyS7j1cTZEUXFszkjjckhbeV7+taJuttP7RGCfnXuv49G9R9b1l8h/ID6VJbD2q+HfMh46EHgw6GlsLjZrxAGtOosT/ZqKwmLEiKwOjAEHzp0KcpJASAn+/750CaYKxFKpJeoAWoUnmo6hDBb0RoUKrNQVHQoVCB0KOhUAAV0DRUKKAdXvXfZHrQoUSHZiI7w0NXncTf9oLQz3aLlzKeXUeFChTRk0xZRTVM2OGRXUMp7pFxpa4NdGOjoVqMQk628q5IoUKJDNd+sQZ8R2eY9jGLFdQGkOpzdQBb3qmYvCiNgV4MQCPyIoUKxqT6y+pvUV0vsSsfClL0KFenlzwecXcUQ9dK6J9aKhVkUVyDDUniMLHILOoP0PoaFCk1CXSl9B8D/AMiKnFtGSMkI5sCQAdRa/SrJhMasyA87d7Q6HnR0K8seifYa4pLBiptYE+wqnihQoMMQ3NEDQoUBjRdxMeXRoW1Kd5f4W4j3/OrWFoUKdFMu4Y4UFehQoinXaUKFCoSj/9k=",
-    accentColor: "#CA8A04",
-    tag: "EdTech",
-    headline: "BYJU's charged ₹80,000. He charged ₹2,000. 10 million students chose.",
-    body: "Alakh Pandey filmed his first Physics lesson in a room in Prayagraj with a consumer camera. He posted it for free. By 2020, 5 million students subscribed on YouTube. The PW app launched at ₹2,000/year — when BYJU's charged 40x more — and six million enrolled within weeks. PhysicsWallah is the only Indian edtech unicorn that is simultaneously affordable, profitable, and growing. Listed in November 2025.",
-    pull: "Affordability is not a discount. It's a design decision.",
-  },
-  {
-    rank: "10",
-    name: "Neysa",
-    slug: "neysa",
-    total: "$600M",
-    totalRaw: 0.6,
-    sector: "AI Infrastructure",
-    hq: "Bengaluru",
-    founded: "2023",
-    valuation: "$1B+",
-    lastRound: "Series B · $600M · Feb 2026",
-    investors: "Blackstone",
-    // ▼ Replace with real image — suggest: GPU server farm / data center / AI infrastructure
-    imgSrc: "data:image/jpeg;base64,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",
-    accentColor: "#9333EA",
-    tag: "AI Cloud · New 2026",
-    headline: "India's first sovereign AI cloud. Backed by Blackstone. Built for what's next.",
-    body: "Neysa became India's newest unicorn in February 2026 when Blackstone led a $600M round — the largest AI infrastructure investment in India's history. The bet: India needs its own GPU cloud, its own inference infrastructure, its own AI stack. Not a dependency on AWS or Azure. Neysa's GPU-as-a-Service model is already serving enterprise AI workloads at a scale that justifies the unicorn tag.",
-    pull: "India's AI future needs Indian infrastructure. That is the thesis.",
+    investors: "Sequoia · GIC · Tiger Global · Ribbit Capital",
+    accent: "#0891B2",
+    accentBg: "#F0FDFF",
+    accentBorder: "#A5F3FC",
+    tag: "Infrastructure",
+    // Real image: fintech / payments / digital finance / code
+    imgSrc: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200&q=85",
+    imgAlt: "Razorpay — India's payments infrastructure, 8 million businesses",
+    headline: "8 million businesses process payments through Razorpay. It is infrastructure.",
+    deck: "Harshil Mathur and Shashank Kumar built the payment rails that power Indian digital commerce — because the existing ones were broken, undocumented, and unreliable.",
+    col1: {
+      h: "The Problem Was Documentation",
+      b: "In 2014, integrating a payment gateway in India meant weeks of paperwork, opaque pricing, and APIs with no documentation. Razorpay's first product was a clean API with honest documentation — targeted at developers who were tired of fighting their payment provider.\n\nWord spread fast. Developers are the most effective distribution channel in software history. Within months, thousands of Indian businesses had switched — not because of a sales team, but because the documentation was good."
+    },
+    col2: {
+      h: "The Reverse Flip Signal",
+      b: "In 2023, Razorpay reverse-flipped its corporate domicile from the US back to India. This is a significant signal — one that says the founders believe Indian capital markets are ready to value a payments infrastructure company at its true worth.\n\nThe IPO, when it comes, will test that thesis. But the underlying business is not in question: 8M+ businesses, from solo founders to enterprise, depend on Razorpay every single day. That dependency is a moat that cannot be replicated by a weekend sprint."
+    },
+    pull: "The invisible rails that power Indian digital commerce. Nobody sees them. Nobody can stop using them.",
+    lesson: "Developer trust is the most durable distribution channel in software.",
+    stats: [
+      { l: "Total Raised", v: "$1.4B" },
+      { l: "Valuation",    v: "$7.5B" },
+      { l: "Businesses",   v: "8M+"   },
+      { l: "Founded",      v: "2014"  },
+    ],
   },
 ]
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebPage",
-      "@id": "https://upforge.in/top-funded-startups",
-      url: "https://upforge.in/top-funded-startups",
-      name: "India's Most Funded Startups 2026 — Capital Report | UpForge",
-      description: "10 Indian startups. $17B+ combined. Verified funding data, investor intelligence, March 2026.",
-      dateModified: "2026-03-07",
-      isPartOf: { "@type": "WebSite", name: "UpForge", url: "https://upforge.in" },
-      breadcrumb: {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: "https://upforge.in" },
-          { "@type": "ListItem", position: 2, name: "Top Funded Startups India 2026", item: "https://upforge.in/top-funded-startups" },
-        ],
-      },
-    },
-    {
-      "@type": "Article",
-      headline: "India's Most Funded Startups 2026 — Capital Report",
-      author: { "@type": "Organization", name: "UpForge", url: "https://upforge.in" },
-      publisher: { "@type": "Organization", name: "UpForge", logo: { "@type": "ImageObject", url: "https://upforge.in/logo.png" } },
-      datePublished: "2026-01-01",
-      dateModified: "2026-03-07",
-      image: "https://upforge.in/og/top-funded-startups.png",
-    },
-    {
-      "@type": "ItemList",
-      name: "Most Funded Startups India 2026",
-      numberOfItems: 10,
-      itemListElement: STARTUPS.map((s, i) => ({
-        "@type": "ListItem",
-        position: i + 1,
-        item: {
-          "@type": "Organization",
-          name: s.name,
-          description: s.body,
-          foundingLocation: { "@type": "Place", name: s.hq },
-        },
-      })),
-    },
-    {
-      "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "Which is the most funded startup in India?",
-          acceptedAnswer: { "@type": "Answer", text: "Ola Cabs is India's most funded startup with $3.8B raised, followed by OYO at $3.7B and Zepto at $2.5B as of March 2026." },
-        },
-        {
-          "@type": "Question",
-          name: "How much did Indian startups raise in 2025?",
-          acceptedAnswer: { "@type": "Answer", text: "Indian startups raised $11.6B across 936 deals in 2025, with AI infrastructure, quick commerce, and fintech leading funding activity." },
-        },
-        {
-          "@type": "Question",
-          name: "Which Indian startup raised the most money in 2026?",
-          acceptedAnswer: { "@type": "Answer", text: "Neysa raised $600M in February 2026 — the largest single AI infrastructure round in India's history — and became India's newest unicorn." },
-        },
-      ],
-    },
-  ],
-}
-
-// ─── STARTUP IMAGE COMPONENT ──────────────────────────────────────────────────
-function StartupImage({
-  src, alt, accent, rank,
-  className = "", style = {}
-}: {
-  src: string; alt: string; accent: string; rank: string
-  className?: string; style?: React.CSSProperties
-}) {
-  const isPlaceholder = src.includes("www.sample.com")
-  return (
-    <div className={`relative overflow-hidden ${className}`} style={{ background: accent + "12", ...style }}>
-      {!isPlaceholder && (
-        <img
-          src={src}
-          alt={alt}
-          className="absolute inset-0 w-full h-full object-cover"
-          loading="lazy"
-        />
-      )}
-      {isPlaceholder && (
-        <div className="absolute inset-0 flex flex-col items-end justify-end p-4">
-          <span
-            className="font-black leading-none opacity-20"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "5rem", color: accent }}
-          >
-            {rank}
-          </span>
-        </div>
-      )}
-      {/* Always-on gradient for caption readability */}
-      <div
-        className="absolute inset-0"
-        style={{ background: "linear-gradient(to top, rgba(12,8,3,0.72) 0%, transparent 55%)" }}
-      />
-    </div>
-  )
-}
-
-// ─── PAGE ─────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 export default function TopFundedStartupsPage() {
+  const [idx, setIdx] = useState(0)
+  const s = STARTUPS[idx]
+  const isFirst = idx === 0
+  const isLast = idx === STARTUPS.length - 1
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }, [idx])
+
   return (
     <div style={{ minHeight: "100vh", background: "#F3EFE5", fontFamily: "'Georgia','Times New Roman',serif" }}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
 
         .pf { font-family: 'Playfair Display', Georgia, serif !important; }
 
-        :root {
-          --ink:   #18120A;
-          --paper: #F3EFE5;
-          --rule:  #C8C2B2;
-          --muted: #6B5C40;
-          --gold:  #C9A84C;
-        }
-
         @keyframes storyIn {
-          from { opacity: 0; transform: translateY(10px); }
+          from { opacity: 0; transform: translateY(8px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        .page-in { animation: storyIn .4s ease both; }
+        .story-in { animation: storyIn .3s ease both; }
 
-        /* Row separator */
-        .entry {
-          border-bottom: 1px solid var(--rule);
-          transition: background .14s;
+        /* Two newspaper columns */
+        @media (min-width: 640px) {
+          .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+          }
+          .two-col > div:first-child {
+            padding-right: 1.5rem;
+            border-right: 1px solid #C8C2B4;
+          }
+          .two-col > div:last-child {
+            padding-left: 1.5rem;
+          }
         }
-        .entry:last-child { border-bottom: none; }
-        .entry:hover { background: rgba(255,255,255,.7); }
 
         /* Drop cap */
         .dropcap::first-letter {
           font-family: 'Playfair Display', Georgia, serif;
-          font-size: 3.8em;
+          font-size: 3.9em;
           font-weight: 900;
           line-height: 0.82;
           float: left;
           margin-right: 0.07em;
           margin-top: 0.05em;
-          color: var(--ink);
+          color: #1A1208;
         }
 
-        /* Ghost rank */
-        .ghost-rank {
-          font-family: 'Playfair Display', Georgia, serif;
-          font-weight: 900;
-          color: #E2DDD4;
-          line-height: 1;
-          user-select: none;
+        .nbtn:not([disabled]):hover {
+          background: #1A1208 !important;
+          color: white !important;
         }
 
-        /* Funding bar */
-        .bar-track { height: 3px; background: #E2DDD4; border-radius: 2px; }
-        .bar-fill  { height: 100%; border-radius: 2px; }
-
-        /* Nav hover */
-        .nav-pill:hover { background: var(--ink) !important; color: white !important; }
+        .thumb { transition: opacity .18s; }
+        .thumb:hover { opacity: 1 !important; }
 
         ::-webkit-scrollbar { width: 3px; }
-        ::-webkit-scrollbar-thumb { background: var(--rule); }
+        ::-webkit-scrollbar-thumb { background: #C8C2B4; }
       `}</style>
 
-      {/* ══════════════════════════════════
-          BREADCRUMB
-      ══════════════════════════════════ */}
-      <div style={{ borderBottom: "1px solid var(--rule)", background: "var(--paper)" }}>
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-8 py-2.5 flex items-center gap-1.5"
-          style={{ fontFamily: "system-ui,sans-serif" }}>
-          <Link href="/" className="text-[9px] text-[#AAA] hover:text-[var(--ink)] uppercase tracking-widest transition-colors">Home</Link>
-          <ChevronRight className="w-3 h-3" style={{ color: "var(--rule)" }} />
-          <span className="text-[9px] font-semibold uppercase tracking-widest" style={{ color: "var(--ink)" }}>Capital Report 2026</span>
-        </div>
-      </div>
+      {/* ══════════════════════════════════════
+          MASTHEAD
+      ══════════════════════════════════════ */}
+      <header style={{ background: "#F3EFE5", borderBottom: "3px solid #1A1208" }}>
 
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-8 pb-24 page-in">
-
-        {/* ══════════════════════════════════
-            MASTHEAD
-        ══════════════════════════════════ */}
-        <header>
-          {/* Dateline */}
-          <div
-            className="flex items-center justify-between pt-8 pb-5"
-            style={{ borderBottom: "3px solid var(--ink)" }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-2.5 h-2.5" style={{ background: "var(--ink)" }} />
-              <span className="text-[9px] font-semibold uppercase tracking-[0.32em]"
-                style={{ color: "var(--muted)", fontFamily: "system-ui,sans-serif" }}>
-                UpForge Capital Report · March 2026
-              </span>
-            </div>
-            <div className="flex items-center gap-2" style={{ fontFamily: "system-ui,sans-serif" }}>
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="animate-ping absolute h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              </span>
-              <span className="text-[9px] uppercase tracking-widest" style={{ color: "#AAA" }}>Verified Data</span>
-            </div>
+        {/* Dateline */}
+        <div className="flex items-center justify-between px-4 sm:px-8 py-1.5"
+          style={{ borderBottom: "1px solid #C8C2B4", fontFamily: "system-ui,sans-serif" }}>
+          <div className="flex items-center gap-2">
+            <Link href="/" className="text-[9px] text-[#888] uppercase tracking-widest hover:text-[#1A1208] transition-colors">
+              upforge.in
+            </Link>
+            <span style={{ color: "#C8C2B4" }}> / </span>
+            <span className="text-[9px] text-[#888] uppercase tracking-widest">Capital Report</span>
           </div>
+          <div className="flex items-center gap-4">
+            <span className="hidden sm:block text-[9px] text-[#AAA] uppercase tracking-widest">Vol. I · India</span>
+            <span className="text-[9px] text-[#AAA] uppercase tracking-widest">March 2026</span>
+          </div>
+        </div>
 
-          {/* Title + deck + stats */}
-          <div
-            className="grid lg:grid-cols-[1fr_360px] gap-10 items-end py-10"
-            style={{ borderBottom: "1px solid var(--rule)" }}
-          >
-            <div>
-              <p className="text-[9.5px] font-bold uppercase tracking-[0.3em] mb-4"
-                style={{ color: "var(--gold)", fontFamily: "system-ui,sans-serif" }}>
-                Funding Intelligence — Top 10
-              </p>
-              <h1
-                className="pf font-black leading-[1.04] text-[var(--ink)]"
-                style={{ fontSize: "clamp(2.2rem, 5vw, 4.4rem)" }}
-              >
-                India's Most<br />
-                <em style={{ color: "var(--muted)" }}>Capital-Intensive</em><br />
-                Startups
-              </h1>
-              <p className="italic leading-[1.7] mt-5 max-w-lg"
-                style={{ fontSize: "clamp(14px, 1.8vw, 17px)", color: "#5A4A30" }}>
-                Ten companies. Seventeen billion dollars. What concentration of capital in these sectors tells us about India's decade ahead.
-              </p>
-              {/* Ornament */}
-              <div className="flex items-center gap-3 mt-6">
-                <div className="h-px flex-1 max-w-[100px]" style={{ background: "var(--rule)" }} />
-                <span style={{ color: "var(--rule)", fontSize: 13 }}>✦</span>
-                <div className="h-px flex-1 max-w-[100px]" style={{ background: "var(--rule)" }} />
+        {/* Publication name */}
+        <div className="text-center px-4 py-6 sm:py-9" style={{ borderBottom: "1px solid #C8C2B4" }}>
+          <p className="text-[8px] tracking-[0.42em] text-[#AAA] uppercase mb-3"
+            style={{ fontFamily: "system-ui,sans-serif" }}>
+            UpForge · Independent Startup Registry · India Edition
+          </p>
+          <h1 className="pf font-black leading-none tracking-tight text-[#1A1208]"
+            style={{ fontSize: "clamp(2rem, 5.5vw, 4.4rem)" }}>
+            The Capital Report
+          </h1>
+          <p className="italic mt-2.5 text-[#6B5C40]"
+            style={{ fontSize: "clamp(13px, 1.8vw, 16px)" }}>
+            India's most funded startups — their capital, their story, their lesson · March 2026
+          </p>
+          <div className="flex items-center justify-center gap-3 mt-5">
+            <div className="h-px w-16 sm:w-32" style={{ background: "#C8C2B4" }} />
+            <span style={{ color: "#C8C2B4", fontSize: 13 }}>✦</span>
+            <div className="h-px w-16 sm:w-32" style={{ background: "#C8C2B4" }} />
+          </div>
+        </div>
+
+        {/* Story tabs */}
+        <div className="flex items-stretch overflow-x-auto"
+          style={{ borderBottom: "1px solid #C8C2B4", fontFamily: "system-ui,sans-serif", scrollbarWidth: "none" }}>
+          <span className="text-[7.5px] text-[#BBB] uppercase tracking-widest px-4 py-3 self-center flex-shrink-0">
+            In this report:
+          </span>
+          {STARTUPS.map((st, i) => (
+            <button
+              key={i}
+              onClick={() => setIdx(i)}
+              className="flex-shrink-0 px-4 py-3 text-[9px] font-bold uppercase tracking-wider border-l transition-colors"
+              style={{
+                borderColor: "#D8D2C4",
+                color: i === idx ? st.accent : "#888",
+                borderBottom: `2.5px solid ${i === idx ? st.accent : "transparent"}`,
+                background: i === idx ? "rgba(255,255,255,0.55)" : "transparent",
+                marginBottom: "-1px",
+              }}
+            >
+              {st.no} · {st.name}
+            </button>
+          ))}
+        </div>
+      </header>
+
+      {/* ══════════════════════════════════════
+          STORY CONTENT
+      ══════════════════════════════════════ */}
+      <main key={idx} className="story-in max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+
+        {/* HERO IMAGE — full width, proper 16:9 aspect ratio */}
+        <div className="relative w-full mt-0" style={{ aspectRatio: "16 / 7" }}>
+          <img
+            src={s.imgSrc}
+            alt={s.imgAlt}
+            className="absolute inset-0 w-full h-full object-cover"
+            loading="eager"
+          />
+          {/* Top accent bar */}
+          <div className="absolute top-0 left-0 right-0 h-1" style={{ background: s.accent }} />
+          {/* Bottom gradient */}
+          <div className="absolute inset-0"
+            style={{ background: "linear-gradient(to top, rgba(12,8,3,0.88) 0%, rgba(12,8,3,0.3) 45%, transparent 75%)" }} />
+          {/* Caption in image */}
+          <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-8">
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <p className="text-[8px] uppercase tracking-[0.28em] mb-2"
+                  style={{ color: s.accent, fontFamily: "system-ui,sans-serif" }}>
+                  {s.sector} · {s.no} of 05
+                </p>
+                <h2 className="pf font-black text-white leading-tight"
+                  style={{ fontSize: "clamp(1.6rem, 3.5vw, 3rem)" }}>
+                  {s.name}
+                </h2>
+                <p className="text-white/50 text-[9px] uppercase tracking-wider mt-1"
+                  style={{ fontFamily: "system-ui,sans-serif" }}>
+                  {s.hq} · Est. {s.founded}
+                </p>
+              </div>
+              {/* Big stat */}
+              <div className="flex-shrink-0 text-right hidden sm:block">
+                <p className="pf font-black text-white leading-none"
+                  style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}>
+                  {s.total}
+                </p>
+                <p className="text-white/35 text-[8px] uppercase tracking-widest mt-1"
+                  style={{ fontFamily: "system-ui,sans-serif" }}>
+                  Total Raised
+                </p>
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Stats block */}
-            <div className="grid grid-cols-2 gap-px flex-shrink-0" style={{ background: "var(--rule)" }}>
-              {[
-                { v: "$11.6B", l: "Raised in 2025",    s: "936 deals" },
-                { v: "$3.32B", l: "Raised YTD 2026",   s: "332 deals" },
-                { v: "10",     l: "Companies Ranked",  s: "by total raised" },
-                { v: "126",    l: "India Unicorns",    s: "all-time" },
-              ].map((s, i) => (
-                <div key={i} className="px-5 py-5"
-                  style={{ background: i % 2 === 0 ? "#18120A" : "#241908" }}>
-                  <p className="pf font-black text-white leading-none" style={{ fontSize: "1.9rem" }}>{s.v}</p>
-                  <p className="text-[8px] uppercase tracking-[0.2em] mt-1.5" style={{ color: "rgba(255,255,255,.4)", fontFamily: "system-ui,sans-serif" }}>{s.l}</p>
-                  <p className="text-[7.5px] mt-0.5" style={{ color: "rgba(255,255,255,.2)", fontFamily: "system-ui,sans-serif" }}>{s.s}</p>
+        {/* TWO-COLUMN: main story | sidebar */}
+        <div className="grid lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_360px]"
+          style={{ borderBottom: "2px solid #1A1208" }}>
+
+          {/* ════ LEFT: EDITORIAL ════ */}
+          <div className="py-8 lg:pr-8" style={{ borderRight: "1px solid #C8C2B4" }}>
+
+            {/* Headline + deck */}
+            <h3 className="pf font-black leading-[1.07] text-[#1A1208] mb-4"
+              style={{ fontSize: "clamp(1.5rem, 3vw, 2.4rem)" }}>
+              {s.headline}
+            </h3>
+            <p className="italic leading-[1.72] mb-6 pb-6 text-[#5A4A30]"
+              style={{ fontSize: "clamp(14px, 1.8vw, 17px)", borderBottom: "1px solid #C8C2B4" }}>
+              {s.deck}
+            </p>
+
+            {/* Byline */}
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-8"
+              style={{ fontFamily: "system-ui,sans-serif" }}>
+              {["By UpForge Editorial", "India", `Est. ${s.founded}`, s.hq].map((item, i, arr) => (
+                <span key={i} className="flex items-center gap-2">
+                  <span className="text-[9px] text-[#AAA] uppercase tracking-wider">{item}</span>
+                  {i < arr.length - 1 && <span className="text-[#C8C2B4] text-[10px]">·</span>}
+                </span>
+              ))}
+            </div>
+
+            {/* Two newspaper columns */}
+            <div className="two-col">
+              {[s.col1, s.col2].map((col, ci) => (
+                <div key={ci} className="mb-6 sm:mb-0">
+                  <h4 className="font-black uppercase tracking-[0.13em] mb-3 pb-1.5"
+                    style={{ fontSize: 11, color: "#1A1208", borderBottom: `1.5px solid ${s.accent}`, fontFamily: "system-ui,sans-serif" }}>
+                    {col.h}
+                  </h4>
+                  {col.b.split("\n\n").map((para, pi) => (
+                    <p key={pi}
+                      className={`leading-[1.9] mb-3 text-[#2C2010] ${ci === 0 && pi === 0 ? "dropcap" : ""}`}
+                      style={{ fontSize: "clamp(12.5px, 1.3vw, 13.5px)", fontFamily: "'Georgia',serif" }}>
+                      {para}
+                    </p>
+                  ))}
                 </div>
               ))}
             </div>
+
+            {/* Pull quote */}
+            <div className="mt-10 pt-6 pb-6 text-center"
+              style={{ borderTop: `3px solid ${s.accent}`, borderBottom: "1px solid #C8C2B4" }}>
+              <span style={{ display: "block", color: "#C8C2B4", fontSize: 16, marginBottom: 10 }}>❧</span>
+              <blockquote className="pf italic text-[#1A1208] leading-[1.7] max-w-2xl mx-auto px-4"
+                style={{ fontSize: "clamp(15px, 1.8vw, 20px)" }}>
+                "{s.pull}"
+              </blockquote>
+              <span style={{ display: "block", color: "#C8C2B4", fontSize: 16, margin: "10px 0 8px" }}>❧</span>
+              <p className="text-[9px] uppercase tracking-[0.24em] text-[#AAA]"
+                style={{ fontFamily: "system-ui,sans-serif" }}>
+                — {s.name} · UpForge Capital Report
+              </p>
+            </div>
+
           </div>
 
-          {/* Byline */}
-          <div className="flex items-center gap-3 py-4" style={{ borderBottom: "1px solid var(--rule)", fontFamily: "system-ui,sans-serif" }}>
-            <span className="text-[9px] text-[#AAA] uppercase tracking-wider">By UpForge Editorial</span>
-            <span style={{ color: "var(--rule)" }}>·</span>
-            <span className="text-[9px] text-[#AAA] uppercase tracking-wider">India</span>
-            <span style={{ color: "var(--rule)" }}>·</span>
-            <span className="text-[9px] text-[#AAA] uppercase tracking-wider">March 2026</span>
-          </div>
-        </header>
+          {/* ════ RIGHT: STATS + FACTS ════ */}
+          <div className="hidden lg:flex flex-col gap-5 pl-8 pt-8 pb-8">
 
-        {/* ══════════════════════════════════
-            THE 10 STARTUP ENTRIES
-        ══════════════════════════════════ */}
-        <section aria-label="India's most funded startups 2026">
-          {STARTUPS.map((s, i) => {
-            const barPct = Math.round((s.totalRaw / 3.8) * 100)
-            const isEven = i % 2 === 0
-
-            return (
-              <article key={s.rank} className="entry py-8 sm:py-10">
-                {/* Two-column on desktop: alternates photo side each entry */}
-                <div className={`grid lg:grid-cols-[1fr_340px] gap-0 ${!isEven ? "lg:grid-cols-[340px_1fr]" : ""}`}>
-
-                  {/* ── TEXT BLOCK ── */}
-                  <div className={`${!isEven ? "order-2 lg:order-2 lg:pl-10" : "pr-0 lg:pr-10"} flex flex-col justify-between`}
-                    style={{ borderRight: isEven ? "1px solid var(--rule)" : "none", borderLeft: !isEven ? "1px solid var(--rule)" : "none" }}>
-
-                    <div>
-                      {/* Rank + sector + tag */}
-                      <div className="flex items-center gap-3 mb-4" style={{ fontFamily: "system-ui,sans-serif" }}>
-                        <span className="ghost-rank" style={{ fontSize: "clamp(2.5rem, 4.5vw, 3.8rem)" }}>
-                          {s.rank}
-                        </span>
-                        <div>
-                          <p className="text-[8.5px] font-bold uppercase tracking-[0.22em] mb-0.5"
-                            style={{ color: s.accentColor }}>
-                            {s.sector}
-                          </p>
-                          <span
-                            className="text-[7.5px] font-bold uppercase tracking-wider px-2 py-0.5 inline-block"
-                            style={{ background: s.accentColor + "16", color: s.accentColor, border: `1px solid ${s.accentColor}35` }}
-                          >
-                            {s.tag}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Company name */}
-                      <h2
-                        className="pf font-black leading-[1.05] text-[var(--ink)] mb-4"
-                        style={{ fontSize: "clamp(1.5rem, 2.8vw, 2.2rem)" }}
-                      >
-                        {s.name}
-                      </h2>
-
-                      {/* Editorial headline */}
-                      <p
-                        className="italic leading-[1.6] mb-5 pb-5"
-                        style={{
-                          fontSize: "clamp(13.5px, 1.8vw, 16px)",
-                          color: "#5A4A30",
-                          borderBottom: "1px solid var(--rule)"
-                        }}
-                      >
-                        {s.headline}
-                      </p>
-
-                      {/* Body — drop cap on first */}
-                      <p
-                        className={`leading-[1.88] mb-4 text-[#2C2010] ${i < 3 ? "dropcap" : ""}`}
-                        style={{ fontSize: "clamp(12.5px, 1.3vw, 13.5px)", fontFamily: "'Georgia','Times New Roman',serif" }}
-                      >
-                        {s.body}
-                      </p>
-
-                      {/* Pull quote */}
-                      <div
-                        className="my-5 pl-4 py-0.5"
-                        style={{ borderLeft: `3px solid ${s.accentColor}` }}
-                      >
-                        <p className="italic text-[var(--ink)] leading-[1.7]"
-                          style={{ fontSize: "clamp(13px, 1.4vw, 14.5px)", fontFamily: "'Georgia',serif" }}>
-                          "{s.pull}"
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Meta strip */}
-                    <div>
-                      {/* Funding bar */}
-                      <div className="mb-4">
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-[7.5px] uppercase tracking-widest"
-                            style={{ color: "var(--muted)", fontFamily: "system-ui,sans-serif" }}>
-                            Total Raised
-                          </span>
-                          <span className="pf font-black" style={{ fontSize: "1.2rem", color: "var(--ink)" }}>
-                            {s.total}
-                          </span>
-                        </div>
-                        <div className="bar-track">
-                          <div className="bar-fill" style={{ width: `${barPct}%`, background: s.accentColor }} />
-                        </div>
-                      </div>
-
-                      {/* 3 facts */}
-                      <div
-                        className="grid grid-cols-3 pt-4 gap-x-4"
-                        style={{ borderTop: "1px solid var(--rule)", fontFamily: "system-ui,sans-serif" }}
-                      >
-                        {[
-                          { l: "Valuation", v: s.valuation },
-                          { l: "Last Round", v: s.lastRound },
-                          { l: "Founded", v: s.founded },
-                        ].map((m, mi) => (
-                          <div key={mi}>
-                            <p className="text-[7px] uppercase tracking-[0.16em] mb-0.5" style={{ color: "var(--rule)" }}>{m.l}</p>
-                            <p className="text-[11.5px] font-semibold text-[var(--ink)]">{m.v}</p>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Investors + profile */}
-                      <div
-                        className="flex items-center justify-between mt-4 pt-3"
-                        style={{ borderTop: "1px solid var(--rule)" }}
-                      >
-                        <p className="text-[11px]" style={{ color: "var(--muted)", fontFamily: "system-ui,sans-serif" }}>
-                          {s.investors}
-                        </p>
-                        <Link
-                          href={`/startup/${s.slug}`}
-                          className="flex-shrink-0 flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider ml-4 transition-opacity hover:opacity-60"
-                          style={{ color: s.accentColor, fontFamily: "system-ui,sans-serif" }}
-                        >
-                          Profile <ArrowRight className="w-3 h-3" />
-                        </Link>
-                      </div>
-                    </div>
+            {/* BY THE NUMBERS */}
+            <div style={{ border: "2px solid #1A1208" }}>
+              <div className="px-4 py-2.5" style={{ background: "#1A1208" }}>
+                <p className="text-[8px] font-black uppercase tracking-[0.3em] text-white"
+                  style={{ fontFamily: "system-ui,sans-serif" }}>
+                  By the Numbers
+                </p>
+              </div>
+              <div className="grid grid-cols-2 divide-x divide-y" style={{ borderColor: "#D8D2C4" }}>
+                {s.stats.map((st, si) => (
+                  <div key={si} className="px-4 py-3.5" style={{ borderColor: "#D8D2C4" }}>
+                    <p className="text-[7.5px] text-[#AAA] uppercase tracking-[0.16em] mb-1"
+                      style={{ fontFamily: "system-ui,sans-serif" }}>
+                      {st.l}
+                    </p>
+                    <p className="pf font-black text-[#1A1208] leading-none" style={{ fontSize: "1.35rem" }}>
+                      {st.v}
+                    </p>
                   </div>
+                ))}
+              </div>
+            </div>
 
-                  {/* ── IMAGE BLOCK ── */}
-                  <div className={`${!isEven ? "order-1 lg:order-1" : ""} relative mb-6 lg:mb-0`}
-                    style={{ minHeight: 280 }}>
-                    <StartupImage
-                      src={s.imgSrc}
-                      alt={`${s.name} — ${s.sector} startup India`}
-                      accent={s.accentColor}
-                      rank={s.rank}
-                      className="w-full h-full"
-                      style={{
-                        minHeight: 280,
-                        height: "100%",
-                        [isEven ? "marginLeft" : "marginRight"]: 0,
-                      }}
-                    />
-                    {/* Accent top bar */}
-                    <div
-                      className="absolute top-0 left-0 right-0 h-[3px]"
-                      style={{ background: s.accentColor }}
-                    />
-                    {/* Caption overlay at bottom */}
-                    <div className="absolute bottom-0 left-0 right-0 px-4 py-3">
-                      <p className="pf text-white font-bold leading-snug" style={{ fontSize: 13 }}>
-                        {s.name}
-                      </p>
-                      <p className="text-white/40 text-[9px] uppercase tracking-wide mt-0.5"
-                        style={{ fontFamily: "system-ui,sans-serif" }}>
-                        {s.hq} · Est. {s.founded}
-                      </p>
-                    </div>
-                  </div>
+            {/* INVESTORS */}
+            <div className="px-4 py-4" style={{ border: "1px solid #D8D2C4", background: "white" }}>
+              <p className="text-[8px] font-black uppercase tracking-[0.26em] mb-2"
+                style={{ color: "#AAA", fontFamily: "system-ui,sans-serif" }}>
+                Key Investors
+              </p>
+              <p className="text-[13px] leading-[1.72] text-[#1A1208]"
+                style={{ fontFamily: "'Georgia',serif" }}>
+                {s.investors}
+              </p>
+            </div>
 
-                </div>
-              </article>
-            )
-          })}
-        </section>
+            {/* THE LESSON */}
+            <div className="px-4 py-4"
+              style={{ background: s.accentBg, border: `1px solid ${s.accentBorder}` }}>
+              <p className="text-[8px] font-black uppercase tracking-[0.26em] mb-2"
+                style={{ color: s.accent, fontFamily: "system-ui,sans-serif" }}>
+                The Lesson
+              </p>
+              <p className="italic text-[#1A1208] leading-[1.72]"
+                style={{ fontSize: 13.5, fontFamily: "'Georgia',serif" }}>
+                {s.lesson}
+              </p>
+            </div>
 
-        {/* ══════════════════════════════════
-            EDITORIAL CLOSE
-        ══════════════════════════════════ */}
-        <div
-          className="py-10 mt-4"
-          style={{ borderTop: "3px solid var(--ink)", borderBottom: "1px solid var(--rule)" }}
-        >
-          <div className="max-w-2xl">
-            <p className="text-[9px] uppercase tracking-[0.3em] mb-4"
-              style={{ color: "var(--gold)", fontFamily: "system-ui,sans-serif" }}>
-              UpForge Editorial Note
-            </p>
-            <p
-              className="pf italic leading-[1.72] text-[var(--ink)]"
-              style={{ fontSize: "clamp(1.05rem, 2vw, 1.3rem)" }}
+            {/* Funding bar */}
+            <div className="px-4 py-4" style={{ border: "1px solid #D8D2C4", background: "white" }}>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[8px] uppercase tracking-widest text-[#AAA]"
+                  style={{ fontFamily: "system-ui,sans-serif" }}>
+                  Capital Raised vs. Leader
+                </p>
+                <p className="pf font-black text-[#1A1208]" style={{ fontSize: "1.1rem" }}>{s.total}</p>
+              </div>
+              <div className="h-1.5 rounded-sm" style={{ background: "#EAE6DC" }}>
+                <div className="h-full rounded-sm transition-all duration-700"
+                  style={{ width: `${Math.round((s.totalRaw / 3.8) * 100)}%`, background: s.accent }} />
+              </div>
+              <p className="text-[8px] text-[#BBB] mt-1.5" style={{ fontFamily: "system-ui,sans-serif" }}>
+                {Math.round((s.totalRaw / 3.8) * 100)}% of top raise ($3.8B)
+              </p>
+            </div>
+
+            {/* Profile link */}
+            <Link
+              href={`/startup/${s.slug}`}
+              className="group flex items-center justify-between px-4 py-3 transition-opacity hover:opacity-70"
+              style={{ border: `1.5px solid ${s.accent}` }}
             >
-              "The concentration of India's most-funded companies across mobility, commerce, fintech, and infrastructure is not a coincidence. It is a map of where 1.4 billion people need reliable services — and where the next decade's wealth will be created."
-            </p>
-            <p className="text-[9px] uppercase tracking-[0.22em] mt-4"
-              style={{ color: "var(--rule)", fontFamily: "system-ui,sans-serif" }}>
-              — UpForge Editorial, March 2026
-            </p>
+              <span className="text-[10px] font-bold uppercase tracking-wider"
+                style={{ color: s.accent, fontFamily: "system-ui,sans-serif" }}>
+                View {s.name} on UpForge
+              </span>
+              <ArrowUpRight className="w-4 h-4" style={{ color: s.accent }} />
+            </Link>
+
           </div>
         </div>
 
-        {/* ══════════════════════════════════
-            INTERNAL NAV + CTA
-        ══════════════════════════════════ */}
-        <nav
-          className="pt-8 pb-2"
-          style={{ borderBottom: "1px solid var(--rule)" }}
-          aria-label="Related UpForge reports"
-        >
-          <p className="text-[8.5px] uppercase tracking-[0.28em] mb-4"
-            style={{ color: "var(--rule)", fontFamily: "system-ui,sans-serif" }}>
-            More UpForge Reports
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {[
-              { label: "Founder Stories", href: "/founder-stories" },
-              { label: "Top AI Startups", href: "/top-ai-startups" },
-              { label: "Best SaaS Startups", href: "/best-saas-startups" },
-              { label: "Indian Unicorns 2026", href: "/indian-unicorns" },
-              { label: "Indian Startups Guide", href: "/indian-startups" },
-              { label: "Browse Registry", href: "/startup" },
-            ].map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className="nav-pill inline-flex items-center gap-1 px-3.5 py-2 text-[9px] font-medium uppercase tracking-wider transition-all"
+        {/* ══════════════════════════════════════
+            NAVIGATION — prev / dots / next
+        ══════════════════════════════════════ */}
+        <div className="flex items-center justify-between py-5"
+          style={{ borderBottom: "1px solid #C8C2B4" }}>
+          <button
+            onClick={() => !isFirst && setIdx(i => i - 1)}
+            disabled={isFirst}
+            className="nbtn flex items-center gap-2 px-4 py-2.5 font-bold uppercase tracking-wider transition-all"
+            style={{
+              border: `1px solid ${isFirst ? "#D8D2C4" : "#1A1208"}`,
+              color: isFirst ? "#C8C2B4" : "#1A1208",
+              cursor: isFirst ? "not-allowed" : "pointer",
+              fontSize: 10,
+              background: "transparent",
+              fontFamily: "system-ui,sans-serif",
+            }}
+          >
+            <ChevronLeft className="w-3.5 h-3.5" />
+            {isFirst ? "First Entry" : STARTUPS[idx - 1].name}
+          </button>
+
+          {/* Dots */}
+          <div className="flex items-center gap-1.5">
+            {STARTUPS.map((st, i) => (
+              <button
+                key={i}
+                onClick={() => setIdx(i)}
+                className="h-1.5 rounded-sm transition-all"
                 style={{
-                  border: "1px solid var(--rule)",
-                  color: "var(--muted)",
-                  background: "white",
-                  fontFamily: "system-ui,sans-serif",
+                  width: i === idx ? 28 : 6,
+                  background: i === idx ? s.accent : "#C8C2B4",
                 }}
-              >
-                {l.label} <ChevronRight className="w-2.5 h-2.5" />
-              </Link>
+              />
             ))}
           </div>
-        </nav>
+
+          <button
+            onClick={() => !isLast && setIdx(i => i + 1)}
+            disabled={isLast}
+            className="nbtn flex items-center gap-2 px-4 py-2.5 font-bold uppercase tracking-wider transition-all"
+            style={{
+              border: `1px solid ${isLast ? "#D8D2C4" : "#1A1208"}`,
+              color: isLast ? "#C8C2B4" : "#1A1208",
+              cursor: isLast ? "not-allowed" : "pointer",
+              fontSize: 10,
+              background: "transparent",
+              fontFamily: "system-ui,sans-serif",
+            }}
+          >
+            {isLast ? "Last Entry" : STARTUPS[idx + 1].name}
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* ══════════════════════════════════════
+            ALL 5 THUMBNAILS
+        ══════════════════════════════════════ */}
+        <div className="py-8" style={{ borderBottom: "1px solid #C8C2B4" }}>
+          <p className="text-[9px] tracking-[0.3em] uppercase text-[#AAA] mb-5"
+            style={{ fontFamily: "system-ui,sans-serif" }}>
+            All Entries in This Report
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            {STARTUPS.map((st, i) => (
+              <button key={i} onClick={() => setIdx(i)}
+                className="thumb text-left"
+                style={{ opacity: i === idx ? 1 : 0.45 }}>
+                {/* Thumbnail image */}
+                <div className="relative w-full overflow-hidden mb-2.5"
+                  style={{
+                    aspectRatio: "4/3",
+                    borderTop: `3px solid ${st.accent}`,
+                  }}>
+                  <img
+                    src={st.imgSrc}
+                    alt={st.name}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0"
+                    style={{ background: "linear-gradient(to top, rgba(12,8,3,0.6) 0%, transparent 60%)" }} />
+                  <p className="absolute bottom-2 left-2.5 pf text-white font-bold leading-tight"
+                    style={{ fontSize: 12 }}>
+                    {st.name}
+                  </p>
+                </div>
+                <p className="text-[8.5px] font-black uppercase tracking-wider mb-0.5"
+                  style={{ color: st.accent, fontFamily: "system-ui,sans-serif" }}>
+                  {st.no}
+                </p>
+                <p className="text-[9.5px] text-[#AAA]"
+                  style={{ fontFamily: "system-ui,sans-serif" }}>
+                  {st.total} raised
+                </p>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ══════════════════════════════════════
+            INSIGHTS + CTA
+        ══════════════════════════════════════ */}
+        <div className="py-8 grid sm:grid-cols-3 gap-4" style={{ borderBottom: "1px solid #C8C2B4" }}>
+          {[
+            { v: "$11.6B", l: "Raised in 2025", b: "Across 936 deals. India's startup funding reached its highest point since 2021." },
+            { v: "$17B+",  l: "Top 5 Combined", b: "Five companies. Seventeen billion dollars. Mobility, hospitality, commerce, fintech, payments." },
+            { v: "126",    l: "Unicorns Total",  b: "India crossed 126 unicorns. The founders reading this will build the next 126." },
+          ].map((item, i) => (
+            <div key={i} className="p-4" style={{ background: "white", border: "1px solid #D8D2C4" }}>
+              <p className="pf font-black text-[#1A1208] leading-none mb-1" style={{ fontSize: "2rem" }}>
+                {item.v}
+              </p>
+              <p className="text-[8px] font-black uppercase tracking-[0.18em] mb-2"
+                style={{ color: "#C9A84C", fontFamily: "system-ui,sans-serif" }}>
+                {item.l}
+              </p>
+              <p className="text-[11.5px] leading-relaxed"
+                style={{ color: "#6B5C40", fontFamily: "system-ui,sans-serif" }}>
+                {item.b}
+              </p>
+            </div>
+          ))}
+        </div>
 
         {/* CTA */}
-        <div
-          className="mt-8 grid sm:grid-cols-2 gap-6 items-center"
-        >
+        <div className="pt-8 grid sm:grid-cols-2 gap-6 items-center">
           <div>
             <p className="text-[8.5px] font-black uppercase tracking-[0.24em] mb-2"
-              style={{ color: "var(--gold)", fontFamily: "system-ui,sans-serif" }}>
+              style={{ color: "#C9A84C", fontFamily: "system-ui,sans-serif" }}>
               UpForge Registry
             </p>
-            <p className="pf font-bold text-[var(--ink)] leading-snug mb-2" style={{ fontSize: "1.2rem" }}>
-              Is your startup in the next funding wave?
+            <p className="pf font-bold text-[#1A1208] leading-snug mb-2" style={{ fontSize: "1.3rem" }}>
+              Your startup belongs in the next report.
             </p>
             <p className="text-[12px] leading-relaxed"
-              style={{ color: "var(--muted)", fontFamily: "system-ui,sans-serif" }}>
-              Investors research startups on UpForge. Get listed, verified, and found — free forever.
+              style={{ color: "#6B5C40", fontFamily: "system-ui,sans-serif" }}>
+              Get independently verified and indexed in India's most trusted startup registry. Free forever.
             </p>
           </div>
           <div className="flex flex-col sm:items-end gap-3">
             <Link
               href="/submit"
               className="inline-flex items-center gap-2 px-6 py-3.5 text-white font-bold uppercase tracking-wider hover:opacity-90 transition-opacity"
-              style={{ background: "var(--ink)", fontSize: 11, fontFamily: "system-ui,sans-serif" }}
+              style={{ background: "#1A1208", fontSize: 11, fontFamily: "system-ui,sans-serif" }}
             >
               List Your Startup — Free <ArrowRight className="w-3.5 h-3.5" />
             </Link>
+            <div className="flex flex-wrap gap-3">
+              {[
+                { l: "Founder Stories", h: "/founder-stories" },
+                { l: "AI Startups", h: "/top-ai-startups" },
+                { l: "Unicorns", h: "/indian-unicorns" },
+                { l: "Registry", h: "/startup" },
+              ].map((lnk) => (
+                <Link key={lnk.h} href={lnk.h}
+                  className="flex items-center gap-0.5 text-[9px] uppercase tracking-wider hover:text-[#1A1208] transition-colors"
+                  style={{ color: "#888", fontFamily: "system-ui,sans-serif" }}>
+                  {lnk.l} <ChevronRight className="w-2.5 h-2.5" />
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
 
-        <p
-          className="mt-8 pb-4 text-[9px] leading-relaxed"
-          style={{ color: "#B8AF9E", fontFamily: "system-ui,sans-serif" }}
-        >
-          * All funding data sourced from Tracxn, Inc42, Growthlist and public company announcements as of March 2026. Valuations reflect last known figures. Images: replace all <code>www.sample.com</code> URLs with real direct image links — any public URL works. UpForge is an independent registry — no paid placements or sponsored rankings.
+        <p className="mt-8 pb-2 text-[9px] leading-relaxed"
+          style={{ color: "#BBB0A0", fontFamily: "system-ui,sans-serif" }}>
+          * Funding data sourced from Tracxn, Inc42, Growthlist and public company announcements as of March 2026. Valuations are last known figures. Hero images: replace <code>imgSrc</code> URLs with your own direct image links — any public URL works, no Next.js config required. UpForge is an independent registry — no paid placements.
         </p>
 
-      </div>
+      </main>
     </div>
   )
 }
