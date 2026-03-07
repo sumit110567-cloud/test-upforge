@@ -234,77 +234,67 @@ export default async function StartupPage({ params }: PageProps) {
               </nav>
 
               {/* ── PROFILE HEADER ── */}
-              <div style={{ padding: "clamp(20px,5vw,44px) 0 clamp(16px,4vw,32px)" }}>
+              <div style={{ padding: "clamp(24px,5vw,48px) 0 0" }}>
 
-                {/* UpForge registry attribution */}
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
-                  <img src="/logo.jpg" alt="UpForge" style={{ width: "22px", height: "22px", objectFit: "contain", display: "block" }} />
-                  <span style={{ fontSize: "11px", color: "var(--ink4)", letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: "'Source Serif 4',serif" }}>UpForge Registry</span>
-                  <span style={{ color: "var(--rule)", fontSize: "14px" }}>·</span>
-                  <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                    <div className="dot" />
-                    <span className="uf-lbl" style={{ color: "var(--pos)", fontSize: "9px" }}>Live Profile</span>
-                  </div>
-                </div>
+                {/* Logo + Name + Tagline */}
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "clamp(14px,3vw,24px)", marginBottom: "clamp(20px,4vw,36px)" }}>
 
-                {/* Startup logo + name block */}
-                <div style={{ display: "flex", alignItems: "flex-start", gap: "clamp(14px,3vw,28px)", marginBottom: "clamp(16px,3vw,28px)" }}>
+                  {/* Startup logo box */}
+                  {startup.logo_url && (
+                    <div style={{
+                      width: "clamp(52px,7vw,68px)", height: "clamp(52px,7vw,68px)",
+                      border: "1px solid var(--rule)", background: "var(--off)",
+                      display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                    }}>
+                      <img src={startup.logo_url} alt={startup.name} style={{ maxWidth: "80%", maxHeight: "80%", objectFit: "contain" }} />
+                    </div>
+                  )}
 
-                  {/* Startup logo */}
-                  <div style={{ width: "clamp(52px,8vw,72px)", height: "clamp(52px,8vw,72px)", border: "1px solid var(--rule)", background: "var(--off)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    {startup.logo_url
-                      ? <img src={startup.logo_url} alt={startup.name} style={{ maxWidth: "80%", maxHeight: "80%", objectFit: "contain" }} />
-                      : <span className="uf-d" style={{ fontSize: "clamp(1.4rem,4vw,2rem)", color: "var(--ink3)", fontWeight: 700 }}>{startup.name.charAt(0)}</span>
-                    }
-                  </div>
-
-                  {/* Name + tagline + badges */}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <h1 className="uf-d" style={{ fontSize: "clamp(1.8rem,5vw,3.4rem)", fontWeight: 900, color: "var(--ink)", lineHeight: 0.92, marginBottom: "10px" }}>
+                    <h1 className="uf-d" style={{
+                      fontSize: "clamp(2rem,5.5vw,3.8rem)", fontWeight: 900,
+                      color: "var(--ink)", lineHeight: 0.9, marginBottom: startup.tagline ? "12px" : "0",
+                    }}>
                       {startup.name}
                     </h1>
                     {startup.tagline && (
-                      <p style={{ fontSize: "clamp(13px,1.8vw,15px)", color: "var(--ink3)", fontStyle: "italic", fontFamily: "'Playfair Display',Georgia,serif", lineHeight: 1.45, marginBottom: "14px", maxWidth: "560px" }}>
-                        "{startup.tagline}"
+                      <p style={{
+                        fontSize: "clamp(13px,1.8vw,15px)", color: "var(--ink3)",
+                        fontStyle: "italic", fontFamily: "'Playfair Display',Georgia,serif",
+                        lineHeight: 1.5, maxWidth: "600px", marginBottom: 0,
+                      }}>
+                        {startup.tagline}
                       </p>
                     )}
-                    {/* Badges row */}
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-                      <div className="vbadge">
-                        <BadgeCheck style={{ width: "11px", height: "11px" }} />
-                        Verified Startup
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "5px" }} className="hide-mob">
-                        <Shield style={{ width: "10px", height: "10px", color: "var(--ink4)" }} />
-                        <span style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif", letterSpacing: "0.08em", textTransform: "uppercase" }}>Independently Reviewed</span>
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "5px" }} className="hide-mob">
-                        <Globe style={{ width: "10px", height: "10px", color: "var(--ink4)" }} />
-                        <span style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif", letterSpacing: "0.08em", textTransform: "uppercase" }}>Publicly Indexed</span>
-                      </div>
-                    </div>
                   </div>
                 </div>
 
-                {/* Meta pills row — founded / sector / city / stage */}
-                <div style={{ display: "flex", alignItems: "center", gap: "0", borderTop: "1px solid var(--rule)", borderBottom: "1px solid var(--rule)" }}>
-                  {[
-                    startup.founded_year   && { label: "Founded",  value: String(startup.founded_year) },
-                    (startup.industry || startup.category) && { label: "Sector",   value: startup.industry || startup.category },
-                    startup.city          && { label: "Based In", value: startup.city },
-                    startup.funding_stage && { label: "Stage",    value: startup.funding_stage },
-                  ]
+                {/* Meta strip — founded · sector · city · stage */}
+                <div style={{ display: "flex", flexWrap: "wrap", borderTop: "1px solid var(--rule)" }}>
+                  {([
+                    startup.founded_year && { label: "Founded",  value: String(startup.founded_year) },
+                    (startup.industry || startup.category) && { label: "Sector", value: startup.industry || startup.category },
+                    startup.city         && { label: "Based In", value: startup.city },
+                    startup.funding_stage && { label: "Stage",   value: startup.funding_stage },
+                  ] as any[])
                     .filter(Boolean)
-                    .map((item: any, i: number, arr) => (
+                    .map((item: any, i: number) => (
                       <div key={i} style={{
                         display: "flex", flexDirection: "column", justifyContent: "center",
-                        padding: "12px 20px", borderRight: i < arr.length - 1 ? "1px solid var(--rule)" : "none",
+                        padding: "11px 20px",
+                        borderRight: "1px solid var(--rule)",
+                        borderBottom: "1px solid var(--rule)",
                         background: i % 2 === 1 ? "var(--warm)" : "#fff",
                       }}>
                         <span className="uf-lbl" style={{ fontSize: "8px", color: "var(--ink4)", marginBottom: "3px" }}>{item.label}</span>
-                        <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--ink)", fontFamily: "'Source Serif 4',serif" }}>{item.value}</span>
+                        <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--ink)", fontFamily: "'Source Serif 4',serif", whiteSpace: "nowrap" }}>{item.value}</span>
                       </div>
                     ))}
+                  {/* Live badge — pushed to end */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px", padding: "11px 20px", marginLeft: "auto", borderBottom: "1px solid var(--rule)" }}>
+                    <div className="dot" />
+                    <span className="uf-lbl" style={{ fontSize: "9px", color: "var(--pos)" }}>Verified · Live</span>
+                  </div>
                 </div>
 
               </div>
