@@ -290,6 +290,11 @@ export default async function Home() {
         .art{transition:opacity .15s}
         .art:hover{opacity:.65}
 
+        .masthead-container {
+          padding-top: 20px; /* Navbar ke neeche space ke liye */
+          margin-top: 10px;
+        }
+
         /* ── SECTOR TABLE ── */
         .s-row{display:grid;grid-template-columns:24px 1fr;gap:0 8px;padding:9px 0;border-bottom:1px solid var(--rl)}
         .s-row:last-child{border-bottom:none}
@@ -364,11 +369,12 @@ export default async function Home() {
 
         <div className="uf-wrap">
 
-          {/* ── MASTHEAD ──────────────────────────────────────────────────── */}
-          <header className="a0">
-            {/* Meta strip */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid var(--rule)", flexWrap: "wrap", gap: "8px" }}>
-              <span className="uf-lbl" style={{ color: "var(--ink4)" }}>{todayStr} · Vol. II</span>
+{/* ── MASTHEAD ──────────────────────────────────────────────────── */}
+          {/* Added masthead-container for better readability and spacing */}
+          <header className="a0 masthead-container">
+            {/* Meta strip - Time and Volume */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid var(--rule)", flexWrap: "wrap", gap: "8px" }}>
+              <span className="uf-lbl" style={{ color: "var(--ink2)", fontWeight: "700" }}>{todayStr} · Vol. II</span>
               <div className="hide-mob" style={{ display: "flex", gap: "20px" }}>
                 {["Independent", "Ad-Free", "Verified"].map((t) => (
                   <span key={t} style={{ fontSize: "10px", color: "var(--ink4)", letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: "'Source Serif 4',serif" }}>✓ {t}</span>
@@ -381,14 +387,14 @@ export default async function Home() {
             </div>
 
             {/* Wordmark */}
-            <div style={{ textAlign: "center", padding: "clamp(20px,5vw,44px) 0 clamp(14px,3vw,24px)", borderBottom: "2px solid var(--ink)" }}>
-              <p style={{ fontSize: "10px", letterSpacing: "0.30em", textTransform: "uppercase", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif", marginBottom: "12px" }}>
+            <div style={{ textAlign: "center", padding: "clamp(30px,6vw,50px) 0 clamp(16px,4vw,28px)", borderBottom: "2px solid var(--ink)" }}>
+              <p style={{ fontSize: "11px", letterSpacing: "0.35em", textTransform: "uppercase", color: "var(--ink3)", fontFamily: "'Source Serif 4',serif", marginBottom: "16px" }}>
                 India's Independent Startup Intelligence Platform
               </p>
-              <h1 className="uf-d" style={{ fontSize: "clamp(3rem,10vw,8rem)", fontWeight: 900, lineHeight: 0.88, color: "var(--ink)", marginBottom: "16px" }}>UpForge</h1>
-              <div style={{ display: "flex", justifyContent: "center", gap: "clamp(10px,2vw,24px)", flexWrap: "wrap" }}>
-                {[`${total.toLocaleString() || "72,000"}+ Verified`, "100% Independent", "AI Reports", "Real-Time Data"].map((t) => (
-                  <span key={t} className="uf-lbl" style={{ color: "var(--ink3)", fontSize: "9px" }}>{t}</span>
+              <h1 className="uf-d" style={{ fontSize: "clamp(3.2rem,11vw,8.5rem)", fontWeight: 900, lineHeight: 0.85, color: "var(--ink)", marginBottom: "20px" }}>UpForge</h1>
+              <div style={{ display: "flex", justifyContent: "center", gap: "clamp(12px,2.5vw,28px)", flexWrap: "wrap" }}>
+                {[`${total.toLocaleString()}+ Verified`, "100% Independent", "AI Reports", "Real-Time Data"].map((t) => (
+                  <span key={t} className="uf-lbl" style={{ color: "var(--gold)", fontSize: "10px", fontWeight: "700" }}>{t}</span>
                 ))}
               </div>
             </div>
@@ -766,9 +772,6 @@ export default async function Home() {
 
         </div>{/* /uf-wrap */}
       </div>{/* /uf */}
-
-      {/* ── FOOTER ────────────────────────────────────────────────────────── */}
-      <Footer />
     </>
   );
 }
