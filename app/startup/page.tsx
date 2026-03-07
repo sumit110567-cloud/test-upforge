@@ -1,3 +1,5 @@
+"use client"
+
 // app/startup/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
@@ -791,15 +793,11 @@ export default async function StartupPage({ searchParams }: Props) {
                     {/* Card image area */}
                     <div className="card-img-wrap">
                       {startup.logo_url ? (
-                        <img
-                          src={startup.logo_url}
-                          alt={startup.name}
-                          style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = "none";
-                          }}
-                        />
+                      <img
+                        src={startup.logo_url}
+                        alt={startup.name}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
+                      />
                       ) : (
                         <div className="card-img-monogram">
                           <span className="pf" style={{ fontSize: "3.2rem", fontWeight: 900, color: "rgba(26,18,8,0.12)" }}>
