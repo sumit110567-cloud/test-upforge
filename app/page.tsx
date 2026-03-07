@@ -360,27 +360,7 @@ export default async function Home() {
               <span className="uf-m" style={{ fontSize: "12px", fontWeight: 600, color: sentColor }}>{eco.marketMood.sentiment} {eco.marketMood.score}/100</span>
             </div>
           </div>
-        </div>
-
-        {/* ══ SUB-NAV ═══════════════════════════════════════════════════════ */}
-        <nav style={{ background: "#fff", borderBottom: "1px solid var(--rule)" }}>
-          <div className="uf-wrap">
-            <div className="noscroll" style={{ display: "flex", alignItems: "center", overflowX: "auto", height: "44px" }}>
-              {[
-                { label: "Registry",    href: "/startup" },
-                { label: "AI Startups", href: "/top-ai-startups" },
-                { label: "Unicorns",    href: "/indian-unicorns" },
-                { label: "Funded",      href: "/top-funded-startups" },
-                { label: "SaaS",        href: "/best-saas-startups" },
-                { label: "Reports",     href: "/reports" },
-              ].map((item) => (
-                <Link key={item.href} href={item.href} className="snav-link">{item.label}</Link>
-              ))}
-              <div style={{ flex: 1 }} />
-              <Link href="/submit" className="btn-d btn-sm hide-mob">+ List Free</Link>
-            </div>
-          </div>
-        </nav>
+        </div
 
         <div className="uf-wrap">
 
