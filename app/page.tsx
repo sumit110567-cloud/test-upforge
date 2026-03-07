@@ -9,32 +9,32 @@ import {
   Gem, CheckCircle2, ChevronRight,
 } from "lucide-react";
 
-// ─── SEO METADATA ─────────────────────────────────────────────────────────────
+// ─── SEO METADATA ────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
   title: "UpForge — India's #1 Independent Startup Registry & Database 2026",
   description:
     "Discover, research and track 72,000+ verified Indian startups. Free listings, AI-powered growth reports, real-time funding news, unicorn tracker and live market intelligence. India's most trusted startup database.",
   keywords: [
-    "Indian startups 2026", "India startup database", "startup registry India",
-    "verified Indian startups", "Indian unicorns 2026", "startup funding India",
-    "list your startup India free", "startup ecosystem India", "Indian founders database",
-    "VC deals India", "startup news India today", "Bengaluru startups",
-    "Mumbai startups", "Delhi NCR startups", "SaaS startups India",
-    "fintech startups India", "edtech startups India", "healthtech India",
-    "AI startups India", "deeptech India startups", "startup valuation India",
-    "angel investors India", "startup growth report India", "UpForge",
-    "India startup intelligence", "Indian soonicorns", "startup funding tracker India",
+    "Indian startups 2026","India startup database","startup registry India",
+    "verified Indian startups","Indian unicorns 2026","startup funding India",
+    "list your startup India free","startup ecosystem India","Indian founders database",
+    "VC deals India","startup news India today","Bengaluru startups",
+    "Mumbai startups","Delhi NCR startups","SaaS startups India",
+    "fintech startups India","edtech startups India","healthtech India",
+    "AI startups India","deeptech India startups","startup valuation India",
+    "angel investors India","startup growth report India","UpForge",
+    "India startup intelligence","Indian soonicorns","startup funding tracker India",
   ].join(", "),
   authors: [{ name: "UpForge", url: "https://upforge.in" }],
-  creator: "UpForge",
-  publisher: "UpForge",
+  creator: "UpForge", publisher: "UpForge",
   metadataBase: new URL("https://upforge.in"),
   alternates: { canonical: "https://upforge.in" },
   openGraph: {
-    type: "website", locale: "en_IN", url: "https://upforge.in", siteName: "UpForge",
+    type: "website", locale: "en_IN", url: "https://upforge.in",
+    siteName: "UpForge",
     title: "UpForge — India's #1 Independent Startup Registry 2026",
     description: "72,000+ verified Indian startups. Free listings · AI growth reports · Live funding news · Unicorn tracker.",
-    images: [{ url: "https://upforge.in/og-image.png", width: 1200, height: 630, alt: "UpForge — India's Independent Startup Registry" }],
+    images: [{ url: "https://upforge.in/og-image.png", width: 1200, height: 630, alt: "UpForge" }],
   },
   twitter: {
     card: "summary_large_image", site: "@upforge_in", creator: "@upforge_in",
@@ -59,38 +59,15 @@ const jsonLd = {
       url: "https://upforge.in", name: "UpForge",
       description: "India's Independent Startup Registry & Live Market Intelligence",
       inLanguage: "en-IN",
-      potentialAction: {
-        "@type": "SearchAction",
-        target: { "@type": "EntryPoint", urlTemplate: "https://upforge.in/startup?q={search_term_string}" },
-        "query-input": "required name=search_term_string",
-      },
+      potentialAction: { "@type": "SearchAction", target: { "@type": "EntryPoint", urlTemplate: "https://upforge.in/startup?q={search_term_string}" }, "query-input": "required name=search_term_string" },
     },
     {
       "@type": "Organization", "@id": "https://upforge.in/#organization",
       name: "UpForge", url: "https://upforge.in",
       logo: { "@type": "ImageObject", url: "https://upforge.in/logo.png", width: 512, height: 512 },
       sameAs: ["https://twitter.com/upforge_in", "https://linkedin.com/company/upforge"],
-      description: "India's most trusted independent startup registry — verified listings, AI growth reports, and real-time market intelligence.",
+      description: "India's most trusted independent startup registry.",
       areaServed: "IN",
-      knowsAbout: ["Indian Startups", "Startup Ecosystem", "Venture Capital India", "Startup Funding", "Indian Unicorns"],
-    },
-    {
-      "@type": "WebPage", "@id": "https://upforge.in/#webpage",
-      url: "https://upforge.in", name: "UpForge — India's #1 Independent Startup Registry 2026",
-      isPartOf: { "@id": "https://upforge.in/#website" },
-      about: { "@id": "https://upforge.in/#organization" },
-      description: "Discover and research 72,000+ verified Indian startups. Free listings, AI growth reports, live funding news.",
-      dateModified: new Date().toISOString(),
-    },
-    {
-      "@type": "ItemList", name: "Top Indian Startup Sectors 2026",
-      description: "Most active startup sectors in India by funding and deal count",
-      numberOfItems: 6,
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "SaaS" }, { "@type": "ListItem", position: 2, name: "FinTech" },
-        { "@type": "ListItem", position: 3, name: "AI/ML" }, { "@type": "ListItem", position: 4, name: "D2C Brands" },
-        { "@type": "ListItem", position: 5, name: "Climate Tech" }, { "@type": "ListItem", position: 6, name: "HealthTech" },
-      ],
     },
   ],
 };
@@ -102,7 +79,7 @@ const TOP_INDIAN_BILLIONAIRES = [
   { name: "Shiv Nadar", netWorth: "$29.4B", rank: "#56", source: "HCL Technologies", yoy: "+$3.8B YoY", startupConnections: ["HCL Software", "Vama Sundari Investments"] },
 ];
 
-// ─── NEWSAPI ──────────────────────────────────────────────────────────────────
+// ─── NEWS ─────────────────────────────────────────────────────────────────────
 async function getLiveNews() {
   try {
     const today = new Date();
@@ -129,10 +106,9 @@ async function getLiveNews() {
         const diffD = Math.floor(diffH / 24);
         const timestamp = diffH < 1 ? "just now" : diffH < 24 ? `${diffH}h ago` : diffD === 1 ? "1d ago" : `${diffD}d ago`;
         const title = article.title.toLowerCase();
-        const impact = title.match(/raises|funding|unicorn|launch|growth|profit|record|surge|ipo|expands/) ? "positive" :
-          title.match(/shutdown|layoff|fraud|crisis|loss|decline|cut|fail|drops/) ? "negative" : "neutral";
+        const impact = title.match(/raises|funding|unicorn|launch|growth|profit|record|surge|ipo|expands/) ? "positive" : title.match(/shutdown|layoff|fraud|crisis|loss|decline|cut|fail|drops/) ? "negative" : "neutral";
         return {
-          headline: article.title.length > 95 ? article.title.slice(0, 92) + "…" : article.title,
+          headline: article.title.length > 90 ? article.title.slice(0, 87) + "…" : article.title,
           source: article.source.name, url: article.url, impact, timestamp,
         };
       });
@@ -142,12 +118,12 @@ async function getLiveNews() {
       { headline: "SEBI eases startup IPO norms, reduces mandatory lock-in to 6 months", source: "Economic Times", impact: "positive", timestamp: "12h ago" },
       { headline: "Government's ₹1,000Cr DeepTech Fund opens applications for Indian startups", source: "PIB India", impact: "positive", timestamp: "1d ago" },
       { headline: "Indian SaaS companies cross $1.8B in new ARR, global expansion accelerates", source: "Mint", impact: "positive", timestamp: "1d ago" },
-      { headline: "Krutrim AI hits 1M enterprise users; eyes Southeast Asia expansion in H2", source: "Inc42", impact: "positive", timestamp: "2d ago" },
+      { headline: "Zepto eyes secondary share sale at $5.5B valuation ahead of IPO", source: "Bloomberg", impact: "positive", timestamp: "2d ago" },
     ];
   }
 }
 
-// ─── GROQ ─────────────────────────────────────────────────────────────────────
+// ─── ECOSYSTEM DATA ───────────────────────────────────────────────────────────
 async function getEcosystemData() {
   const dateStr = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
   try {
@@ -160,22 +136,13 @@ async function getEcosystemData() {
         messages: [
           {
             role: "system",
-            content: `Indian startup market data analyst. Today: ${dateStr}.
-Return ONLY valid JSON, no markdown.
-{
-  "marketMood": { "sentiment": "Bullish/Neutral/Bearish", "score": "0-100 string", "reason": "max 8 words" },
-  "topRisingStartups": [{"name":"real startup","sector":"sector","insight":"max 12 words","growthIndicator":"+XX%","momentum":"high/medium"}],
-  "sectorMomentum": [{"sector":"sector","deals":"number","funding":"$XB or $XM","trend":"max 6 words","growth":"+XX%"}],
-  "fundingNews": [{"startup":"real name","amount":"$XXM","round":"Series X","investors":"real investors","valuation":"$XXB or null"}],
-  "ecosystemMetrics": {"totalActiveStartups":"XX,000+","totalFundingYTD":"$X.XB","activeVCFirms":"X,XXX+","unicorns":"XXX","soonicorns":"XXX+","avgDealSize":"$XX.XM","mostActiveSector":"sector","topCity":"city","monthlyGrowth":"+XX%","activeAngels":"X,XXX+"}
-}
+            content: `Indian startup market data analyst. Today: ${dateStr}. Return ONLY valid JSON, no markdown.
+{"marketMood":{"sentiment":"Bullish/Neutral/Bearish","score":"0-100 string","reason":"max 8 words"},"topRisingStartups":[{"name":"real startup","sector":"sector","insight":"max 12 words","growthIndicator":"+XX%","momentum":"high/medium"}],"sectorMomentum":[{"sector":"sector","deals":"number","funding":"$XB or $XM","trend":"max 6 words","growth":"+XX%"}],"fundingNews":[{"startup":"real name","amount":"$XXM","round":"Series X","investors":"real investors","valuation":"$XXB or null"}],"ecosystemMetrics":{"totalActiveStartups":"XX,000+","totalFundingYTD":"$X.XB","activeVCFirms":"X,XXX+","unicorns":"XXX","soonicorns":"XXX+","avgDealSize":"$XX.XM","mostActiveSector":"sector","topCity":"city","monthlyGrowth":"+XX%","activeAngels":"X,XXX+"}}
 EXACTLY: 6 topRisingStartups, 6 sectorMomentum, 4 fundingNews.`,
           },
           { role: "user", content: `Indian startup market data for ${dateStr}. Q1 2026 actuals. Real startups, real investors only.` },
         ],
-        temperature: 0.15,
-        max_tokens: 1500,
-        response_format: { type: "json_object" },
+        temperature: 0.15, max_tokens: 1500, response_format: { type: "json_object" },
       }),
     });
     if (!response.ok) throw new Error(`Groq ${response.status}`);
@@ -221,9 +188,9 @@ EXACTLY: 6 topRisingStartups, 6 sectorMomentum, 4 fundingNews.`,
 
 export const revalidate = 3600;
 
-// ─── PULSE DOT ────────────────────────────────────────────────────────────────
+// ─── PULSE DOT ───────────────────────────────────────────────────────────────
 function PulseDot({ color = "green" }: { color?: "green" | "blue" | "amber" }) {
-  const c = { green: ["bg-green-400", "bg-green-500"], blue: ["bg-blue-400", "bg-blue-500"], amber: ["bg-amber-400", "bg-amber-500"] };
+  const c = { green: ["bg-emerald-400", "bg-emerald-500"], blue: ["bg-blue-400", "bg-blue-500"], amber: ["bg-amber-400", "bg-amber-500"] };
   return (
     <span className="relative flex h-2 w-2 flex-shrink-0">
       <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${c[color][0]} opacity-75`} />
@@ -235,6 +202,7 @@ function PulseDot({ color = "green" }: { color?: "green" | "blue" | "amber" }) {
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 export default async function Home() {
   const supabase = await createClient();
+
   const [liveNews, ecosystem, startupsCount, industriesData, recentData] = await Promise.all([
     getLiveNews(),
     getEcosystemData(),
@@ -246,682 +214,641 @@ export default async function Home() {
   const totalStartups = startupsCount.count;
   const uniqueIndustries = industriesData.data ? new Set(industriesData.data.map((i: any) => i.industry)).size : 30;
   const verifiedStartups = recentData.data?.map((s: any) => ({ ...s, verified: true }));
-  const sentimentColor = ecosystem.marketMood.sentiment === "Bullish" ? "#22c55e" : ecosystem.marketMood.sentiment === "Neutral" ? "#f59e0b" : "#ef4444";
-  const lastUpdated = new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata", hour12: true });
-  const todayStr = new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
+
+  const sentimentColor = ecosystem.marketMood.sentiment === "Bullish" ? "#16a34a" : ecosystem.marketMood.sentiment === "Neutral" ? "#d97706" : "#dc2626";
+
+  const today = new Date();
+  const dateStr = today.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
+  const lastUpdated = today.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata", hour12: true });
 
   return (
-    <div className="bg-[#F5F0E8] text-[#1A1208] antialiased" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+    <div style={{ background: "#FAF8F3", minHeight: "100vh", fontFamily: "'Georgia','Times New Roman',serif", color: "#1A1208" }}>
 
+      {/* Structured data */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <script dangerouslySetInnerHTML={{ __html: `var _hAt=null;document.addEventListener('visibilitychange',function(){if(document.hidden){_hAt=Date.now();}else if(_hAt&&(Date.now()-_hAt)>3600000){window.location.reload();}});` }} />
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,800;0,900;1,400;1,700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+        .pf { font-family: 'Playfair Display', Georgia, serif !important; }
+        .ss { font-family: 'Source Serif 4', Georgia, serif !important; }
+        .dm { font-family: 'DM Sans', system-ui, sans-serif !important; }
 
         @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 
-        .fade-up-0{animation:fadeUp .6s .00s ease both}
-        .fade-up-1{animation:fadeUp .6s .10s ease both}
-        .fade-up-2{animation:fadeUp .6s .20s ease both}
-        .fade-up-3{animation:fadeUp .6s .32s ease both}
-        .fade-up-4{animation:fadeUp .6s .44s ease both}
-        .fade-up-5{animation:fadeUp .6s .56s ease both}
+        .fade-0{animation:fadeUp .6s .05s ease both}
+        .fade-1{animation:fadeUp .6s .15s ease both}
+        .fade-2{animation:fadeUp .6s .25s ease both}
+        .fade-3{animation:fadeUp .6s .38s ease both}
+        .fade-4{animation:fadeUp .6s .50s ease both}
+        .fade-5{animation:fadeUp .6s .62s ease both}
 
         .ticker-track{animation:ticker 55s linear infinite}
         .ticker-track:hover{animation-play-state:paused}
 
-        .num-font{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
-        .playfair{font-family:'Playfair Display',Georgia,serif}
-        .baskerville{font-family:'Libre Baskerville',Georgia,serif}
+        .card-lift{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+        .card-lift:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(26,18,8,.1)}
 
+        .num{font-variant-numeric:tabular-nums}
+
+        /* Newspaper column dividers */
+        .col-rule{column-rule:1px solid #DDD8CE}
+
+        /* Drop cap */
         .dropcap::first-letter{
-          float:left;font-family:'Playfair Display',Georgia,serif;
-          font-size:3.8em;line-height:.78;font-weight:900;
-          margin:.04em .12em 0 0;color:#1A1208;
+          font-family:'Playfair Display',Georgia,serif;
+          font-size:4.2em;font-weight:900;line-height:0.8;
+          float:left;margin-right:0.06em;margin-top:0.04em;
+          color:#1A1208;
         }
 
-        .card-lift{transition:transform .22s ease,box-shadow .22s ease,border-color .18s ease}
-        .card-lift:hover{transform:translateY(-3px);box-shadow:0 10px 32px rgba(26,18,8,.12);border-color:#8B7355!important}
+        /* Ornament hr */
+        .ornament{
+          display:flex;align-items:center;gap:12px;
+          margin:0 auto;
+        }
+        .ornament::before,.ornament::after{
+          content:'';flex:1;height:1px;background:#C8C2B4;
+        }
 
-        .orn-rule{display:flex;align-items:center;gap:10px;color:#C9A84C;font-size:11px;letter-spacing:.25em;font-family:system-ui,sans-serif}
-        .orn-rule::before,.orn-rule::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,#C9A84C70,#C9A84C,#C9A84C70,transparent)}
+        /* Section rule */
+        .section-label{
+          display:flex;align-items:center;gap:10px;
+          margin-bottom:1.25rem;
+        }
+        .section-label::after{
+          content:'';flex:1;height:1px;background:#DDD8CE;
+        }
 
-        .sector-bar{height:2px;background:#E8E2D8;border-radius:1px;overflow:hidden}
-        .sector-bar-fill{height:100%;background:linear-gradient(90deg,#1A1208,#5C4A2A);border-radius:1px}
+        /* Hover news link */
+        .news-link:hover{color:#8B4513 !important}
 
-        .pull-quote{border-left:3px solid #C9A84C;padding-left:1rem;font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:1.1rem;line-height:1.55;color:#3D2B1A}
+        /* Metric card hover */
+        .metric-hover:hover{background:#fff !important}
 
-        .section-divider{text-align:center;color:#C9A84C;letter-spacing:.3em;font-size:10px;font-family:system-ui,sans-serif;position:relative;overflow:hidden}
-        .section-divider::before,.section-divider::after{content:'';position:absolute;top:50%;width:44%;height:1px;background:linear-gradient(90deg,transparent,#C9A84C50)}
-        .section-divider::before{left:0}.section-divider::after{right:0;transform:scaleX(-1)}
+        /* Mobile ticker speed */
+        @media(max-width:640px){
+          .ticker-track{animation-duration:35s}
+        }
 
-        .round-badge{font-family:system-ui,sans-serif;font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:2px 7px;border:1px solid currentColor}
-
-        .vr{width:1px;background:linear-gradient(180deg,transparent,#C8BCA8 10%,#C8BCA8 90%,transparent);flex-shrink:0}
-
-        .trust-chip{display:inline-flex;align-items:center;gap:6px;font-family:system-ui,sans-serif;font-size:10px;font-weight:600;color:#5C4A2A;letter-spacing:.05em;padding:5px 12px;background:#EDE7DA;border:1px solid #D4C9B0}
-
-        .mood-meter{height:4px;border-radius:2px;background:linear-gradient(90deg,#ef4444 0%,#f59e0b 45%,#22c55e 100%);position:relative}
-
-        .verified-stamp{display:inline-flex;align-items:center;gap:4px;font-family:system-ui,sans-serif;font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#16a34a;border:1.5px solid #16a34a;padding:2px 8px;transform:rotate(-1deg)}
-
-        .paper-texture{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.022'/%3E%3C/svg%3E")}
+        /* Print-style column layout for body text */
+        @media(min-width:768px){
+          .prose-cols{
+            columns:3;column-gap:2rem;
+            column-rule:1px solid #DDD8CE;
+          }
+          .prose-cols p{break-inside:avoid}
+        }
       `}</style>
 
-      {/* ══ BREAKING TICKER ══════════════════════════════════════════════════ */}
-      <div className="bg-[#0F0B06] text-white overflow-hidden border-b border-[#2A2218]" style={{ marginTop: "3.5rem" }}>
+      {/* ══════════════════════════════════════════════════════
+          LIVE TICKER BAR
+      ══════════════════════════════════════════════════════ */}
+      <div style={{ background: "#111108", marginTop: "3.5rem", borderBottom: "1px solid #2A2820" }}>
         <div className="flex items-stretch">
-          <div className="flex items-center gap-2.5 bg-[#C9A84C] text-[#0F0B06] px-4 py-2.5 flex-shrink-0">
+          <div className="flex items-center gap-2 px-4 py-2.5 flex-shrink-0" style={{ background: "#C9A84C", borderRight: "1px solid #B8973A" }}>
             <PulseDot color="green" />
-            <span className="text-[9px] font-black tracking-[.22em] uppercase" style={{ fontFamily: "system-ui,sans-serif" }}>Breaking</span>
+            <span className="dm text-[9px] font-bold tracking-[0.22em] uppercase text-[#111108]">Live Feed</span>
           </div>
           <div className="flex-1 overflow-hidden">
-            <div className="ticker-track flex whitespace-nowrap py-2.5">
+            <div className="ticker-track flex whitespace-nowrap">
               {[...liveNews, ...liveNews].map((news: any, i: number) => (
-                <span key={i} className="inline-flex items-center gap-3 px-7 border-r border-white/10">
-                  <span className={`text-[8px] font-black px-1.5 py-0.5 flex-shrink-0 tracking-wider ${news.impact === "positive" ? "bg-emerald-500/25 text-emerald-400" : news.impact === "negative" ? "bg-red-500/20 text-red-400" : "bg-white/8 text-white/40"}`} style={{ fontFamily: "system-ui,sans-serif" }}>
-                    {news.impact === "positive" ? "▲ UP" : news.impact === "negative" ? "▼ DOWN" : "● WATCH"}
+                <span key={i} className="inline-flex items-center gap-3 px-7 py-2.5" style={{ borderRight: "1px solid #2A2820" }}>
+                  <span className="dm text-[8px] font-black px-1.5 py-0.5 flex-shrink-0"
+                    style={{
+                      background: news.impact === "positive" ? "rgba(22,163,74,0.15)" : news.impact === "negative" ? "rgba(220,38,38,0.15)" : "rgba(255,255,255,0.06)",
+                      color: news.impact === "positive" ? "#4ade80" : news.impact === "negative" ? "#f87171" : "#888",
+                    }}>
+                    {news.impact === "positive" ? "▲" : news.impact === "negative" ? "▼" : "●"}
                   </span>
-                  <span className="text-[11.5px] text-white/80" style={{ fontFamily: "'Libre Baskerville',Georgia,serif" }}>{news.headline}</span>
-                  <span className="text-[9px] text-white/25 flex-shrink-0" style={{ fontFamily: "system-ui,sans-serif" }}>
+                  <span className="ss text-[11.5px] text-white/80 italic">{news.headline}</span>
+                  <span className="dm text-[9px] flex-shrink-0" style={{ color: "#665" }}>
                     {news.source} · {news.timestamp}
                   </span>
                 </span>
               ))}
             </div>
           </div>
-          <div className="flex-shrink-0 items-center gap-3 px-5 border-l border-white/10 hidden md:flex">
-            <Activity className="w-3 h-3 text-white/25" />
-            <div style={{ fontFamily: "system-ui,sans-serif" }}>
-              <div className="text-[8px] text-white/25 uppercase tracking-widest mb-0.5">Market</div>
-              <div className="text-[13px] font-bold" style={{ color: sentimentColor }}>{ecosystem.marketMood.sentiment} {ecosystem.marketMood.score}/100</div>
+          <div className="hidden sm:flex items-center gap-3 px-5 flex-shrink-0" style={{ borderLeft: "1px solid #2A2820" }}>
+            <div>
+              <div className="dm text-[8px] uppercase tracking-widest mb-0.5" style={{ color: "#555" }}>Sentiment</div>
+              <div className="pf font-bold text-base" style={{ color: sentimentColor }}>{ecosystem.marketMood.sentiment} · {ecosystem.marketMood.score}/100</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ══ MAIN WRAPPER ═════════════════════════════════════════════════════ */}
-      <div className="paper-texture" style={{ backgroundColor: "#F5F0E8" }}>
-        <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-10 pb-20">
+      {/* ══════════════════════════════════════════════════════
+          MASTHEAD — Newspaper Front Page Style
+      ══════════════════════════════════════════════════════ */}
+      <header style={{ borderBottom: "4px double #1A1208" }}>
 
-          {/* ── NEWSPAPER MASTHEAD ─────────────────────────────────────────── */}
-          <header className="fade-up-0">
-            {/* Dateline strip */}
-            <div className="flex items-center justify-between py-2.5 border-b border-[#C8BCA8]">
-              <span className="text-[10px] text-[#8B7355] tracking-wide baskerville">{todayStr} · Vol. II</span>
-              <div className="hidden sm:flex items-center gap-5">
-                {["Independent", "Ad-Free", "Verified"].map((t) => (
-                  <span key={t} className="flex items-center gap-1.5 text-[9px] text-[#8B7355] uppercase tracking-[.15em]" style={{ fontFamily: "system-ui,sans-serif" }}>
-                    <span className="w-1 h-1 rounded-full bg-[#C9A84C] inline-block" />
-                    {t}
-                  </span>
-                ))}
-              </div>
+        {/* Dateline strip */}
+        <div className="fade-0" style={{ borderBottom: "1px solid #C8C2B4", background: "#F0EDE3" }}>
+          <div className="max-w-[1480px] mx-auto px-4 sm:px-8 py-2 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-4">
+              <span className="dm text-[9px] text-[#888] uppercase tracking-[0.22em]">{dateStr}</span>
+              <span style={{ color: "#C8C2B4" }}>·</span>
               <div className="flex items-center gap-1.5">
                 <PulseDot color="green" />
-                <span className="text-[9px] text-[#8B7355]" style={{ fontFamily: "system-ui,sans-serif" }}>{lastUpdated} IST</span>
+                <span className="dm text-[9px] text-[#888] uppercase tracking-wider">Live · {lastUpdated} IST</span>
               </div>
             </div>
-
-            {/* Masthead */}
-            <div className="py-7 sm:py-10 text-center border-b-2 border-[#1A1208]">
-              <div className="orn-rule mb-5">INDIA'S INDEPENDENT STARTUP REGISTRY</div>
-              <h1 className="playfair text-[4rem] sm:text-[5.5rem] md:text-[7rem] lg:text-[8.5rem] font-black leading-[.88] tracking-tight text-[#1A1208] mb-4">
-                UpForge
-              </h1>
-              <p className="text-[10px] tracking-[.38em] text-[#8B7355] uppercase mb-6" style={{ fontFamily: "system-ui,sans-serif" }}>
-                Est. 2024 · Bengaluru, India · Registry of Record
-              </p>
-              <div className="flex items-center justify-center flex-wrap gap-2 sm:gap-3">
-                <span className="trust-chip"><BadgeCheck className="w-3 h-3 text-emerald-600" />{totalStartups || 0}+ Verified</span>
-                <span className="trust-chip"><Globe className="w-3 h-3 text-blue-600" />{uniqueIndustries} Sectors</span>
-                <span className="trust-chip"><Shield className="w-3 h-3 text-amber-600" />100% Independent</span>
-                <span className="trust-chip"><Sparkles className="w-3 h-3 text-purple-600" />AI Reports</span>
-              </div>
-            </div>
-
-            {/* Navigation bar */}
-            <div className="flex items-center justify-between border-b border-[#C8BCA8] overflow-x-auto">
-              <div className="flex items-center gap-0 flex-nowrap">
-                {[
-                  { label: "Registry", href: "/startup" },
-                  { label: "AI Startups", href: "/top-ai-startups" },
-                  { label: "Unicorns", href: "/indian-unicorns" },
-                  { label: "Founders", href: "/founder-stories" },
-                  { label: "Funded", href: "/top-funded-startups" },
-                  { label: "SaaS", href: "/best-saas-startups" },
-                  { label: "Reports", href: "/reports" },
-                ].map((item, i) => (
-                  <Link key={i} href={item.href}
-                    className="text-[10px] font-bold tracking-[.12em] uppercase text-[#5C4A2A] px-3 sm:px-4 py-2 hover:bg-[#1A1208] hover:text-[#C9A84C] transition-colors border-r border-[#C8BCA8] whitespace-nowrap"
-                    style={{ fontFamily: "system-ui,sans-serif" }}>
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-              <Link href="/submit"
-                className="text-[9px] font-black tracking-[.18em] uppercase bg-[#1A1208] text-[#C9A84C] px-4 py-2 hover:bg-[#C9A84C] hover:text-[#1A1208] transition-colors whitespace-nowrap hidden sm:block"
-                style={{ fontFamily: "system-ui,sans-serif" }}>
-                + List Free
-              </Link>
-            </div>
-          </header>
-
-          {/* ── 3-COLUMN BROADSHEET HERO ────────────────────────────────────── */}
-          <section className="border-b border-[#C8BCA8] fade-up-1">
-            <div className="grid lg:grid-cols-[1fr_2px_1.65fr_2px_1fr] gap-0 py-8">
-
-              {/* LEFT: Market mood + funding deals */}
-              <div className="pr-0 lg:pr-7 pb-8 lg:pb-0 border-b lg:border-b-0 border-[#C8BCA8]">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="w-5 h-px bg-[#C9A84C]" />
-                  <span className="text-[9px] font-black tracking-[.2em] uppercase text-[#C9A84C]" style={{ fontFamily: "system-ui,sans-serif" }}>Market Pulse</span>
-                </div>
-
-                {/* Mood card */}
-                <div className="bg-[#1A1208] text-white p-4 mb-5">
-                  <div className="flex items-baseline gap-2 mb-3">
-                    <span className="playfair text-[2.2rem] font-black leading-none" style={{ color: sentimentColor }}>{ecosystem.marketMood.sentiment}</span>
-                    <span className="num-font text-lg font-black text-white/40" style={{ fontFamily: "system-ui,sans-serif" }}>{ecosystem.marketMood.score}</span>
-                  </div>
-                  <div className="mood-meter mb-2">
-                    <div className="absolute -top-0.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-[#1A1208] shadow" style={{ left: `calc(${ecosystem.marketMood.score}% - 7px)`, position: "relative", top: "-5px", marginTop: "0" }} />
-                  </div>
-                  <div className="flex justify-between text-[7.5px] text-white/25 mt-2 mb-2" style={{ fontFamily: "system-ui,sans-serif" }}>
-                    <span>Bearish</span><span>Neutral</span><span>Bullish</span>
-                  </div>
-                  <p className="text-[9px] text-white/45 leading-relaxed" style={{ fontFamily: "system-ui,sans-serif" }}>
-                    {ecosystem.marketMood.reason}
-                  </p>
-                </div>
-
-                {/* Latest 3 deals */}
-                <p className="text-[8.5px] font-black tracking-[.2em] uppercase text-[#8B7355] mb-3" style={{ fontFamily: "system-ui,sans-serif" }}>Latest Deals</p>
-                {ecosystem.fundingNews.slice(0, 3).map((f: any, i: number) => (
-                  <div key={i} className="flex items-start justify-between py-2.5 border-b border-[#EDE7DA] last:border-b-0">
-                    <div className="flex-1 min-w-0 pr-2">
-                      <p className="playfair font-bold text-[.88rem] text-[#1A1208] leading-tight">{f.startup}</p>
-                      <p className="text-[8.5px] text-[#8B7355] mt-0.5 truncate" style={{ fontFamily: "system-ui,sans-serif" }}>{f.round} · {f.investors.split(",")[0]}</p>
-                    </div>
-                    <div className="text-right flex-shrink-0">
-                      <p className="num-font playfair font-bold text-[.9rem] text-emerald-700">{f.amount}</p>
-                      {f.valuation && <p className="text-[7.5px] text-[#B0A090]" style={{ fontFamily: "system-ui,sans-serif" }}>@ {f.valuation}</p>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* VERTICAL RULE */}
-              <div className="vr hidden lg:block mx-5" />
-
-              {/* CENTER: Hero */}
-              <div className="py-8 lg:py-0 border-b lg:border-b-0 border-[#C8BCA8]">
-                {/* Hero image */}
-                <div className="relative w-full overflow-hidden mb-5" style={{ aspectRatio: "16/9" }}>
-                  <img
-                    src="https://images.unsplash.com/photo-1568992687947-868a62a9f521?w=900&q=80&fit=crop"
-                    alt="India startup ecosystem — Bengaluru tech hub office"
-                    className="w-full h-full object-cover"
-                    style={{ filter: "sepia(15%) contrast(108%)" }}
-                  />
-                  <div className="absolute inset-0" style={{ background: "linear-gradient(180deg,transparent 50%,rgba(26,18,8,.8) 100%)" }} />
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <span className="bg-[#C9A84C] text-[#1A1208] text-[7.5px] font-black tracking-[.2em] uppercase px-2.5 py-1" style={{ fontFamily: "system-ui,sans-serif" }}>Feature Story</span>
-                    <p className="playfair text-white font-bold text-[.95rem] mt-2 leading-snug">India's startup hubs are rewriting the rules of global innovation</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="bg-[#1A1208] text-[#C9A84C] text-[7.5px] font-black tracking-[.2em] uppercase px-2.5 py-1" style={{ fontFamily: "system-ui,sans-serif" }}>Verified Registry</span>
-                  <span className="text-[9px] text-[#8B7355] baskerville italic">Updated {lastUpdated} IST</span>
-                </div>
-
-                <h2 className="playfair text-[2rem] sm:text-[2.6rem] font-black leading-[1.02] tracking-tight text-[#1A1208] mb-4">
-                  Documenting India's{" "}
-                  <em className="not-italic" style={{ color: "#8B5E3C" }}>72,000+</em>{" "}
-                  emerging founders — one verified listing at a time.
-                </h2>
-
-                <p className="dropcap baskerville text-[.93rem] text-[#3D2B1A] leading-relaxed mb-4">
-                  UpForge is India's only fully independent, ad-free startup registry — built for founders, investors, and researchers who demand verified data, not sponsored noise. Every single listing is manually reviewed before it appears in our registry.
-                </p>
-
-                <div className="pull-quote mb-5">
-                  "The most comprehensive free database of verified Indian startups — used by 340+ VC firms and research teams."
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-3 mb-5">
-                  <Link href="/startup"
-                    className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-[#1A1208] text-[#C9A84C] text-[10.5px] font-black tracking-[.18em] uppercase hover:bg-[#C9A84C] hover:text-[#1A1208] transition-all"
-                    style={{ fontFamily: "system-ui,sans-serif" }}>
-                    Open Registry <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                  <Link href="/submit"
-                    className="inline-flex items-center justify-center gap-2 px-7 py-3.5 border-2 border-[#1A1208] text-[#1A1208] text-[10.5px] font-black tracking-[.18em] uppercase hover:bg-[#1A1208] hover:text-[#C9A84C] transition-all"
-                    style={{ fontFamily: "system-ui,sans-serif" }}>
-                    List Your Startup — Free
-                  </Link>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-4 border-t border-[#E8E2D8]">
-                  {[
-                    { icon: CheckCircle2, text: "Free forever", c: "text-emerald-700" },
-                    { icon: BadgeCheck, text: "Manual verification", c: "text-blue-700" },
-                    { icon: Sparkles, text: "AI reports", c: "text-amber-700" },
-                  ].map((p, i) => (
-                    <div key={i} className="flex items-center gap-1.5">
-                      <p.icon className={`w-3.5 h-3.5 ${p.c}`} />
-                      <span className="text-[10px] text-[#5C4A2A]" style={{ fontFamily: "system-ui,sans-serif" }}>{p.text}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* VERTICAL RULE */}
-              <div className="vr hidden lg:block mx-5" />
-
-              {/* RIGHT: Live news dispatch */}
-              <div className="pt-8 lg:pt-0">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Newspaper className="w-3.5 h-3.5 text-[#8B7355]" />
-                    <span className="text-[9px] font-black tracking-[.2em] uppercase text-[#8B7355]" style={{ fontFamily: "system-ui,sans-serif" }}>Startup Dispatch</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <PulseDot color="green" />
-                    <span className="text-[8px] text-emerald-700 font-bold uppercase tracking-widest" style={{ fontFamily: "system-ui,sans-serif" }}>Live</span>
-                  </div>
-                </div>
-
-                <div className="divide-y divide-[#E8E2D8]">
-                  {liveNews.map((news: any, i: number) => (
-                    <article key={i} className="py-3.5">
-                      <div className="flex items-start gap-2.5">
-                        <div className={`mt-2 flex-shrink-0 w-0 h-0 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-l-[7px] ${news.impact === "positive" ? "border-l-emerald-500" : news.impact === "negative" ? "border-l-red-500" : "border-l-[#C8BCA8]"}`} />
-                        <div className="flex-1 min-w-0">
-                          {news.url ? (
-                            <a href={news.url} target="_blank" rel="noopener noreferrer"
-                              className="baskerville text-[.82rem] leading-snug text-[#1A1208] hover:text-[#8B5E3C] transition-colors block mb-1.5 font-bold">
-                              {news.headline}
-                            </a>
-                          ) : (
-                            <p className="baskerville text-[.82rem] leading-snug text-[#1A1208] mb-1.5 font-bold">{news.headline}</p>
-                          )}
-                          <div className="flex items-center gap-2" style={{ fontFamily: "system-ui,sans-serif" }}>
-                            <span className="text-[8.5px] font-black text-[#8B7355] uppercase tracking-wider">{news.source}</span>
-                            <span className="text-[#D4C9B0]">·</span>
-                            <span className="text-[8.5px] text-[#B0A090]">{news.timestamp}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-
-                <div className="mt-3 pt-3 border-t border-[#E8E2D8] flex items-center gap-1.5 text-[8.5px] text-[#B0A090]" style={{ fontFamily: "system-ui,sans-serif" }}>
-                  <Clock className="w-3 h-3" />
-                  NewsAPI · Refreshed hourly · {lastUpdated} IST
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* ── SECTION DIVIDER ───────────────────────────────────────────── */}
-          <div className="section-divider py-3 fade-up-2">✦ ECOSYSTEM METRICS · Q1 2026 ✦</div>
-
-          {/* ── METRICS GRID ──────────────────────────────────────────────── */}
-          <section className="border-y border-[#C8BCA8] fade-up-2" aria-label="Indian startup ecosystem metrics 2026">
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8">
+            <div className="flex items-center gap-4">
               {[
-                { icon: Building2, label: "Active Startups", value: ecosystem.ecosystemMetrics.totalActiveStartups, sub: "+2,300 this month", dark: false },
-                { icon: IndianRupee, label: "Funding YTD '26", value: ecosystem.ecosystemMetrics.totalFundingYTD, sub: `${ecosystem.ecosystemMetrics.monthlyGrowth} YoY`, dark: false },
-                { icon: Briefcase, label: "VC Firms", value: ecosystem.ecosystemMetrics.activeVCFirms, sub: `${ecosystem.ecosystemMetrics.activeAngels} angels`, dark: false },
-                { icon: Gem, label: "Unicorns", value: ecosystem.ecosystemMetrics.unicorns, sub: `${ecosystem.ecosystemMetrics.soonicorns} soonicorns`, dark: true },
-                { icon: LineChart, label: "Avg Deal Size", value: ecosystem.ecosystemMetrics.avgDealSize, sub: "Seed → Series A", dark: false },
-                { icon: Zap, label: "Hottest Sector", value: ecosystem.ecosystemMetrics.mostActiveSector, sub: `${ecosystem.sectorMomentum[0]?.deals || 178} deals`, dark: false },
-                { icon: Globe, label: "Top City", value: ecosystem.ecosystemMetrics.topCity, sub: "Leading hub", dark: false },
-                { icon: Award, label: "Our Registry", value: `${totalStartups || 0}+`, sub: `${uniqueIndustries} sectors`, dark: true },
+                { icon: Shield, text: "100% Independent" },
+                { icon: BadgeCheck, text: `${totalStartups || "72,000"}+ Verified` },
+                { icon: Globe, text: `${uniqueIndustries} Sectors` },
               ].map((item, i) => (
-                <div key={i}
-                  className={`p-4 sm:p-5 border-r border-[#C8BCA8] last:border-r-0 transition-colors group ${item.dark ? "bg-[#1A1208] text-white" : "hover:bg-[#EDE7DA]"} ${i >= 4 ? "border-t border-[#C8BCA8] lg:border-t-0" : ""}`}>
-                  <item.icon className={`w-3.5 h-3.5 mb-2.5 transition-colors ${item.dark ? "text-[#C9A84C]" : "text-[#C8BCA8] group-hover:text-[#8B7355]"}`} />
-                  <p className={`num-font playfair font-black leading-none mb-1.5 text-[1.5rem] sm:text-[1.7rem] ${item.dark ? "text-white" : "text-[#1A1208]"}`}>{item.value}</p>
-                  <p className={`text-[8.5px] font-black tracking-[.15em] uppercase mb-1 ${item.dark ? "text-white/40" : "text-[#8B7355]"}`} style={{ fontFamily: "system-ui,sans-serif" }}>{item.label}</p>
-                  <p className={`text-[8px] ${item.dark ? "text-white/25" : "text-[#B0A090]"}`} style={{ fontFamily: "system-ui,sans-serif" }}>{item.sub}</p>
+                <div key={i} className="hidden sm:flex items-center gap-1.5">
+                  <item.icon className="w-3 h-3" style={{ color: "#999" }} />
+                  <span className="dm text-[9px] text-[#777] uppercase tracking-wide">{item.text}</span>
                 </div>
               ))}
             </div>
-          </section>
+          </div>
+        </div>
 
-          {/* ── SECTION DIVIDER ───────────────────────────────────────────── */}
-          <div className="section-divider py-3 fade-up-3">✦ SECTOR INTELLIGENCE ✦</div>
+        {/* Publication name — big broadsheet */}
+        <div className="max-w-[1480px] mx-auto px-4 sm:px-8 py-8 sm:py-10 text-center fade-1" style={{ borderBottom: "1px solid #C8C2B4" }}>
+          <div className="ornament mb-5">
+            <span className="dm text-[9px] text-[#AAA] uppercase tracking-[0.32em] flex-shrink-0">Est. 2024 · Bengaluru</span>
+          </div>
+          <h1 className="pf font-black leading-none tracking-tight text-[#1A1208]"
+            style={{ fontSize: "clamp(2.8rem, 8vw, 7rem)", letterSpacing: "-0.02em" }}>
+            UpForge
+          </h1>
+          <p className="ss italic mt-2" style={{ fontSize: "clamp(13px, 2vw, 19px)", color: "#6B5C40" }}>
+            India's Independent Startup Registry & Live Market Intelligence
+          </p>
+          <div className="ornament mt-5">
+            <span style={{ color: "#C8C2B4", fontSize: 14 }}>✦</span>
+          </div>
+        </div>
 
-          {/* ── SECTORS + BILLIONAIRES ─────────────────────────────────────── */}
-          <div className="grid lg:grid-cols-[1fr_2px_360px] border-y border-[#C8BCA8] fade-up-3">
-            <section className="py-8 pr-0 lg:pr-8" aria-label="Sector momentum Q1 2026">
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="w-3.5 h-3.5 text-[#8B7355]" />
-                  <h2 className="text-[9px] font-black tracking-[.2em] uppercase text-[#8B7355]" style={{ fontFamily: "system-ui,sans-serif" }}>Sector Momentum · Q1 2026</h2>
+        {/* Nav strip */}
+        <div className="max-w-[1480px] mx-auto px-4 sm:px-8 fade-2">
+          <div className="flex items-center justify-between py-2.5 flex-wrap gap-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            <nav className="flex items-center gap-0 overflow-x-auto">
+              {["Registry", "Unicorns", "Funding", "Reports", "Founder Stories", "Sectors", "Submit"].map((item, i) => (
+                <Link key={i} href={`/${item.toLowerCase().replace(/ /g, "-")}`}
+                  className="dm text-[10px] font-semibold uppercase tracking-widest px-4 py-2 transition-colors hover:text-[#8B4513] whitespace-nowrap flex-shrink-0"
+                  style={{ color: "#555", borderRight: "1px solid #DDD8CE" }}>
+                  {item}
+                </Link>
+              ))}
+            </nav>
+            <div className="flex items-center gap-3">
+              <Link href="/submit" className="dm text-[10px] font-bold uppercase tracking-wider px-4 py-2 text-white transition-opacity hover:opacity-80"
+                style={{ background: "#1A1208" }}>
+                List Free →
+              </Link>
+            </div>
+          </div>
+        </div>
+
+      </header>
+
+      {/* ══════════════════════════════════════════════════════
+          MAIN CONTENT — Broadsheet Layout
+      ══════════════════════════════════════════════════════ */}
+      <main className="max-w-[1480px] mx-auto px-4 sm:px-8 pb-16">
+
+        {/* ─── FRONT PAGE GRID ─────────────────────────────── */}
+        <div className="grid lg:grid-cols-[1fr_2px_1fr_2px_1fr] gap-0 fade-3" style={{ borderBottom: "2px solid #1A1208" }}>
+
+          {/* COL 1 — Market Mood + Stats */}
+          <div className="py-8 lg:pr-7" style={{ borderRight: "1px solid #C8C2B4" }}>
+
+            {/* Market mood badge */}
+            <div className="flex items-center gap-2 mb-5">
+              <Activity className="w-3.5 h-3.5" style={{ color: "#999" }} />
+              <span className="dm text-[9px] font-black uppercase tracking-[0.26em] text-[#888]">Market Intelligence</span>
+            </div>
+
+            <div className="p-4 mb-6" style={{ background: "#1A1208", border: "1px solid #1A1208" }}>
+              <div className="dm text-[8px] uppercase tracking-[0.26em] text-white/40 mb-1">Live Sentiment Score</div>
+              <div className="pf font-black text-5xl leading-none mb-1" style={{ color: "#C9A84C" }}>
+                {ecosystem.marketMood.score}
+                <span className="text-2xl">/100</span>
+              </div>
+              <div className="pf italic text-lg mt-2" style={{ color: sentimentColor }}>{ecosystem.marketMood.sentiment}</div>
+              <div className="dm text-[10px] mt-1.5" style={{ color: "rgba(255,255,255,0.35)" }}>{ecosystem.marketMood.reason}</div>
+            </div>
+
+            {/* Key ecosystem numbers in newspaper stat style */}
+            {[
+              { label: "Active Startups", value: ecosystem.ecosystemMetrics.totalActiveStartups, sub: "Verified & tracked" },
+              { label: "Funding YTD 2026", value: ecosystem.ecosystemMetrics.totalFundingYTD, sub: ecosystem.ecosystemMetrics.monthlyGrowth + " YoY" },
+              { label: "Unicorns", value: ecosystem.ecosystemMetrics.unicorns, sub: ecosystem.ecosystemMetrics.soonicorns + " soonicorns" },
+              { label: "Active VC Firms", value: ecosystem.ecosystemMetrics.activeVCFirms, sub: ecosystem.ecosystemMetrics.activeAngels + " angels" },
+            ].map((item, i) => (
+              <div key={i} className="flex items-start justify-between py-3" style={{ borderBottom: "1px solid #E8E4DC" }}>
+                <div>
+                  <div className="dm text-[9px] uppercase tracking-wider text-[#888] mb-0.5">{item.label}</div>
+                  <div className="dm text-[9px] text-[#BBB]">{item.sub}</div>
                 </div>
-                <div className="flex gap-5 text-[8px] text-[#C8BCA8] uppercase tracking-widest" style={{ fontFamily: "system-ui,sans-serif" }}>
-                  <span>Deals</span><span>Funding</span><span>Growth</span>
-                </div>
+                <div className="pf font-bold text-xl num text-[#1A1208]">{item.value}</div>
               </div>
-              <div className="divide-y divide-[#EDE7DA]">
-                {ecosystem.sectorMomentum.map((sector: any, i: number) => {
-                  const growthNum = Math.min(parseFloat(sector.growth.replace("+", "").replace("%", "")), 160);
-                  return (
-                    <div key={i} className="flex items-center gap-3 py-3 hover:bg-[#EDE7DA]/60 px-2 -mx-2 transition-colors">
-                      <span className="playfair text-[.75rem] text-[#C8BCA8] w-5 flex-shrink-0 font-bold num-font">{String(i + 1).padStart(2, "0")}</span>
-                      <p className="playfair font-bold text-[.9rem] text-[#1A1208] w-[100px] sm:w-[120px] flex-shrink-0">{sector.sector}</p>
-                      <div className="flex-1 hidden sm:block px-3">
-                        <div className="sector-bar">
-                          <div className="sector-bar-fill" style={{ width: `${(growthNum / 160) * 100}%` }} />
-                        </div>
-                        <p className="text-[8.5px] text-[#B0A090] mt-1 truncate" style={{ fontFamily: "system-ui,sans-serif" }}>{sector.trend}</p>
-                      </div>
-                      <div className="flex items-center gap-4 sm:gap-6 flex-shrink-0 ml-auto" style={{ fontFamily: "system-ui,sans-serif" }}>
-                        <span className="num-font text-sm text-[#5C4A2A] w-8 sm:w-10 text-right">{sector.deals}</span>
-                        <span className="num-font text-sm text-[#5C4A2A] w-14 text-right">{sector.funding}</span>
-                        <span className="num-font playfair font-black text-[.9rem] text-emerald-700 w-14 text-right">{sector.growth}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
+            ))}
 
-            <div className="vr hidden lg:block mx-0" />
-
-            <aside className="py-8 lg:pl-8 border-t lg:border-t-0 border-[#C8BCA8]" aria-label="India's top billionaires">
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-2">
-                  <Award className="w-3.5 h-3.5 text-[#8B7355]" />
-                  <h2 className="text-[9px] font-black tracking-[.2em] uppercase text-[#8B7355]" style={{ fontFamily: "system-ui,sans-serif" }}>Business Leaders</h2>
-                </div>
-                <a href="https://www.forbes.com/billionaires/" target="_blank" rel="noopener noreferrer"
-                  className="text-[8px] text-[#B0A090] hover:text-[#8B7355] uppercase tracking-wider" style={{ fontFamily: "system-ui,sans-serif" }}>
-                  Forbes ↗
-                </a>
-              </div>
-              <div className="divide-y divide-[#EDE7DA]">
-                {TOP_INDIAN_BILLIONAIRES.map((person, i) => (
-                  <div key={i} className="py-4 hover:bg-[#EDE7DA]/60 px-2 -mx-2 transition-colors">
-                    <div className="flex items-start justify-between mb-1.5">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 bg-[#1A1208] flex items-center justify-center flex-shrink-0">
-                          <span className="text-[#C9A84C] text-[8px] font-black" style={{ fontFamily: "system-ui,sans-serif" }}>{person.rank.replace("#", "")}</span>
-                        </div>
-                        <p className="playfair font-bold text-[.9rem] text-[#1A1208]">{person.name}</p>
-                      </div>
-                      <p className="num-font playfair font-black text-base text-[#1A1208] ml-2 flex-shrink-0">{person.netWorth}</p>
-                    </div>
-                    <div className="flex items-center justify-between mb-2.5" style={{ fontFamily: "system-ui,sans-serif" }}>
-                      <p className="text-[9px] text-[#8B7355]">{person.source}</p>
-                      <p className="text-[9px] text-emerald-700 font-bold">{person.yoy}</p>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {person.startupConnections.slice(0, 2).map((conn, j) => (
-                        <span key={j} className="text-[8px] bg-[#EDE7DA] text-[#5C4A2A] px-2 py-0.5 border border-[#D4C9B0]" style={{ fontFamily: "system-ui,sans-serif" }}>{conn}</span>
-                      ))}
-                      {person.startupConnections.length > 2 && (
-                        <span className="text-[8px] text-[#B0A090]" style={{ fontFamily: "system-ui,sans-serif" }}>+{person.startupConnections.length - 2}</span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <p className="text-[8px] text-[#C8BCA8] mt-4 leading-relaxed baskerville italic">
-                Forbes Real-Time Billionaires, March 2026. Rankings fluctuate daily.
-              </p>
-            </aside>
+            <div className="mt-5 flex flex-col gap-2">
+              <Link href="/startup" className="dm text-[11px] font-bold uppercase tracking-wider text-center py-3 block transition-colors hover:text-white hover:bg-[#1A1208]"
+                style={{ border: "2px solid #1A1208", color: "#1A1208" }}>
+                Explore Full Registry →
+              </Link>
+              <Link href="/submit" className="dm text-[11px] font-bold uppercase tracking-wider text-center py-3 block transition-colors hover:opacity-80"
+                style={{ background: "#C9A84C", color: "#1A1208" }}>
+                List Your Startup — Free
+              </Link>
+            </div>
           </div>
 
-          {/* ── SECTION DIVIDER ───────────────────────────────────────────── */}
-          <div className="section-divider py-3 fade-up-4">✦ RISING COMPANIES · FUNDING TRACKER ✦</div>
+          {/* Divider */}
+          <div style={{ background: "#C8C2B4", width: 1 }} className="hidden lg:block" />
 
-          {/* ── RISING STARTUPS + FUNDING ─────────────────────────────────── */}
-          <div className="grid lg:grid-cols-[1fr_2px_340px] border-b border-[#C8BCA8] fade-up-4">
-            <section className="py-8 pr-0 lg:pr-8" aria-label="Top rising Indian startups 2026">
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-2">
-                  <Rocket className="w-3.5 h-3.5 text-[#8B7355]" />
-                  <h2 className="text-[9px] font-black tracking-[.2em] uppercase text-[#8B7355]" style={{ fontFamily: "system-ui,sans-serif" }}>Top Rising Startups · 2026</h2>
+          {/* COL 2 — HERO STORY */}
+          <div className="py-8 lg:px-7" style={{ borderRight: "1px solid #C8C2B4" }}>
+
+            <div className="flex items-center gap-2 mb-5">
+              <span className="dm text-[8px] font-black uppercase tracking-[0.3em] px-2.5 py-1 text-white" style={{ background: "#C9A84C", color: "#1A1208" }}>
+                Registry Report
+              </span>
+              <span className="dm text-[9px] text-[#AAA] uppercase tracking-wider">Q1 2026</span>
+            </div>
+
+            {/* Big headline */}
+            <h2 className="pf font-black leading-[1.05] text-[#1A1208] mb-4"
+              style={{ fontSize: "clamp(1.9rem, 3.5vw, 2.8rem)" }}>
+              Documenting India's Most Consequential Wave of Builders
+            </h2>
+
+            {/* Deck */}
+            <p className="ss italic leading-[1.8] mb-5 pb-5 text-[#5A4A30]"
+              style={{ fontSize: "clamp(14px, 1.6vw, 16.5px)", borderBottom: "1px solid #C8C2B4" }}>
+              72,000 verified startups. Real-time funding intelligence. Independent, unbiased, and free — UpForge is where India's builders get discovered.
+            </p>
+
+            {/* Newspaper body columns */}
+            <div className="prose-cols mb-5">
+              <p className="dropcap leading-[1.85] text-[#2C2010] mb-3" style={{ fontSize: "13.5px" }}>
+                India's startup ecosystem is no longer emerging — it is among the three largest on Earth, generating $9.2 billion in new investment in the first quarter of 2026 alone. Behind every headline valuation is a founder story that rarely gets told with the rigour it deserves.
+              </p>
+              <p className="leading-[1.85] text-[#2C2010] mb-3" style={{ fontSize: "13.5px" }}>
+                UpForge was built to change that. Every startup in our registry is manually reviewed. No paid rankings, no sponsored placements, no black-box algorithms. When a company appears on UpForge, it belongs there — verified by a human, indexed for the world.
+              </p>
+              <p className="leading-[1.85] text-[#2C2010]" style={{ fontSize: "13.5px" }}>
+                From the Bengaluru garage to the Bombay Stock Exchange, the journey of an Indian startup has never been more scrutinised or more celebrated. This is the definitive record of that journey.
+              </p>
+            </div>
+
+            {/* Trust badges */}
+            <div className="grid grid-cols-3 gap-2 pt-4" style={{ borderTop: "1px solid #C8C2B4" }}>
+              {[
+                { icon: CheckCircle2, text: "Free Forever", color: "#16a34a" },
+                { icon: BadgeCheck, text: "Hand-Verified", color: "#2563eb" },
+                { icon: Sparkles, text: "AI Reports", color: "#d97706" },
+              ].map((p, i) => (
+                <div key={i} className="flex flex-col items-center gap-1.5 p-3 text-center" style={{ background: "#F0EDE3" }}>
+                  <p.icon className="w-4 h-4" style={{ color: p.color }} />
+                  <span className="dm text-[9px] font-bold uppercase tracking-wider text-[#555]">{p.text}</span>
                 </div>
-                <Link href="/startup" className="flex items-center gap-1 text-[9px] text-[#8B7355] hover:text-[#1A1208] transition-colors" style={{ fontFamily: "system-ui,sans-serif" }}>
-                  Full registry <ChevronRight className="w-3 h-3" />
-                </Link>
-              </div>
+              ))}
+            </div>
+          </div>
 
-              {/* Editor's Pick hero card */}
-              {ecosystem.topRisingStartups[0] && (
-                <div className="bg-[#1A1208] text-white p-5 sm:p-6 mb-4 card-lift border border-[#1A1208]">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="bg-[#C9A84C] text-[#1A1208] text-[7px] font-black tracking-[.25em] uppercase px-2 py-0.5" style={{ fontFamily: "system-ui,sans-serif" }}>Editor's Pick</span>
-                        <span className="text-[8px] text-white/40 uppercase tracking-widest" style={{ fontFamily: "system-ui,sans-serif" }}>{ecosystem.topRisingStartups[0].sector}</span>
-                      </div>
-                      <p className="playfair font-black text-2xl sm:text-3xl text-white leading-tight">{ecosystem.topRisingStartups[0].name}</p>
-                    </div>
-                    <span className="num-font playfair text-3xl font-black text-[#C9A84C] ml-4 flex-shrink-0">{ecosystem.topRisingStartups[0].growthIndicator}</span>
-                  </div>
-                  <p className="baskerville text-[.88rem] text-white/65 leading-relaxed mb-3">{ecosystem.topRisingStartups[0].insight}</p>
-                  <span className="inline-block bg-emerald-500/20 text-emerald-400 text-[8px] font-black px-2.5 py-1 uppercase tracking-widest" style={{ fontFamily: "system-ui,sans-serif" }}>🔥 Momentum: High</span>
-                </div>
-              )}
+          {/* Divider */}
+          <div style={{ background: "#C8C2B4", width: 1 }} className="hidden lg:block" />
 
-              <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
-                {ecosystem.topRisingStartups.slice(1, 6).map((startup: any, i: number) => (
-                  <div key={i} className="bg-white border border-[#E8E2D8] p-4 card-lift">
-                    <div className="flex items-start justify-between mb-2">
-                      <p className="playfair font-bold text-[.9rem] text-[#1A1208] leading-tight">{startup.name}</p>
-                      <span className={`text-[8px] px-1.5 py-0.5 font-black uppercase tracking-wider flex-shrink-0 ml-2 ${startup.momentum === "high" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-amber-50 text-amber-700 border border-amber-200"}`} style={{ fontFamily: "system-ui,sans-serif" }}>
-                        {startup.momentum === "high" ? "🔥" : "↑"}
+          {/* COL 3 — LIVE NEWS */}
+          <div className="py-8 lg:pl-7">
+
+            <div className="section-label">
+              <Newspaper className="w-3.5 h-3.5 text-[#999]" />
+              <span className="dm text-[9px] font-black uppercase tracking-[0.26em] text-[#888]">Startup Dispatch</span>
+            </div>
+
+            <div className="divide-y" style={{ borderColor: "#E8E4DC" }}>
+              {liveNews.slice(0, 5).map((news: any, i: number) => (
+                <div key={i} className="py-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 mt-[3px]">
+                      <span className="pf font-bold text-2xl num leading-none" style={{ color: "#DDD8CE" }}>
+                        {String(i + 1).padStart(2, "0")}
                       </span>
                     </div>
-                    <p className="text-[8.5px] font-black tracking-widest uppercase text-[#B0A090] mb-1.5" style={{ fontFamily: "system-ui,sans-serif" }}>{startup.sector}</p>
-                    <p className="baskerville text-[.8rem] text-[#5C4A2A] leading-snug mb-3 line-clamp-2">{startup.insight}</p>
-                    <div className="flex items-center justify-between pt-2.5 border-t border-[#F0E9D8]">
-                      <span className="text-[8px] text-[#B0A090] uppercase tracking-wider" style={{ fontFamily: "system-ui,sans-serif" }}>Growth</span>
-                      <span className="num-font playfair font-black text-base text-emerald-700">{startup.growthIndicator}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span className={`dm text-[8px] font-black px-1.5 py-0.5 uppercase tracking-wider ${news.impact === "positive" ? "text-emerald-700 bg-emerald-50" : news.impact === "negative" ? "text-red-700 bg-red-50" : "text-gray-500 bg-gray-100"}`}>
+                          {news.impact === "positive" ? "▲" : news.impact === "negative" ? "▼" : "●"} {news.impact}
+                        </span>
+                      </div>
+                      {news.url ? (
+                        <a href={news.url} target="_blank" rel="noopener noreferrer"
+                          className="news-link ss leading-snug block mb-1.5 transition-colors"
+                          style={{ fontSize: "13.5px", color: "#1A1208" }}>
+                          {news.headline}
+                        </a>
+                      ) : (
+                        <p className="ss leading-snug mb-1.5" style={{ fontSize: "13.5px", color: "#1A1208" }}>{news.headline}</p>
+                      )}
+                      <div className="flex items-center gap-2">
+                        <span className="dm text-[9px] font-bold text-[#888]">{news.source}</span>
+                        <span style={{ color: "#DDD" }}>·</span>
+                        <span className="dm text-[9px] text-[#BBB]">{news.timestamp}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4 pt-3 flex items-center gap-2" style={{ borderTop: "1px solid #E8E4DC" }}>
+              <Clock className="w-3 h-3 text-[#CCC]" />
+              <span className="dm text-[9px] text-[#CCC]">NewsAPI · {lastUpdated} IST</span>
+            </div>
+
+          </div>
+        </div>
+
+        {/* ─── SECTION HEADER: SECTOR INTELLIGENCE ──────── */}
+        <div className="fade-3" style={{ borderBottom: "2px solid #1A1208" }}>
+          <div className="py-3 px-0 flex items-center justify-between" style={{ borderBottom: "1px solid #C8C2B4" }}>
+            <div className="flex items-center gap-3">
+              <TrendingUp className="w-4 h-4 text-[#999]" />
+              <span className="dm text-[10px] font-black uppercase tracking-[0.26em] text-[#888]">Sector Intelligence · Q1 2026</span>
+            </div>
+            <div className="hidden sm:flex gap-6 dm text-[9px] uppercase tracking-widest text-[#CCC]">
+              <span>Deals</span><span>Funding</span><span>Growth</span>
+            </div>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-0">
+            {/* LEFT: Sector table */}
+            <div style={{ borderRight: "1px solid #C8C2B4" }}>
+              {ecosystem.sectorMomentum.map((sector: any, i: number) => (
+                <div key={i} className="flex items-center gap-4 py-3.5 px-0 transition-colors hover:bg-white" style={{ borderBottom: i < 5 ? "1px solid #EEEAE3" : "none" }}>
+                  <span className="pf font-bold text-2xl num flex-shrink-0" style={{ color: "#E8E4DC", width: 32 }}>{i + 1}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="pf font-bold text-[#1A1208]" style={{ fontSize: "15px" }}>{sector.sector}</p>
+                      <span className="dm num font-bold text-sm" style={{ color: "#16a34a" }}>{sector.growth}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 h-px overflow-hidden" style={{ background: "#EEEAE3" }}>
+                        <div className="h-px" style={{ background: "#1A1208", width: Math.min(parseFloat(sector.growth.replace("+", "").replace("%", "")), 100) + "%" }} />
+                      </div>
+                      <span className="dm text-[9px] text-[#BBB] whitespace-nowrap">{sector.trend}</span>
+                    </div>
+                  </div>
+                  <div className="hidden sm:flex items-center gap-5 flex-shrink-0">
+                    <span className="dm num text-sm text-[#666] w-8 text-right">{sector.deals}</span>
+                    <span className="dm num text-sm text-[#666] w-16 text-right">{sector.funding}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* RIGHT: Rising startups */}
+            <div className="lg:pl-8 py-3 lg:py-0">
+              <div className="section-label pt-3 lg:pt-4">
+                <Rocket className="w-3.5 h-3.5 text-[#999]" />
+                <span className="dm text-[9px] font-black uppercase tracking-[0.26em] text-[#888]">Rising Startups</span>
+              </div>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-3 pb-4">
+                {ecosystem.topRisingStartups.slice(0, 4).map((startup: any, i: number) => (
+                  <div key={i} className="p-4 card-lift cursor-default" style={{ background: "#fff", border: "1px solid #E2DDD5" }}>
+                    <div className="flex items-start justify-between mb-2">
+                      <p className="pf font-bold text-[#1A1208]" style={{ fontSize: "14.5px" }}>{startup.name}</p>
+                      <span className="dm text-[8px] font-black uppercase tracking-wider px-2 py-0.5 flex-shrink-0 ml-2"
+                        style={{
+                          background: startup.momentum === "high" ? "#FFF7E6" : "#F0FDF4",
+                          color: startup.momentum === "high" ? "#d97706" : "#16a34a",
+                          border: `1px solid ${startup.momentum === "high" ? "#FDE68A" : "#A7F3D0"}`,
+                        }}>
+                        {startup.momentum === "high" ? "🔥 Hot" : "↑ Rising"}
+                      </span>
+                    </div>
+                    <p className="dm text-[9px] uppercase tracking-widest text-[#AAA] mb-2">{startup.sector}</p>
+                    <p className="ss text-xs text-[#666] leading-snug mb-3" style={{ fontSize: "12px" }}>{startup.insight}</p>
+                    <div className="flex items-center justify-between pt-2.5" style={{ borderTop: "1px solid #F0ECE5" }}>
+                      <span className="dm text-[9px] text-[#CCC] uppercase tracking-wider">Momentum</span>
+                      <span className="dm num font-bold text-sm" style={{ color: "#16a34a" }}>{startup.growthIndicator}</span>
                     </div>
                   </div>
                 ))}
               </div>
-            </section>
+            </div>
+          </div>
+        </div>
 
-            <div className="vr hidden lg:block mx-0" />
+        {/* ─── FUNDING + BUSINESS LEADERS ──────────────── */}
+        <div className="grid lg:grid-cols-[1fr_1px_340px] fade-4" style={{ borderBottom: "2px solid #1A1208" }}>
 
-            <aside className="py-8 lg:pl-8 border-t lg:border-t-0 border-[#C8BCA8]" aria-label="Funding tracker">
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-2">
-                  <DollarSign className="w-3.5 h-3.5 text-[#8B7355]" />
-                  <h2 className="text-[9px] font-black tracking-[.2em] uppercase text-[#8B7355]" style={{ fontFamily: "system-ui,sans-serif" }}>Funding Tracker</h2>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <PulseDot color="blue" />
-                  <span className="text-[8px] text-blue-600 font-bold uppercase tracking-widest" style={{ fontFamily: "system-ui,sans-serif" }}>Active</span>
-                </div>
+          {/* Funding rounds */}
+          <div className="py-8 lg:pr-8">
+            <div className="section-label">
+              <DollarSign className="w-3.5 h-3.5 text-[#999]" />
+              <span className="dm text-[9px] font-black uppercase tracking-[0.26em] text-[#888]">Latest Funding Rounds</span>
+              <div className="flex items-center gap-1.5 ml-2">
+                <PulseDot color="blue" />
+                <span className="dm text-[8px] text-blue-500 font-bold uppercase tracking-widest">Active</span>
               </div>
+            </div>
 
+            <div className="grid sm:grid-cols-2 gap-4">
               {ecosystem.fundingNews.map((funding: any, i: number) => (
-                <div key={i} className={`py-4 border-b border-[#EDE7DA] last:border-b-0 ${i === 0 ? "bg-[#1A1208] -mx-5 px-5 mb-1" : ""}`}>
-                  <div className="flex items-start justify-between mb-1.5">
-                    <p className={`playfair font-bold text-[.92rem] leading-tight ${i === 0 ? "text-white" : "text-[#1A1208]"}`}>{funding.startup}</p>
-                    <p className={`num-font playfair font-black text-base ml-2 flex-shrink-0 ${i === 0 ? "text-[#C9A84C]" : "text-emerald-700"}`}>{funding.amount}</p>
+                <div key={i} className="p-5 card-lift" style={{ background: i === 0 ? "#1A1208" : "#fff", border: "1px solid #E2DDD5" }}>
+                  {i === 0 && (
+                    <div className="dm text-[8px] uppercase tracking-[0.26em] text-white/30 mb-3">Lead Story</div>
+                  )}
+                  <div className="flex items-start justify-between mb-2">
+                    <p className="pf font-bold" style={{ fontSize: "17px", color: i === 0 ? "#fff" : "#1A1208" }}>{funding.startup}</p>
+                    <p className="pf font-bold text-xl num ml-2 flex-shrink-0" style={{ color: i === 0 ? "#C9A84C" : "#16a34a" }}>{funding.amount}</p>
                   </div>
-                  <div className="flex items-center gap-2 mb-1.5" style={{ fontFamily: "system-ui,sans-serif" }}>
-                    <span className={`round-badge ${i === 0 ? "text-[#C9A84C] border-[#C9A84C]/40" : "text-[#5C4A2A] border-[#D4C9B0]"}`}>{funding.round}</span>
-                    <span className={`text-[8.5px] truncate ${i === 0 ? "text-white/40" : "text-[#B0A090]"}`}>{funding.investors.split(",")[0]}</span>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="dm text-[9px] font-bold px-2 py-0.5"
+                      style={{ background: i === 0 ? "rgba(201,168,76,0.2)" : "#EEEAE3", color: i === 0 ? "#C9A84C" : "#555" }}>
+                      {funding.round}
+                    </span>
                   </div>
+                  <p className="dm text-[10px] leading-snug mb-1" style={{ color: i === 0 ? "rgba(255,255,255,0.4)" : "#AAA" }}>{funding.investors}</p>
                   {funding.valuation && (
-                    <p className={`text-[8.5px] ${i === 0 ? "text-white/30" : "text-[#B0A090]"}`} style={{ fontFamily: "system-ui,sans-serif" }}>
-                      Valuation: <span className={`font-bold ${i === 0 ? "text-white/55" : "text-[#5C4A2A]"}`}>{funding.valuation}</span>
+                    <p className="dm text-[10px]" style={{ color: i === 0 ? "rgba(255,255,255,0.3)" : "#BBB" }}>
+                      Val: <span className="font-bold" style={{ color: i === 0 ? "rgba(255,255,255,0.7)" : "#666" }}>{funding.valuation}</span>
                     </p>
                   )}
                 </div>
               ))}
-
-              <div className="mt-5 p-4 bg-[#EDE7DA] border border-[#D4C9B0]">
-                <p className="text-[8.5px] font-black tracking-[.2em] uppercase text-[#8B7355] mb-3" style={{ fontFamily: "system-ui,sans-serif" }}>Q1 2026 Snapshot</p>
-                {[
-                  { label: "Total Funding YTD", value: ecosystem.ecosystemMetrics.totalFundingYTD },
-                  { label: "Avg Deal Size", value: ecosystem.ecosystemMetrics.avgDealSize },
-                  { label: "Active Unicorns", value: ecosystem.ecosystemMetrics.unicorns },
-                  { label: "Soonicorns", value: ecosystem.ecosystemMetrics.soonicorns },
-                ].map((stat, i) => (
-                  <div key={i} className="flex items-center justify-between py-1.5 border-b border-[#C8BCA8] last:border-0">
-                    <span className="text-[9px] text-[#8B7355]" style={{ fontFamily: "system-ui,sans-serif" }}>{stat.label}</span>
-                    <span className="num-font playfair font-black text-[.9rem] text-[#1A1208]">{stat.value}</span>
-                  </div>
-                ))}
-              </div>
-            </aside>
-          </div>
-
-          {/* ── RECENTLY VERIFIED ──────────────────────────────────────────── */}
-          <section className="py-8 border-b border-[#C8BCA8] fade-up-5" aria-label="Recently verified startups">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <BadgeCheck className="w-4 h-4 text-emerald-700" />
-                <h2 className="playfair font-black text-xl text-[#1A1208]">Recently Verified on UpForge</h2>
-                <span className="verified-stamp">✓ Live Registry</span>
-              </div>
-              <Link href="/startup" className="flex items-center gap-1 text-[9px] text-[#8B7355] hover:text-[#1A1208] transition-colors" style={{ fontFamily: "system-ui,sans-serif" }}>
-                View all {totalStartups}+ <ChevronRight className="w-3 h-3" />
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
-              {verifiedStartups?.slice(0, 6).map((startup: any) => (
-                <Link key={startup.id} href={`/startup/${startup.slug}`}
-                  className="bg-white border border-[#E8E2D8] p-4 card-lift group"
-                  aria-label={`${startup.name} — UpForge registry`}>
-                  <div className="flex items-start justify-between mb-2">
-                    <p className="playfair font-bold text-[.88rem] text-[#1A1208] line-clamp-1 leading-tight">{startup.name}</p>
-                    <BadgeCheck className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 ml-1 mt-0.5" />
-                  </div>
-                  <p className="baskerville text-[.78rem] text-[#5C4A2A] line-clamp-2 mb-3.5 leading-snug">{startup.description}</p>
-                  <div className="flex items-center gap-2 pt-2.5 border-t border-[#F0E9D8]" style={{ fontFamily: "system-ui,sans-serif" }}>
-                    <span className="text-[8.5px] text-[#B0A090]">{startup.founded_year || "N/A"}</span>
-                    <span className="w-0.5 h-0.5 bg-[#D4C9B0] rounded-full" />
-                    <span className="text-[8.5px] text-[#5C4A2A] uppercase tracking-wider font-bold truncate">{startup.industry || "Startup"}</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          {/* ── EDITORIAL PAGES ROW ─────────────────────────────────────────── */}
-          <section className="py-8 border-b border-[#C8BCA8] fade-up-5">
-            <div className="orn-rule mb-6">EDITORIAL INTELLIGENCE</div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-              {[
-                { label: "Top AI Startups", sub: "55K+ monthly readers", href: "/top-ai-startups", icon: Sparkles, num: "1,779+" },
-                { label: "Indian Unicorns", sub: "126 verified profiles", href: "/indian-unicorns", icon: Gem, num: "126" },
-                { label: "Best SaaS", sub: "$26B market guide", href: "/best-saas-startups", icon: Zap, num: "$26B" },
-                { label: "Top Funded", sub: "$14B+ tracked", href: "/top-funded-startups", icon: DollarSign, num: "$14B+" },
-                { label: "Founder Stories", sub: "India's best builders", href: "/founder-stories", icon: Rocket, num: "5 Profiles" },
-                { label: "Full Registry", sub: "Live startup database", href: "/startup", icon: Building2, num: `${totalStartups}+` },
-              ].map((item, i) => (
-                <Link key={i} href={item.href}
-                  className="group bg-white border border-[#E8E2D8] p-4 card-lift flex flex-col justify-between min-h-[105px]">
-                  <div className="flex items-start justify-between mb-3">
-                    <item.icon className="w-4 h-4 text-[#C9A84C]" />
-                    <ChevronRight className="w-3.5 h-3.5 text-[#C8BCA8] group-hover:text-[#1A1208] transition-colors" />
-                  </div>
-                  <div>
-                    <p className="playfair font-bold text-[.9rem] text-[#1A1208] leading-tight mb-0.5">{item.label}</p>
-                    <p className="text-[8.5px] text-[#8B7355]" style={{ fontFamily: "system-ui,sans-serif" }}>{item.sub}</p>
-                  </div>
-                  <p className="num-font playfair text-base font-black text-[#C9A84C] mt-2">{item.num}</p>
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          {/* ── TRUST STRIP ─────────────────────────────────────────────────── */}
-          <div className="py-5 border-b border-[#C8BCA8] bg-[#EDE7DA]/40">
-            <div className="flex flex-wrap items-center justify-center gap-x-7 gap-y-3">
-              {[
-                { icon: Shield, text: "100% Independent · Zero paid rankings" },
-                { icon: BadgeCheck, text: "Every startup manually reviewed & verified" },
-                { icon: Sparkles, text: "AI-powered deep analysis reports" },
-                { icon: Globe, text: "Open, public & fully Google-indexed" },
-                { icon: Clock, text: "News via NewsAPI · Market data via Groq LLM" },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <item.icon className="w-3.5 h-3.5 text-[#8B7355]" />
-                  <span className="text-[10px] text-[#5C4A2A]" style={{ fontFamily: "system-ui,sans-serif" }}>{item.text}</span>
-                </div>
-              ))}
             </div>
           </div>
 
-          {/* ── REPORTS CTA ─────────────────────────────────────────────────── */}
-          <div className="my-12">
-            <div className="bg-[#1A1208] relative overflow-hidden"
-              style={{ backgroundImage: "repeating-linear-gradient(0deg,rgba(201,168,76,.04) 0px,rgba(201,168,76,.04) 1px,transparent 1px,transparent 40px),repeating-linear-gradient(90deg,rgba(201,168,76,.04) 0px,rgba(201,168,76,.04) 1px,transparent 1px,transparent 80px)" }}>
-              <div className="relative p-10 sm:p-14">
-                <div className="grid lg:grid-cols-2 gap-10 items-center">
-                  <div>
-                    <div className="orn-rule mb-6" style={{ color: "#C9A84C80" }}>PREMIUM INTELLIGENCE</div>
-                    <h2 className="playfair text-[2.4rem] sm:text-[3rem] font-black text-white leading-tight mb-4">
-                      Deep Startup<br /><em className="not-italic" style={{ color: "#C9A84C" }}>Research Reports</em>
-                    </h2>
-                    <p className="baskerville text-[.93rem] text-white/48 max-w-lg leading-relaxed mb-6">
-                      Institutional-grade AI research on Indian startups — valuation insights, competitive analysis, market positioning, risk signals, and growth trajectory.
-                    </p>
-                    <Link href="/reports"
-                      className="inline-flex items-center gap-2 px-8 py-4 bg-[#C9A84C] text-[#1A1208] text-[10.5px] font-black tracking-[.18em] uppercase hover:bg-[#E8C547] transition-colors"
-                      style={{ fontFamily: "system-ui,sans-serif" }}>
-                      Explore Reports <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  </div>
-                  <div className="hidden lg:grid grid-cols-2 gap-3">
-                    {["Valuation Analysis", "Market Positioning", "Risk Signals", "Growth Trajectory"].map((t, i) => (
-                      <div key={i} className="border border-[#C9A84C]/20 p-5 hover:border-[#C9A84C]/50 transition-colors">
-                        <Newspaper className="w-5 h-5 text-[#C9A84C] mb-3 opacity-50" />
-                        <p className="playfair font-bold text-white text-[.9rem] leading-tight">{t}</p>
+          <div style={{ background: "#C8C2B4", width: 1 }} className="hidden lg:block" />
+
+          {/* Business Leaders */}
+          <div className="py-8 lg:pl-8">
+            <div className="section-label">
+              <Award className="w-3.5 h-3.5 text-[#999]" />
+              <span className="dm text-[9px] font-black uppercase tracking-[0.26em] text-[#888]">India's Business Leaders</span>
+              <a href="https://www.forbes.com/billionaires/" target="_blank" rel="noopener noreferrer"
+                className="dm text-[8px] text-[#BBB] hover:text-[#888] transition-colors uppercase tracking-wider ml-2">
+                Forbes ↗
+              </a>
+            </div>
+
+            <div className="divide-y" style={{ borderColor: "#EEEAE3" }}>
+              {TOP_INDIAN_BILLIONAIRES.map((person, i) => (
+                <div key={i} className="py-4 hover:bg-white/70 -mx-2 px-2 transition-colors">
+                  <div className="flex items-start justify-between mb-1.5">
+                    <div>
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="dm text-[9px] font-black text-[#C8C2B4]">{person.rank}</span>
+                        <p className="pf font-bold text-[#1A1208]" style={{ fontSize: "15px" }}>{person.name}</p>
                       </div>
+                      <p className="dm text-[9px] text-[#999]">{person.source}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="pf font-bold text-xl num text-[#1A1208]">{person.netWorth}</p>
+                      <p className="dm text-[9px] font-semibold" style={{ color: "#16a34a" }}>{person.yoy}</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {person.startupConnections.map((conn, j) => (
+                      <span key={j} className="dm text-[9px] px-2 py-0.5 text-[#666]" style={{ background: "#F0EDE3", border: "1px solid #E8E4DC" }}>{conn}</span>
                     ))}
                   </div>
                 </div>
+              ))}
+            </div>
+            <p className="dm text-[8px] text-[#C8C2B4] mt-4 italic">
+              *Forbes Real-Time Billionaires, March 2026. Daily fluctuations apply.
+            </p>
+          </div>
+        </div>
+
+        {/* ─── RECENTLY VERIFIED ON UPFORGE ──────────────── */}
+        <section className="py-8 fade-4" style={{ borderBottom: "2px solid #1A1208" }}>
+          <div className="flex items-center justify-between mb-6">
+            <div className="section-label flex-1">
+              <BadgeCheck className="w-4 h-4" style={{ color: "#16a34a" }} />
+              <span className="dm text-[9px] font-black uppercase tracking-[0.26em] text-[#888]">Recently Verified on UpForge Registry</span>
+            </div>
+            <Link href="/startup" className="dm flex items-center gap-1 text-[10px] uppercase tracking-wider text-[#888] hover:text-[#1A1208] transition-colors flex-shrink-0 ml-4">
+              View all <ChevronRight className="w-3 h-3" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+            {verifiedStartups?.slice(0, 6).map((startup: any) => (
+              <Link key={startup.id} href={`/startup/${startup.slug}`}
+                className="p-4 card-lift group block"
+                style={{ background: "#fff", border: "1px solid #E2DDD5" }}>
+                <div className="flex items-start justify-between mb-2">
+                  <p className="pf font-bold text-[#1A1208] leading-tight" style={{ fontSize: "14px" }}>{startup.name}</p>
+                  <BadgeCheck className="w-3.5 h-3.5 flex-shrink-0 ml-1 mt-0.5" style={{ color: "#16a34a" }} />
+                </div>
+                <p className="ss text-xs text-[#777] leading-snug mb-3.5 line-clamp-2" style={{ fontSize: "12px" }}>{startup.description}</p>
+                <div className="flex items-center gap-2 pt-2.5" style={{ borderTop: "1px solid #F0ECE5" }}>
+                  <span className="dm text-[9px] text-[#BBB]">{startup.founded_year || "N/A"}</span>
+                  <span style={{ color: "#DDD", fontSize: 8 }}>●</span>
+                  <span className="dm text-[9px] text-[#666] uppercase tracking-wider font-bold truncate">{startup.industry || "Startup"}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* ─── TRUST / AUTHORITY STRIP ───────────────────── */}
+        <div className="fade-5" style={{ borderBottom: "1px solid #C8C2B4", background: "#F0EDE3" }}>
+          <div className="py-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-center">
+            {[
+              { icon: Shield, text: "100% Independent · No paid rankings" },
+              { icon: BadgeCheck, text: "Every listing manually reviewed" },
+              { icon: Sparkles, text: "AI-powered analysis & growth reports" },
+              { icon: Globe, text: "Public, open & Google-indexed" },
+              { icon: Clock, text: "Live via NewsAPI · Market data via Groq" },
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <item.icon className="w-3.5 h-3.5" style={{ color: "#AAA" }} />
+                <span className="dm text-[10px] text-[#666]">{item.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ─── REPORTS CTA — Magazine Feature Style ──────── */}
+        <div className="my-12 fade-5">
+          <div style={{ background: "#1A1208", position: "relative", overflow: "hidden" }}>
+            {/* Grid texture */}
+            <div style={{ position: "absolute", inset: 0, opacity: 0.04, backgroundImage: "repeating-linear-gradient(0deg,white 0,white 1px,transparent 1px,transparent 44px),repeating-linear-gradient(90deg,white 0,white 1px,transparent 1px,transparent 88px)", pointerEvents: "none" }} />
+            {/* Gold accent bar */}
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: "#C9A84C" }} />
+
+            <div style={{ position: "relative" }} className="p-10 sm:p-16 grid sm:grid-cols-[1fr_auto] gap-8 items-center">
+              <div>
+                <div className="dm text-[9px] font-black uppercase tracking-[0.32em] mb-4" style={{ color: "#C9A84C" }}>
+                  Premium Intelligence · UpForge Reports
+                </div>
+                <h2 className="pf font-black text-white leading-tight mb-4" style={{ fontSize: "clamp(1.8rem, 4vw, 3.2rem)" }}>
+                  Institutional-Grade<br />
+                  <em className="italic" style={{ color: "#C9A84C" }}>Startup Intelligence</em>
+                </h2>
+                <p className="ss italic leading-relaxed mb-0 max-w-xl" style={{ fontSize: "15px", color: "rgba(255,255,255,0.45)" }}>
+                  AI-powered deep research on Indian startups — valuation signals, risk analysis, market positioning, and growth intelligence. Built for founders, VCs, and serious operators.
+                </p>
+              </div>
+              <div className="flex flex-col gap-3">
+                <Link href="/reports" className="dm inline-flex items-center gap-2 px-8 py-4 font-bold uppercase tracking-wider transition-opacity hover:opacity-85 whitespace-nowrap"
+                  style={{ background: "#C9A84C", color: "#1A1208", fontSize: "11px" }}>
+                  Explore Reports <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link href="/founder-stories" className="dm inline-flex items-center gap-2 px-8 py-4 font-bold uppercase tracking-wider transition-colors hover:bg-white/10 whitespace-nowrap"
+                  style={{ border: "1.5px solid rgba(255,255,255,0.2)", color: "rgba(255,255,255,0.6)", fontSize: "11px" }}>
+                  Founder Stories ↗
+                </Link>
               </div>
             </div>
           </div>
-
-          {/* ── FOOTER ──────────────────────────────────────────────────────── */}
-          <footer className="pt-5 border-t-2 border-[#1A1208]">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-[#1A1208] flex items-center justify-center">
-                  <span className="text-[#C9A84C] text-[10px] font-black" style={{ fontFamily: "system-ui,sans-serif" }}>UF</span>
-                </div>
-                <div>
-                  <p className="playfair font-black text-[#1A1208] text-base leading-tight">UpForge</p>
-                  <p className="text-[9px] text-[#8B7355] tracking-[.2em] uppercase" style={{ fontFamily: "system-ui,sans-serif" }}>India's Registry of Record</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <PulseDot color="green" />
-                <span className="text-[9px] text-[#B0A090]" style={{ fontFamily: "system-ui,sans-serif" }}>
-                  Live news via NewsAPI · Market data via Groq · {lastUpdated} IST
-                </span>
-              </div>
-            </div>
-            <div className="pt-4 border-t border-[#E8E2D8] flex items-center justify-center">
-              <span className="text-[8.5px] text-[#C8BCA8] baskerville italic">
-                © {new Date().getFullYear()} UpForge · Independent · Ad-Free · Open Registry · v2.3
-              </span>
-            </div>
-          </footer>
-
         </div>
-      </div>
+
+        {/* ─── FOOTER ────────────────────────────────────── */}
+        <footer style={{ borderTop: "3px double #1A1208" }}>
+          <div className="py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 flex items-center justify-center text-[10px] font-black dm"
+                style={{ background: "#1A1208", color: "#C9A84C" }}>UF</div>
+              <div>
+                <p className="pf font-bold text-sm text-[#1A1208]">UpForge</p>
+                <p className="dm text-[9px] text-[#AAA] uppercase tracking-wider">India's Independent Startup Registry · {new Date().getFullYear()}</p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+              {["Registry", "Reports", "Founder Stories", "Unicorns", "Submit"].map((item) => (
+                <Link key={item} href={`/${item.toLowerCase().replace(/ /g, "-")}`}
+                  className="dm text-[9px] uppercase tracking-wider text-[#AAA] hover:text-[#1A1208] transition-colors">
+                  {item}
+                </Link>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <PulseDot color="green" />
+              <span className="dm text-[9px] text-[#BBB]">Live · NewsAPI · Groq · {lastUpdated} IST</span>
+            </div>
+          </div>
+
+          <div className="pb-6 text-center">
+            <p className="dm text-[9px] text-[#CCC] italic">
+              UpForge is 100% independent. No paid placements, no sponsored rankings. All startups are manually verified before listing.
+            </p>
+          </div>
+        </footer>
+
+      </main>
     </div>
   );
 }
