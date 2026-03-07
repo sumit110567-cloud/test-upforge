@@ -1,19 +1,39 @@
-//next.config.mjs
-
+// next.config.mjs
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
     remotePatterns: [
+      // Supabase storage — startup logos & uploads
       {
         protocol: 'https',
         hostname: 'vunvjscphatofvsqvofg.supabase.co',
         port: '',
         pathname: '/storage/v1/object/public/**',
       },
+      // Inc42 — founder press photos
+      {
+        protocol: 'https',
+        hostname: 'images.inc42.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'assets.inc42.com',
+      },
+      // Wikipedia / Wikimedia — company logos
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+      },
+      // BrowserStack CDN
+      {
+        protocol: 'https',
+        hostname: 'www.browserstack.com',
+      },
+      // General wildcard fallback for any other press/CDN images
       {
         protocol: 'https',
         hostname: '**',
-      }
+      },
     ],
   },
   async headers() {
@@ -28,5 +48,6 @@ const nextConfig = {
       },
     ]
   },
-};
-export default nextConfig;
+}
+
+export default nextConfig
