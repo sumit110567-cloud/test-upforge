@@ -211,6 +211,144 @@ const FOUNDERS = [
       { l: "Founded", v: "2012" },
     ],
   },
+
+  {
+  no: "06", edition: "No. 06",
+  category: "FINTECH / BROKERAGE",
+  name: "Nithin Kamath",
+  nameShort: "Nithin Kamath",
+  initials: "NK",
+  company: "Zerodha", slug: "zerodha",
+  role: "Founder & CEO",
+  city: "Bangalore", context: "Bootstrapped fintech revolution",
+  valuation: "$3B+", funding: "Bootstrapped", founded: "2010",
+  imgSrc: "data:image/jpeg;base64,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",
+  accent: "#2563EB", accentBg: "#EFF6FF", accentBorder: "#93C5FD",
+  headline: "He built India's largest stock brokerage without raising venture capital — and forced the entire industry to cut fees.",
+  deck: "Nithin Kamath transformed Indian retail investing by proving that technology, transparency, and low fees could beat decades-old brokerage giants.",
+
+  cols: [
+    {
+      h: "The Trader Who Built a Platform",
+      b: "Before Zerodha existed, Nithin Kamath was already trading in the markets. As an active trader in the early 2000s, he constantly faced high brokerage costs and outdated trading platforms.\n\nInstead of accepting the system, he decided to build something better. In 2010, along with his brother Nikhil Kamath, he launched Zerodha — India's first discount brokerage."
+    },
+    {
+      h: "Disrupting a Billion-Dollar Industry",
+      b: "At the time, brokerages charged high commissions for every trade. Zerodha introduced a radically simple idea: flat pricing.\n\nThe platform also built modern trading tools like Kite and Coin that simplified investing for a new generation of retail investors.\n\nWithin a decade, Zerodha became India's largest brokerage by active clients."
+    },
+    {
+      h: "Bootstrapped and Profitable",
+      b: "Unlike most fintech startups, Zerodha never raised venture capital. The company grew entirely through profits and product innovation.\n\nToday Zerodha serves millions of investors and processes billions in daily trades — proving that sustainable businesses don't always require venture funding."
+    }
+  ],
+
+  pull: "If you build something that genuinely improves people's financial lives, growth will follow naturally.",
+  pullBy: "Nithin Kamath",
+
+  lesson: "Great companies are built by solving real problems — not chasing valuations.",
+
+  stats: [
+    { l: "Valuation", v: "$3B+" },
+    { l: "Users", v: "10M+" },
+    { l: "Founded", v: "2010" },
+    { l: "Funding", v: "Bootstrapped" },
+  ],
+},
+
+  {
+  no: "07", edition: "No. 07",
+  category: "MOBILITY / TRANSPORT",
+  name: "Bhavish Aggarwal",
+  nameShort: "Bhavish Aggarwal",
+  initials: "BA",
+  company: "Ola", slug: "ola",
+  role: "Co-Founder & CEO",
+  city: "Bangalore", context: "Built India's largest ride-hailing platform",
+  valuation: "$7B+", funding: "$4B+", founded: "2010",
+  imgSrc: "data:image/jpeg;base64,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",
+  accent: "#EA580C", accentBg: "#FFF7ED", accentBorder: "#FDBA74",
+  headline: "A single bad taxi ride inspired him to build one of India's largest mobility platforms.",
+  deck: "Bhavish Aggarwal founded Ola after a frustrating cab experience — and went on to build a transportation network serving hundreds of cities across India.",
+
+  cols: [
+    {
+      h: "The Problem That Sparked Ola",
+      b: "In 2010, Bhavish Aggarwal was traveling from Bangalore to Bandipur when his taxi driver abruptly stopped midway and demanded extra money.\n\nThe experience revealed a huge gap in India's transportation infrastructure. Bhavish realized millions of commuters faced the same problem daily."
+    },
+    {
+      h: "Building India's Ride-Hailing Giant",
+      b: "Bhavish partnered with Ankit Bhati to launch Ola — a platform connecting passengers with reliable drivers through mobile technology.\n\nThe startup expanded rapidly across Indian cities and soon became a dominant player in ride-hailing."
+    },
+    {
+      h: "Beyond Ride-Hailing",
+      b: "Ola eventually expanded into electric mobility through Ola Electric, building scooters, EV platforms, and gigafactories.\n\nBhavish's ambition has always been larger than taxis — he wants to redefine transportation for an electric future."
+    }
+  ],
+
+  pull: "Every frustrating experience is an opportunity to build something better.",
+  pullBy: "Bhavish Aggarwal",
+
+  lesson: "Some of the biggest companies start with solving a personal problem.",
+
+  stats: [
+    { l: "Valuation", v: "$7B+" },
+    { l: "Cities", v: "250+" },
+    { l: "Founded", v: "2010" },
+    { l: "Funding", v: "$4B+" },
+  ],
+},
+
+
+  {
+  no: "08", edition: "No. 08",
+  category: "STARTUP DATA / MEDIA",
+  name: "Your Name",
+  nameShort: "Your Name",
+  initials: "YN",
+  company: "Upforge",
+  slug: "upforge",
+  role: "Founder",
+  city: "India",
+  context: "Building India's largest startup registry",
+  valuation: "Private",
+  funding: "Bootstrapped",
+  founded: "2024",
+  imgSrc: "/luckyinternadda.jpg",
+  accent: "#16A34A",
+  accentBg: "#F0FDF4",
+  accentBorder: "#86EFAC",
+
+  headline: "He is building India's most comprehensive startup intelligence platform — one verified company at a time.",
+
+  deck: "Upforge was created with a simple idea: India needed a transparent, structured, and searchable database of its startups. A place where founders, investors, and researchers could discover companies that are actually building the future.",
+
+  cols: [
+    {
+      h: "The Problem With Startup Data",
+      b: "India's startup ecosystem has exploded in the last decade, yet reliable information about early-stage companies remains fragmented across news articles, social media, and outdated directories.\n\nUpforge aims to organize this chaos into a single verified registry."
+    },
+    {
+      h: "A New Kind of Startup Platform",
+      b: "Instead of focusing on hype or headlines, the platform focuses on structured data: founders, sectors, funding, traction, and verified company profiles.\n\nThe goal is to make Upforge the most trusted startup intelligence platform in India."
+    },
+    {
+      h: "Building a Public Record of Innovation",
+      b: "Every great ecosystem needs a historical record. Upforge aims to become that archive — documenting the founders, ideas, and companies shaping India's future.\n\nFrom early startups to unicorns, the mission is simple: build the most reliable startup registry in the country."
+    }
+  ],
+
+  pull: "If the future is being built by startups, someone needs to document that future.",
+  pullBy: "Founder, Upforge",
+
+  lesson: "Great platforms start by organizing information others ignore.",
+
+  stats: [
+    { l: "Startups Indexed", v: "72,000+" },
+    { l: "Founded", v: "2024" },
+    { l: "Funding", v: "Bootstrapped" },
+    { l: "Mission", v: "Startup Intelligence" },
+  ],
+},
 ]
 
 // ─── FOUNDER PHOTO COMPONENT ──────────────────────────────────────────────────
