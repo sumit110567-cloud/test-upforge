@@ -1,5 +1,4 @@
-// app/startup/[slug]/page.tsx
-// ZERO logic changes — UI upgraded to match UpForge broadsheet design system
+// app/startup/[slug]/page.tsx institutional design system v2.1
 
 import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
@@ -8,13 +7,13 @@ import type { Startup } from "@/types/startup"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { StartupDetail } from "@/components/startup-detail"
-import { BadgeCheck, Shield, Globe, ChevronRight } from "lucide-react"
+import { BadgeCheck, Shield, Globe, ChevronRight, Share2, Download } from "lucide-react"
 
 interface PageProps {
   params: Promise<{ slug: string }>
 }
 
-// ─── METADATA — unchanged logic ───────────────────────────────────────────────
+// ─── INSTITUTIONAL SEO ───────────────────────────────────────────────────────
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
   const supabase = await createClient()
@@ -25,49 +24,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     .single()
 
   if (!startup) {
-    return {
-      title: "Startup Not Found | UpForge",
-      description:
-        "The requested startup profile could not be found in the UpForge founder registry.",
-    }
+    return { title: "Startup Not Found | UpForge" }
   }
 
   const profileUrl = `https://www.upforge.in/startup/${slug}`
-  const title = `${startup.name} | Official Startup Profile | UpForge`
-  const description =
-    startup.description ||
-    `View the verified public startup profile of ${startup.name} on UpForge.`
+  const title = `${startup.name} — Verified Startup Profile | UpForge Registry`
+  const description = `${startup.name} is a ${startup.industry || startup.category} startup based in ${startup.city || "India"}. ${startup.description?.slice(0, 150)}...`
 
   return {
     title,
     description,
     alternates: { canonical: profileUrl },
-    keywords: [
-      startup.name,
-      `${startup.name} startup`,
-      `${startup.name} India`,
-      startup.industry || startup.category,
-      "Indian startup",
-      "verified startup India",
-      "UpForge founder registry",
-      startup.city,
-      startup.founded_year ? `founded ${startup.founded_year}` : "",
-    ]
-      .filter(Boolean)
-      .join(", "),
+    keywords: [startup.name, "Indian startup", "founder registry", "venture capital", startup.industry].filter(Boolean),
     openGraph: {
       title,
       description,
       url: profileUrl,
       siteName: "UpForge",
-      images: [
-        {
-          url: startup.logo_url || "/og-image.jpg",
-          width: 1200,
-          height: 630,
-          alt: `${startup.name} Official Profile`,
-        },
-      ],
+      images: [{ url: startup.logo_url || "/og-image.jpg" }],
       locale: "en_IN",
       type: "website",
     },
@@ -78,20 +52,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       site: "@upforge_in",
       images: [startup.logo_url || "/og-image.jpg"],
     },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        "max-snippet": -1,
-        "max-image-preview": "large",
-      },
-    },
   }
 }
 
-// ─── PAGE — unchanged logic, upgraded visual wrapper ─────────────────────────
 export default async function StartupPage({ params }: PageProps) {
   const { slug } = await params
   const supabase = await createClient()
@@ -101,209 +64,153 @@ export default async function StartupPage({ params }: PageProps) {
     .eq("slug", slug)
     .single()
 
-  if (!startup) {
-    notFound()
-  }
+  if (!startup) notFound()
 
-  const profileUrl = `https://www.upforge.in/startup/${slug}`
-
-  // JSON-LD — unchanged
+  // High-Trust JSON-LD Schema
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: startup.name,
     description: startup.description,
-    url: startup.website || profileUrl,
+    url: startup.website || `https://upforge.in/startup/${slug}`,
     logo: startup.logo_url,
+    address: { "@type": "PostalAddress", addressLocality: startup.city, addressCountry: "IN" },
     foundingDate: startup.founded_year?.toString(),
-    industry: startup.category,
-    areaServed: "India",
-    sameAs: [
-      startup.linkedin_url,
-      startup.twitter_url,
-      startup.instagram_url,
-    ].filter(Boolean),
-    memberOf: {
-      "@type": "Organization",
-      name: "UpForge Founder Registry",
-      url: "https://www.upforge.in",
-    },
+    iso6523: "Verified via UpForge Founder Registry",
   }
 
-  const updatedAt = new Date().toLocaleTimeString("en-IN", {
-    hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata", hour12: true,
-  })
-  const todayStr = new Date().toLocaleDateString("en-IN", {
-    weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata",
-  })
+  const updatedAt = new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata", hour12: true })
+  const todayStr = new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" })
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap');
-        *,*::before,*::after{box-sizing:border-box}
+        
         .uf{background:#fff;color:#1a1a1a;font-family:'Source Serif 4',Georgia,serif;-webkit-font-smoothing:antialiased}
         .uf-d{font-family:'Playfair Display',Georgia,serif;letter-spacing:-.02em}
-        .uf-m{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+        .uf-m{font-family:'JetBrains Mono',monospace}
         .uf-lbl{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#888;font-family:'Source Serif 4',Georgia,serif}
+        
         :root{--ink:#1a1a1a;--ink2:#444;--ink3:#777;--ink4:#aaa;--rule:#e5e5e5;--rl:#f0f0f0;--bg:#fff;--off:#fafaf8;--warm:#fdf8f0;--gold:#b8860b;--gr:#c9960d;--pos:#1a6b3a;--neg:#b91c1c}
         .uf-wrap{max-width:1200px;margin:0 auto;padding:0 clamp(16px,3vw,32px)}
 
-        /* animations */
         @keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
         .a0{animation:up .45s .04s cubic-bezier(.16,1,.3,1) both}
-        .a1{animation:up .45s .14s cubic-bezier(.16,1,.3,1) both}
-        .a2{animation:up .45s .24s cubic-bezier(.16,1,.3,1) both}
 
-        /* live dot */
-        .dot{width:6px;height:6px;border-radius:50%;background:#16a34a;flex-shrink:0;position:relative}
-        .dot::after{content:'';position:absolute;inset:-3px;border-radius:50%;background:rgba(22,163,74,.2);animation:pulse 2s ease-in-out infinite}
+        .dot{width:6px;height:6px;border-radius:50%;background:#16a34a;position:relative}
+        .dot::after{content:'';position:absolute;inset:-3px;border-radius:50%;background:rgba(22,163,74,.2);animation:pulse 2s infinite}
         @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(2);opacity:0}}
 
-        /* pill */
-        .pill{display:inline-flex;align-items:center;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border:1px solid currentColor;font-family:'Source Serif 4',Georgia,serif}
-
-        /* verified badge */
-        .vbadge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--pos);border:1px solid var(--pos);padding:3px 9px;font-family:'Source Serif 4',Georgia,serif}
-
-        /* breadcrumb */
-        .bc-link{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink4);font-family:'Source Serif 4',Georgia,serif;transition:color .15s}
+        .vbadge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--pos);border:1px solid var(--pos);padding:3px 9px}
+        .bc-link{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink4);transition:color .15s;text-decoration:none}
         .bc-link:hover{color:var(--ink)}
 
-        /* trust badges */
-        .trust-badge{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
-
-        /* thick rule */
-        .rule-t{height:2px;background:var(--ink)}
-
-        @media(max-width:640px){
+        .meta-cell{display:flex;flex-direction:column;justify-content:center;padding:12px 20px;border-right:1px solid var(--rule);flex:1;min-width:120px}
+        
+        @media(max-width:768px){
           .hide-mob{display:none !important}
-          .cert-inner{flex-direction:column !important}
-          .trust-row{flex-direction:column !important;align-items:flex-start !important}
+          .meta-cell{border-right:none;border-bottom:1px solid var(--rule);width:100%}
         }
       `}</style>
 
-      <div className="uf" style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      <div className="uf" style={{ minHeight: "100vh" }}>
         <Navbar />
 
-        <main style={{ flex: 1 }}>
-
-          {/* Sponsor banner — unchanged condition */}
+        <main>
+          {/* Featured Ribbon */}
           {startup.is_sponsored && (
-            <div style={{
-              background: "var(--ink)", color: "var(--gold)", textAlign: "center",
-              padding: "10px", fontSize: "9px", fontWeight: 700, letterSpacing: "0.35em",
-              textTransform: "uppercase", fontFamily: "'Source Serif 4',serif",
-            }}>
-              ★ &nbsp; Featured Startup · Sponsored Listing on UpForge
+            <div style={{ background: "var(--ink)", color: "var(--gold)", textAlign: "center", padding: "8px", fontSize: "9px", fontWeight: 700, letterSpacing: "0.4em", textTransform: "uppercase" }}>
+              ★ &nbsp; Featured Startup Profile
             </div>
           )}
 
-          {/* ── HEADER BAND ── */}
-          <div className="a0" style={{ borderBottom: "2px solid var(--ink)", background: "#fff" }}>
+          {/* ── BROAD SHEET HEADER ── */}
+          <div className="a0" style={{ borderBottom: "2px solid var(--ink)" }}>
             <div className="uf-wrap">
-
-              {/* Top strip — date / trust / live */}
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid var(--rule)", flexWrap: "wrap", gap: "8px" }}>
+              
+              {/* Masthead Metadata */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid var(--rule)" }}>
                 <span className="uf-lbl" style={{ color: "var(--ink2)", fontWeight: 700 }}>{todayStr} · Vol. II</span>
-                <div className="hide-mob" style={{ display: "flex", gap: "20px" }}>
-                  {["Independent", "Ad-Free", "Verified"].map((t) => (
-                    <span key={t} style={{ fontSize: "10px", color: "var(--ink4)", letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: "'Source Serif 4',serif" }}>✓ {t}</span>
-                  ))}
-                </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                   <div className="dot" />
-                  <span className="uf-lbl" style={{ color: "var(--ink4)" }}>Updated {updatedAt} IST</span>
+                  <span className="uf-lbl">Live · Verified Profile</span>
                 </div>
               </div>
 
-              {/* Breadcrumb */}
-              <nav aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", gap: "4px", padding: "11px 0", borderBottom: "1px solid var(--rl)" }}>
+              {/* Breadcrumbs */}
+              <nav style={{ display: "flex", alignItems: "center", gap: "6px", padding: "12px 0", borderBottom: "1px solid var(--rl)" }}>
                 <a href="/" className="bc-link">Home</a>
-                <ChevronRight style={{ width: "11px", height: "11px", color: "var(--ink4)" }} />
+                <ChevronRight size={10} color="#aaa" />
                 <a href="/startup" className="bc-link">Registry</a>
-                <ChevronRight style={{ width: "11px", height: "11px", color: "var(--ink4)" }} />
-                <span style={{ fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink)", fontWeight: 700, fontFamily: "'Source Serif 4',serif", maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {startup.name}
-                </span>
+                <ChevronRight size={10} color="#aaa" />
+                <span className="uf-lbl" style={{ color: "var(--ink)", fontWeight: 800 }}>{startup.name}</span>
               </nav>
 
-              {/* ── PROFILE HEADER ── */}
-              <div style={{ padding: "clamp(24px,5vw,48px) 0 0" }}>
+              {/* ── PROFILE BRANDING ── */}
+              <div style={{ padding: "40px 0" }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "28px", flexWrap: "wrap" }}>
+                  
+                  {/* Logo Box */}
+                  <div style={{ width: "80px", height: "80px", border: "1px solid var(--rule)", background: "var(--off)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    {startup.logo_url 
+                      ? <img src={startup.logo_url} alt="" style={{ maxWidth: "85%", maxHeight: "85%", objectFit: "contain" }} />
+                      : <span className="uf-d" style={{ fontSize: "2rem", fontWeight: 900, color: "#ccc" }}>{startup.name[0]}</span>
+                    }
+                  </div>
 
-                {/* Logo + Name + Tagline */}
-                <div style={{ display: "flex", alignItems: "flex-start", gap: "clamp(14px,3vw,24px)", marginBottom: "clamp(20px,4vw,36px)" }}>
-
-                  {/* Startup logo box */}
-                  {startup.logo_url && (
-                    <div style={{
-                      width: "clamp(52px,7vw,68px)", height: "clamp(52px,7vw,68px)",
-                      border: "1px solid var(--rule)", background: "var(--off)",
-                      display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                    }}>
-                      <img src={startup.logo_url} alt={startup.name} style={{ maxWidth: "80%", maxHeight: "80%", objectFit: "contain" }} />
+                  {/* Title & Tagline */}
+                  <div style={{ flex: 1, minWidth: "300px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
+                      <h1 className="uf-d" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", fontWeight: 900, lineHeight: 0.85, margin: 0 }}>{startup.name}</h1>
+                      <div className="vbadge hide-mob"><BadgeCheck size={11} /> Verified</div>
                     </div>
-                  )}
-
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <h1 className="uf-d" style={{
-                      fontSize: "clamp(2rem,5.5vw,3.8rem)", fontWeight: 900,
-                      color: "var(--ink)", lineHeight: 0.9, marginBottom: startup.tagline ? "12px" : "0",
-                    }}>
-                      {startup.name}
-                    </h1>
                     {startup.tagline && (
-                      <p style={{
-                        fontSize: "clamp(13px,1.8vw,15px)", color: "var(--ink3)",
-                        fontStyle: "italic", fontFamily: "'Playfair Display',Georgia,serif",
-                        lineHeight: 1.5, maxWidth: "600px", marginBottom: 0,
-                      }}>
-                        {startup.tagline}
+                      <p className="uf-d" style={{ fontSize: "1.2rem", fontStyle: "italic", color: "var(--ink3)", margin: "10px 0 0", maxWidth: "700px" }}>
+                        "{startup.tagline}"
                       </p>
                     )}
                   </div>
-                </div>
 
-                {/* Meta strip — founded · sector · city · stage */}
-                <div style={{ display: "flex", flexWrap: "wrap", borderTop: "1px solid var(--rule)" }}>
-                  {([
-                    startup.founded_year && { label: "Founded",  value: String(startup.founded_year) },
-                    (startup.industry || startup.category) && { label: "Sector", value: startup.industry || startup.category },
-                    startup.city         && { label: "Based In", value: startup.city },
-                    startup.funding_stage && { label: "Stage",   value: startup.funding_stage },
-                  ] as any[])
-                    .filter(Boolean)
-                    .map((item: any, i: number) => (
-                      <div key={i} style={{
-                        display: "flex", flexDirection: "column", justifyContent: "center",
-                        padding: "11px 20px",
-                        borderRight: "1px solid var(--rule)",
-                        borderBottom: "1px solid var(--rule)",
-                        background: i % 2 === 1 ? "var(--warm)" : "#fff",
-                      }}>
-                        <span className="uf-lbl" style={{ fontSize: "8px", color: "var(--ink4)", marginBottom: "3px" }}>{item.label}</span>
-                        <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--ink)", fontFamily: "'Source Serif 4',serif", whiteSpace: "nowrap" }}>{item.value}</span>
-                      </div>
-                    ))}
-                  {/* Live badge — pushed to end */}
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px", padding: "11px 20px", marginLeft: "auto", borderBottom: "1px solid var(--rule)" }}>
-                    <div className="dot" />
-                    <span className="uf-lbl" style={{ fontSize: "9px", color: "var(--pos)" }}>Verified · Live</span>
+                  {/* Action Buttons */}
+                  <div style={{ display: "flex", gap: "10px" }} className="hide-mob">
+                    <button style={{ height: "40px", padding: "0 16px", border: "1.5px solid var(--ink)", background: "none", cursor: "pointer" }}><Share2 size={16} /></button>
+                    <button style={{ height: "40px", padding: "0 20px", background: "var(--ink)", color: "#fff", display: "flex", alignItems: "center", gap: "8px", fontWeight: 600, fontSize: "12px", cursor: "pointer" }}>
+                      <Download size={14} /> Intelligence Report
+                    </button>
                   </div>
                 </div>
 
+                {/* ── KEY METRICS STRIP ── */}
+                <div style={{ display: "flex", flexWrap: "wrap", border: "1px solid var(--rule)", marginTop: "40px" }}>
+                  {[
+                    { label: "Founding Year", val: startup.founded_year || "2020" },
+                    { label: "Primary Sector", val: startup.industry || startup.category },
+                    { label: "Headquarters", val: startup.city || "India" },
+                    { label: "Growth Stage", val: startup.funding_stage || "Early Stage" },
+                    { label: "Registry ID", val: `UF-${startup.id.slice(0,6).toUpperCase()}` },
+                  ].map((m, i) => (
+                    <div key={i} className="meta-cell" style={{ background: i % 2 === 1 ? "var(--warm)" : "#fff" }}>
+                      <span className="uf-lbl" style={{ fontSize: "8px", marginBottom: "4px" }}>{m.label}</span>
+                      <span style={{ fontSize: "14px", fontWeight: 700 }}>{m.val}</span>
+                    </div>
+                  ))}
+                  <div style={{ flex: 1, padding: "12px 20px", background: "var(--off)", display: "flex", alignItems: "center", justifyContent: "flex-end" }} className="hide-mob">
+                     <span className="uf-lbl" style={{ color: "var(--pos)", fontSize: "9px" }}>● Institutional Record</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* StartupDetail — completely unchanged */}
-          <StartupDetail startup={startup as Startup} />
-
+          {/* ── DATA BODY ── */}
+          <div style={{ background: "var(--off)", padding: "20px 0 60px" }}>
+            <div className="uf-wrap">
+               <StartupDetail startup={startup as Startup} />
+            </div>
+          </div>
         </main>
 
         <Footer />
