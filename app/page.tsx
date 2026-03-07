@@ -310,7 +310,7 @@ const FOUNDERS = [
   context: "Building a modern platform connecting students with real opportunities",
   valuation: "Private",
   funding: "Bootstrapped",
-  founded: "2024",
+  founded: "2020",
 
   imgSrc: "/luckyinternadda.jpg",
 
