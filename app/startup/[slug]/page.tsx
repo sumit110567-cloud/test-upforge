@@ -1,5 +1,5 @@
 // app/startup/[slug]/page.tsx
-// ZERO logic changes — UI wrapper only upgraded
+// ZERO logic changes — UI upgraded to match UpForge broadsheet design system
 
 import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
@@ -14,7 +14,7 @@ interface PageProps {
   params: Promise<{ slug: string }>
 }
 
-// ─── METADATA — unchanged logic, richer keywords ─────────────────────────────
+// ─── METADATA — unchanged logic ───────────────────────────────────────────────
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
   const supabase = await createClient()
@@ -130,213 +130,228 @@ export default async function StartupPage({ params }: PageProps) {
     },
   }
 
+  const updatedAt = new Date().toLocaleTimeString("en-IN", {
+    hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata", hour12: true,
+  })
+  const todayStr = new Date().toLocaleDateString("en-IN", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata",
+  })
+
   return (
-    <div
-      className="flex min-h-screen flex-col bg-[#F7F5F0]"
-      style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
-    >
-      {/* Structured Data — unchanged */}
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
       <style>{`
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(14px); }
-          to   { opacity: 1; transform: translateY(0); }
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap');
+        *,*::before,*::after{box-sizing:border-box}
+        .uf{background:#fff;color:#1a1a1a;font-family:'Source Serif 4',Georgia,serif;-webkit-font-smoothing:antialiased}
+        .uf-d{font-family:'Playfair Display',Georgia,serif;letter-spacing:-.02em}
+        .uf-m{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+        .uf-lbl{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#888;font-family:'Source Serif 4',Georgia,serif}
+        :root{--ink:#1a1a1a;--ink2:#444;--ink3:#777;--ink4:#aaa;--rule:#e5e5e5;--rl:#f0f0f0;--bg:#fff;--off:#fafaf8;--warm:#fdf8f0;--gold:#b8860b;--gr:#c9960d;--pos:#1a6b3a;--neg:#b91c1c}
+        .uf-wrap{max-width:1200px;margin:0 auto;padding:0 clamp(16px,3vw,32px)}
+
+        /* animations */
+        @keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+        .a0{animation:up .45s .04s cubic-bezier(.16,1,.3,1) both}
+        .a1{animation:up .45s .14s cubic-bezier(.16,1,.3,1) both}
+        .a2{animation:up .45s .24s cubic-bezier(.16,1,.3,1) both}
+
+        /* live dot */
+        .dot{width:6px;height:6px;border-radius:50%;background:#16a34a;flex-shrink:0;position:relative}
+        .dot::after{content:'';position:absolute;inset:-3px;border-radius:50%;background:rgba(22,163,74,.2);animation:pulse 2s ease-in-out infinite}
+        @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(2);opacity:0}}
+
+        /* pill */
+        .pill{display:inline-flex;align-items:center;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border:1px solid currentColor;font-family:'Source Serif 4',Georgia,serif}
+
+        /* verified badge */
+        .vbadge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--pos);border:1px solid var(--pos);padding:3px 9px;font-family:'Source Serif 4',Georgia,serif}
+
+        /* breadcrumb */
+        .bc-link{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink4);font-family:'Source Serif 4',Georgia,serif;transition:color .15s}
+        .bc-link:hover{color:var(--ink)}
+
+        /* cert box */
+        .cert{border:2px solid var(--ink);background:#fff;position:relative;overflow:hidden}
+        .cert-corner{position:absolute;width:20px;height:20px;border-color:var(--gold)}
+        .cert-tl{top:0;left:0;border-right-width:2px;border-bottom-width:2px;border-style:solid}
+        .cert-tr{top:0;right:0;border-left-width:2px;border-bottom-width:2px;border-style:solid}
+        .cert-bl{bottom:0;left:0;border-right-width:2px;border-top-width:2px;border-style:solid}
+        .cert-br{bottom:0;right:0;border-left-width:2px;border-top-width:2px;border-style:solid}
+
+        /* dot grid texture */
+        .dot-grid{position:absolute;inset:0;pointer-events:none;opacity:.025;
+          background-image:radial-gradient(circle,#000 1px,transparent 1px);background-size:24px 24px}
+
+        /* seal */
+        .uf-seal{width:52px;height:52px;background:var(--ink);border:1px solid #333;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0}
+
+        /* meta strip */
+        .meta-strip{border-top:1px solid var(--rule);background:var(--off);padding:10px clamp(16px,3vw,32px);display:flex;flex-wrap:wrap;align-items:center;gap:6px 20px}
+        .meta-item{display:flex;align-items:center;gap:6px}
+        .meta-sep{color:var(--rule);font-size:14px}
+
+        /* trust badges */
+        .trust-badge{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+
+        /* thick rule */
+        .rule-t{height:2px;background:var(--ink)}
+
+        @media(max-width:640px){
+          .hide-mob{display:none !important}
+          .cert-inner{flex-direction:column !important}
+          .trust-row{flex-direction:column !important;align-items:flex-start !important}
         }
-        .fu-0 { animation: fadeUp .45s .04s ease both; }
-        .fu-1 { animation: fadeUp .45s .14s ease both; }
-        .fu-2 { animation: fadeUp .45s .24s ease both; }
       `}</style>
 
-      <Navbar />
+      <div className="uf" style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+        <Navbar />
 
-      <main className="flex-1">
+        <main style={{ flex: 1 }}>
 
-        {/* Sponsor banner — unchanged condition */}
-        {startup.is_sponsored && (
-          <div
-            className="bg-[#1C1C1C] text-[#E8C547] text-center py-2.5 text-[9px] font-bold uppercase tracking-[0.35em]"
-            style={{ fontFamily: "system-ui, sans-serif" }}
-          >
-            ★ &nbsp; Featured Startup · Sponsored Listing on UpForge
-          </div>
-        )}
+          {/* Sponsor banner — unchanged condition */}
+          {startup.is_sponsored && (
+            <div style={{
+              background: "var(--ink)", color: "var(--gold)", textAlign: "center",
+              padding: "10px", fontSize: "9px", fontWeight: 700, letterSpacing: "0.35em",
+              textTransform: "uppercase", fontFamily: "'Source Serif 4',serif",
+            }}>
+              ★ &nbsp; Featured Startup · Sponsored Listing on UpForge
+            </div>
+          )}
 
-        {/* ── PRIDE HEADER BAND ───────────────────────────────────────────────
-            Pure visual addition — no data or logic touched.
-            Gives founders a "this is official" moment.
-        ─────────────────────────────────────────────────────────────────────── */}
-        <div className="border-b-2 border-[#1C1C1C] bg-[#F7F5F0] fu-0">
-          <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+          {/* ── PRIDE HEADER BAND ── */}
+          <div className="a0" style={{ borderBottom: "2px solid var(--ink)" }}>
+            <div className="uf-wrap">
 
-            {/* Breadcrumb */}
-            <nav
-              aria-label="Breadcrumb"
-              className="flex items-center gap-1 py-3 border-b border-[#E8E4DC]"
-              style={{ fontFamily: "system-ui, sans-serif" }}
-            >
-              <a href="/" className="text-[10px] text-[#999] hover:text-[#1C1C1C] transition-colors uppercase tracking-wider">
-                Home
-              </a>
-              <ChevronRight className="w-3 h-3 text-[#CCC]" />
-              <a href="/startup" className="text-[10px] text-[#999] hover:text-[#1C1C1C] transition-colors uppercase tracking-wider">
-                Registry
-              </a>
-              <ChevronRight className="w-3 h-3 text-[#CCC]" />
-              <span className="text-[10px] text-[#1C1C1C] font-semibold uppercase tracking-wider truncate max-w-[180px]">
-                {startup.name}
-              </span>
-            </nav>
-
-            {/* Registry certificate block */}
-            <div className="py-6 sm:py-8">
-              <div className="border-2 border-[#1C1C1C] bg-white relative overflow-hidden">
-
-                {/* Gold corner ticks — editorial craft detail */}
-                <span className="absolute top-0  left-0  w-6 h-6 border-r-2 border-b-2 border-[#E8C547] pointer-events-none" />
-                <span className="absolute top-0  right-0 w-6 h-6 border-l-2 border-b-2 border-[#E8C547] pointer-events-none" />
-                <span className="absolute bottom-0 left-0  w-6 h-6 border-r-2 border-t-2 border-[#E8C547] pointer-events-none" />
-                <span className="absolute bottom-0 right-0 w-6 h-6 border-l-2 border-t-2 border-[#E8C547] pointer-events-none" />
-
-                {/* Subtle dot-grid texture */}
-                <div
-                  className="absolute inset-0 pointer-events-none opacity-[0.025]"
-                  style={{
-                    backgroundImage:
-                      "radial-gradient(circle, #000 1px, transparent 1px)",
-                    backgroundSize: "24px 24px",
-                  }}
-                />
-
-                <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 px-6 sm:px-8 py-6 sm:py-7">
-
-                  {/* LEFT — UF seal + name */}
-                  <div className="flex items-center gap-4 sm:gap-5 min-w-0">
-                    {/* Seal block */}
-                    <div className="flex-shrink-0 w-14 h-14 bg-[#1C1C1C] flex flex-col items-center justify-center gap-0.5 border border-[#333]">
-                      <span
-                        className="text-[#E8C547] font-black text-[15px] leading-none"
-                        style={{ fontFamily: "system-ui, sans-serif" }}
-                      >
-                        UF
-                      </span>
-                      <span
-                        className="text-white/25 text-[6px] uppercase tracking-[0.2em] leading-none"
-                        style={{ fontFamily: "system-ui, sans-serif" }}
-                      >
-                        REG
-                      </span>
-                    </div>
-
-                    <div className="min-w-0">
-                      <div
-                        className="flex items-center gap-2 mb-1"
-                        style={{ fontFamily: "system-ui, sans-serif" }}
-                      >
-                        <span className="text-[9px] text-[#BBB] uppercase tracking-[0.22em]">
-                          Official Registry Profile
-                        </span>
-                        <span className="text-[#DDD]">·</span>
-                        <span className="text-[9px] font-mono text-[#888] tracking-wider">
-                          UF–{String(startup.id || "000001").slice(-6).toUpperCase()}
-                        </span>
-                      </div>
-                      <h1
-                        className="text-2xl sm:text-3xl font-bold text-[#1C1C1C] leading-tight tracking-tight truncate"
-                      >
-                        {startup.name}
-                      </h1>
-                      {startup.tagline && (
-                        <p
-                          className="text-sm text-[#777] italic mt-0.5 truncate"
-                          style={{ fontFamily: "'Georgia', serif" }}
-                        >
-                          "{startup.tagline}"
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* RIGHT — trust badges */}
-                  <div
-                    className="flex flex-row lg:flex-col items-start lg:items-end gap-2 flex-shrink-0"
-                    style={{ fontFamily: "system-ui, sans-serif" }}
-                  >
-                    {/* Verified badge */}
-                    <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3 py-1.5">
-                      <BadgeCheck className="w-3.5 h-3.5 text-emerald-600" />
-                      <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-[0.16em]">
-                        Verified Startup
-                      </span>
-                    </div>
-
-                    {/* Mini trust row */}
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-1 text-[9px] text-[#AAA]">
-                        <Shield className="w-3 h-3" />
-                        <span>Independently Reviewed</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-[9px] text-[#AAA]">
-                        <Globe className="w-3 h-3" />
-                        <span>Publicly Indexed</span>
-                      </div>
-                    </div>
-                  </div>
+              {/* Meta strip — date + trust signals */}
+              <div style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                padding: "10px 0", borderBottom: "1px solid var(--rule)", flexWrap: "wrap", gap: "8px",
+              }}>
+                <span className="uf-lbl" style={{ color: "var(--ink2)", fontWeight: 700 }}>{todayStr} · Vol. II</span>
+                <div className="hide-mob" style={{ display: "flex", gap: "20px" }}>
+                  {["Independent", "Ad-Free", "Verified"].map((t) => (
+                    <span key={t} style={{ fontSize: "10px", color: "var(--ink4)", letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: "'Source Serif 4',serif" }}>✓ {t}</span>
+                  ))}
                 </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <div className="dot" />
+                  <span className="uf-lbl" style={{ color: "var(--ink4)" }}>Updated {updatedAt} IST</span>
+                </div>
+              </div>
 
-                {/* Bottom meta strip */}
-                <div
-                  className="border-t border-[#EEEAE3] bg-[#FAFAF8] px-6 sm:px-8 py-3 flex flex-wrap items-center gap-x-6 gap-y-2"
-                  style={{ fontFamily: "system-ui, sans-serif" }}
-                >
-                  {[
-                    startup.founded_year && { label: "Founded", value: startup.founded_year },
-                    (startup.industry || startup.category) && { label: "Sector", value: startup.industry || startup.category },
-                    startup.city && { label: "Based in", value: startup.city },
-                    startup.funding_stage && { label: "Stage", value: startup.funding_stage },
-                  ]
-                    .filter(Boolean)
-                    .map((item: any, i: number, arr) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <div>
-                          <span className="text-[9px] text-[#BBB] uppercase tracking-[0.18em]">
-                            {item.label}
-                          </span>
-                          <span className="text-[9px] text-[#BBB] mx-1">·</span>
-                          <span className="text-[11px] font-semibold text-[#444]">
-                            {item.value}
+              {/* Breadcrumb */}
+              <nav aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", gap: "4px", padding: "12px 0", borderBottom: "1px solid var(--rl)" }}>
+                <a href="/" className="bc-link">Home</a>
+                <ChevronRight style={{ width: "11px", height: "11px", color: "var(--ink4)" }} />
+                <a href="/startup" className="bc-link">Registry</a>
+                <ChevronRight style={{ width: "11px", height: "11px", color: "var(--ink4)" }} />
+                <span style={{ fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink)", fontWeight: 700, fontFamily: "'Source Serif 4',serif", maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {startup.name}
+                </span>
+              </nav>
+
+              {/* Certificate block */}
+              <div style={{ padding: "clamp(16px,4vw,32px) 0" }}>
+                <div className="cert">
+                  {/* Corner decorations */}
+                  <span className="cert-corner cert-tl" />
+                  <span className="cert-corner cert-tr" />
+                  <span className="cert-corner cert-bl" />
+                  <span className="cert-corner cert-br" />
+                  {/* Dot grid texture */}
+                  <div className="dot-grid" />
+
+                  {/* Main content */}
+                  <div className="cert-inner" style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "clamp(16px,4vw,40px)", padding: "clamp(18px,4vw,32px) clamp(18px,4vw,32px) clamp(14px,3vw,24px)" }}>
+
+                    {/* LEFT: Seal + name */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "clamp(12px,3vw,20px)", flex: 1, minWidth: 0 }}>
+                      {/* UF Seal */}
+                      <div className="uf-seal">
+                        <span style={{ color: "var(--gold)", fontWeight: 900, fontSize: "15px", lineHeight: 1, fontFamily: "'Playfair Display',Georgia,serif" }}>UF</span>
+                        <span className="uf-m" style={{ color: "rgba(255,255,255,.25)", fontSize: "6px", letterSpacing: "0.2em", lineHeight: 1 }}>REG</span>
+                      </div>
+
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px", flexWrap: "wrap" }}>
+                          <span className="uf-lbl" style={{ color: "var(--ink4)", fontSize: "9px" }}>Official Registry Profile</span>
+                          <span style={{ color: "var(--rule)" }}>·</span>
+                          <span className="uf-m" style={{ fontSize: "9px", color: "var(--ink4)", letterSpacing: "0.1em" }}>
+                            UF–{String(startup.id || "000001").slice(-6).toUpperCase()}
                           </span>
                         </div>
-                        {i < arr.length - 1 && (
-                          <span className="text-[#DDD] hidden sm:inline">|</span>
+                        <h1 className="uf-d" style={{ fontSize: "clamp(1.6rem,4vw,2.8rem)", fontWeight: 900, color: "var(--ink)", lineHeight: 1, marginBottom: "6px" }}>
+                          {startup.name}
+                        </h1>
+                        {startup.tagline && (
+                          <p style={{ fontSize: "13px", color: "var(--ink3)", fontStyle: "italic", fontFamily: "'Playfair Display',Georgia,serif", lineHeight: 1.4 }}>
+                            "{startup.tagline}"
+                          </p>
                         )}
                       </div>
-                    ))}
+                    </div>
 
-                  <div className="ml-auto flex items-center gap-1.5">
-                    <span className="relative flex h-1.5 w-1.5 flex-shrink-0">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                    </span>
-                    <span className="text-[9px] text-[#AAA] uppercase tracking-wider">
-                      Live Profile
-                    </span>
+                    {/* RIGHT: Trust badges */}
+                    <div className="trust-row" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px", flexShrink: 0 }}>
+                      <div className="vbadge">
+                        <BadgeCheck style={{ width: "11px", height: "11px" }} />
+                        Verified Startup
+                      </div>
+                      <div style={{ display: "flex", gap: "14px" }}>
+                        <div className="trust-badge" style={{ color: "var(--ink4)" }}>
+                          <Shield style={{ width: "11px", height: "11px" }} />
+                          <span>Independently Reviewed</span>
+                        </div>
+                        <div className="trust-badge hide-mob" style={{ color: "var(--ink4)" }}>
+                          <Globe style={{ width: "11px", height: "11px" }} />
+                          <span>Publicly Indexed</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bottom meta strip */}
+                  <div className="meta-strip">
+                    {[
+                      startup.founded_year   && { label: "Founded", value: startup.founded_year },
+                      (startup.industry || startup.category) && { label: "Sector", value: startup.industry || startup.category },
+                      startup.city          && { label: "Based In", value: startup.city },
+                      startup.funding_stage && { label: "Stage",    value: startup.funding_stage },
+                    ]
+                      .filter(Boolean)
+                      .map((item: any, i: number, arr) => (
+                        <div key={i} className="meta-item">
+                          <span className="uf-lbl" style={{ fontSize: "9px", color: "var(--ink4)" }}>{item.label}</span>
+                          <span style={{ color: "var(--rl)", fontSize: "12px" }}>·</span>
+                          <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--ink2)", fontFamily: "'Source Serif 4',serif" }}>{item.value}</span>
+                          {i < arr.length - 1 && <span className="meta-sep hide-mob">|</span>}
+                        </div>
+                      ))}
+
+                    {/* Live indicator — pushed right */}
+                    <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "6px" }}>
+                      <div className="dot" />
+                      <span className="uf-lbl" style={{ fontSize: "9px", color: "var(--ink4)" }}>Live Profile</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* StartupDetail — completely unchanged */}
-        <StartupDetail startup={startup as Startup} />
+          {/* StartupDetail — completely unchanged */}
+          <StartupDetail startup={startup as Startup} />
 
-      </main>
+        </main>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </>
   )
 }
