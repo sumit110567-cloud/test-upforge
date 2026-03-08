@@ -347,7 +347,7 @@ export function ReportGenerator() {
               ].map(({ l, f, p }) => (
                 <div key={f}>
                   <label className="uf-lbl2">{l}</label>
-                  <input className="uf-inp" placeholder={p} value={(form as Record<string, string>)[f]} onChange={upd(f as keyof FormData)} />
+                  <input className="uf-inp" placeholder={p} value={form[f as keyof FormData]} onChange={upd(f as keyof FormData)} />
                 </div>
               ))}
               <div>
