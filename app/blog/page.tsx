@@ -24,7 +24,7 @@ const HERO_POST = {
   category: "Leadership",
   date: "March 2026",
   readTime: "7 min",
-  img: "https://images.unsplash.com/photo-1540747913346-19212a4f73ef?w=1400&q=85&auto=format",
+  img: "https://wpleague.in/wp-content/uploads/2026/03/Josh-Folder-2026-03-05T232154.662-1772733178087-1024x536.webp",
   tag: "Trending",
 };
 
@@ -47,7 +47,7 @@ const SECONDARY_POSTS = [
     category: "Founder Story",
     date: "February 2026",
     readTime: "5 min",
-    img: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=900&q=80&auto=format",
+    img: "https://www.businessoutreach.in/wp-content/uploads/2023/08/Nithin-Kamath-1.jpg",
     tag: null,
   },
 ];
