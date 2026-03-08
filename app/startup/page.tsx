@@ -41,8 +41,8 @@ const SECTORS = [
   { name: "EdTech",       hot: false },
 ];
 
-const FIRST_PAGE_ITEMS = 21; // 3 featured + 18 grid
-const OTHER_PAGE_ITEMS = 18;
+const FIRST_PAGE_ITEMS = 23; // 3 featured + 18 grid
+const OTHER_PAGE_ITEMS = 20;
 
 export default async function StartupPage({ searchParams }: Props) {
   const supabase = await createClient();
