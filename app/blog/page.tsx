@@ -167,8 +167,6 @@ export default function BlogIndexPage() {
           --green:  #15803D;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--parch); }
 
         /* ── ANIMATIONS ── */
         @keyframes fadeUp {
