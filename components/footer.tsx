@@ -222,7 +222,7 @@ export function Footer() {
 
           <div className="flex items-center gap-5">
 
-            <a href="#" className="text-[#6B6B6B] hover:text-[#C59A2E]">
+            <a href="https://www.linkedin.com/company/upforge-india" className="text-[#6B6B6B] hover:text-[#C59A2E]">
               <Linkedin size={18} />
             </a>
 
@@ -234,7 +234,7 @@ export function Footer() {
               <Instagram size={18} />
             </a>
 
-            <a href="#" className="text-[#6B6B6B] hover:text-[#C59A2E]">
+            <a href="https://www.youtube.com/@upforge-ind" className="text-[#6B6B6B] hover:text-[#C59A2E]">
               <Youtube size={18} />
             </a>
 
