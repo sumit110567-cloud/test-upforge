@@ -1,729 +1,603 @@
-// app/startup/sarvam-ai/page.tsx
-import type { Metadata } from "next";
-import Link from "next/link";
+"use client"
 
-// ─── SEO ──────────────────────────────────────────────────────────────────────
-export const metadata: Metadata = {
-  title: "Sarvam AI — India's Sovereign AI Startup: Founders, Funding & Models | UpForge",
+// app/startup/sarvam-ai/page.tsx
+// UpForge — Sarvam AI · Vivek Raghavan Founder Chronicle
+// SEO: full structured data, breadcrumbs, OG, Twitter metadata
+
+import { useState, useEffect } from "react"
+import Link from "next/link"
+import { ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react"
+
+// ─── METADATA (export from layout/page for Next.js App Router) ─────────────────
+// In your app/startup/sarvam-ai/page.tsx, export this metadata object:
+export const metadata = {
+  title: "Vivek Raghavan & Pratyush Kumar — Sarvam AI Founders | India's Own LLM | UpForge",
   description:
-    "Deep profile of Sarvam AI — India's first sovereign LLM company. Founders Vivek Raghavan & Pratyush Kumar, $53.8M raised, Sarvam-105B model, IndiaAI Mission, Sarvam Kaze wearable, and why this startup could define India's AI decade.",
+    "Sarvam AI is building India's sovereign large language models for Hindi, Tamil, Telugu and 20+ Indian languages. Co-founders Vivek Raghavan & Pratyush Kumar raised $70M+. Read the full founder story on UpForge.",
   keywords: [
-    "Sarvam AI startup India",
-    "Sarvam AI founders Vivek Raghavan Pratyush Kumar",
-    "Sarvam AI funding valuation 2026",
-    "India sovereign AI model",
-    "Sarvam 105B model",
-    "IndiaAI Mission startup",
-    "Indian language AI model",
-    "Sarvam AI vs ChatGPT Gemini",
-    "Sarvam Kaze wearable AI",
-    "best AI startups India 2026",
+    "Sarvam AI founder", "Vivek Raghavan", "Pratyush Kumar", "India AI startup",
+    "Indian LLM", "Bharat AI model", "Sarvam AI funding", "Indian language AI",
+    "sovereign AI India", "AI unicorn India 2025", "Sarvam AI $1 billion",
+    "AI4Bharat", "UpForge startup profile"
   ],
+  alternates: { canonical: "https://upforge.in/startup/sarvam-ai" },
   openGraph: {
-    title: "Sarvam AI — India's Sovereign AI Startup | UpForge",
-    description:
-      "From IIT research labs to Bharat Mandapam — how two IITians are building India's answer to OpenAI. Full profile: founders, funding, models, government contracts.",
+    title: "Sarvam AI — India's Own LLM | Vivek Raghavan & Pratyush Kumar | UpForge",
+    description: "Building AI infrastructure for India's 1.4 billion people — in their own languages. Sarvam AI founder story, funding, valuation & insights on UpForge.",
     url: "https://upforge.in/startup/sarvam-ai",
-    type: "article",
-    images: [
-      {
-        url: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&q=85",
-        width: 1200,
-        height: 630,
-        alt: "Sarvam AI — India's Sovereign AI Startup Profile",
-      },
-    ],
+    siteName: "UpForge",
+    images: [{ url: "https://upforge.in/og/sarvam-ai.png", width: 1200, height: 630 }],
+    locale: "en_IN", type: "article",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sarvam AI — India's Sovereign AI Startup | UpForge",
-    description:
-      "$53.8M raised. Sarvam-105B model. Government-backed. Two IITians building India's sovereign AI stack.",
+    title: "Sarvam AI — Vivek Raghavan's Mission to Build India's Own AI | UpForge",
+    description: "India's sovereign LLM story — $70M raised, 22 Indian languages, and a vision bigger than GPT. Full profile on UpForge.",
+    images: ["https://upforge.in/og/sarvam-ai.png"],
   },
-  alternates: { canonical: "https://upforge.in/startup/sarvam-ai" },
-};
+}
 
-// ─── JSON-LD ──────────────────────────────────────────────────────────────────
-const jsonLd = [
-  {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: "Sarvam AI — India's Sovereign AI Startup: Founders, Funding & Models",
-    description:
-      "Deep profile of Sarvam AI — India's first sovereign LLM company built by Vivek Raghavan and Pratyush Kumar.",
-    image: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&q=85",
-    datePublished: "2026-03-09",
-    dateModified: "2026-03-09",
-    author: { "@type": "Organization", name: "UpForge Editorial", url: "https://upforge.in" },
-    publisher: {
-      "@type": "Organization",
-      name: "UpForge",
-      logo: { "@type": "ImageObject", url: "https://upforge.in/logo.jpg" },
-    },
-    mainEntityOfPage: { "@type": "WebPage", "@id": "https://upforge.in/startup/sarvam-ai" },
-    breadcrumb: {
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: "https://upforge.in" },
-        { "@type": "ListItem", position: 2, name: "Startup Registry", item: "https://upforge.in/startup" },
-        { "@type": "ListItem", position: 3, name: "AI / ML", item: "https://upforge.in/startup?sector=AI%2FML" },
-        { "@type": "ListItem", position: 4, name: "Sarvam AI", item: "https://upforge.in/startup/sarvam-ai" },
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "@id": "https://upforge.in/startup/sarvam-ai#article",
+      "headline": "Sarvam AI — Building India's Sovereign Large Language Models",
+      "description": "Sarvam AI co-founders Vivek Raghavan and Pratyush Kumar are building India's own LLMs for 22 Indian languages. Funded by Peak XV, Lightspeed and others. Full founder story on UpForge.",
+      "url": "https://upforge.in/startup/sarvam-ai",
+      "datePublished": "2026-03-01T00:00:00+05:30",
+      "dateModified": "2026-03-10T00:00:00+05:30",
+      "inLanguage": "en-IN",
+      "image": { "@type": "ImageObject", "url": "https://upforge.in/og/sarvam-ai.png", "width": 1200, "height": 630 },
+      "publisher": {
+        "@type": "Organization",
+        "name": "UpForge",
+        "url": "https://upforge.in",
+        "logo": { "@type": "ImageObject", "url": "https://upforge.in/logo.png" }
+      },
+      "author": { "@type": "Organization", "name": "UpForge Editorial" },
+      "about": [
+        {
+          "@type": "Person", "name": "Vivek Raghavan",
+          "jobTitle": "Co-Founder & CEO", "worksFor": { "@type": "Organization", "name": "Sarvam AI" },
+          "sameAs": ["https://www.linkedin.com/in/vivekraghavan/"]
+        },
+        {
+          "@type": "Person", "name": "Pratyush Kumar",
+          "jobTitle": "Co-Founder", "worksFor": { "@type": "Organization", "name": "Sarvam AI" }
+        }
       ],
+      "mentions": {
+        "@type": "Organization",
+        "name": "Sarvam AI",
+        "url": "https://www.sarvam.ai",
+        "foundingDate": "2023",
+        "foundingLocation": { "@type": "Place", "addressLocality": "Bengaluru", "addressCountry": "IN" },
+        "description": "Sarvam AI builds large language models optimised for Indian languages and use cases.",
+        "numberOfEmployees": { "@type": "QuantitativeValue", "minValue": 100 },
+        "sameAs": ["https://www.sarvam.ai", "https://twitter.com/sarvam_ai"]
+      }
     },
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "Sarvam AI",
-    url: "https://www.sarvam.ai",
-    foundingDate: "2023",
-    foundingLocation: "Bengaluru, Karnataka, India",
-    description: "India's full-stack sovereign AI platform building large language models for Indian languages and enterprise use cases.",
-    founder: [
-      { "@type": "Person", name: "Vivek Raghavan", jobTitle: "Co-Founder" },
-      { "@type": "Person", name: "Pratyush Kumar", jobTitle: "Co-Founder & CEO" },
-    ],
-    numberOfEmployees: { "@type": "QuantitativeValue", value: 114 },
-    sameAs: [
-      "https://en.wikipedia.org/wiki/Sarvam_AI",
-      "https://www.linkedin.com/company/sarvam-ai",
-    ],
-  },
-];
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://upforge.in" },
+        { "@type": "ListItem", "position": 2, "name": "Startup Registry", "item": "https://upforge.in/startup" },
+        { "@type": "ListItem", "position": 3, "name": "AI Startups India", "item": "https://upforge.in/top-ai-startups" },
+        { "@type": "ListItem", "position": 4, "name": "Sarvam AI", "item": "https://upforge.in/startup/sarvam-ai" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question", "name": "Who founded Sarvam AI?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Sarvam AI was co-founded by Vivek Raghavan and Pratyush Kumar in 2023 in Bengaluru, India. Both founders previously worked on AI4Bharat, a government-backed initiative to build language technology for Indian languages." }
+        },
+        {
+          "@type": "Question", "name": "How much funding has Sarvam AI raised?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Sarvam AI has raised over $70M in funding, including from investors like Peak XV Partners (formerly Sequoia India), Lightspeed India, and the Government of India's IndiaAI Mission." }
+        },
+        {
+          "@type": "Question", "name": "What does Sarvam AI build?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Sarvam AI builds large language models (LLMs) optimised for Indian languages including Hindi, Tamil, Telugu, Bengali, Kannada, Malayalam, and more. Their models are designed for Indian government services, enterprise applications, and consumer platforms." }
+        },
+        {
+          "@type": "Question", "name": "What is Sarvam AI's valuation?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Sarvam AI is valued at over $1 billion as of 2025, making it one of India's AI unicorns. The company received support from India's national AI Mission." }
+        }
+      ]
+    }
+  ]
+}
 
-// ─── DESIGN TOKENS ────────────────────────────────────────────────────────────
-const T = {
-  parch: "#F5F1E8", parch2: "#EDE9DF", parch3: "#E6E1D6",
-  ink: "#1A1208", ink2: "#2C2010", ink3: "#5A4A30", ink4: "#8C7D65", ink5: "#BBB0A0",
-  rule: "#C8C2B4", rule2: "#D8D2C4",
-  gold: "#B45309", gold2: "#D97706", gold3: "#92400E", goldlt: "#FEF3C7",
-  white: "#FDFCF9", green: "#15803D",
-  accent: "#6D28D9", // Sarvam purple
-  accentlt: "#EDE9FE",
-};
+const STATS = [
+  { l: "Valuation", v: "$1B+" },
+  { l: "Funding", v: "$70M+" },
+  { l: "Languages", v: "22 Indian" },
+  { l: "Founded", v: "2023" },
+  { l: "Employees", v: "100+" },
+  { l: "Govt Partner", v: "IndiaAI" },
+]
 
-// ─── PAGE ─────────────────────────────────────────────────────────────────────
-export default function SarvamAIProfile() {
+const TIMELINE = [
+  { year: "2023", event: "Sarvam AI founded in Bengaluru by Vivek Raghavan & Pratyush Kumar" },
+  { year: "Early 2024", event: "Sarvam-1 model launched — first Indian LLM trained on Indic languages at scale" },
+  { year: "Mid 2024", event: "$41M Series A raised. Peak XV & Lightspeed lead the round" },
+  { year: "Late 2024", event: "Partnered with Government of India's IndiaAI Mission as anchor partner" },
+  { year: "2025", event: "Total funding crosses $70M. Valuation exceeds $1 billion. Sarvam declared India's sovereign AI layer" },
+]
+
+const RELATED = [
+  { name: "Zepto", slug: "zepto", cat: "Quick Commerce", val: "$5.9B" },
+  { name: "Zerodha", slug: "zerodha", cat: "Fintech", val: "$8.2B" },
+  { name: "Zomato", slug: "zomato", cat: "FoodTech", val: "$25B+" },
+]
+
+export default function SarvamAIPage() {
+  const accent = "#2563EB"
+  const accentBg = "#EFF6FF"
+  const accentBorder = "#BFDBFE"
+
+  useEffect(() => {
+    const existing = document.getElementById("sarvam-ai-jsonld")
+    if (!existing) {
+      const s = document.createElement("script")
+      s.id = "sarvam-ai-jsonld"
+      s.type = "application/ld+json"
+      s.textContent = JSON.stringify(JSON_LD)
+      document.head.appendChild(s)
+    }
+    return () => { document.getElementById("sarvam-ai-jsonld")?.remove() }
+  }, [])
+
+  useEffect(() => {
+    document.title = "Vivek Raghavan — Sarvam AI Founder Story | India's Own LLM | UpForge"
+  }, [])
+
   return (
-    <>
-      {jsonLd.map((schema, i) => (
-        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      ))}
+    <div
+      style={{ minHeight: "100vh", background: "#F3EFE5", fontFamily: "'Georgia','Times New Roman',serif" }}
+      role="main"
+    >
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
+        .pf { font-family: 'Playfair Display', Georgia, serif !important; }
+        .dropcap::first-letter {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: 4em; font-weight: 900; line-height: 0.82;
+          float: left; margin-right: 0.08em; margin-top: 0.06em; color: #1A1208;
+        }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        .fade-up { animation: fadeUp .4s ease both; }
+        @media (min-width:640px) {
+          .ncols { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; }
+          .ncols > div { padding:0 1.5rem; border-right:1px solid #C8C2B4; }
+          .ncols > div:first-child { padding-left:0; }
+          .ncols > div:last-child { border-right:none; padding-right:0; }
+        }
+        .rule-blue { border-top: 3px double #2563EB; }
+        ::-webkit-scrollbar { width:3px; } ::-webkit-scrollbar-thumb { background:#C8C2B4; }
+      `}</style>
 
-      <article style={{ background: T.parch, fontFamily: "'Georgia','Times New Roman',serif", color: T.ink, lineHeight: 1.75 }}>
+      {/* ── HIDDEN H1 FOR SEO ── */}
+      <h1 className="sr-only">
+        Sarvam AI Founder Story — Vivek Raghavan & Pratyush Kumar | India's Sovereign AI | UpForge
+      </h1>
 
-        {/* ── BREADCRUMB ── */}
-        <div style={{ background: T.parch2, borderBottom: `1px solid ${T.rule}`, padding: "10px clamp(16px,4vw,40px)" }}>
-          <nav aria-label="Breadcrumb">
-            <ol style={{ display: "flex", flexWrap: "wrap", gap: 6, listStyle: "none", margin: 0, padding: 0 }}>
-              {[["Home", "/"], ["Startup Registry", "/startup"], ["AI / ML", "/startup?sector=AI%2FML"], ["Sarvam AI", "#"]].map(([label, href], i, arr) => (
-                <li key={label as string} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  {href === "#"
-                    ? <span style={{ fontSize: 11, color: T.ink4, fontFamily: "system-ui" }}>{label}</span>
-                    : <Link href={href as string} style={{ fontSize: 11, color: T.gold, textDecoration: "none", fontFamily: "system-ui" }}>{label}</Link>}
-                  {i < arr.length - 1 && <span style={{ color: T.rule, fontSize: 10 }}>›</span>}
-                </li>
-              ))}
-            </ol>
-          </nav>
-        </div>
+      {/* ── BREADCRUMB ── */}
+      <nav
+        aria-label="Breadcrumb"
+        className="px-4 sm:px-8 py-2"
+        style={{ background: "#EDE9DF", borderBottom: "1px solid #D8D2C4", fontFamily: "system-ui,sans-serif" }}
+      >
+        <ol className="flex flex-wrap items-center gap-1.5 text-[9px] text-[#AAA] uppercase tracking-widest"
+          itemScope itemType="https://schema.org/BreadcrumbList">
+          {[
+            { n: "UpForge", h: "/" },
+            { n: "Startup Registry", h: "/startup" },
+            { n: "AI Startups", h: "/top-ai-startups" },
+            { n: "Sarvam AI", h: "/startup/sarvam-ai" },
+          ].map((b, i, arr) => (
+            <li key={i} className="flex items-center gap-1.5"
+              itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+              {i < arr.length - 1
+                ? <Link href={b.h} itemProp="item" className="hover:text-[#1A1208] transition-colors"><span itemProp="name">{b.n}</span></Link>
+                : <span itemProp="name" className="text-[#1A1208] font-semibold">{b.n}</span>}
+              <meta itemProp="position" content={String(i + 1)} />
+              {i < arr.length - 1 && <ChevronRight className="w-2.5 h-2.5 text-[#C8C2B4]" />}
+            </li>
+          ))}
+        </ol>
+      </nav>
 
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 clamp(16px,4vw,40px)" }}>
-
-          {/* ══ MASTHEAD ══════════════════════════════════════════════════════════ */}
-          <header style={{ borderBottom: `3px solid ${T.ink}`, padding: "clamp(28px,5vw,56px) 0 clamp(20px,4vw,36px)" }}>
-
-            {/* Dateline row */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingBottom: 10, borderBottom: `1px solid ${T.rule}`, marginBottom: "clamp(18px,3vw,32px)", flexWrap: "wrap", gap: 8 }}>
-              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".22em", textTransform: "uppercase", color: T.ink4, fontFamily: "system-ui", margin: 0 }}>
-                9 March 2026 · UpForge Startup Intelligence · Bengaluru, India
-              </p>
-              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: T.accent, border: `1px solid ${T.accent}`, padding: "2px 10px", fontFamily: "system-ui" }}>AI / ML</span>
-                <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: T.green, border: `1px solid ${T.green}`, padding: "2px 10px", fontFamily: "system-ui" }}>✓ Verified</span>
-              </div>
-            </div>
-
-            {/* Main headline */}
-            <div style={{ textAlign: "center", paddingBottom: "clamp(18px,3vw,32px)", borderBottom: `1px solid ${T.rule}`, marginBottom: "clamp(16px,3vw,28px)" }}>
-              {/* Logo / initials badge */}
-              <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 72, height: 72, background: T.accent, marginBottom: 20, borderRadius: 4, border: `2px solid ${T.ink}` }}>
-                <span style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 28, fontWeight: 900, color: "white", letterSpacing: "-.03em" }}>SA</span>
-              </div>
-
-              <h1 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(2.2rem,5.5vw,4.5rem)", fontWeight: 900, lineHeight: 1.04, letterSpacing: "-.02em", color: T.ink, margin: "0 0 12px" }}>
-                Sarvam AI
-              </h1>
-              <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1rem,2.2vw,1.5rem)", fontStyle: "italic", color: T.accent, margin: "0 0 18px", fontWeight: 700 }}>
-                India's Full-Stack Sovereign AI Platform
-              </p>
-              <p style={{ fontSize: "clamp(14px,1.8vw,17px)", color: T.ink3, maxWidth: 700, margin: "0 auto 18px", fontStyle: "italic" }}>
-                Two IITians who built India's digital public infrastructure are now building India's AI brain — trained from scratch, for India's 22 languages, at government scale.
-              </p>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
-                <div style={{ height: 1, width: "clamp(40px,8vw,100px)", background: T.rule }} />
-                <span style={{ color: T.rule, fontSize: 14 }}>✦</span>
-                <div style={{ height: 1, width: "clamp(40px,8vw,100px)", background: T.rule }} />
-              </div>
-            </div>
-
-            {/* Byline */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 20px", fontSize: 11, color: T.ink4, fontFamily: "system-ui" }}>
-              <span>Profile by <strong style={{ color: T.ink3 }}>UpForge Research</strong></span>
-              <span style={{ color: T.rule }}>·</span>
-              <span>Founded August 2023</span>
-              <span style={{ color: T.rule }}>·</span>
-              <span>Bengaluru, Karnataka</span>
-              <span style={{ color: T.rule }}>·</span>
-              <span>18 min read</span>
-            </div>
-          </header>
-
-          {/* ── HERO IMAGE ── */}
-          <figure style={{ margin: "clamp(20px,4vw,36px) 0 0" }}>
-            <div style={{ position: "relative", overflow: "hidden", height: "clamp(220px,38vw,480px)" }}>
-              <img
-                src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&q=85"
-                alt="Sarvam AI — India sovereign AI language model startup Bengaluru"
-                style={{ width: "100%", height: "100%", objectFit: "cover", filter: "sepia(8%) contrast(110%)" }}
-              />
-              {/* Overlay headline on image */}
-              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(26,18,8,.82) 0%, rgba(26,18,8,.3) 50%, transparent 100%)" }} />
-              <div style={{ position: "absolute", bottom: "clamp(16px,3vw,32px)", left: "clamp(16px,3vw,32px)", right: "clamp(16px,3vw,32px)" }}>
-                <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1rem,2.5vw,1.6rem)", fontWeight: 700, color: "rgba(253,252,249,.9)", lineHeight: 1.35, margin: 0, maxWidth: 700 }}>
-                  "India has demonstrated it can harness technology differently. With GenAI, we have an opportunity to reimagine how this technology adds value to people's lives."
-                </p>
-                <p style={{ fontSize: 10, color: "rgba(253,252,249,.45)", margin: "8px 0 0", fontFamily: "system-ui" }}>— Vivek Raghavan, Co-Founder, Sarvam AI</p>
-              </div>
-            </div>
-            <figcaption style={{ fontSize: 10, color: T.ink5, marginTop: 8, fontFamily: "system-ui", fontStyle: "italic", paddingBottom: "clamp(16px,3vw,28px)", borderBottom: `1px solid ${T.rule}` }}>
-              Sarvam AI launched its sovereign 105B parameter model at the India AI Impact Summit, Bharat Mandapam, New Delhi, February 2026 — a first for any Indian startup.
-            </figcaption>
-          </figure>
-
-          {/* ══ BODY: 2-column layout ══════════════════════════════════════════ */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr clamp(260px,30%,320px)", gap: "clamp(28px,5vw,60px)", alignItems: "start", paddingTop: "clamp(24px,4vw,40px)" }}>
-
-            {/* ── LEFT: Main article ── */}
-            <div>
-
-              {/* ── KEY STATS GRID ── */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1.5px", border: `1.5px solid ${T.ink}`, background: T.ink, marginBottom: "clamp(24px,4vw,40px)" }}>
-                {[
-                  ["$53.8M", "Total Raised", "3 rounds"],
-                  ["~$200M", "Valuation", "Aug 2025"],
-                  ["₹29.1Cr", "Annual Revenue", "FY2025"],
-                  ["2023", "Founded", "August"],
-                  ["114", "Team Size", "As of 2025"],
-                  ["22+", "Indian Languages", "Supported"],
-                ].map(([v, l, s]) => (
-                  <div key={l as string} style={{ background: T.white, padding: "16px 14px", textAlign: "center" }}>
-                    <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,2rem)", fontWeight: 900, color: T.accent, margin: "0 0 4px", lineHeight: 1 }}>{v}</p>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: T.ink, margin: "0 0 2px", fontFamily: "system-ui" }}>{l}</p>
-                    <p style={{ fontSize: 9, color: T.ink5, margin: 0, fontFamily: "system-ui" }}>{s}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* ── OPENING ── */}
-              <p style={{ fontSize: "clamp(14px,1.6vw,16.5px)", lineHeight: 1.9, marginBottom: 20, color: T.ink2 }}>
-                <span style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(3rem,5vw,4.2rem)", fontWeight: 900, float: "left", lineHeight: 0.82, marginRight: 10, marginTop: 10, color: T.ink }}>I</span>
-                n August 2023, two Indian researchers who had spent their careers building technology for a billion people — one on Aadhaar's biometric backbone, one on open-source AI for Indian languages — decided that the most important thing they could do next was build India's own AI. Not fine-tune an American model. Not wrap OpenAI's API. Build from scratch, with Indian data, Indian compute, for Indian languages. They called the company Sarvam — Sanskrit for "all, everything, the whole."
-              </p>
-
-              <p style={{ fontSize: "clamp(14px,1.6vw,16px)", lineHeight: 1.9, marginBottom: 24, color: T.ink2 }}>
-                Within four months, Sarvam AI had raised $41 million in a seed-and-Series-A combined round — one of the fastest institutional rounds in Indian AI history. By February 2026, it had stood on the stage at Bharat Mandapam in New Delhi and demonstrated Sarvam-105B, a 105-billion-parameter model built on government GPU infrastructure. Not adapted from a foreign model — built from scratch, on Indian soil, with Indian data. That single fact changed the conversation about what Indian startups could do in artificial intelligence.
-              </p>
-
-              {/* §1 — Founders */}
-              <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "clamp(24px,4vw,36px) 0 18px", paddingTop: "clamp(16px,3vw,24px)", borderTop: `2px solid ${T.ink}` }}>
-                <span style={{ fontSize: 9, fontWeight: 800, color: T.gold, letterSpacing: ".2em", fontFamily: "system-ui" }}>§01</span>
-                <h2 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,1.9rem)", fontWeight: 900, margin: 0, color: T.ink }}>The Founders</h2>
-                <div style={{ flex: 1, height: 1, background: T.rule }} />
-              </div>
-
-              {/* 2-col founder cards */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5px", border: `1.5px solid ${T.ink}`, background: T.ink, marginBottom: 24 }}>
-                {[
-                  {
-                    name: "Dr. Pratyush Kumar",
-                    role: "Co-Founder & CEO",
-                    education: "B.Tech, IIT Bombay · PhD, ETH Zurich",
-                    prev: "IBM Research · Microsoft Research · IIT Madras (Faculty) · AI4Bharat",
-                    insight: "The researcher who built India's first open-source Hindi LLM (OpenHathi) before building a company. His PhD research on GPU design makes him one of the few AI CEOs who understands hardware as well as models.",
-                    img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80",
-                  },
-                  {
-                    name: "Dr. Vivek Raghavan",
-                    role: "Co-Founder",
-                    education: "B.Tech, IIT Delhi · PhD, Carnegie Mellon University",
-                    prev: "UIDAI / Aadhaar (12 years) · EkStep Foundation · Magma Design Automation · AI4Bharat",
-                    insight: "The man who helped enrol 1.4 billion Indians in Aadhaar now wants to give them AI. His experience operating at population scale — not startup scale — is Sarvam's structural advantage over every other AI startup in India.",
-                    img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80",
-                  },
-                ].map((f, i) => (
-                  <div key={i} style={{ background: T.white, padding: "clamp(14px,2.5vw,24px)" }}>
-                    <div style={{ display: "flex", gap: 14, alignItems: "flex-start", marginBottom: 14 }}>
-                      <div style={{ width: 54, height: 54, flexShrink: 0, borderRadius: "50%", overflow: "hidden", border: `2px solid ${T.ink}` }}>
-                        <img src={f.img} alt={f.name} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "sepia(14%)" }} />
-                      </div>
-                      <div>
-                        <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1rem,1.8vw,1.2rem)", fontWeight: 900, color: T.ink, margin: "0 0 3px" }}>{f.name}</p>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: T.accent, margin: "0 0 3px", fontFamily: "system-ui", textTransform: "uppercase", letterSpacing: ".1em" }}>{f.role}</p>
-                        <p style={{ fontSize: 10, color: T.ink4, margin: 0, fontFamily: "system-ui" }}>{f.education}</p>
-                      </div>
-                    </div>
-                    <p style={{ fontSize: 10.5, color: T.ink4, margin: "0 0 10px", fontFamily: "system-ui", fontStyle: "italic" }}>Previously: {f.prev}</p>
-                    <div style={{ background: T.accentlt, borderLeft: `3px solid ${T.accent}`, padding: "10px 12px" }}>
-                      <p style={{ fontSize: 11.5, color: T.ink2, margin: 0, lineHeight: 1.65 }}>{f.insight}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* §2 — The Origin Story */}
-              <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "clamp(24px,4vw,36px) 0 18px", paddingTop: "clamp(16px,3vw,24px)", borderTop: `1px solid ${T.rule}` }}>
-                <span style={{ fontSize: 9, fontWeight: 800, color: T.gold, letterSpacing: ".2em", fontFamily: "system-ui" }}>§02</span>
-                <h2 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,1.9rem)", fontWeight: 900, margin: 0, color: T.ink }}>The Origin Story</h2>
-                <div style={{ flex: 1, height: 1, background: T.rule }} />
-              </div>
-
-              <p style={{ fontSize: "clamp(14px,1.6vw,16px)", lineHeight: 1.9, marginBottom: 16, color: T.ink2 }}>
-                The story of Sarvam AI begins not in a garage or a dorm room but in a research lab at IIT Madras, where Pratyush Kumar was building AI tools for Indian languages under the AI4Bharat initiative — backed by Nandan Nilekani with a ₹36 crore grant. The lab produced India's first open-source Hindi language model, IndicBERT, and trained researchers who would go on to build the next generation of Indian AI. Kumar had been thinking about the gap for years: why did every major AI system work beautifully in English and struggle with Hindi, Tamil, Telugu?
-              </p>
-
-              <p style={{ fontSize: "clamp(14px,1.6vw,16px)", lineHeight: 1.9, marginBottom: 16, color: T.ink2 }}>
-                Vivek Raghavan brought a different perspective. He had spent twelve years working on Aadhaar — the world's largest biometric identity system — watching how digital infrastructure deployed at population scale could transform lives. When ChatGPT launched in November 2022, Raghavan saw what Kumar saw: a massive window that was about to open. India had 1.4 billion people who wanted to use AI. Almost none of them spoke English as their primary language. The models being built in San Francisco were not designed for them.
-              </p>
-
-              {/* Pull quote */}
-              <blockquote style={{ borderLeft: `4px solid ${T.accent}`, paddingLeft: 20, margin: "clamp(20px,4vw,32px) 0", background: T.accentlt, padding: "clamp(16px,3vw,24px)", borderLeft: `4px solid ${T.accent}` }}>
-                <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1rem,2vw,1.25rem)", fontWeight: 700, fontStyle: "italic", color: T.ink, margin: "0 0 10px", lineHeight: 1.65 }}>
-                  "We came across Kumar's work at AI4Bharat and were lost in the depths of his blog on spiritualism and AI. In him, we noticed a rare combination of a world-class researcher with boundless ambition and unusual clarity of thought about how to serve India's AI revolution."
-                </p>
-                <footer style={{ fontSize: 10, color: T.ink4, fontFamily: "system-ui" }}>— Harshjit Sethi, Managing Director, Peak XV Partners</footer>
-              </blockquote>
-
-              <p style={{ fontSize: "clamp(14px,1.6vw,16px)", lineHeight: 1.9, marginBottom: 24, color: T.ink2 }}>
-                They incorporated Sarvam AI in August 2023. Four months later, in December 2023, they announced a combined seed and Series A round of $41 million — led by Lightspeed Venture Partners, with Peak XV Partners and Khosla Ventures participating. It was one of the largest early-stage AI rounds in Indian history. The speed of it — from founding to $41M in under five months — reflected both the quality of the team and the global intensity of the AI investment moment.
-              </p>
-
-              {/* §3 — The Models */}
-              <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "clamp(24px,4vw,36px) 0 18px", paddingTop: "clamp(16px,3vw,24px)", borderTop: `1px solid ${T.rule}` }}>
-                <span style={{ fontSize: 9, fontWeight: 800, color: T.gold, letterSpacing: ".2em", fontFamily: "system-ui" }}>§03</span>
-                <h2 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,1.9rem)", fontWeight: 900, margin: 0, color: T.ink }}>The Models & Products</h2>
-                <div style={{ flex: 1, height: 1, background: T.rule }} />
-              </div>
-
-              <p style={{ fontSize: "clamp(14px,1.6vw,16px)", lineHeight: 1.9, marginBottom: 20, color: T.ink2 }}>
-                Sarvam's product strategy is a full stack — not just a single model, but the complete infrastructure needed to deploy Indian-language AI at enterprise and government scale. By February 2026, the company had released multiple models in rapid succession — what they called a "14-day launch streak" — each targeting a different part of the Indian AI stack.
-              </p>
-
-              {/* Model cards */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "1.5px", border: `1.5px solid ${T.ink}`, background: T.ink, marginBottom: 24 }}>
-                {[
-                  {
-                    name: "Sarvam-105B",
-                    codename: "Indus",
-                    params: "105 Billion Parameters",
-                    type: "Flagship Foundation Model",
-                    desc: "Mixture-of-Experts architecture activating ~9B parameters per token. 128,000-token context window for processing entire documents — balance sheets, legal filings, technical manuals — in a single prompt. Built from scratch on government GPU infrastructure under IndiaAI Mission. Available on iOS, Android, and web.",
-                    highlight: "First sovereign, scratch-built 100B+ parameter model by an Indian startup.",
-                    status: "Released Feb 2026",
-                  },
-                  {
-                    name: "Sarvam-30B",
-                    codename: "–",
-                    params: "30 Billion Parameters",
-                    type: "Efficient Foundation Model",
-                    desc: "Mixture-of-Experts design activating ~1B parameters per token. 32,000-token context window. Designed for real-time enterprise applications where cost and latency matter. Suitable for conversational agents, search, and document processing.",
-                    highlight: "Enterprise-grade efficiency at a fraction of the computational cost of frontier models.",
-                    status: "Released Feb 2026",
-                  },
-                  {
-                    name: "Sarvam Vision",
-                    codename: "–",
-                    params: "Multimodal Vision-Language",
-                    type: "Document Understanding & OCR",
-                    desc: "Vision-language model designed for Indian-script OCR and document understanding. Achieved 84.3% accuracy on olmOCR-Bench — outperforming Google Gemini 3 Pro, DeepSeek OCR v2, and ChatGPT. Excels at complex layouts, Indian scripts, and mathematical formulas in documents.",
-                    highlight: "Beats ChatGPT and Gemini on Indian-language OCR. Directly relevant to MSME and government use cases.",
-                    status: "Released Feb 2026",
-                  },
-                  {
-                    name: "Bulbul V3",
-                    codename: "–",
-                    params: "Speech Model",
-                    type: "Text-to-Speech (TTS)",
-                    desc: "High-quality, natural-sounding speech synthesis across 10+ Indian languages. Benchmark winner in Indian-language TTS quality. Powers Sarvam's voice-first product strategy and the UIDAI Aadhaar voice interaction system.",
-                    highlight: "Outperforms global TTS systems on Indian language naturalness benchmarks.",
-                    status: "Released 2025",
-                  },
-                  {
-                    name: "Saaras V3",
-                    codename: "–",
-                    params: "Speech-to-Text Model",
-                    type: "Automatic Speech Recognition (ASR)",
-                    desc: "Multi-language ASR covering 10+ Indian languages and dialects. Designed for noisy real-world environments — call centres, field recordings, government kiosks. Powers the Aadhaar voice feedback system deployed by UIDAI.",
-                    highlight: "Built for the acoustic realities of India — regional accents, background noise, code-switched speech.",
-                    status: "Production",
-                  },
-                ].map((m, i) => (
-                  <div key={i} style={{ background: i === 0 ? T.ink : T.white, padding: "clamp(14px,2.5vw,22px)", borderLeft: `4px solid ${i === 0 ? T.gold2 : T.accent}` }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 10, flexWrap: "wrap" }}>
-                      <div>
-                        <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 4 }}>
-                          <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1rem,2vw,1.3rem)", fontWeight: 900, color: i === 0 ? "#FDFCF9" : T.ink, margin: 0 }}>{m.name}</p>
-                          {m.codename !== "–" && <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 12, fontStyle: "italic", color: i === 0 ? T.gold2 : T.accent, margin: 0 }}>"Indus"</p>}
-                        </div>
-                        <p style={{ fontSize: 9.5, color: i === 0 ? "rgba(232,197,71,.7)" : T.ink4, margin: 0, fontFamily: "system-ui", textTransform: "uppercase", letterSpacing: ".1em" }}>{m.type} · {m.params}</p>
-                      </div>
-                      <span style={{ fontSize: 8, fontWeight: 700, color: T.green, border: `1px solid ${T.green}`, padding: "2px 8px", fontFamily: "system-ui", flexShrink: 0 }}>{m.status}</span>
-                    </div>
-                    <p style={{ fontSize: "clamp(12px,1.4vw,13.5px)", color: i === 0 ? "rgba(253,252,249,.75)" : T.ink3, margin: "0 0 10px", lineHeight: 1.7 }}>{m.desc}</p>
-                    <div style={{ background: i === 0 ? "rgba(232,197,71,.12)" : T.accentlt, borderLeft: `2px solid ${i === 0 ? T.gold2 : T.accent}`, padding: "7px 10px" }}>
-                      <p style={{ fontSize: 11, fontWeight: 700, color: i === 0 ? T.gold2 : T.accent, margin: 0, fontFamily: "system-ui" }}>★ {m.highlight}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* §4 — YouTube Video */}
-              <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "clamp(24px,4vw,36px) 0 18px", paddingTop: "clamp(16px,3vw,24px)", borderTop: `1px solid ${T.rule}` }}>
-                <span style={{ fontSize: 9, fontWeight: 800, color: T.gold, letterSpacing: ".2em", fontFamily: "system-ui" }}>§04</span>
-                <h2 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,1.9rem)", fontWeight: 900, margin: 0, color: T.ink }}>Watch: Sarvam AI in Their Own Words</h2>
-                <div style={{ flex: 1, height: 1, background: T.rule }} />
-              </div>
-
-              <p style={{ fontSize: "clamp(14px,1.6vw,16px)", lineHeight: 1.9, marginBottom: 18, color: T.ink2 }}>
-                The clearest way to understand what Sarvam is building — and why — is to hear it directly from the founders. The video below captures the Sarvam vision: why Indian-language AI matters, how a sovereign model is different from fine-tuning a foreign one, and what it means for India to own its AI infrastructure.
-              </p>
-
-              {/* YouTube embed */}
-              <div style={{ border: `1.5px solid ${T.ink}`, marginBottom: 24 }}>
-                {/* Video header */}
-                <div style={{ background: T.ink, padding: "10px 16px", display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".2em", textTransform: "uppercase", color: "rgba(255,255,255,.45)", fontFamily: "system-ui" }}>UpForge · Featured Video</span>
-                  <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,.1)" }} />
-                  <span style={{ fontSize: 9, fontWeight: 700, color: "#FF0000", fontFamily: "system-ui", letterSpacing: ".1em" }}>▶ YouTube</span>
-                </div>
-
-                {/* Actual YouTube embed — 16:9 */}
-                <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, background: "#000" }}>
-                  <iframe
-                    src="https://www.youtube.com/embed/l7pDuakyskI?rel=0&modestbranding=1&color=white"
-                    title="Sarvam AI — India's Sovereign AI Platform | Founders Interview"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                    loading="lazy"
-                    style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
-                  />
-                </div>
-
-                {/* Video caption */}
-                <div style={{ background: T.parch2, padding: "12px 16px", borderTop: `1px solid ${T.rule}` }}>
-                  <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 13, fontWeight: 700, color: T.ink, margin: "0 0 4px" }}>
-                    Sarvam AI — Building India's Sovereign AI Stack
-                  </p>
-                  <p style={{ fontSize: 10.5, color: T.ink4, margin: 0, fontFamily: "system-ui" }}>
-                    Co-founders Dr. Vivek Raghavan and Dr. Pratyush Kumar explain why India needs its own AI, what sovereign LLMs mean in practice, and how Sarvam's models are designed to serve 1.4 billion people in their own languages.
-                  </p>
-                </div>
-              </div>
-
-              {/* §5 — Government & Partnerships */}
-              <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "clamp(24px,4vw,36px) 0 18px", paddingTop: "clamp(16px,3vw,24px)", borderTop: `1px solid ${T.rule}` }}>
-                <span style={{ fontSize: 9, fontWeight: 800, color: T.gold, letterSpacing: ".2em", fontFamily: "system-ui" }}>§05</span>
-                <h2 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,1.9rem)", fontWeight: 900, margin: 0, color: T.ink }}>Government Mandate & Key Partnerships</h2>
-                <div style={{ flex: 1, height: 1, background: T.rule }} />
-              </div>
-
-              <p style={{ fontSize: "clamp(14px,1.6vw,16px)", lineHeight: 1.9, marginBottom: 16, color: T.ink2 }}>
-                The single most important strategic fact about Sarvam AI is this: in April 2025, India's Ministry of Electronics and Information Technology (MeitY) selected Sarvam as one of the companies to develop India's sovereign foundational AI model under the IndiaAI Mission. This is not a grant or an endorsement — it is a mandate. Sarvam was given access to government-supported GPU compute infrastructure to train models that would otherwise be impossibly expensive for a startup to build.
-              </p>
-
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5px", border: `1.5px solid ${T.ink}`, background: T.ink, marginBottom: 24 }}>
-                {[
-                  {
-                    partner: "IndiaAI Mission (MeitY)",
-                    type: "Government Mandate",
-                    desc: "Selected to build India's sovereign foundational LLM. Received government GPU compute (Nvidia hardware, Yotta data centres) for training Sarvam-105B from scratch.",
-                    significance: "Critical — removes the compute cost barrier that prevents most startups from training frontier models.",
-                  },
-                  {
-                    partner: "UIDAI (Aadhaar)",
-                    type: "Government Deployment",
-                    desc: "Deployed AI-driven voice interaction system for Aadhaar users. Enables voice-based feedback collection, detects overcharging by service providers. Covers hundreds of millions of users.",
-                    significance: "India's largest AI deployment in public digital infrastructure. Population-scale proof of concept.",
-                  },
-                  {
-                    partner: "Microsoft Azure",
-                    type: "Cloud Partnership",
-                    desc: "Partnership to build Indic voice LLM available on Azure cloud platform. Gives enterprise developers access to Sarvam's Indian-language models through Microsoft's global distribution network.",
-                    significance: "Enterprise distribution at global scale without Sarvam needing to build its own cloud.",
-                  },
-                  {
-                    partner: "AI Alliance (Meta + IBM)",
-                    type: "Global Consortium",
-                    desc: "One of 7 Indian members admitted to the AI Alliance global consortium in September 2024, alongside Infosys and AI4Bharat. Promotes open, safe AI development globally.",
-                    significance: "Signals global credibility beyond India's domestic AI ecosystem.",
-                  },
-                ].map(({ partner, type, desc, significance }, i) => (
-                  <div key={i} style={{ background: T.white, padding: "clamp(14px,2.5vw,20px)", borderTop: `3px solid ${T.accent}` }}>
-                    <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 13.5, fontWeight: 900, color: T.ink, margin: "0 0 4px" }}>{partner}</p>
-                    <p style={{ fontSize: 9, fontWeight: 700, color: T.accent, textTransform: "uppercase", letterSpacing: ".12em", margin: "0 0 8px", fontFamily: "system-ui" }}>{type}</p>
-                    <p style={{ fontSize: 12, color: T.ink3, margin: "0 0 10px", lineHeight: 1.65 }}>{desc}</p>
-                    <div style={{ background: T.accentlt, borderLeft: `2px solid ${T.accent}`, padding: "7px 10px" }}>
-                      <p style={{ fontSize: 10.5, color: T.accent, margin: 0, fontFamily: "system-ui", fontWeight: 600 }}>{significance}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* §6 — Sarvam Kaze */}
-              <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "clamp(24px,4vw,36px) 0 18px", paddingTop: "clamp(16px,3vw,24px)", borderTop: `1px solid ${T.rule}` }}>
-                <span style={{ fontSize: 9, fontWeight: 800, color: T.gold, letterSpacing: ".2em", fontFamily: "system-ui" }}>§06</span>
-                <h2 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,1.9rem)", fontWeight: 900, margin: 0, color: T.ink }}>The Hardware Bet: Sarvam Kaze</h2>
-                <div style={{ flex: 1, height: 1, background: T.rule }} />
-              </div>
-
-              {/* Kaze image */}
-              <figure style={{ margin: "0 0 20px" }}>
-                <div style={{ position: "relative", overflow: "hidden", height: "clamp(180px,28vw,320px)" }}>
-                  <img
-                    src="https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=900&q=85"
-                    alt="Sarvam Kaze AI wearable smart glasses India launch 2026"
-                    style={{ width: "100%", height: "100%", objectFit: "cover", filter: "sepia(8%) contrast(108%)" }}
-                  />
-                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(109,40,217,.6) 0%, transparent 60%)" }} />
-                  <div style={{ position: "absolute", bottom: 16, left: 16 }}>
-                    <span style={{ fontFamily: "system-ui", fontSize: 9, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "white", background: T.accent, padding: "4px 10px" }}>Launching May 2026</span>
-                  </div>
-                </div>
-                <figcaption style={{ fontSize: 10, color: T.ink5, marginTop: 8, fontFamily: "system-ui", fontStyle: "italic" }}>
-                  Sarvam Kaze — AI-powered smart eyewear supporting 10+ Indian languages, launching May 2026 in partnership with HMD Global.
-                </figcaption>
-              </figure>
-
-              <p style={{ fontSize: "clamp(14px,1.6vw,16px)", lineHeight: 1.9, marginBottom: 16, color: T.ink2 }}>
-                In February 2026, Sarvam announced a hardware product that nobody in the Indian AI ecosystem had expected: Sarvam Kaze, an AI-powered smart eyewear device built in partnership with HMD Global. The glasses listen, understand, and capture what users see — in real time, in over 10 Indian languages, with voice-based interaction and real-time translation capability.
-              </p>
-
-              <p style={{ fontSize: "clamp(14px,1.6vw,16px)", lineHeight: 1.9, marginBottom: 24, color: T.ink2 }}>
-                Launching in May 2026, Kaze represents a strategic pivot that few AI companies have successfully executed: from software models to a consumer hardware device. The bet is that the best way to deploy Indian-language AI at scale is not through enterprise APIs but through a wearable that goes wherever the user goes — a doctor on rounds in a rural hospital, a shopkeeper managing inventory in Bhojpuri, a student taking notes in Tamil. If it works, Kaze becomes Sarvam's distribution layer for everything the company has built.
-              </p>
-
-              {/* §7 — Investment Story */}
-              <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "clamp(24px,4vw,36px) 0 18px", paddingTop: "clamp(16px,3vw,24px)", borderTop: `1px solid ${T.rule}` }}>
-                <span style={{ fontSize: 9, fontWeight: 800, color: T.gold, letterSpacing: ".2em", fontFamily: "system-ui" }}>§07</span>
-                <h2 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,1.9rem)", fontWeight: 900, margin: 0, color: T.ink }}>Funding & Investors</h2>
-                <div style={{ flex: 1, height: 1, background: T.rule }} />
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: "1.5px", border: `1.5px solid ${T.ink}`, background: T.ink, marginBottom: 24 }}>
-                {/* Table header */}
-                <div style={{ background: T.ink, padding: "8px 16px", display: "grid", gridTemplateColumns: "100px 1fr 140px 100px" }}>
-                  {["Date", "Round", "Investors", "Amount"].map(h => (
-                    <span key={h} style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: ".2em", textTransform: "uppercase", color: "rgba(255,255,255,.28)", fontFamily: "system-ui" }}>{h}</span>
-                  ))}
-                </div>
-                {[
-                  { date: "Aug 2023", round: "Seed", investors: "Peak XV Partners, Madhavan Living Trust, Angels", amount: "$5.4M" },
-                  { date: "Dec 2023", round: "Series A", investors: "Lightspeed Venture Partners, Peak XV, Khosla Ventures, Neeraj Sagar + 7 others", amount: "~$41M" },
-                  { date: "Aug 2025", round: "Series A (extension)", investors: "Avvanti Advisors + existing investors", amount: "Top-up" },
-                ].map((row, i) => (
-                  <div key={i} style={{ background: T.white, padding: "12px 16px", display: "grid", gridTemplateColumns: "100px 1fr 140px 100px", gap: 12, alignItems: "center" }}>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: T.ink4, margin: 0, fontFamily: "system-ui" }}>{row.date}</p>
-                    <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 13.5, fontWeight: 700, color: T.ink, margin: 0 }}>{row.round}</p>
-                    <p style={{ fontSize: 11, color: T.ink3, margin: 0, fontFamily: "system-ui", lineHeight: 1.5 }}>{row.investors}</p>
-                    <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 16, fontWeight: 900, color: T.accent, margin: 0, lineHeight: 1 }}>{row.amount}</p>
-                  </div>
-                ))}
-                {/* Total */}
-                <div style={{ background: T.parch2, padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".14em", color: T.ink4, margin: 0, fontFamily: "system-ui" }}>Total Raised</p>
-                  <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 22, fontWeight: 900, color: T.accent, margin: 0, lineHeight: 1 }}>$53.8M</p>
-                </div>
-              </div>
-
-              <p style={{ fontSize: "clamp(14px,1.6vw,16px)", lineHeight: 1.9, marginBottom: 16, color: T.ink2 }}>
-                The cap table tells an important story: founders retain 51.34% of the company, institutional funds hold 36.21%, ESOP pool holds 12.09%, and angel investors hold 0.36%. For a $53.8M-raised AI startup in 2026, founder control at 51% is exceptional — and reflects both the leverage of the IndiaAI Mission selection (which reduced their dependence on VC capital for compute) and the discipline of a team that negotiated from a position of strength.
-              </p>
-
-              {/* §8 — The Why: Sovereign AI */}
-              <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "clamp(24px,4vw,36px) 0 18px", paddingTop: "clamp(16px,3vw,24px)", borderTop: `1px solid ${T.rule}` }}>
-                <span style={{ fontSize: 9, fontWeight: 800, color: T.gold, letterSpacing: ".2em", fontFamily: "system-ui" }}>§08</span>
-                <h2 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,1.9rem)", fontWeight: 900, margin: 0, color: T.ink }}>Why Sovereign AI? The Geopolitical Bet</h2>
-                <div style={{ flex: 1, height: 1, background: T.rule }} />
-              </div>
-
-              <p style={{ fontSize: "clamp(14px,1.6vw,16px)", lineHeight: 1.9, marginBottom: 16, color: T.ink2 }}>
-                The word "sovereign" in Sarvam's positioning is not marketing language — it is a geopolitical argument. India currently depends on AI systems built, trained, and hosted in the United States. Every time an Indian government agency, hospital, or bank uses GPT-4 or Gemini, sensitive data routes through American servers and is governed by American regulatory frameworks. Sarvam's co-founder Vivek Raghavan has warned publicly of the risk of India becoming a "digital colony" — a country that consumes AI but does not control it.
-              </p>
-
-              <p style={{ fontSize: "clamp(14px,1.6vw,16px)", lineHeight: 1.9, marginBottom: 16, color: T.ink2 }}>
-                The IndiaAI Mission's selection of Sarvam was partly driven by this logic. A country that builds Aadhaar and UPI — two of the world's most sophisticated digital public infrastructure systems — should be capable of building its own AI foundation models. Sarvam-105B, built on domestic compute with domestic data, is India's first serious answer to that question.
-              </p>
-
-              {/* Verdict box */}
-              <div style={{ background: T.ink, padding: "clamp(20px,4vw,36px)", margin: "clamp(24px,4vw,40px) 0" }}>
-                <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".2em", textTransform: "uppercase", color: T.gold2, fontFamily: "system-ui", margin: "0 0 14px" }}>✦ UpForge Analyst Verdict</p>
-                <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1rem,2vw,1.25rem)", fontStyle: "italic", color: "rgba(253,252,249,.88)", lineHeight: 1.8, margin: "0 0 16px" }}>
-                  "Sarvam AI is not just the most interesting AI startup in India — it may be the most important. The combination of world-class researchers, government mandate, frontier-scale models trained from scratch, and a population-scale deployment partner in UIDAI creates a moat that no amount of VC funding alone can replicate. The Sarvam Kaze wearable is a high-risk bet, but if it succeeds, Sarvam becomes the hardware distribution layer for Indian-language AI at a scale no enterprise API strategy could achieve. Watch this company very closely."
-                </p>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1.5px", border: "1px solid rgba(255,255,255,.1)", background: "rgba(255,255,255,.1)" }}>
-                  {[
-                    { label: "Moat Score", value: "★★★★★", note: "Government mandate + IIT research pedigree + data advantage" },
-                    { label: "Risk Score", value: "★★★☆☆", note: "Hardware bet unproven; frontier model competition intensifying" },
-                    { label: "Long-Term Potential", value: "★★★★★", note: "Sovereign AI for 1.4B people is a generational opportunity" },
-                  ].map(({ label, value, note }) => (
-                    <div key={label} style={{ background: "rgba(255,255,255,.05)", padding: "12px 14px", textAlign: "center" }}>
-                      <p style={{ fontSize: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".14em", color: "rgba(255,255,255,.4)", fontFamily: "system-ui", margin: "0 0 6px" }}>{label}</p>
-                      <p style={{ fontSize: 14, color: T.gold2, margin: "0 0 4px" }}>{value}</p>
-                      <p style={{ fontSize: 9.5, color: "rgba(255,255,255,.35)", margin: 0, fontFamily: "system-ui", lineHeight: 1.5 }}>{note}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* §9 — Startup Programme */}
-              <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "clamp(24px,4vw,36px) 0 18px", paddingTop: "clamp(16px,3vw,24px)", borderTop: `1px solid ${T.rule}` }}>
-                <span style={{ fontSize: 9, fontWeight: 800, color: T.gold, letterSpacing: ".2em", fontFamily: "system-ui" }}>§09</span>
-                <h2 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,1.9rem)", fontWeight: 900, margin: 0, color: T.ink }}>For Founders: The Sarvam Startup Programme</h2>
-                <div style={{ flex: 1, height: 1, background: T.rule }} />
-              </div>
-
-              <p style={{ fontSize: "clamp(14px,1.6vw,16px)", lineHeight: 1.9, marginBottom: 16, color: T.ink2 }}>
-                In March 2026, Sarvam launched a startup programme specifically for early-stage founders building on Indian-language AI. Selected companies receive 6–12 months of API credits scaled to their needs, priority engineering support from the Sarvam team, and direct access to production infrastructure. If you are building in Indian languages — healthcare, agriculture, education, legal, financial services — this programme is worth applying to.
-              </p>
-
-              <div style={{ background: T.accentlt, border: `1.5px solid ${T.accent}`, padding: "clamp(16px,3vw,24px)", marginBottom: 24 }}>
-                <p style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".2em", color: T.accent, fontFamily: "system-ui", margin: "0 0 10px" }}>Sarvam Startup Programme — What You Get</p>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                  {[
-                    "6–12 months API credits (scaled to needs)",
-                    "Priority engineering support from Sarvam team",
-                    "Access to production infrastructure",
-                    "Sarvam-105B & Sarvam-30B access",
-                    "Speech models: Bulbul V3 (TTS) + Saaras V3 (ASR)",
-                    "Direct contact with founders & research team",
-                  ].map((item, i) => (
-                    <div key={i} style={{ display: "flex", gap: 8 }}>
-                      <span style={{ color: T.accent, fontSize: 12, flexShrink: 0 }}>✓</span>
-                      <p style={{ fontSize: 12, color: T.ink2, margin: 0, fontFamily: "system-ui", lineHeight: 1.55 }}>{item}</p>
-                    </div>
-                  ))}
-                </div>
-                <a href="https://www.sarvam.ai" target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 16, background: T.accent, color: "white", padding: "10px 18px", textDecoration: "none", fontFamily: "system-ui", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".1em" }}>
-                  Apply at sarvam.ai →
-                </a>
-              </div>
-
-              {/* Internal links */}
-              <div style={{ borderTop: `1px solid ${T.rule}`, paddingTop: "clamp(16px,3vw,28px)", marginBottom: "clamp(24px,4vw,40px)" }}>
-                <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".2em", textTransform: "uppercase", color: T.ink4, fontFamily: "system-ui", marginBottom: 14 }}>Continue Exploring on UpForge</p>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                  {[
-                    ["India Startup Ecosystem 2026 Report", "/blog/india-startup-ecosystem-2026"],
-                    ["Top Indian Unicorns 2026", "/blog/top-indian-unicorns-2026"],
-                    ["Best AI Startups India 2026", "/startup?sector=AI%2FML"],
-                    ["How to Get Startup Funding India", "/blog/how-to-get-startup-funding-india-2026"],
-                    ["25 Indian Founders to Follow 2026", "/blog/best-indian-startup-founders-to-follow-2026"],
-                    ["Generate Free Valuation Report", "/report"],
-                  ].map(([label, href]) => (
-                    <Link key={label as string} href={href as string} style={{ display: "flex", alignItems: "center", gap: 7, padding: "10px 12px", background: T.parch2, border: `1px solid ${T.rule2}`, textDecoration: "none", color: T.gold, fontSize: 11.5, fontFamily: "system-ui", fontWeight: 600 }}>
-                      <span>›</span> {label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* ── RIGHT: Sticky Sidebar ── */}
-            <aside style={{ position: "sticky", top: "calc(var(--site-header-height, 64px) + 16px)", display: "flex", flexDirection: "column", gap: 12 }}>
-
-              {/* Company snapshot */}
-              <div>
-                <div style={{ background: T.ink, padding: "10px 14px" }}>
-                  <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".2em", textTransform: "uppercase", color: "white", margin: 0, fontFamily: "system-ui" }}>Company Snapshot</p>
-                </div>
-                <div style={{ border: `1px solid ${T.rule2}`, borderTop: "none" }}>
-                  {[
-                    ["Founded", "August 2023"],
-                    ["Headquarters", "Bengaluru, India"],
-                    ["Legal Entity", "Axonwise Pvt. Ltd."],
-                    ["Total Raised", "$53.8M"],
-                    ["Valuation", "~$200M (Aug 2025)"],
-                    ["Annual Revenue", "₹29.1Cr (FY2025)"],
-                    ["Team Size", "114 employees"],
-                    ["Sector", "AI / ML"],
-                    ["Stage", "Series A"],
-                    ["Founders' Stake", "51.34%"],
-                    ["Website", "sarvam.ai"],
-                  ].map(([label, value], i) => (
-                    <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "9px 14px", borderBottom: `1px solid ${T.rule}`, background: i % 2 === 0 ? T.white : T.parch2, gap: 8 }}>
-                      <p style={{ fontSize: 10.5, color: T.ink4, margin: 0, fontFamily: "system-ui" }}>{label}</p>
-                      <p style={{ fontSize: 11, fontWeight: 700, color: i === 4 || i === 3 ? T.accent : T.ink, margin: 0, fontFamily: i === 0 ? "'Playfair Display',Georgia,serif" : "system-ui", textAlign: "right" }}>{value}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Investors */}
-              <div>
-                <div style={{ background: T.ink, padding: "10px 14px" }}>
-                  <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".2em", textTransform: "uppercase", color: "white", margin: 0, fontFamily: "system-ui" }}>Key Investors</p>
-                </div>
-                <div style={{ border: `1px solid ${T.rule2}`, borderTop: "none" }}>
-                  {[
-                    { name: "Lightspeed Venture Partners", type: "Lead Investor", round: "Series A" },
-                    { name: "Peak XV Partners", type: "Sequoia India", round: "Seed + Series A" },
-                    { name: "Khosla Ventures", type: "Vinod Khosla's Fund", round: "Series A" },
-                    { name: "Avvanti Advisors", type: "Strategic", round: "Series A ext." },
-                  ].map((inv, i) => (
-                    <div key={i} style={{ padding: "10px 14px", borderBottom: `1px solid ${T.rule}`, background: i % 2 === 0 ? T.white : T.parch2 }}>
-                      <p style={{ fontSize: 12, fontWeight: 700, color: T.ink, margin: "0 0 3px", fontFamily: "system-ui" }}>{inv.name}</p>
-                      <p style={{ fontSize: 9.5, color: T.ink4, margin: 0, fontFamily: "system-ui" }}>{inv.type} · {inv.round}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Milestones */}
-              <div style={{ background: T.goldlt, border: `1px solid #FDE68A`, padding: "14px 16px" }}>
-                <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".2em", textTransform: "uppercase", color: T.gold3, fontFamily: "system-ui", margin: "0 0 12px" }}>Key Milestones</p>
-                {[
-                  ["Aug 2023", "Founded by Raghavan & Kumar"],
-                  ["Dec 2023", "$41M seed+Series A raised"],
-                  ["Jan 2024", "Acquired Pipable AI"],
-                  ["Sep 2024", "Joined AI Alliance (Meta + IBM)"],
-                  ["Mar 2025", "UIDAI Aadhaar partnership live"],
-                  ["Apr 2025", "IndiaAI Mission mandate — MeitY"],
-                  ["Aug 2025", "Series A extension round"],
-                  ["Feb 2026", "Sarvam-105B + 30B launched at Bharat Mandapam"],
-                  ["Feb 2026", "Sarvam Kaze announced — HMD Global"],
-                  ["Mar 2026", "Sarvam Startup Programme launched"],
-                  ["May 2026", "Sarvam Kaze wearable — expected launch"],
-                ].map(([date, event]) => (
-                  <div key={date as string} style={{ display: "flex", gap: 10, marginBottom: 8 }}>
-                    <span style={{ fontSize: 9, fontWeight: 700, color: T.gold3, fontFamily: "system-ui", whiteSpace: "nowrap", marginTop: 2 }}>{date}</span>
-                    <p style={{ fontSize: 11, color: T.gold3, margin: 0, fontFamily: "system-ui", lineHeight: 1.5 }}>{event}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Report CTA */}
-              <Link href="/report" style={{ display: "block", background: T.ink, color: "#FDFCF9", textAlign: "center", padding: "14px 16px", textDecoration: "none", fontFamily: "system-ui", fontSize: 10, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", border: `1.5px solid ${T.ink}` }}>
-                Generate Your Free Valuation Report →
-              </Link>
-
-              {/* Browse Registry */}
-              <Link href="/startup?sector=AI%2FML" style={{ display: "block", background: T.accentlt, color: T.accent, textAlign: "center", padding: "12px 16px", textDecoration: "none", fontFamily: "system-ui", fontSize: 10, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", border: `1.5px solid ${T.accent}` }}>
-                Browse All AI Startups →
-              </Link>
-            </aside>
+      {/* ── MASTHEAD ── */}
+      <header style={{ background: "#F3EFE5", borderBottom: "3px solid #1A1208" }} role="banner">
+        <div className="text-center px-4 pt-3 pb-6" style={{ borderBottom: "1px solid #C8C2B4" }}>
+          <p className="text-[8px] tracking-[0.44em] text-[#AAA] uppercase mb-2" style={{ fontFamily: "system-ui,sans-serif" }}>
+            UpForge · Startup Registry · Artificial Intelligence
+          </p>
+          <p className="pf font-black leading-none text-[#1A1208]" style={{ fontSize: "clamp(2rem,5.5vw,4.2rem)" }}>
+            The Founder Chronicle
+          </p>
+          <p className="italic mt-2 text-[#6B5C40]" style={{ fontSize: "clamp(12px,1.8vw,15px)" }}>
+            India's independent startup registry — verified, editorial, March 2026
+          </p>
+          <div className="flex items-center justify-center gap-3 mt-4">
+            <div className="h-px w-20 sm:w-36" style={{ background: "#C8C2B4" }} />
+            <span style={{ color: "#C8C2B4", fontSize: 12 }}>✦</span>
+            <div className="h-px w-20 sm:w-36" style={{ background: "#C8C2B4" }} />
           </div>
         </div>
-      </article>
-    </>
-  );
+        <div className="flex items-center px-4 sm:px-8 py-2 gap-4"
+          style={{ fontFamily: "system-ui,sans-serif", borderBottom: "1px solid #C8C2B4" }}>
+          <span className="text-[8px] text-[#AAA] uppercase tracking-widest flex-shrink-0">Edition No. 01</span>
+          <div className="h-3 w-px bg-[#C8C2B4]" />
+          <span className="text-[9px] font-black uppercase tracking-wider" style={{ color: accent }}>
+            Artificial Intelligence · March 2026
+          </span>
+          <div className="h-3 w-px bg-[#C8C2B4]" />
+          <span className="text-[9px] text-[#AAA]">Bengaluru, Karnataka</span>
+        </div>
+      </header>
+
+      {/* ── MAIN CONTENT ── */}
+      <main className="fade-up max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+
+        {/* HERO GRID */}
+        <div className="grid lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_420px]"
+          style={{ borderBottom: "2px solid #1A1208" }}
+          itemScope itemType="https://schema.org/Article">
+          <meta itemProp="headline" content="Sarvam AI — Building India's Sovereign Large Language Models" />
+          <meta itemProp="datePublished" content="2026-03-01" />
+          <meta itemProp="author" content="UpForge Editorial" />
+          <link itemProp="url" href="https://upforge.in/startup/sarvam-ai" />
+
+          {/* LEFT: EDITORIAL */}
+          <article className="py-8 lg:pr-8" style={{ borderRight: "1px solid #C8C2B4" }}>
+            <div className="flex items-center gap-3 mb-5" style={{ fontFamily: "system-ui,sans-serif" }}>
+              <span className="text-[8.5px] font-black tracking-[0.28em] uppercase px-3 py-1.5 text-white"
+                style={{ background: accent }}>ARTIFICIAL INTELLIGENCE</span>
+              <span className="text-[9px] text-[#AAA] uppercase tracking-wider">No. 01 · March 2026</span>
+            </div>
+
+            <h2 className="pf font-black leading-[1.05] text-[#1A1208] mb-5"
+              style={{ fontSize: "clamp(1.8rem,4vw,3.2rem)" }}>
+              If India wants to lead the AI era, it cannot rely only on models built elsewhere.
+            </h2>
+
+            <p className="italic leading-[1.75] mb-6 pb-6 text-[#5A4A30]"
+              style={{ fontSize: "clamp(14px,1.9vw,17px)", borderBottom: "1px solid #C8C2B4" }}
+              itemProp="description">
+              Sarvam AI is building the foundational AI infrastructure India needs — large language models 
+              designed not just to translate Indian languages, but to <em>think</em> in them. 
+              With $70M raised and India's government as a partner, Vivek Raghavan and Pratyush Kumar 
+              are building the GPT-equivalent for 1.4 billion people.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-8"
+              style={{ fontFamily: "system-ui,sans-serif" }}>
+              {["By UpForge Editorial", "Bengaluru, KA", "Est. 2023", "India's Sovereign AI"].map((t, i, a) => (
+                <span key={i} className="flex items-center gap-2">
+                  <span className="text-[9px] text-[#AAA] uppercase tracking-wider">{t}</span>
+                  {i < a.length - 1 && <span className="text-[#C8C2B4] text-[10px]">·</span>}
+                </span>
+              ))}
+            </div>
+
+            {/* MOBILE PHOTO */}
+            <div className="lg:hidden mb-8">
+              <img src="https://static.businessworld.in/sarvam_20250427233307_original_image_44.webp"
+                alt="Vivek Raghavan, Co-Founder and CEO of Sarvam AI, India's sovereign LLM startup"
+                className="w-full object-cover object-top"
+                style={{ height: "min(300px,60vw)" }}
+                loading="eager" />
+              <div className="px-4 py-3" style={{ background: "#1A1208" }}>
+                <p className="pf text-white font-bold" style={{ fontSize: 13 }}>Vivek Raghavan & Pratyush Kumar</p>
+                <p className="text-white/40 text-[9px] uppercase tracking-wide mt-0.5"
+                  style={{ fontFamily: "system-ui,sans-serif" }}>Co-Founders · Sarvam AI</p>
+              </div>
+            </div>
+
+            {/* 3-COL BODY */}
+            <div className="ncols" itemProp="articleBody">
+              {[
+                {
+                  h: "The India-First AI Vision",
+                  b: `In 2023, when the world was fixated on GPT-4 and the race between OpenAI and Google, two researchers in Bengaluru made a quieter but more consequential decision: India needed its own foundation models.\n\nVivek Raghavan and Pratyush Kumar had spent years at IIT Madras and AI4Bharat — a government-backed initiative to build language technology for the subcontinent. They knew something most Silicon Valley engineers didn't: that 90% of India's population primarily communicates in languages that are massively underrepresented in global AI training data.\n\nSarvam AI was built on a single premise — that the AI era would only serve India if India had sovereign infrastructure to participate in it on its own terms.`
+                },
+                {
+                  h: "Building India's Own LLM",
+                  b: `Sarvam's technical bet was specific and hard. Rather than fine-tuning existing Western models on Indian data, the founders committed to training models from scratch — with architectures that understood the grammatical structures of Dravidian and Indo-Aryan language families.\n\nBy early 2024, Sarvam-1 launched: the first LLM trained comprehensively on 22 Indian languages. It was not a translation model. It was a reasoning model — one that could understand context, disambiguate honorifics, and navigate the code-switching between English and Hindi that defines how educated Indians actually communicate.\n\nThe early results stunned enterprise customers. Sarvam's voice AI and conversational APIs outperformed global models on Hindi, Tamil, and Telugu by margins that made the product genuinely competitive at enterprise scale.`
+                },
+                {
+                  h: "The Sovereign AI Moment",
+                  b: `As the global AI race intensified through 2024, India's government moved decisively. The IndiaAI Mission — a $1.2B national initiative — selected Sarvam AI as its primary model development partner. The implications were enormous: state capacity, government data access, and sovereign deployment rights.\n\nThe $41M Series A from Peak XV and Lightspeed followed. Total funding crossed $70M. Valuation crossed $1B.\n\nBut what Raghavan describes as the real validation isn't the capital — it's the deployment. Sarvam's models now power government citizen services, agricultural advisory platforms, and healthcare chatbots across India's rural heartland. These are users GPT-4 was never designed for. They speak Bhojpuri, Odia, and Marathi. They use voice, not keyboards.\n\nFor them, Sarvam AI isn't a feature — it's the only viable interface.`
+                }
+              ].map((col, ci) => (
+                <div key={ci} className="mb-6 sm:mb-0">
+                  <h3 className="font-black uppercase tracking-[0.13em] mb-3 pb-1.5"
+                    style={{ fontSize: 11, color: "#1A1208", borderBottom: `1.5px solid ${accent}`, fontFamily: "system-ui,sans-serif" }}>
+                    {col.h}
+                  </h3>
+                  {col.b.split("\n\n").map((p, pi) => (
+                    <p key={pi} className={`leading-[1.9] mb-3 text-[#2C2010] ${ci === 0 && pi === 0 ? "dropcap" : ""}`}
+                      style={{ fontSize: "clamp(12.5px,1.3vw,13.5px)" }}>{p}</p>
+                  ))}
+                </div>
+              ))}
+            </div>
+
+            {/* PULL QUOTE */}
+            <div className="mt-10 pt-6 pb-6 text-center rule-blue"
+              style={{ borderBottom: "1px solid #C8C2B4" }}>
+              <span style={{ display: "block", color: accent, fontSize: 24, marginBottom: 10 }}>❝</span>
+              <blockquote className="pf italic text-[#1A1208] leading-[1.7] max-w-2xl mx-auto px-4"
+                style={{ fontSize: "clamp(16px,2.2vw,22px)" }}>
+                "We are not building a product. We are building infrastructure for a billion people 
+                who deserve AI in their own languages."
+              </blockquote>
+              <p className="text-[9px] uppercase tracking-[0.24em] text-[#AAA] mt-4"
+                style={{ fontFamily: "system-ui,sans-serif" }}>
+                — Vivek Raghavan, Co-Founder & CEO, Sarvam AI
+              </p>
+            </div>
+
+            {/* YOUTUBE VIDEO EMBED */}
+            <div className="mt-8">
+              <p className="text-[8.5px] font-black uppercase tracking-[0.26em] mb-3"
+                style={{ color: accent, fontFamily: "system-ui,sans-serif", borderBottom: `1px solid ${accentBorder}`, paddingBottom: 8 }}>
+                Watch · Sarvam AI in Conversation
+              </p>
+              <div className="relative w-full" style={{ paddingBottom: "56.25%", background: "#000" }}>
+                <iframe
+                  src="https://www.youtube.com/embed/l7pDuakyskI?si=ldN2OI7y4ciehvsq"
+                  title="Sarvam AI — Vivek Raghavan on Building India's Sovereign LLM | UpForge"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full"
+                  loading="lazy"
+                  style={{ border: "none" }}
+                />
+              </div>
+              <p className="text-[10px] text-[#AAA] mt-2 italic" style={{ fontFamily: "system-ui,sans-serif" }}>
+                Vivek Raghavan on building India's AI sovereign infrastructure — UpForge Featured Interview
+              </p>
+            </div>
+
+            {/* TIMELINE */}
+            <div className="mt-8">
+              <p className="text-[8.5px] font-black uppercase tracking-[0.26em] mb-4"
+                style={{ color: accent, fontFamily: "system-ui,sans-serif", borderBottom: `1px solid ${accentBorder}`, paddingBottom: 8 }}>
+                Company Timeline
+              </p>
+              <ol style={{ fontFamily: "system-ui,sans-serif" }}>
+                {TIMELINE.map((t, i) => (
+                  <li key={i} className="flex gap-4 mb-4">
+                    <div className="flex flex-col items-center flex-shrink-0">
+                      <div className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ background: accent }} />
+                      {i < TIMELINE.length - 1 && <div className="w-px flex-1 mt-1" style={{ background: accentBorder, minHeight: 24 }} />}
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-black uppercase tracking-wider" style={{ color: accent }}>{t.year}</span>
+                      <p className="text-[12px] text-[#2C2010] mt-0.5 leading-relaxed">{t.event}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            {/* FAQ (SEO) */}
+            <section className="mt-8" itemScope itemType="https://schema.org/FAQPage">
+              <p className="text-[8.5px] font-black uppercase tracking-[0.26em] mb-4"
+                style={{ color: accent, fontFamily: "system-ui,sans-serif", borderBottom: `1px solid ${accentBorder}`, paddingBottom: 8 }}>
+                Frequently Asked Questions
+              </p>
+              {[
+                { q: "Who are the founders of Sarvam AI?", a: "Sarvam AI was co-founded by Vivek Raghavan and Pratyush Kumar in 2023. Both previously led AI4Bharat, the IIT Madras initiative building language technology for Indian languages. Raghavan serves as CEO; Kumar leads the technical research." },
+                { q: "How much funding has Sarvam AI raised?", a: "Sarvam AI has raised over $70M in total funding. The Series A of $41M was led by Peak XV Partners (formerly Sequoia India) and Lightspeed India. The company also secured funding through India's IndiaAI Mission." },
+                { q: "What makes Sarvam AI different from other AI companies?", a: "Sarvam AI trains LLMs from scratch on Indian language data — rather than fine-tuning Western models. Their models understand the grammatical structures of Dravidian and Indo-Aryan languages and outperform global models on Hindi, Tamil, and Telugu benchmarks." },
+                { q: "Is Sarvam AI a unicorn?", a: "Yes. As of 2025, Sarvam AI is valued at over $1 billion, making it one of India's AI unicorns. The valuation was achieved within two years of founding." },
+              ].map((faq, i) => (
+                <div key={i} className="mb-4 pb-4" style={{ borderBottom: "1px solid #D8D2C4" }}
+                  itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+                  <h3 className="font-bold text-[#1A1208] mb-1.5" style={{ fontSize: 13, fontFamily: "system-ui,sans-serif" }}
+                    itemProp="name">{faq.q}</h3>
+                  <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
+                    <p className="text-[12.5px] text-[#5A4A30] leading-relaxed" style={{ fontFamily: "system-ui,sans-serif" }}
+                      itemProp="text">{faq.a}</p>
+                  </div>
+                </div>
+              ))}
+            </section>
+
+          </article>
+
+          {/* RIGHT SIDEBAR */}
+          <aside className="hidden lg:block pl-8 pt-8 pb-8">
+            <div className="sticky top-4 flex flex-col gap-5">
+
+              {/* FOUNDER PHOTO */}
+              <div className="relative w-full overflow-hidden" style={{ height: 340 }}>
+                <img
+                  src="https://static.businessworld.in/sarvam_20250427233307_original_image_44.webp"
+                  alt="Vivek Raghavan, Co-Founder and CEO of Sarvam AI — UpForge Founder Chronicle"
+                  className="w-full h-full object-cover object-top"
+                  loading="eager"
+                  itemProp="image"
+                />
+                <div className="absolute bottom-0 left-0 right-0 px-4 py-3.5"
+                  style={{ background: "linear-gradient(to top, rgba(12,7,2,0.96) 60%, transparent)" }}>
+                  <p className="pf text-white font-bold" style={{ fontSize: 14 }}>Vivek Raghavan</p>
+                  <p className="text-white/40 text-[9px] uppercase tracking-wide mt-0.5"
+                    style={{ fontFamily: "system-ui,sans-serif" }}>Co-Founder & CEO · Sarvam AI</p>
+                </div>
+              </div>
+
+              {/* VIDEO THUMBNAIL */}
+              <div>
+                <p className="text-[8px] font-black uppercase tracking-[0.26em] mb-2"
+                  style={{ color: accent, fontFamily: "system-ui,sans-serif" }}>Featured Watch</p>
+                <a href="https://youtu.be/l7pDuakyskI?si=ldN2OI7y4ciehvsq"
+                  target="_blank" rel="noopener noreferrer"
+                  className="block relative group" aria-label="Watch Sarvam AI interview on YouTube">
+                  <img
+                    src="https://img.youtube.com/vi/l7pDuakyskI/maxresdefault.jpg"
+                    alt="Sarvam AI — Vivek Raghavan interview on India's sovereign AI"
+                    className="w-full object-cover"
+                    style={{ height: 140, border: `1px solid ${accentBorder}` }}
+                    loading="lazy"
+                    onError={(e) => { (e.target as HTMLImageElement).src = "https://img.youtube.com/vi/l7pDuakyskI/hqdefault.jpg" }}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center"
+                    style={{ background: "rgba(0,0,0,0.3)" }}>
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center"
+                      style={{ background: "rgba(255,0,0,0.9)" }}>
+                      <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white ml-0.5"><path d="M8 5v14l11-7z" /></svg>
+                    </div>
+                  </div>
+                </a>
+                <p className="text-[9px] text-[#AAA] mt-1.5 italic" style={{ fontFamily: "system-ui,sans-serif" }}>
+                  Vivek Raghavan on India's sovereign AI mission
+                </p>
+              </div>
+
+              {/* STATS */}
+              <div style={{ border: "2px solid #1A1208" }}>
+                <div className="px-4 py-2.5" style={{ background: "#1A1208" }}>
+                  <p className="text-[8px] font-black uppercase tracking-[0.3em] text-white"
+                    style={{ fontFamily: "system-ui,sans-serif" }}>By the Numbers</p>
+                </div>
+                <dl className="grid grid-cols-2 divide-x divide-y" style={{ borderColor: "#D8D2C4" }}>
+                  {STATS.map((s, i) => (
+                    <div key={i} className="px-4 py-3" style={{ borderColor: "#D8D2C4" }}>
+                      <dt className="text-[7.5px] text-[#AAA] uppercase tracking-[0.16em] mb-1"
+                        style={{ fontFamily: "system-ui,sans-serif" }}>{s.l}</dt>
+                      <dd className="pf font-black text-[#1A1208] leading-none" style={{ fontSize: "1.25rem" }}>{s.v}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+
+              {/* LESSON */}
+              <div className="px-4 py-4" style={{ background: accentBg, border: `1px solid ${accentBorder}` }}>
+                <p className="text-[8px] font-black uppercase tracking-[0.26em] mb-2"
+                  style={{ color: accent, fontFamily: "system-ui,sans-serif" }}>The Lesson</p>
+                <p className="italic text-[#1A1208] leading-[1.72]" style={{ fontSize: 13 }}>
+                  In the AI era, the country that owns the infrastructure layer owns the future. 
+                  Sarvam bet on sovereignty before it was fashionable — and won.
+                </p>
+              </div>
+
+              {/* INVESTORS */}
+              <div style={{ border: "1px solid #D8D2C4" }}>
+                <div className="px-4 py-2" style={{ background: "#F9F7F2", borderBottom: "1px solid #D8D2C4" }}>
+                  <p className="text-[8px] font-black uppercase tracking-[0.24em] text-[#1A1208]"
+                    style={{ fontFamily: "system-ui,sans-serif" }}>Key Investors</p>
+                </div>
+                <div className="px-4 py-3 space-y-1.5">
+                  {["Peak XV Partners (Sequoia India)", "Lightspeed India", "IndiaAI Mission (Govt.)", "Surge", "Individual Angels"].map((inv, i) => (
+                    <p key={i} className="flex items-center gap-2 text-[11px] text-[#2C2010]"
+                      style={{ fontFamily: "system-ui,sans-serif" }}>
+                      <span style={{ width: 6, height: 6, borderRadius: 1, background: accent, display: "inline-block", flexShrink: 0 }} />
+                      {inv}
+                    </p>
+                  ))}
+                </div>
+              </div>
+
+              {/* RELATED PROFILES */}
+              <div>
+                <p className="text-[8px] font-black uppercase tracking-[0.26em] mb-3"
+                  style={{ color: "#AAA", fontFamily: "system-ui,sans-serif" }}>Also Read on UpForge</p>
+                {RELATED.map((r) => (
+                  <Link key={r.slug} href={`/startup/${r.slug}`}
+                    className="flex items-center justify-between py-2.5 group hover:opacity-70 transition-opacity"
+                    style={{ borderBottom: "1px solid #EDE9DF" }}>
+                    <div>
+                      <p className="text-[11px] font-bold text-[#1A1208]" style={{ fontFamily: "system-ui,sans-serif" }}>{r.name}</p>
+                      <p className="text-[9px] text-[#AAA] uppercase tracking-wider">{r.cat} · {r.val}</p>
+                    </div>
+                    <ArrowUpRight className="w-3.5 h-3.5 text-[#AAA]" />
+                  </Link>
+                ))}
+              </div>
+
+            </div>
+          </aside>
+        </div>
+
+        {/* SEO INTERNAL LINKS */}
+        <section className="py-8" style={{ borderBottom: "1px solid #C8C2B4" }}>
+          <p className="text-[9px] tracking-[0.3em] uppercase text-[#AAA] mb-4"
+            style={{ fontFamily: "system-ui,sans-serif" }}>Explore More AI Startups on UpForge</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { l: "Top AI Startups India 2026", h: "/top-ai-startups" },
+              { l: "Indian Unicorns Full List", h: "/indian-unicorns" },
+              { l: "Sarvam AI vs Krutrim", h: "/ai-startups/sarvam-vs-krutrim" },
+              { l: "AI4Bharat Research", h: "/research/ai4bharat" },
+              { l: "Deep Tech Startups India", h: "/deep-tech-startups" },
+              { l: "NLP India Landscape", h: "/nlp-india" },
+              { l: "Startup Registry India", h: "/startup" },
+              { l: "Submit Your Startup", h: "/submit" },
+            ].map((lnk) => (
+              <Link key={lnk.h} href={lnk.h}
+                className="flex items-center gap-1 p-3 hover:border-[#1A1208] transition-all"
+                style={{ border: "1px solid #D8D2C4", background: "white" }}>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#1A1208]"
+                  style={{ fontFamily: "system-ui,sans-serif" }}>{lnk.l}</span>
+                <ChevronRight className="w-2.5 h-2.5 text-[#AAA] flex-shrink-0 ml-auto" />
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* FOOTER */}
+        <footer className="pt-8 pb-2">
+          <div className="grid sm:grid-cols-2 gap-6 items-center pb-8" style={{ borderBottom: "1px solid #D8D2C4" }}>
+            <div>
+              <p className="pf font-bold text-[#1A1208] mb-2" style={{ fontSize: "1.2rem" }}>
+                Building India's next unicorn? Get verified on UpForge.
+              </p>
+              <p className="text-[12px] text-[#6B5C40]" style={{ fontFamily: "system-ui,sans-serif" }}>
+                Free startup profiles. Independent verification. Indexed by Google.
+              </p>
+            </div>
+            <div className="flex sm:justify-end">
+              <Link href="/submit"
+                className="inline-flex items-center gap-2 px-6 py-3.5 text-white font-bold uppercase tracking-wider hover:opacity-90"
+                style={{ background: "#1A1208", fontSize: 11, fontFamily: "system-ui,sans-serif" }}>
+                List Your Startup — Free <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+          <p className="text-[9px] leading-relaxed mt-4" style={{ color: "#BBB0A0", fontFamily: "system-ui,sans-serif" }}>
+            * Data sourced from public filings, Tracxn, Inc42, Forbes India, and Sarvam AI press releases as of March 2026. 
+            UpForge is an independent registry — no paid placements, no sponsored rankings.
+          </p>
+          <nav aria-label="Footer navigation" className="mt-3">
+            <ul className="flex flex-wrap gap-x-4 gap-y-2">
+              {[
+                { l: "Indian AI Startups", h: "/top-ai-startups" },
+                { l: "Startup Registry", h: "/startup" },
+                { l: "Indian Unicorns", h: "/indian-unicorns" },
+                { l: "Fintech Startups", h: "/fintech-startups" },
+                { l: "Zerodha Profile", h: "/startup/zerodha" },
+                { l: "Zepto Profile", h: "/startup/zepto" },
+                { l: "Zomato Profile", h: "/startup/zomato" },
+              ].map(lnk => (
+                <li key={lnk.h}>
+                  <Link href={lnk.h}
+                    className="text-[9px] text-[#AAA] hover:text-[#1A1208] uppercase tracking-wider transition-colors"
+                    style={{ fontFamily: "system-ui,sans-serif" }}>{lnk.l}</Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </footer>
+      </main>
+    </div>
+  )
 }
