@@ -533,10 +533,6 @@ const getUniqueMonths = () => {
   })
 }
 
-// Get unique categories for filter
-const getUniqueCategories = () => {
-  return [...new Set(ARCHIVE_FOUNDERS.map(f => f.category))]
-}
 
 // ─── FOUNDER PHOTO COMPONENT ──────────────────────────────────────────────────
 function FounderPhoto({
@@ -591,13 +587,12 @@ function FounderPhoto({
 export default function ArchivePage() {
   // Filter state
   const [selectedMonth, setSelectedMonth] = useState<string>("All")
-  const [selectedCategory, setSelectedCategory] = useState<string>("All")
   const [searchQuery, setSearchQuery] = useState("")
   const [debouncedSearch, setDebouncedSearch] = useState("")
   
   // UI state
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+  const [viewMode, setViewMode] = useState<"grid" | "list">("list")
   
   // Get unique filter options
   const months = getUniqueMonths()
@@ -627,10 +622,6 @@ export default function ArchivePage() {
   // Filter founders based on selected filters
   const filteredFounders = useMemo(() => {
     return ARCHIVE_FOUNDERS.filter(founder => {
-      // Month filter
-      if (selectedMonth !== "All" && founder.editionDate !== selectedMonth) {
-        return false
-      }
       
       // Category filter
       if (selectedCategory !== "All" && founder.category !== selectedCategory) {
@@ -754,6 +745,14 @@ export default function ArchivePage() {
           background: #1A1208;
           color: white;
         }
+
+        .list-view-item img {
+        filter: grayscale(100%);
+        transition: filter 0.3s ease;
+      }
+      .list-view-item:hover img {
+        filter: grayscale(0%);
+      }
 
         .archive-card {
           border: 1px solid #D8D2C4;
@@ -1036,7 +1035,6 @@ export default function ArchivePage() {
                   <button
                     onClick={() => {
                       setSelectedMonth("All")
-                      setSelectedCategory("All")
                       setSearchQuery("")
                     }}
                     className="underline ml-2 hover:text-[#1A1208]"
