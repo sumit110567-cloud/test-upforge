@@ -297,6 +297,28 @@ export default function ZeptoPage() {
               </p>
             </div>
 
+            {/* YOUTUBE VIDEO EMBED */}
+            <div className="mt-8">
+              <p className="text-[8.5px] font-black uppercase tracking-[0.26em] mb-3"
+                style={{ color: accent, fontFamily: "system-ui,sans-serif", borderBottom: `1px solid ${accentBorder}`, paddingBottom: 8 }}>
+                Watch · Zepto in Conversation
+              </p>
+              <div className="relative w-full" style={{ paddingBottom: "56.25%", background: "#000" }}>
+                <iframe
+                  src="https://www.youtube.com/embed/l7pDuakyskI?si=zAxsfi7fsPWKKrrQ"
+                  title="Zepto — Aadit Palicha on Building India's Fastest Unicorn | UpForge"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full"
+                  loading="lazy"
+                  style={{ border: "none" }}
+                />
+              </div>
+              <p className="text-[10px] text-[#AAA] mt-2 italic" style={{ fontFamily: "system-ui,sans-serif" }}>
+                Aadit Palicha on building Zepto — 10-minute delivery, dark stores & India's quick commerce future — UpForge Featured Interview
+              </p>
+            </div>
+
             {/* TIMELINE */}
             <div className="mt-8">
               <p className="text-[8.5px] font-black uppercase tracking-[0.26em] mb-4"
@@ -370,6 +392,34 @@ export default function ZeptoPage() {
                   <p className="text-white/40 text-[9px] uppercase tracking-wide mt-0.5"
                     style={{ fontFamily: "system-ui,sans-serif" }}>Co-Founders · Zepto</p>
                 </div>
+              </div>
+
+              {/* VIDEO THUMBNAIL */}
+              <div>
+                <p className="text-[8px] font-black uppercase tracking-[0.26em] mb-2"
+                  style={{ color: accent, fontFamily: "system-ui,sans-serif" }}>Featured Watch</p>
+                <a href="https://youtu.be/l7pDuakyskI?si=zAxsfi7fsPWKKrrQ"
+                  target="_blank" rel="noopener noreferrer"
+                  className="block relative group" aria-label="Watch Zepto founder interview on YouTube">
+                  <img
+                    src="https://img.youtube.com/vi/l7pDuakyskI/maxresdefault.jpg"
+                    alt="Zepto — Aadit Palicha interview on quick commerce and India's fastest unicorn"
+                    className="w-full object-cover"
+                    style={{ height: 140, border: `1px solid ${accentBorder}` }}
+                    loading="lazy"
+                    onError={(e) => { (e.target as HTMLImageElement).src = "https://img.youtube.com/vi/l7pDuakyskI/hqdefault.jpg" }}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center"
+                    style={{ background: "rgba(0,0,0,0.3)" }}>
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center"
+                      style={{ background: "rgba(255,0,0,0.9)" }}>
+                      <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white ml-0.5"><path d="M8 5v14l11-7z" /></svg>
+                    </div>
+                  </div>
+                </a>
+                <p className="text-[9px] text-[#AAA] mt-1.5 italic" style={{ fontFamily: "system-ui,sans-serif" }}>
+                  Aadit Palicha on 10-minute delivery & India's quick commerce future
+                </p>
               </div>
 
               <div style={{ border: "2px solid #1A1208" }}>
