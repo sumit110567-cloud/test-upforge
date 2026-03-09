@@ -533,7 +533,6 @@ const getUniqueMonths = () => {
   })
 }
 
-
 // ─── FOUNDER PHOTO COMPONENT ──────────────────────────────────────────────────
 function FounderPhoto({
   src, alt, initials, accent, accentBg,
@@ -585,7 +584,7 @@ function FounderPhoto({
 
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 export default function ArchivePage() {
-  // Filter state
+  // Filter state - ONLY MONTH FILTER NOW
   const [selectedMonth, setSelectedMonth] = useState<string>("All")
   const [searchQuery, setSearchQuery] = useState("")
   const [debouncedSearch, setDebouncedSearch] = useState("")
@@ -594,9 +593,8 @@ export default function ArchivePage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [viewMode, setViewMode] = useState<"grid" | "list">("list")
   
-  // Get unique filter options
+  // Get unique filter options - ONLY MONTHS
   const months = getUniqueMonths()
-  const categories = getUniqueCategories()
 
   // Debounce search to avoid too many re-renders
   useEffect(() => {
@@ -619,12 +617,11 @@ export default function ArchivePage() {
     return () => clearInterval(interval)
   }, [])
 
-  // Filter founders based on selected filters
+  // Filter founders based on selected filters - ONLY MONTH NOW
   const filteredFounders = useMemo(() => {
     return ARCHIVE_FOUNDERS.filter(founder => {
-      
-      // Category filter
-      if (selectedCategory !== "All" && founder.category !== selectedCategory) {
+      // Month filter
+      if (selectedMonth !== "All" && founder.editionDate !== selectedMonth) {
         return false
       }
       
@@ -642,7 +639,7 @@ export default function ArchivePage() {
       
       return true
     })
-  }, [selectedMonth, selectedCategory, debouncedSearch])
+  }, [selectedMonth, debouncedSearch])
 
   // Group filtered founders by month for better organization
   const groupedByMonth = useMemo(() => {
@@ -747,12 +744,12 @@ export default function ArchivePage() {
         }
 
         .list-view-item img {
-        filter: grayscale(100%);
-        transition: filter 0.3s ease;
-      }
-      .list-view-item:hover img {
-        filter: grayscale(0%);
-      }
+          filter: grayscale(100%);
+          transition: filter 0.3s ease;
+        }
+        .list-view-item:hover img {
+          filter: grayscale(0%);
+        }
 
         .archive-card {
           border: 1px solid #D8D2C4;
@@ -937,7 +934,7 @@ export default function ArchivePage() {
             </div>
           </div>
 
-          {/* Filter Chips - Desktop */}
+          {/* Filter Chips - Desktop - ONLY MONTH FILTERS */}
           <div className="hidden sm:block mt-4">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[9px] text-[#AAA] uppercase tracking-wider mr-2">Month:</span>
@@ -957,28 +954,9 @@ export default function ArchivePage() {
                 </button>
               ))}
             </div>
-            
-            <div className="flex flex-wrap items-center gap-2 mt-3">
-              <span className="text-[9px] text-[#AAA] uppercase tracking-wider mr-2">Category:</span>
-              <button
-                className={`filter-chip ${selectedCategory === "All" ? "active" : ""}`}
-                onClick={() => setSelectedCategory("All")}
-              >
-                All
-              </button>
-              {categories.map(category => (
-                <button
-                  key={category}
-                  className={`filter-chip ${selectedCategory === category ? "active" : ""}`}
-                  onClick={() => setSelectedCategory(category)}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
           </div>
 
-          {/* Filter Chips - Mobile (conditionally shown) */}
+          {/* Filter Chips - Mobile (conditionally shown) - ONLY MONTH FILTERS */}
           {isFilterOpen && (
             <div className="sm:hidden mt-4 space-y-3 fade-in">
               <div>
@@ -1001,27 +979,6 @@ export default function ArchivePage() {
                   ))}
                 </div>
               </div>
-              
-              <div>
-                <p className="text-[9px] text-[#AAA] uppercase tracking-wider mb-2">Category</p>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    className={`filter-chip ${selectedCategory === "All" ? "active" : ""}`}
-                    onClick={() => setSelectedCategory("All")}
-                  >
-                    All
-                  </button>
-                  {categories.map(category => (
-                    <button
-                      key={category}
-                      className={`filter-chip ${selectedCategory === category ? "active" : ""}`}
-                      onClick={() => setSelectedCategory(category)}
-                    >
-                      {category}
-                    </button>
-                  ))}
-                </div>
-              </div>
             </div>
           )}
 
@@ -1029,7 +986,7 @@ export default function ArchivePage() {
           <div className="mt-4 flex items-center justify-between">
             <p className="text-[10px] text-[#AAA]" style={{ fontFamily: "system-ui,sans-serif" }}>
               {filteredFounders.length} {filteredFounders.length === 1 ? 'story' : 'stories'} found
-              {(selectedMonth !== "All" || selectedCategory !== "All" || searchQuery) && (
+              {(selectedMonth !== "All" || searchQuery) && (
                 <span>
                   {" "}
                   <button
@@ -1059,7 +1016,6 @@ export default function ArchivePage() {
             <button
               onClick={() => {
                 setSelectedMonth("All")
-                setSelectedCategory("All")
                 setSearchQuery("")
               }}
               className="mt-4 px-4 py-2 text-[10px] uppercase tracking-wider"
@@ -1244,10 +1200,6 @@ export default function ArchivePage() {
             <div className="text-center">
               <p className="pf font-black text-[#1A1208] text-3xl">{months.length}</p>
               <p className="text-[9px] text-[#AAA] uppercase tracking-wider">Editions</p>
-            </div>
-            <div className="text-center">
-              <p className="pf font-black text-[#1A1208] text-3xl">{categories.length}</p>
-              <p className="text-[9px] text-[#AAA] uppercase tracking-wider">Categories</p>
             </div>
             <div className="text-center">
               <p className="pf font-black text-[#1A1208] text-3xl">
