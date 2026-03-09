@@ -344,6 +344,28 @@ export default function ZerodhaPage() {
               </div>
             </div>
 
+            {/* YOUTUBE VIDEO EMBED */}
+            <div className="mt-8">
+              <p className="text-[8.5px] font-black uppercase tracking-[0.26em] mb-3"
+                style={{ color: accent, fontFamily: "system-ui,sans-serif", borderBottom: `1px solid ${accentBorder}`, paddingBottom: 8 }}>
+                Watch · Zerodha in Conversation
+              </p>
+              <div className="relative w-full" style={{ paddingBottom: "56.25%", background: "#000" }}>
+                <iframe
+                  src="https://www.youtube.com/embed/l7pDuakyskI?si=zAxsfi7fsPWKKrrQ"
+                  title="Zerodha — Nithin Kamath on Bootstrapping India's Largest Stockbroker | UpForge"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full"
+                  loading="lazy"
+                  style={{ border: "none" }}
+                />
+              </div>
+              <p className="text-[10px] text-[#AAA] mt-2 italic" style={{ fontFamily: "system-ui,sans-serif" }}>
+                Nithin Kamath on bootstrapping Zerodha, ₹20 flat brokerage & building without VC — UpForge Featured Interview
+              </p>
+            </div>
+
             {/* TIMELINE */}
             <div className="mt-8">
               <p className="text-[8.5px] font-black uppercase tracking-[0.26em] mb-4"
@@ -425,6 +447,34 @@ export default function ZerodhaPage() {
                   style={{ color: "#E8C547", fontFamily: "system-ui,sans-serif" }}>The Bootstrapped Exception</p>
                 <p className="pf text-white italic leading-relaxed" style={{ fontSize: 13 }}>
                   One of the largest fintech companies in the world built without a single rupee of venture capital.
+                </p>
+              </div>
+
+              {/* VIDEO THUMBNAIL */}
+              <div>
+                <p className="text-[8px] font-black uppercase tracking-[0.26em] mb-2"
+                  style={{ color: accent, fontFamily: "system-ui,sans-serif" }}>Featured Watch</p>
+                <a href="https://youtu.be/l7pDuakyskI?si=zAxsfi7fsPWKKrrQ"
+                  target="_blank" rel="noopener noreferrer"
+                  className="block relative group" aria-label="Watch Zerodha founder interview on YouTube">
+                  <img
+                    src="https://img.youtube.com/vi/l7pDuakyskI/maxresdefault.jpg"
+                    alt="Nithin Kamath — Zerodha interview on bootstrapping India's largest stockbroker"
+                    className="w-full object-cover"
+                    style={{ height: 140, border: `1px solid ${accentBorder}` }}
+                    loading="lazy"
+                    onError={(e) => { (e.target as HTMLImageElement).src = "https://img.youtube.com/vi/l7pDuakyskI/hqdefault.jpg" }}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center"
+                    style={{ background: "rgba(0,0,0,0.3)" }}>
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center"
+                      style={{ background: "rgba(255,0,0,0.9)" }}>
+                      <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white ml-0.5"><path d="M8 5v14l11-7z" /></svg>
+                    </div>
+                  </div>
+                </a>
+                <p className="text-[9px] text-[#AAA] mt-1.5 italic" style={{ fontFamily: "system-ui,sans-serif" }}>
+                  Nithin Kamath on ₹0 VC, ₹20 brokerage & 15 years of compounding trust
                 </p>
               </div>
 
