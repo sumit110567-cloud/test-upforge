@@ -548,7 +548,7 @@ export default async function AboutPage() {
             </div>
           </div>
 
-    {/* FOOTER NAV */}
+   {/* ── FOOTER NAV ── */}
           <nav style={{ padding: "14px 0", borderTop: "2px solid var(--ink)" }}>
             <ul style={{ display: "flex", flexWrap: "wrap", gap: "8px 18px", listStyle: "none", margin: 0, padding: 0 }}>
               {[
@@ -566,8 +566,8 @@ export default async function AboutPage() {
               ))}
             </ul>
           </nav>
-        </div>
-      </div>
+        </div> 
+      </div> 
     </>
   );
 }
