@@ -1,16 +1,28 @@
-// next.config.mjs
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'www.upforge.in',
+          },
+        ],
+        destination: 'https://upforge.in/:path*',
+        permanent: true,
+      },
+    ]
+  },
   images: {
     remotePatterns: [
-      // Supabase storage — startup logos & uploads
       {
         protocol: 'https',
         hostname: 'vunvjscphatofvsqvofg.supabase.co',
         port: '',
         pathname: '/storage/v1/object/public/**',
       },
-      // Inc42 — founder press photos
       {
         protocol: 'https',
         hostname: 'images.inc42.com',
@@ -19,17 +31,14 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'assets.inc42.com',
       },
-      // Wikipedia / Wikimedia — company logos
       {
         protocol: 'https',
         hostname: 'upload.wikimedia.org',
       },
-      // BrowserStack CDN
       {
         protocol: 'https',
         hostname: 'www.browserstack.com',
       },
-      // General wildcard fallback for any other press/CDN images
       {
         protocol: 'https',
         hostname: '**',
