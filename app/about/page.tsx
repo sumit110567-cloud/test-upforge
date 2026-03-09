@@ -203,31 +203,56 @@ export default async function AboutPage() {
                 Not a media platform. Not a marketplace.<br />A permanent public record of serious builders.
               </p>
             </div>
-            {/* Live badge — top right */}
-            <div style={{ position:"absolute", top:18, right:20, display:"flex", alignItems:"center", gap:7, background:"rgba(26,18,8,.7)", border:"1px solid rgba(255,255,255,.12)", padding:"5px 12px" }}>
-              <span className="ldot" />
-              <span className="sf" style={{ fontSize:8.5, color:"#4ADE80", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.16em" }}>Live Registry</span>
-            </div>
+           {/* Live badge — top right */}
+          <div style={{ 
+            position: "absolute", 
+            top: "32px", // Increased from 18 to clear the header
+            right: "clamp(16px, 3vw, 32px)", 
+            display: "flex", 
+            alignItems: "center", 
+            gap: 7, 
+            background: "rgba(26,18,8,.8)", 
+            border: "1px solid rgba(255,255,255,.15)", 
+            padding: "6px 14px",
+            zIndex: 10 // Ensures it stays above the gradient
+          }}>
+            <span className="ldot" />
+            <span className="sf" style={{ fontSize: 9, color: "#4ADE80", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.16em" }}>
+              Live Registry
+            </span>
           </div>
 
           {/* Stats bar */}
-          <div style={{ background:"var(--ink)" }}>
-            <div style={{ maxWidth:1300, margin:"0 auto", padding:"0 clamp(16px,3vw,32px)" }}>
-              <div style={{ display:"flex", flexWrap:"wrap" }}>
+          <div style={{ background: "var(--ink)" }}>
+            <div style={{ maxWidth: 1300, margin: "0 auto", padding: "0 clamp(16px, 3vw, 32px)" }}>
+              <div style={{ 
+                display: "flex", 
+                flexDirection: "row", // Force horizontal
+                justifyContent: "space-between", // Spread them out
+                alignItems: "center"
+              }}>
                 {[
-                  { v:`${(totalStartups||0).toLocaleString()}+`, l:"Verified Profiles"   },
-                  { v:`${(startupsWithReports||30)}+`,           l:"Reports Generated"   },
-                  { v:`${uniqueIndustries||20}+`,                l:"Industries Covered"  },
-                ].map((s,i) => (
-                  <div key={i} style={{ flex:"1 1 110px", padding:"18px clamp(14px,2vw,24px)", borderRight:"1px solid rgba(255,255,255,.07)" }}>
-                    <p className="pf" style={{ fontSize:"clamp(1.4rem,2.8vw,2.2rem)", fontWeight:900, color:"white", lineHeight:1, marginBottom:5 }}>{s.v}</p>
-                    <p className="sf" style={{ fontSize:8, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.18em", color:"rgba(255,255,255,.3)" }}>{s.l}</p>
+                  { v: `${(totalStartups || 0).toLocaleString()}+`, l: "Verified Profiles" },
+                  { v: `${(startupsWithReports || 30)}+`, l: "Reports Generated" },
+                  { v: `${uniqueIndustries || 20}+`, l: "Industries Covered" },
+                ].map((s, i) => (
+                  <div key={i} style={{ 
+                    flex: "1", // Distribute space equally
+                    padding: "24px 0", // Consistent vertical padding
+                    borderRight: i === 2 ? "none" : "1px solid rgba(255,255,255,.07)",
+                    textAlign: "center" // Keep numbers and text aligned
+                  }}>
+                    <p className="pf" style={{ fontSize: "clamp(1.4rem, 2.5vw, 2rem)", fontWeight: 900, color: "white", lineHeight: 1, marginBottom: 8 }}>
+                      {s.v}
+                    </p>
+                    <p className="sf" style={{ fontSize: 8.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.18em", color: "rgba(255,255,255,.4)" }}>
+                      {s.l}
+                    </p>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-        </div>
 
         {/* MAIN */}
         <div style={{ maxWidth:1300, margin:"0 auto", padding:"0 clamp(16px,3vw,32px) clamp(48px,8vw,96px)" }}>
