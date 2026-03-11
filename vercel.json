@@ -1,7 +1,13 @@
 {
   "redirects": [
     {
-      "source": "https://upforge.in/:path*",
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "upforge.in"
+        }
+      ],
       "destination": "https://www.upforge.in/:path*",
       "permanent": true
     }
