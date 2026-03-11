@@ -1,46 +1,39 @@
-"use client";
+"use client"; // Sabse pehle ye line add karein
 
 import Link from "next/link";
-import { ArrowRight, ChevronRight, GraduationCap } from "lucide-react";
+import { ArrowRight, GraduationCap } from "lucide-react";
 
 export default function EdTechStartupsPage() {
   return (
-    <div className="min-h-screen bg-[#F0F4F8] p-8 font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] p-8">
       <nav className="mb-8">
-        <Link href="/" className="text-xs uppercase tracking-widest text-slate-500 hover:text-blue-600 transition-colors">
-          ← UpForge Home
+        <Link href="/" className="text-sm font-bold uppercase tracking-widest text-slate-400 hover:text-blue-600">
+          ← Back
         </Link>
       </nav>
       
-      <header className="mb-12 border-b-2 border-blue-900 pb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <GraduationCap className="h-6 w-6 text-blue-700" />
-          <span className="text-xs font-bold uppercase tracking-widest text-blue-700">Sector Analysis</span>
+      <header className="mb-12 border-b-4 border-blue-900 pb-8">
+        <div className="flex items-center gap-2 mb-4">
+          <GraduationCap className="h-8 w-8 text-blue-800" />
+          <span className="bg-blue-100 text-blue-800 text-xs font-black px-2 py-1 uppercase">Sector Guide</span>
         </div>
-        <h1 className="text-5xl font-black text-blue-900">EdTech Startups India</h1>
-        <p className="mt-4 text-xl text-slate-600 italic">Reimagining Education for 2026</p>
+        <h1 className="text-6xl font-black text-blue-900">EdTech Startups India</h1>
+        <p className="mt-4 text-xl text-slate-600">The most comprehensive directory of Indian EdTech brands in 2026.</p>
       </header>
 
-      <main className="max-w-4xl">
-        <div className="grid gap-6">
-          {["Byju's", "Unacademy", "PhysicsWallah", "Eruditus"].map((brand) => (
-            <div key={brand} className="group border-2 border-blue-900 bg-white p-6 transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_rgba(30,58,138,1)]">
-              <h2 className="text-2xl font-bold text-blue-900">{brand}</h2>
-              <p className="mt-2 text-slate-600">Leading the digital learning transformation with scalable technology and content.</p>
-              <div className="mt-4 flex items-center justify-between">
-                <Link href="/submit" className="inline-flex items-center gap-2 font-bold text-blue-700">
-                  Verify Startup <ArrowRight className="h-4 w-4" />
-                </Link>
-                <span className="text-[10px] font-black uppercase text-slate-300">Verified Registry</span>
-              </div>
+      <main className="max-w-5xl">
+        <div className="grid gap-8 sm:grid-cols-2">
+          {["Byju's", "Unacademy", "PhysicsWallah", "UpGrad"].map((brand) => (
+            <div key={brand} className="border-4 border-blue-900 bg-white p-8 shadow-[10px_10px_0px_0px_rgba(30,58,138,1)]">
+              <h2 className="text-3xl font-black text-blue-900 mb-2">{brand}</h2>
+              <p className="text-slate-500 leading-relaxed mb-6">Revolutionizing the way India learns through technology and expert-led content.</p>
+              <Link href="/submit" className="inline-flex items-center gap-2 text-blue-700 font-black hover:gap-4 transition-all">
+                Verify Startup <ArrowRight className="h-5 w-5" />
+              </Link>
             </div>
           ))}
         </div>
       </main>
-
-      <footer className="mt-16 border-t border-slate-200 pt-8 text-center text-slate-400">
-        <p className="text-[10px] uppercase tracking-widest">© 2026 UpForge Intelligence Unit</p>
-      </footer>
     </div>
   );
 }
