@@ -1,3 +1,5 @@
+//app/startup/[slug]/page.tsx
+
 import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
@@ -97,28 +99,63 @@ export default async function StartupPage({ params }: PageProps) {
    * STRUCTURED DATA (JSON-LD)
    * Enhanced for Google rich results & knowledge graph association
    */
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: startup.name,
-    description: startup.description,
-    url: startup.website || profileUrl,
-    logo: startup.logo_url,
-    foundingDate: startup.founded_year?.toString(),
-    industry: startup.category,
-    areaServed: "India",
-    sameAs: [
-      startup.linkedin_url,
-      startup.twitter_url,
-      startup.instagram_url,
-    ].filter(Boolean),
-    memberOf: {
-      "@type": "Organization",
-      name: "UpForge Founder Registry",
-      url: "https://www.upforge.in",
-    },
-  }
+ const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
 
+    {
+      "@type": "Organization",
+      "@id": profileUrl + "#organization",
+      "name": startup.name,
+      "description": startup.description,
+      "url": startup.website || profileUrl,
+      "logo": startup.logo_url,
+      "foundingDate": startup.founded_year?.toString(),
+      "industry": startup.category,
+      "areaServed": "India",
+      "sameAs": [
+        startup.linkedin_url,
+        startup.twitter_url,
+        startup.instagram_url,
+      ].filter(Boolean),
+      "memberOf": {
+        "@type": "Organization",
+        "name": "UpForge Founder Registry",
+        "url": "https://www.upforge.in"
+      }
+    },
+
+    {
+      "@type": "BreadcrumbList",
+      "@id": profileUrl + "#breadcrumb",
+      "itemListElement": [
+
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.upforge.in/"
+        },
+
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "The Founder Chronicle",
+          "item": "https://www.upforge.in/startup"
+        },
+
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": startup.name,
+          "item": profileUrl
+        }
+
+      ]
+    }
+
+  ]
+}
   return (
     <div className="flex min-h-screen flex-col bg-[#FAFAF9]">
 
