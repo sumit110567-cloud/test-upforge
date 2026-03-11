@@ -1,3 +1,4 @@
+```tsx
 // app/layout.tsx
 
 import type { Metadata } from "next"
@@ -48,7 +49,7 @@ export const metadata: Metadata = {
   category: "Business",
 
   alternates: {
-    canonical: "/",
+    canonical: "https://www.upforge.in/",
   },
 
   icons: {
@@ -129,29 +130,6 @@ const jsonLd = {
         "query-input": "required name=search_term_string",
       },
     },
-
-    {
-      "@type": "BreadcrumbList",
-      "@id": "https://www.upforge.in/#breadcrumb",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: {
-            "@id": "https://www.upforge.in/",
-          },
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "The Founder Chronicle",
-          item: {
-            "@id": "https://www.upforge.in/startup",
-          },
-        },
-      ],
-    },
   ],
 }
 
@@ -177,3 +155,4 @@ export default function RootLayout({
     </html>
   )
 }
+```
