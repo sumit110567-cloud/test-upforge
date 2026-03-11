@@ -1,4 +1,5 @@
-//app/startup/[slug]/page.tsx
+
+// app/startup/[slug]/page.tsx
 
 import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
@@ -9,15 +10,16 @@ import { Footer } from "@/components/footer"
 import { StartupDetail } from "@/components/startup-detail"
 
 interface PageProps {
-  params: Promise<{ slug: string }>
+  params: { slug: string }
 }
 
-/**
- * DYNAMIC METADATA
- * Optimized for search authority, credibility, and strong social previews.
- */
+/*
+DYNAMIC METADATA
+SEO optimized for search + social previews
+*/
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params
+  const { slug } = params
   const supabase = await createClient()
 
   const { data: startup } = await supabase
@@ -30,12 +32,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {
       title: "Startup Not Found | UpForge",
       description:
-        "The requested startup profile could not be found in the UpForge founder registry.",
+        "The requested startup profile could not be found in the UpForge registry.",
     }
   }
 
   const profileUrl = `https://www.upforge.in/startup/${slug}`
+
   const title = `${startup.name} | Official Startup Profile | UpForge`
+
   const description =
     startup.description ||
     `View the verified public startup profile of ${startup.name} on UpForge.`
@@ -51,6 +55,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       url: profileUrl,
       siteName: "UpForge",
+      locale: "en_IN",
+      type: "website",
       images: [
         {
           url: startup.logo_url || "/og-image.jpg",
@@ -59,8 +65,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
           alt: `${startup.name} Official Profile`,
         },
       ],
-      locale: "en_IN",
-      type: "website",
     },
     twitter: {
       card: "summary_large_image",
@@ -75,12 +79,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-/**
- * STARTUP PROFILE PAGE
- * Public registry record of a verified startup.
- */
+/*
+STARTUP PROFILE PAGE
+*/
+
 export default async function StartupPage({ params }: PageProps) {
-  const { slug } = await params
+  const { slug } = params
   const supabase = await createClient()
 
   const { data: startup } = await supabase
@@ -95,81 +99,48 @@ export default async function StartupPage({ params }: PageProps) {
 
   const profileUrl = `https://www.upforge.in/startup/${slug}`
 
-  /**
-   * STRUCTURED DATA (JSON-LD)
-   * Enhanced for Google rich results & knowledge graph association
-   */
- const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
+  /*
+  VALID STRUCTURED DATA
+  */
 
-    {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": profileUrl + "#organization",
+    name: startup.name,
+    description: startup.description,
+    url: startup.website || profileUrl,
+    logo: startup.logo_url,
+    foundingDate: startup.founded_year?.toString(),
+    industry: startup.category,
+    areaServed: "India",
+    sameAs: [
+      startup.linkedin_url,
+      startup.twitter_url,
+      startup.instagram_url,
+    ].filter(Boolean),
+    memberOf: {
       "@type": "Organization",
-      "@id": profileUrl + "#organization",
-      "name": startup.name,
-      "description": startup.description,
-      "url": startup.website || profileUrl,
-      "logo": startup.logo_url,
-      "foundingDate": startup.founded_year?.toString(),
-      "industry": startup.category,
-      "areaServed": "India",
-      "sameAs": [
-        startup.linkedin_url,
-        startup.twitter_url,
-        startup.instagram_url,
-      ].filter(Boolean),
-      "memberOf": {
-        "@type": "Organization",
-        "name": "UpForge Founder Registry",
-        "url": "https://www.upforge.in"
-      }
+      name: "UpForge Founder Registry",
+      url: "https://www.upforge.in",
     },
+  }
 
-    {
-      "@type": "BreadcrumbList",
-      "@id": profileUrl + "#breadcrumb",
-      "itemListElement": [
-
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://www.upforge.in/"
-        },
-
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "The Founder Chronicle",
-          "item": "https://www.upforge.in/startup"
-        },
-
-        {
-          "@type": "ListItem",
-          "position": 3,
-          "name": startup.name,
-          "item": profileUrl
-        }
-
-      ]
-    }
-
-  ]
-}
   return (
     <div className="flex min-h-screen flex-col bg-[#FAFAF9]">
 
-      {/* Structured Data Injection */}
+      {/* Structured Data */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd),
+        }}
       />
 
       <Navbar />
 
       <main className="flex-1">
 
-        {/* Sponsor Banner (If Applicable) */}
         {startup.is_sponsored && (
           <div className="bg-black text-white text-center py-3 text-xs uppercase tracking-[0.3em]">
             Sponsored Startup · Featured by UpForge
@@ -177,9 +148,11 @@ export default async function StartupPage({ params }: PageProps) {
         )}
 
         <StartupDetail startup={startup as Startup} />
+
       </main>
 
       <Footer />
+
     </div>
   )
 }
