@@ -508,13 +508,7 @@ const JSON_LD = {
         "address": { "@type": "PostalAddress", "addressLocality": f.city, "addressCountry": "IN" }
       }))
     },
-    {
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://upforge.in" },
-        { "@type": "ListItem", "position": 2, "name": "The Founder Chronicle", "item": "https://upforge.in" }
-      ]
-    },
+
     {
       "@type": "ItemList",
       "name": "Indian Startup Founders 2026",
@@ -694,54 +688,6 @@ export default function HomePage() {
       >
         Indian Startup Founder Stories 2026 — Zepto, PhysicsWallah, Zomato, Zerodha, Nykaa, OYO, Ola, CRED, Paytm, InternAdda | UpForge Founder Chronicle
       </h1>
-
-      {/* ══════════════════════════════════════════
-          SEO: Breadcrumb nav (visible + schema-aligned)
-      ══════════════════════════════════════════ */}
-      <nav
-        aria-label="Breadcrumb"
-        className="px-4 sm:px-8 py-2"
-        style={{ background: "#EDE9DF", borderBottom: "1px solid #D8D2C4", fontFamily: "system-ui,sans-serif" }}
-      >
-        <ol
-          className="flex items-center gap-1.5 text-[9px] text-[#AAA] uppercase tracking-widest"
-          itemScope
-          itemType="https://schema.org/BreadcrumbList"
-        >
-          <li
-            itemScope
-            itemProp="itemListElement"
-            itemType="https://schema.org/ListItem"
-          >
-            <Link
-              href="/"
-              itemProp="item"
-              className="hover:text-[#1A1208] transition-colors"
-            >
-              <span itemProp="name">UpForge</span>
-            </Link>
-            <meta itemProp="position" content="1" />
-          </li>
-          <li aria-hidden="true" className="text-[#C8C2B4]">/</li>
-          <li
-            itemScope
-            itemProp="itemListElement"
-            itemType="https://schema.org/ListItem"
-          >
-            <span itemProp="name" className="text-[#666]">The Founder Chronicle</span>
-            <meta itemProp="position" content="2" />
-          </li>
-          <li aria-hidden="true" className="text-[#C8C2B4]">/</li>
-          <li
-            itemScope
-            itemProp="itemListElement"
-            itemType="https://schema.org/ListItem"
-          >
-            <span itemProp="name" className="text-[#1A1208] font-semibold">{f.nameShort} · {f.company}</span>
-            <meta itemProp="position" content="3" />
-          </li>
-        </ol>
-      </nav>
 
       {/* ══════════════════════════════════════════
           MASTHEAD
