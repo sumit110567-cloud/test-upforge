@@ -21,7 +21,7 @@ const JSON_LD = {
       "datePublished": "2026-03-01T00:00:00+05:30",
       "dateModified": "2026-03-10T00:00:00+05:30",
       "inLanguage": "en-IN",
-      "image": { "@type": "ImageObject", "url": "https://upforge.in/og/spinny-cars.png", "width": 1200, "height": 630 },
+      "image": { "@type": "ImageObject", "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxhEGcchrkMFMKY10CKmOUHWAIo3T06-9dPA&s", "width": 1200, "height": 630 },
       "publisher": {
         "@type": "Organization", "name": "UpForge", "url": "https://upforge.in",
         "logo": { "@type": "ImageObject", "url": "https://upforge.in/logo.png" }
