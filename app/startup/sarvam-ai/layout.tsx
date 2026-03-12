@@ -1,7 +1,5 @@
 // app/startup/sarvam-ai/layout.tsx
 // SERVER COMPONENT — metadata lives here, NOT in page.tsx
-// page.tsx keeps "use client" for useState/useEffect
-
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
