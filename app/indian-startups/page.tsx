@@ -54,7 +54,6 @@ const SECTORS = [
     name: "Fintech", count: "23 unicorns", funding: "$1.6B in 2025",
     examples: "Razorpay · CRED · Groww · PhonePe",
     accent: "#2563EB", accentBg: "#EFF6FF", accentBorder: "#BFDBFE",
-    // Unsplash — finance / payments
     img: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=480&q=80&auto=format&fit=crop",
     imgAlt: "Digital payments fintech India",
     why: "India's UPI stack and 900M+ banked citizens create a uniquely captive fintech market. Payments, lending, and wealthtech dominate.",
@@ -238,7 +237,6 @@ const jsonLd = {
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
-// Section divider — matches all other Chronicle pages
 function SH({ marker, title }: { marker: string; title: string }) {
   return (
     <div className="flex items-center gap-3 mb-0"
@@ -277,35 +275,27 @@ export default function IndianStartupsPage() {
         .fu5 { animation-delay: .28s; }
         .fu6 { animation-delay: .35s; }
 
-        /* ── card hover — matches Chronicle .hc pattern ── */
         .hc { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
         .hc:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 #1A1208; border-color: #1A1208 !important; z-index: 1; }
 
-        /* ── image overlay fade-in ── */
         .img-cover { object-fit: cover; object-position: center; width: 100%; height: 100%; transition: transform .4s ease; }
         .img-wrap:hover .img-cover { transform: scale(1.03); }
 
-        /* ── sector card image ── */
         .sector-img-wrap { overflow: hidden; position: relative; }
 
-        /* ── FAQ accordion ── */
         details summary::-webkit-details-marker { display: none; }
         details[open] .faq-chev { transform: rotate(90deg); }
         .faq-chev { transition: transform .2s ease; }
 
-        /* ── explore link ── */
         .explore-link { transition: border-color .15s, background .15s; }
         .explore-link:hover { border-color: #1A1208 !important; background: #FDFCF9 !important; }
 
-        /* ── funded row ── */
         .funded-row:hover { background: #F3EFE5 !important; }
         .funded-row { transition: background .15s; }
 
-        /* ── scrollbar ── */
         ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-thumb { background: #C8C2B4; }
 
-        /* ── dropcap for intro ── */
         .intro-drop::first-letter {
           font-family: 'Playfair Display', Georgia, serif;
           font-size: 4em; font-weight: 900;
@@ -314,22 +304,18 @@ export default function IndianStartupsPage() {
           color: #1A1208;
         }
 
-        /* ── newspaper column layout ── */
         @media (min-width: 768px) {
           .ncols-2 { columns: 2; column-gap: 2.5rem; column-rule: 1px solid #D8D2C4; }
           .ncols-3 { columns: 3; column-gap: 2rem; column-rule: 1px solid #D8D2C4; }
         }
 
-        /* ── city card image ── */
         .city-card-img { height: 120px; overflow: hidden; position: relative; }
         @media (max-width: 639px) {
           .city-card-img { height: 90px; }
         }
 
-        /* ── trend bar ── */
         .trend-bar { width: 2px; flex-shrink: 0; align-self: stretch; }
 
-        /* ── stat bar fill animation ── */
         @keyframes barFill {
           from { width: 0; }
           to { width: var(--w); }
@@ -341,9 +327,7 @@ export default function IndianStartupsPage() {
         }
       `}</style>
 
-      {/* ════════════════════════════════════════════
-          BREADCRUMB
-      ════════════════════════════════════════════ */}
+      {/* BREADCRUMB */}
       <nav style={{ background: "#EDE9DF", borderBottom: "1px solid #C8C2B4", fontFamily: "system-ui,sans-serif" }} aria-label="Breadcrumb">
         <div className="max-w-[1160px] mx-auto px-4 sm:px-8 py-2.5">
           <ol className="flex flex-wrap items-center gap-1.5" itemScope itemType="https://schema.org/BreadcrumbList">
@@ -363,12 +347,9 @@ export default function IndianStartupsPage() {
 
       <div className="max-w-[1160px] mx-auto px-4 sm:px-8 pb-24">
 
-        {/* ════════════════════════════════════════════
-            MASTHEAD — full newspaper header
-        ════════════════════════════════════════════ */}
+        {/* MASTHEAD */}
         <header className="fu fu1" style={{ borderBottom: "3px solid #1A1208" }}>
 
-          {/* Top nameplate bar */}
           <div className="text-center px-4 pt-10 sm:pt-14 pb-6 sm:pb-8" style={{ borderBottom: "1px solid #C8C2B4" }}>
             <p className="text-[8px] tracking-[0.44em] text-[#AAA] uppercase mb-3" style={{ fontFamily: "system-ui,sans-serif" }}>
               UpForge Intelligence · Independent Startup Registry
@@ -387,7 +368,6 @@ export default function IndianStartupsPage() {
             </div>
           </div>
 
-          {/* Edition bar */}
           <div className="flex flex-wrap items-center gap-4 px-1 py-2.5" style={{ borderBottom: "1px solid #C8C2B4", fontFamily: "system-ui,sans-serif" }}>
             <span className="text-[8px] font-black tracking-[0.28em] uppercase px-3 py-1 text-white" style={{ background: "#1A1208" }}>
               Ecosystem Report
@@ -400,18 +380,17 @@ export default function IndianStartupsPage() {
             ))}
           </div>
 
-          {/* HERO GRID — 3-col newspaper layout */}
           <div className="grid lg:grid-cols-[1fr_1.8px_320px] xl:grid-cols-[1fr_1.8px_360px] py-8 gap-0">
 
-            {/* LEFT: hero editorial */}
             <div className="lg:pr-8">
-              {/* Hero image */}
               <div className="img-wrap relative w-full mb-6 overflow-hidden" style={{ height: "clamp(200px,28vw,340px)" }}>
+                {/* Hero image — no onError needed, Unsplash URLs are stable */}
                 <img
                   src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=900&q=85&auto=format&fit=crop"
                   alt="India startup ecosystem founders technology 2026"
                   className="img-cover"
-                  width={900} height={340}
+                  width={900}
+                  height={340}
                   loading="eager"
                 />
                 <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(26,18,8,0.82) 0%, rgba(26,18,8,0.15) 55%, transparent 100%)" }} />
@@ -425,7 +404,6 @@ export default function IndianStartupsPage() {
                 </div>
               </div>
 
-              {/* Intro copy — 3 col newspaper on desktop */}
               <div className="ncols-3">
                 <p className="intro-drop leading-[1.88] text-[#2C2010] mb-3" style={{ fontSize: "clamp(12px,1.2vw,13.5px)", fontFamily: "'Georgia','Times New Roman',serif" }}>
                   India is the world's third-largest startup ecosystem — a status earned through two decades of relentless founder ambition, engineering talent, and a domestic market large enough to sustain billion-dollar businesses.
@@ -439,13 +417,9 @@ export default function IndianStartupsPage() {
               </div>
             </div>
 
-            {/* Vertical rule */}
             <div className="hidden lg:block" style={{ background: "#C8C2B4", width: "1.5px", margin: "0 0" }} />
 
-            {/* RIGHT: stats sidebar */}
             <div className="hidden lg:flex flex-col gap-0 pl-8 pt-0">
-
-              {/* Big stat grid */}
               <div style={{ border: "2px solid #1A1208", marginBottom: 16 }}>
                 <div className="px-4 py-2" style={{ background: "#1A1208" }}>
                   <p className="text-[8px] font-black uppercase tracking-[0.3em] text-white" style={{ fontFamily: "system-ui,sans-serif" }}>By the Numbers</p>
@@ -461,7 +435,6 @@ export default function IndianStartupsPage() {
                 </dl>
               </div>
 
-              {/* Top 3 cities quick view */}
               <div style={{ border: "1px solid #D8D2C4", background: "#FDFCF9", marginBottom: 16 }}>
                 <div className="px-4 py-2" style={{ borderBottom: "1.5px solid #1A1208" }}>
                   <p className="text-[8px] font-black uppercase tracking-[0.3em] text-[#1A1208]" style={{ fontFamily: "system-ui,sans-serif" }}>Top Cities</p>
@@ -480,7 +453,6 @@ export default function IndianStartupsPage() {
                 ))}
               </div>
 
-              {/* Insight pull */}
               <div className="px-4 py-4" style={{ background: "#EFF6FF", border: "1px solid #BFDBFE" }}>
                 <p className="text-[7.5px] font-black uppercase tracking-[0.26em] mb-2" style={{ color: "#2563EB", fontFamily: "system-ui,sans-serif" }}>The Insight</p>
                 <p className="pf italic text-[#1A1208] leading-snug" style={{ fontSize: 12.5 }}>
@@ -491,7 +463,6 @@ export default function IndianStartupsPage() {
             </div>
           </div>
 
-          {/* Mobile: stats below hero */}
           <div className="lg:hidden grid grid-cols-2 gap-[1.5px] mb-6" style={{ background: "#1A1208", border: "2px solid #1A1208" }}>
             {ECOSYSTEM_STATS.map((s, i) => (
               <div key={i} style={{ background: "#FDFCF9", padding: "clamp(10px,2.5vw,16px)" }}>
@@ -503,9 +474,7 @@ export default function IndianStartupsPage() {
           </div>
         </header>
 
-        {/* ════════════════════════════════════════════
-            §01 — SECTOR BREAKDOWN
-        ════════════════════════════════════════════ */}
+        {/* §01 — SECTOR BREAKDOWN */}
         <section className="fu fu2" style={{ borderBottom: "1px solid #C8C2B4" }} aria-labelledby="sectors-heading">
           <SH marker="§01" title="India's Startup Sectors — Where the Capital Flows" />
           <p className="text-[9px] uppercase tracking-[0.24em] mb-6" style={{ color: "#AAA", fontFamily: "system-ui,sans-serif" }}>
@@ -515,16 +484,16 @@ export default function IndianStartupsPage() {
           <div className="grid sm:grid-cols-2 gap-[1.5px]" style={{ background: "#1A1208", border: "1.5px solid #1A1208", marginBottom: "clamp(20px,4vw,36px)" }}>
             {SECTORS.map((s, i) => (
               <div key={i} className="hc" style={{ background: "#FDFCF9", borderTop: `3px solid ${s.accent}`, cursor: "default" }}>
-                {/* Sector image */}
-                <div className="sector-img-wrap img-wrap" style={{ height: 130 }}>
+                {/* ✅ FIX: removed onError handler — not allowed in Server Components */}
+                <div className="sector-img-wrap img-wrap" style={{ height: 130, overflow: "hidden", position: "relative" }}>
                   <img
                     src={s.img}
                     alt={s.imgAlt}
                     className="img-cover"
-                    width={480} height={130}
+                    width={480}
+                    height={130}
                     loading="lazy"
-                    style={{ display: "block" }}
-                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
+                    style={{ display: "block", objectFit: "cover", width: "100%", height: "100%" }}
                   />
                   <div className="absolute inset-0 pointer-events-none"
                     style={{ background: `linear-gradient(to right, ${s.accentBg}cc 0%, transparent 70%)` }} />
@@ -536,7 +505,6 @@ export default function IndianStartupsPage() {
                   </div>
                 </div>
 
-                {/* Content */}
                 <div style={{ padding: "clamp(14px,2.2vw,20px)" }}>
                   <div className="flex items-center gap-2 mb-2">
                     <h3 className="pf font-bold" style={{ fontSize: "clamp(13px,1.4vw,15px)", color: "#1A1208", margin: 0 }}>{s.name}</h3>
@@ -555,9 +523,7 @@ export default function IndianStartupsPage() {
           </div>
         </section>
 
-        {/* ════════════════════════════════════════════
-            §02 — STARTUP CITIES
-        ════════════════════════════════════════════ */}
+        {/* §02 — STARTUP CITIES */}
         <section className="fu fu3" style={{ borderBottom: "1px solid #C8C2B4" }} aria-labelledby="cities-heading">
           <SH marker="§02" title="Startup Cities of India" />
           <p className="text-[9px] uppercase tracking-[0.24em] mb-6" style={{ color: "#AAA", fontFamily: "system-ui,sans-serif" }}>
@@ -568,15 +534,16 @@ export default function IndianStartupsPage() {
             style={{ background: "#1A1208", border: "1.5px solid #1A1208", marginBottom: "clamp(20px,4vw,36px)" }}>
             {CITIES.map((c, i) => (
               <div key={i} className="hc" style={{ background: "#FDFCF9", cursor: "default" }}>
-                {/* City image */}
-                <div className="city-card-img img-wrap" style={{ borderTop: `3px solid ${c.accent}` }}>
+                {/* ✅ FIX: removed onError handler — not allowed in Server Components */}
+                <div className="city-card-img img-wrap" style={{ borderTop: `3px solid ${c.accent}`, overflow: "hidden", position: "relative" }}>
                   <img
                     src={c.img}
                     alt={c.imgAlt}
                     className="img-cover"
-                    width={400} height={120}
+                    width={400}
+                    height={120}
                     loading="lazy"
-                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
+                    style={{ display: "block", objectFit: "cover", width: "100%", height: "100%" }}
                   />
                   <div className="absolute inset-0 pointer-events-none"
                     style={{ background: "linear-gradient(to top, rgba(26,18,8,0.72) 0%, transparent 60%)" }} />
@@ -588,7 +555,6 @@ export default function IndianStartupsPage() {
                     </div>
                   </div>
                 </div>
-                {/* City copy */}
                 <div style={{ padding: "clamp(12px,2vw,16px)" }}>
                   <p className="text-[8.5px] font-black uppercase tracking-[0.22em] mb-2" style={{ color: c.accent, fontFamily: "system-ui,sans-serif" }}>
                     {c.label}
@@ -602,9 +568,7 @@ export default function IndianStartupsPage() {
           </div>
         </section>
 
-        {/* ════════════════════════════════════════════
-            §03 — MOST FUNDED — full-bleed dark table
-        ════════════════════════════════════════════ */}
+        {/* §03 — MOST FUNDED */}
         <section className="fu fu3" style={{ borderBottom: "1px solid #C8C2B4" }} aria-labelledby="funded-heading">
           <SH marker="§03" title="Most Funded Indian Startups" />
           <p className="text-[9px] uppercase tracking-[0.24em] mb-6" style={{ color: "#AAA", fontFamily: "system-ui,sans-serif" }}>
@@ -612,7 +576,6 @@ export default function IndianStartupsPage() {
           </p>
 
           <div style={{ border: "1.5px solid #1A1208", marginBottom: "clamp(20px,4vw,36px)" }}>
-            {/* Table header */}
             <div className="grid grid-cols-[28px_1fr_auto_auto] gap-4 px-5 py-3 items-center"
               style={{ background: "#1A1208", fontFamily: "system-ui,sans-serif" }}>
               <span className="text-[7.5px] font-black uppercase tracking-[0.2em] text-white/30">#</span>
@@ -642,9 +605,7 @@ export default function IndianStartupsPage() {
           </div>
         </section>
 
-        {/* ════════════════════════════════════════════
-            §04 — INSIGHT STRIP (matches homepage)
-        ════════════════════════════════════════════ */}
+        {/* §04 — INSIGHT STRIP */}
         <section className="fu fu4" style={{ borderBottom: "1px solid #C8C2B4" }} aria-label="UpForge ecosystem insights">
           <SH marker="§04" title="UpForge Ecosystem Insights" />
 
@@ -666,9 +627,7 @@ export default function IndianStartupsPage() {
           </div>
         </section>
 
-        {/* ════════════════════════════════════════════
-            §05 — 2026 TRENDS (newspaper column layout)
-        ════════════════════════════════════════════ */}
+        {/* §05 — 2026 TRENDS */}
         <section className="fu fu5" style={{ borderBottom: "1px solid #C8C2B4" }} aria-labelledby="trends-heading">
           <SH marker="§05" title="Key Trends Shaping India's Startup Story in 2026" />
           <p className="text-[9px] uppercase tracking-[0.24em] mb-6" style={{ color: "#AAA", fontFamily: "system-ui,sans-serif" }}>
@@ -679,14 +638,11 @@ export default function IndianStartupsPage() {
             {TRENDS.map((t, i) => (
               <div key={t.num} className="flex gap-0"
                 style={{ background: i % 2 === 0 ? "#FDFCF9" : "#F8F5EF", borderBottom: i < TRENDS.length - 1 ? "1.5px solid #1A1208" : "none" }}>
-                {/* Accent left bar */}
                 <div className="trend-bar flex-shrink-0" style={{ background: t.accent, width: 4 }} />
-                {/* Rank */}
                 <div className="flex-shrink-0 flex items-center justify-center px-4 py-4 hide-mob"
                   style={{ borderRight: "1px solid #EDE9DF", minWidth: 52 }}>
                   <span className="pf font-black text-[#C8C2B4] leading-none" style={{ fontSize: "1.1rem" }}>{t.num}</span>
                 </div>
-                {/* Content */}
                 <div style={{ padding: "clamp(14px,2.2vw,20px) clamp(14px,2vw,20px)" }}>
                   <h3 className="pf font-bold mb-2" style={{ fontSize: "clamp(13px,1.4vw,15px)", color: "#1A1208", margin: "0 0 8px 0" }}>
                     {t.title}
@@ -700,9 +656,7 @@ export default function IndianStartupsPage() {
           </div>
         </section>
 
-        {/* ════════════════════════════════════════════
-            §06 — FAQ (accordion)
-        ════════════════════════════════════════════ */}
+        {/* §06 — FAQ */}
         <section className="fu fu6" style={{ borderBottom: "1px solid #C8C2B4" }} aria-labelledby="faq-heading">
           <SH marker="§06" title="Frequently Asked Questions" />
           <p className="text-[9px] uppercase tracking-[0.24em] mb-6" style={{ color: "#AAA", fontFamily: "system-ui,sans-serif" }}>
@@ -727,9 +681,7 @@ export default function IndianStartupsPage() {
           </div>
         </section>
 
-        {/* ════════════════════════════════════════════
-            PULL QUOTE — matches Chronicle pages
-        ════════════════════════════════════════════ */}
+        {/* PULL QUOTE */}
         <div className="fu fu6 text-center py-8 my-2" style={{ borderTop: "3px solid #1A1208", borderBottom: "1px solid #C8C2B4" }}>
           <span style={{ display: "block", color: "#C8C2B4", fontSize: 16, marginBottom: 12 }} aria-hidden="true">❧</span>
           <blockquote className="pf italic text-[#1A1208] leading-[1.7] max-w-2xl mx-auto px-4"
@@ -742,9 +694,7 @@ export default function IndianStartupsPage() {
           </p>
         </div>
 
-        {/* ════════════════════════════════════════════
-            INTERNAL LINKS — matches Chronicle homepage
-        ════════════════════════════════════════════ */}
+        {/* INTERNAL LINKS */}
         <nav className="fu fu6 py-8" style={{ borderBottom: "1px solid #C8C2B4" }} aria-label="Related startup lists on UpForge">
           <p className="text-[8.5px] tracking-[0.3em] uppercase text-[#AAA] mb-4" style={{ fontFamily: "system-ui,sans-serif" }}>
             Explore on UpForge
@@ -772,9 +722,7 @@ export default function IndianStartupsPage() {
           </div>
         </nav>
 
-        {/* ════════════════════════════════════════════
-            CTA — matches Chronicle homepage
-        ════════════════════════════════════════════ */}
+        {/* CTA */}
         <section className="fu fu6 pt-7 grid sm:grid-cols-2 gap-6 items-center" style={{ marginTop: 8 }} aria-label="List your startup on UpForge">
           <div>
             <div className="flex items-center gap-2 mb-2">
@@ -798,7 +746,7 @@ export default function IndianStartupsPage() {
           </div>
         </section>
 
-        {/* ════ FOOTER ════ */}
+        {/* FOOTER */}
         <footer className="mt-7 pb-2">
           <p className="text-[8.5px] leading-relaxed"
             style={{ color: "#BBB0A0", fontFamily: "system-ui,sans-serif", borderTop: "1px solid #D8D2C4", paddingTop: "1rem" }}>
