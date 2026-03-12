@@ -1,83 +1,203 @@
-// app/startup/page.tsx
+// app/about/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import type { Metadata } from "next";
-import PageTransition from "@/components/page-transition";
-import { ChevronLeft, ChevronRight, BadgeCheck, ArrowUpRight, MapPin, Calendar, Star } from "lucide-react";
+import {
+  Shield, Users, TrendingUp, Award, BadgeCheck, Globe,
+  ArrowRight, Sparkles, Calculator, FileText, Zap,
+  Building2, Target, Activity, CheckCircle2,
+} from "lucide-react";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const supabase = await createClient();
-  const { count } = await supabase.from("startups").select("*", { count: "exact", head: true });
-  return {
-    title: `Indian Startup Registry 2026 — ${(count || 72000).toLocaleString()}+ Verified Startups | UpForge`,
-    description: `Browse ${(count || 72000).toLocaleString()}+ verified Indian startups across AI, SaaS, FinTech, HealthTech and 30+ sectors.`,
-    alternates: { canonical: "https://upforge.in/startup" },
-    openGraph: {
-      title: `Indian Startup Registry — ${(count || 72000).toLocaleString()}+ Verified | UpForge`,
-      description: "Browse India's most comprehensive startup database. Free, verified, updated daily.",
-      url: "https://upforge.in/startup",
-      siteName: "UpForge",
-      images: [{ url: "https://upforge.in/og-registry.png", width: 1200, height: 630 }],
-      locale: "en_IN", type: "website",
-    },
-    robots: { index: true, follow: true },
-  };
+export const revalidate = 600;
+
+export const metadata: Metadata = {
+  title: "About UpForge — India's Independent Startup Registry | UpForge",
+  description:
+    "UpForge is India's independent startup registry — not a media platform, not a marketplace. A permanent public record of serious builders across 30+ sectors.",
+  alternates: {
+    canonical: "https://www.upforge.in/about",
+  },
+  openGraph: {
+    title: "About UpForge — India's Independent Startup Registry",
+    description:
+      "India's verified, structured, permanent startup registry. Free for founders. Trusted by investors and press.",
+    url: "https://www.upforge.in/about",
+    siteName: "UpForge",
+    images: [{ url: "https://www.upforge.in/og-about.png", width: 1200, height: 630 }],
+    locale: "en_IN",
+    type: "website",
+  },
+  robots: { index: true, follow: true },
+};
+
+async function getAboutInsights() {
+  try {
+    const response = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${process.env.GROQ_API_KEY}` },
+      body: JSON.stringify({
+        model: "mixtral-8x7b-32768",
+        messages: [
+          {
+            role: "system",
+            content: `Return ONLY valid JSON:
+            {
+              "ecosystemPulse": {
+                "headline": "one powerful stat or fact about Indian startup ecosystem 2026",
+                "stat": "big number or %",
+                "context": "brief context under 12 words"
+              },
+              "whyRegistry": [
+                {"point": "why a startup registry matters in India", "data": "supporting stat"}
+              ],
+              "milestones": [
+                {"year": "year", "event": "Indian startup ecosystem milestone"}
+              ]
+            }`,
+          },
+          { role: "user", content: "Give compelling data about why documenting Indian startups matters in 2026." },
+        ],
+        temperature: 0.3,
+        response_format: { type: "json_object" },
+      }),
+    });
+    const data = await response.json();
+    return JSON.parse(data.choices[0].message.content);
+  } catch {
+    return {
+      ecosystemPulse: {
+        headline: "India is now home to the world's 3rd largest startup ecosystem",
+        stat: "126 Unicorns",
+        context: "and growing — ₹9.2B funded in Q1 2026 alone",
+      },
+      whyRegistry: [
+        { point: "90% of Indian startups have zero structured digital presence", data: "Less than 10% appear on verified databases" },
+        { point: "Investors lose time verifying basic startup information", data: "Avg 3–5 days per due diligence on basic data" },
+        { point: "Founders lack institutional-grade digital credibility early on", data: "Most rely only on LinkedIn and AngelList" },
+        { point: "India's startup data is fragmented across 200+ sources", data: "No single trusted public registry existed before" },
+      ],
+      milestones: [
+        { year: "2016", event: "Startup India launched — 10,000 registered startups" },
+        { year: "2019", event: "India crosses 50,000 DPIIT-recognized startups" },
+        { year: "2021", event: "Record $42B funding — India's breakout year" },
+        { year: "2023", event: "100+ unicorns, 3rd largest ecosystem globally" },
+        { year: "2025", event: "72,000+ active startups, AI-led second wave begins" },
+        { year: "2026", event: "UpForge becomes India's independent public registry" },
+      ],
+    };
+  }
 }
 
-export const revalidate = 0;
+const IMAGES = {
+  hero:     "/aboutus.jpg",
+  problem:  "https://media.licdn.com/dms/image/v2/D5612AQHvdNFPlgO8mA/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1726469383648?e=2147483647&v=beta&t=TOuXsxGGTTfnFrJ16aAHJdDZwFLP2fjF5u-Cutu1q68",
+  answer:   "https://images.yourstory.com/cs/2/ab6020f0259611ee840c6712417aa5cf/What-is-Startup-India-Showcase-11-1703785002234.jpg?mode=crop&crop=faces&ar=16%3A9&format=auto&w=1920&q=75",
+  builders: "https://p2.piqsels.com/preview/160/1022/497/startup-start-up-growth-hacking-market.jpg",
+  believe:  "https://miro.medium.com/0*OzIZRmuVzMtG9M9X",
+};
 
-interface Props {
-  searchParams?: Promise<{ page?: string; sector?: string }>;
-}
-
-const SECTORS = [
-  { name: "AI/ML",        hot: true  },
-  { name: "FinTech",      hot: true  },
-  { name: "SaaS",         hot: true  },
-  { name: "Space Tech",   hot: true  },
-  { name: "Climate Tech", hot: false },
-  { name: "D2C Brands",   hot: false },
-  { name: "HealthTech",   hot: false },
-  { name: "EdTech",       hot: false },
+// FAQ data for structured data + on-page rendering
+const FAQ_ITEMS = [
+  {
+    q: "What is UpForge?",
+    a: "UpForge is India's independent startup registry — a free, structured, and permanently accessible public record of verified Indian startups across 30+ sectors.",
+  },
+  {
+    q: "Is UpForge free for founders?",
+    a: "Yes. Listing your startup on UpForge is completely free. We believe every serious builder deserves institutional-grade digital credibility without paying for it.",
+  },
+  {
+    q: "How does UpForge verify startups?",
+    a: "Every startup profile is manually reviewed before listing. We check basic company details, founders, and operational status to ensure accuracy.",
+  },
+  {
+    q: "Is UpForge a media company or accelerator?",
+    a: "No. UpForge is neither a media outlet nor an accelerator. We are India's neutral, independent registry — no paid rankings, no sponsored placements.",
+  },
+  {
+    q: "Who can use UpForge?",
+    a: "Founders use UpForge to build a verified digital paper trail. Investors use it to discover startups before they hit headlines. Press use it to cite reliable startup data.",
+  },
+  {
+    q: "How many startups are on UpForge?",
+    a: "UpForge lists thousands of verified Indian startups and grows daily across sectors like AI/ML, FinTech, SaaS, HealthTech, Climate Tech, and more.",
+  },
 ];
 
-const FIRST_PAGE_ITEMS = 23; // 3 featured + 18 grid
-const OTHER_PAGE_ITEMS = 20;
-
-export default async function StartupPage({ searchParams }: Props) {
+export default async function AboutPage() {
   const supabase = await createClient();
+  const insights = await getAboutInsights();
 
-  const params        = await searchParams;
-  const sectorFilter  = params?.sector?.trim() ?? "";
-  const currentPage   = Number(params?.page ?? 1);
-  const isFirstPage   = currentPage === 1;
-  const showFeatured  = isFirstPage && !sectorFilter;
+  const { count: totalStartups } = await supabase
+    .from("startups").select("*", { count: "exact", head: true });
 
-  const itemsForPage  = isFirstPage ? FIRST_PAGE_ITEMS : OTHER_PAGE_ITEMS;
-  const from          = isFirstPage ? 0 : FIRST_PAGE_ITEMS + (currentPage - 2) * OTHER_PAGE_ITEMS;
-  const to            = from + itemsForPage - 1;
+  const { count: startupsWithReports } = await supabase
+    .from("startups").select("*", { count: "exact", head: true }).eq("has_report", true);
 
-  let query = supabase.from("startups").select("*", { count: "exact" });
-  if (sectorFilter) query = query.or(`industry.ilike.%${sectorFilter}%,category.ilike.%${sectorFilter}%`);
+  const { data: industries } = await supabase
+    .from("startups").select("industry").not("industry", "is", null);
 
-  const { data: startups, count, error } = await query
-    .order("name", { ascending: true })
-    .range(from, to);
+  const uniqueIndustries = industries ? new Set(industries.map((i) => i.industry)).size : 0;
 
-  if (error) console.log("SUPABASE ERROR:", error);
-
-  const totalCount      = count || 0;
-  const totalPages      = totalCount <= FIRST_PAGE_ITEMS
-    ? 1
-    : 1 + Math.ceil((totalCount - FIRST_PAGE_ITEMS) / OTHER_PAGE_ITEMS);
-
-  const featuredStartups = showFeatured ? (startups || []).slice(0, 3)  : [];
-  const gridStartups     = showFeatured ? (startups || []).slice(3)     : (startups || []);
+  // Structured data: Organization + BreadcrumbList + FAQPage
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://www.upforge.in/#organization",
+        "name": "UpForge",
+        "url": "https://www.upforge.in",
+        "logo": "https://www.upforge.in/logo.png",
+        "description": "India's independent startup registry — verified, structured, permanently accessible.",
+        "foundingDate": "2025",
+        "areaServed": "IN",
+        "sameAs": [
+          "https://www.linkedin.com/company/upforge",
+          "https://twitter.com/upforge_in"
+        ],
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "UpForge",
+            "item": "https://www.upforge.in/",
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "About",
+            "item": "https://www.upforge.in/about",
+          },
+        ],
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": FAQ_ITEMS.map((faq) => ({
+          "@type": "Question",
+          "name": faq.q,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": faq.a,
+          },
+        })),
+      },
+    ],
+  };
 
   return (
     <>
+      {/* ── STRUCTURED DATA ── */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap');
 
         .pf  { font-family: 'Playfair Display', Georgia, serif !important; }
         .rp  { font-family: 'Georgia', 'Times New Roman', serif; }
@@ -94,178 +214,89 @@ export default async function StartupPage({ searchParams }: Props) {
           --ink5:   #BBB0A0;
           --rule:   #C8C2B4;
           --rule2:  #D8D2C4;
-          --gold:   #B45309;
-          --gold2:  #D97706;
-          --gold3:  #92400E;
-          --goldlt: #FEF3C7;
+          --gold:   #D97706;
+          --gold2:  #E8C547;
+          --gold3:  #8B6914;
           --white:  #FDFCF9;
-          --green:  #15803D;
         }
 
         body { background: var(--parch); }
 
-        /* ── ANIMATIONS ── */
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(10px); }
+        @keyframes storyIn {
+          from { opacity: 0; transform: translateY(9px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        .a0 { animation: fadeUp .42s .00s cubic-bezier(.16,1,.3,1) both; }
-        .a1 { animation: fadeUp .42s .08s cubic-bezier(.16,1,.3,1) both; }
-        .a2 { animation: fadeUp .42s .15s cubic-bezier(.16,1,.3,1) both; }
-        .a3 { animation: fadeUp .42s .22s cubic-bezier(.16,1,.3,1) both; }
+        .a0 { animation: storyIn .42s .00s cubic-bezier(.16,1,.3,1) both; }
+        .a1 { animation: storyIn .42s .08s cubic-bezier(.16,1,.3,1) both; }
+        .a2 { animation: storyIn .42s .16s cubic-bezier(.16,1,.3,1) both; }
+        .a3 { animation: storyIn .42s .24s cubic-bezier(.16,1,.3,1) both; }
+        .a4 { animation: storyIn .42s .32s cubic-bezier(.16,1,.3,1) both; }
 
-        /* ── LIVE DOT ── */
-        .ldot {
-          width: 7px; height: 7px; border-radius: 50%;
-          background: #22C55E; display: inline-block; flex-shrink: 0;
-          position: relative;
-        }
-        .ldot::after {
-          content: ''; position: absolute; inset: -3px; border-radius: 50%;
-          background: rgba(34,197,94,.25);
-          animation: lp 2.2s ease-in-out infinite;
-        }
-        @keyframes lp { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(2.2);opacity:0} }
+        .ldot { width:7px;height:7px;border-radius:50%;background:#22C55E;display:inline-block;flex-shrink:0;position:relative; }
+        .ldot::after { content:'';display:block;width:100%;height:100%;border-radius:50%;background:rgba(34,197,94,.35);animation:lp 2s ease-in-out infinite;position:absolute;top:0;left:0; }
+        @keyframes lp { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(2.5);opacity:0} }
 
-        /* ── PILL ── */
-        .pill {
-          display: inline-flex; align-items: center; gap: 4px;
-          font-size: 9px; font-weight: 700; letter-spacing: .12em;
-          text-transform: uppercase; padding: 5px 13px;
-          border: 1px solid var(--rule2); background: var(--white);
-          color: var(--ink4); font-family: system-ui, sans-serif;
-          transition: border-color .15s, color .15s, background .15s;
-          white-space: nowrap; text-decoration: none; cursor: pointer;
-        }
-        .pill:hover { border-color: var(--ink); color: var(--ink); }
-        .pill.on { background: var(--ink); color: white; border-color: var(--ink); }
-
-        /* ── SECTOR SCROLL ── */
-        .strip { overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-        .strip::-webkit-scrollbar { display: none; }
-
-        /* ── SECTION HEAD ── */
-        .sh { display: flex; align-items: center; gap: 10px; }
-        .sh-l { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .28em; color: var(--ink5); font-family: system-ui; white-space: nowrap; }
-        .sh-r { flex: 1; height: 1px; background: var(--rule2); }
-
-        /* ── VERIFIED BADGE ── */
         .vbadge {
-          display: inline-flex; align-items: center; gap: 3px;
-          font-size: 7.5px; font-weight: 700; letter-spacing: .1em;
-          text-transform: uppercase; color: var(--green);
-          border: 1px solid rgba(21,128,61,.28); padding: 2px 7px;
-          font-family: system-ui;
+          display:inline-flex;align-items:center;gap:3px;
+          font-size:7.5px;font-weight:700;letter-spacing:.12em;
+          text-transform:uppercase;color:#15803D;
+          border:1px solid rgba(21,128,61,.3);padding:2px 7px;
+          font-family:system-ui;
         }
 
-        /* ══════════════════════════════
-           FEATURED GRID (top 3)
-        ══════════════════════════════ */
-        .feat-grid {
-          display: grid; grid-template-columns: repeat(3, 1fr);
-          border: 1.5px solid var(--ink); background: var(--ink);
-          gap: 1.5px;
-        }
-        .feat-card {
-          background: var(--white); display: flex; flex-direction: column;
-          text-decoration: none; position: relative; overflow: hidden;
-          transition: background .18s;
-        }
-        .feat-card:hover { background: #FEFCF5; }
+        .imgf { position:relative;overflow:hidden; }
+        .imgf img { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:sepia(18%) contrast(107%);transition:transform .6s ease; }
+        .imgf:hover img { transform:scale(1.025); }
 
-        /* gold accent line on hover */
-        .feat-card::after {
-          content: ''; position: absolute; top: 0; left: 0; right: 0;
-          height: 3px; background: transparent;
-          transition: background .18s;
-        }
-        .feat-card:hover::after { background: var(--gold2); }
+        .sh { display:flex;align-items:center;gap:10px;margin-bottom:14px; }
+        .sh-l { font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.26em;color:var(--ink5);font-family:system-ui;white-space:nowrap; }
+        .sh-r { flex:1;height:1px;background:var(--rule2); }
 
-        /* ── Feat image ── */
-        .feat-img {
-          height: 170px; position: relative; overflow: hidden;
-          background: var(--parch2); flex-shrink: 0;
-          border-bottom: 1.5px solid var(--ink);
-        }
-        .feat-img img {
-          width: 100%; height: 100%; object-fit: cover; object-position: center;
-          transition: transform .5s ease;
-        }
-        .feat-card:hover .feat-img img { transform: scale(1.04); }
+        .hc { transition:background .18s,border-color .18s,transform .18s,box-shadow .18s; }
+        .hc:hover { border-color:var(--ink)!important;transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink);z-index:1; }
 
-        /* ══════════════════════════════
-           REGULAR CARD GRID
-        ══════════════════════════════ */
-        .card-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-          border: 1.5px solid var(--ink); background: var(--ink);
-          gap: 1.5px;
-        }
+        .pc-wrap:hover .pc-icon { background:var(--ink); }
+        .pc-wrap:hover .pc-icon svg { color:var(--gold2)!important; }
+        .pc-icon { transition:background .18s; }
+        .pc-icon svg { transition:color .18s; }
 
-        .s-card {
-          background: var(--white); display: flex; flex-direction: column;
-          text-decoration: none; position: relative;
-          transition: background .15s, transform .15s, box-shadow .15s;
-        }
-        .s-card:hover {
-          background: #FEFCF5;
-          transform: translate(-2px, -2px);
-          box-shadow: 4px 4px 0 var(--ink);
-          z-index: 2;
-        }
-        /* gold top accent */
-        .s-card::before {
-          content: ''; position: absolute; top: 0; left: 0; right: 0;
-          height: 2.5px; background: transparent; transition: background .15s;
-        }
-        .s-card:hover::before { background: var(--gold2); }
+        .rlink:hover { background:var(--parch2)!important; }
 
-        /* ── Card logo circle ── */
-        .logo-circle {
-          width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
-          border: 1.5px solid var(--rule2);
-          background: var(--parch2);
-          display: flex; align-items: center; justify-content: center;
-          overflow: hidden; transition: border-color .15s;
+        /* FAQ accordion */
+        .faq-item { border-bottom:1px solid var(--rule2); }
+        .faq-q {
+          width:100%;text-align:left;background:none;border:none;
+          padding:16px 0;cursor:pointer;display:flex;align-items:center;
+          justify-content:space-between;gap:12px;
         }
-        .s-card:hover .logo-circle { border-color: var(--ink4); }
-        .logo-circle img { width: 100%; height: 100%; object-fit: cover; }
+        .faq-q:hover .faq-q-text { color:var(--ink)!important; }
+        details[open] .faq-arrow { transform:rotate(180deg); }
+        .faq-arrow { transition:transform .2s;flex-shrink:0; }
+        .faq-a { padding:0 0 14px; }
 
-        /* ── PAGINATION ── */
-        .pg {
-          display: inline-flex; align-items: center; gap: 5px;
-          padding: 8px 16px; border: 1.5px solid var(--rule2);
-          background: var(--white); font-size: 10px; font-weight: 700;
-          letter-spacing: .1em; text-transform: uppercase;
-          color: var(--ink4); font-family: system-ui; transition: all .15s;
-          text-decoration: none;
-        }
-        .pg:hover { border-color: var(--ink); color: var(--ink); }
-        .pg.on { background: var(--ink); color: white; border-color: var(--ink); }
-        .pg.off { opacity: .25; pointer-events: none; }
-
-        /* ── MOBILE LIST ── */
-        .m-row {
-          display: flex; align-items: center; gap: 13px;
-          padding: 14px 16px; background: var(--white);
-          border-bottom: 1px solid var(--rule2);
-          text-decoration: none; transition: background .13s;
-        }
-        .m-row:hover { background: var(--parch2); }
-
-        /* ── RESPONSIVE ── */
+        /* ── RESPONSIVE (taken from startup page patterns) ── */
         @media (max-width: 900px) {
-          .feat-grid { grid-template-columns: 1fr 1fr !important; }
+          .two-col { grid-template-columns: 1fr !important; }
+          .two-col > * { border-right: none !important; padding-right: 0 !important; padding-left: 0 !important; border-top: 1px solid var(--rule2); }
+          .two-col > *:first-child { border-top: none !important; }
         }
-        @media (max-width: 640px) {
-          .feat-grid { grid-template-columns: 1fr !important; }
-          .hide-mob  { display: none !important; }
-          .show-mob  { display: flex !important; }
-          .card-grid { grid-template-columns: 1fr 1fr !important; }
+
+        @media (max-width: 768px) {
+          .hero-h  { height: clamp(220px, 50vw, 300px) !important; }
+          .stats-bar { flex-direction: column !important; }
+          .stats-bar > div { border-right: none !important; border-bottom: 1px solid rgba(255,255,255,.07); padding: 16px 0 !important; }
+          .stats-bar > div:last-child { border-bottom: none !important; }
+          .pulse-grid { grid-template-columns: 1fr !important; }
+          .pulse-stat { border-left: none !important; padding-left: 0 !important; border-top: 1px solid var(--rule2); padding-top: 16px !important; }
+          .milestone-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .serve-grid { grid-template-columns: 1fr !important; }
+          .principles-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
-        @media (max-width: 400px) {
-          .card-grid { grid-template-columns: 1fr !important; }
+
+        @media (max-width: 480px) {
+          .milestone-grid { grid-template-columns: 1fr !important; }
+          .principles-grid { grid-template-columns: 1fr !important; }
+          .hide-mob { display: none !important; }
         }
       `}</style>
 
@@ -275,443 +306,260 @@ export default async function StartupPage({ searchParams }: Props) {
         <nav className="sf a0" style={{ background: "var(--parch2)", borderBottom: "1px solid var(--rule2)", padding: "8px 0" }}>
           <div style={{ maxWidth: 1340, margin: "0 auto", padding: "0 clamp(16px,3vw,36px)" }}>
             <ol style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 9, color: "var(--ink5)", textTransform: "uppercase", letterSpacing: "0.18em", listStyle: "none", margin: 0, padding: 0 }}>
-              <li><Link href="/" style={{ color: "var(--ink5)", textDecoration: "none" }}>UpForge</Link></li>
+              <li>
+                {/* Visible link uses / for Next.js routing; canonical URL in schema uses www */}
+                <Link href="/" style={{ color: "var(--ink5)", textDecoration: "none" }}>UpForge</Link>
+              </li>
               <li style={{ color: "var(--rule)" }}>/</li>
-              <li style={{ color: "var(--ink4)", fontWeight: 700 }}>Startup Registry</li>
+              <li style={{ color: "var(--ink4)", fontWeight: 700 }}>About</li>
             </ol>
           </div>
         </nav>
 
-        {/* ── MASTHEAD ── */}
-        <header className="a0" style={{ background: "var(--parch)", borderBottom: "3px solid var(--ink)" }}>
-          <div style={{ maxWidth: 1340, margin: "0 auto", padding: "0 clamp(16px,3vw,36px)" }}>
-            <div style={{
-              textAlign: "center",
-              padding: "clamp(32px,5vw,60px) 0 clamp(18px,3vw,32px)",
-              borderBottom: "1px solid var(--rule2)",
-            }}>
-              {/* Overline */}
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 20 }}>
-                <div style={{ height: 1, width: 48, background: "var(--rule)" }} />
-                <span className="sf" style={{ fontSize: 8.5, letterSpacing: "0.36em", textTransform: "uppercase", color: "var(--ink5)", fontWeight: 700 }}>
-                  UpForge · India Edition · 2026
-                </span>
-                <div style={{ height: 1, width: 48, background: "var(--rule)" }} />
-              </div>
-
-              {/* Title */}
-              <h1 className="pf" style={{
-                fontSize: "clamp(2.6rem, 7vw, 5.8rem)",
-                fontWeight: 900, lineHeight: 0.9,
-                color: "var(--ink)", letterSpacing: "-0.025em",
-                marginBottom: 22,
-              }}>
-                Startup Registry
-              </h1>
-
-              {/* Subtitle */}
-              <p className="rp" style={{
-                fontSize: "clamp(13px, 1.8vw, 16px)",
-                fontStyle: "italic", color: "var(--ink4)",
-                marginBottom: 24, lineHeight: 1.5,
-              }}>
-                India's independent registry of verified builders — free, structured, permanent.
+        {/* ── HERO IMAGE MASTHEAD ── */}
+        <div className="a0" style={{ borderBottom: "3px solid var(--ink)" }}>
+          <div className="imgf hero-h" style={{ height: "clamp(260px,32vw,420px)" }}>
+            <img src={IMAGES.hero} alt="Indian startup ecosystem" />
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(26,18,8,.42) 0%, rgba(26,18,8,.82) 100%)" }} />
+            <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 clamp(16px,5vw,60px)", textAlign: "center" }}>
+              <p className="sf" style={{ fontSize: 8.5, letterSpacing: "0.42em", textTransform: "uppercase", color: "rgba(255,255,255,0.45)", marginBottom: 16 }}>
+                UpForge · Our Story · Est. 2025
               </p>
+              <h1 className="pf" style={{ fontSize: "clamp(2rem,6.5vw,5.2rem)", fontWeight: 900, lineHeight: 0.93, color: "white", letterSpacing: "-0.02em", marginBottom: 18 }}>
+                India's Independent<br />
+                <span style={{ color: "var(--gold2)" }}>Startup Registry</span>
+              </h1>
+              <p className="rp" style={{ fontSize: "clamp(13px,1.8vw,16px)", fontStyle: "italic", color: "rgba(255,255,255,0.6)", maxWidth: 520, lineHeight: 1.6 }}>
+                Not a media platform. Not a marketplace.<br />A permanent public record of serious builders.
+              </p>
+            </div>
+            <div style={{ position: "absolute", top: "clamp(14px,3vw,32px)", right: "clamp(16px,3vw,32px)", display: "flex", alignItems: "center", gap: 7, background: "rgba(26,18,8,.8)", border: "1px solid rgba(255,255,255,.15)", padding: "6px 14px", zIndex: 10 }}>
+              <span className="ldot" />
+              <span className="sf" style={{ fontSize: 9, color: "#4ADE80", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.16em" }}>Live Registry</span>
+            </div>
+          </div>
 
-              {/* Status pills */}
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                  <span className="ldot" />
-                  <span className="sf" style={{ fontSize: 9, color: "#15803D", textTransform: "uppercase", letterSpacing: "0.16em", fontWeight: 700 }}>
-                    Live · {totalCount.toLocaleString()} Profiles
-                  </span>
-                </div>
-                <div style={{ width: 1, height: 12, background: "var(--rule)" }} />
-                <span className="vbadge"><BadgeCheck style={{ width: 9, height: 9 }} /> All Verified</span>
-                <div style={{ width: 1, height: 12, background: "var(--rule)" }} />
-                <span className="sf" style={{ fontSize: 9, color: "var(--ink5)", textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 600 }}>
-                  Updated Daily
-                </span>
+          {/* Stats bar */}
+          <div style={{ background: "var(--ink)" }}>
+            <div style={{ maxWidth: 1340, margin: "0 auto", padding: "0 clamp(16px,3vw,36px)" }}>
+              <div className="stats-bar" style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                {[
+                  { v: `${(totalStartups || 0).toLocaleString()}+`, l: "Verified Profiles" },
+                  { v: `${(startupsWithReports || 30)}+`, l: "Reports Generated" },
+                  { v: `${uniqueIndustries || 20}+`, l: "Industries Covered" },
+                ].map((s, i) => (
+                  <div key={i} style={{ flex: "1", padding: "24px 0", borderRight: i === 2 ? "none" : "1px solid rgba(255,255,255,.07)", textAlign: "center" }}>
+                    <p className="pf" style={{ fontSize: "clamp(1.4rem,2.5vw,2rem)", fontWeight: 900, color: "white", lineHeight: 1, marginBottom: 8 }}>{s.v}</p>
+                    <p className="sf" style={{ fontSize: 8.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.18em", color: "rgba(255,255,255,.4)" }}>{s.l}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
-        </header>
+        </div>
 
-        {/* ── MAIN ── */}
+        {/* ── MAIN CONTENT ── */}
         <div style={{ maxWidth: 1340, margin: "0 auto", padding: "0 clamp(16px,3vw,36px) clamp(48px,8vw,96px)" }}>
 
-          {/* SECTOR FILTER */}
-          <div className="a1 strip" style={{ padding: "14px 0", borderBottom: "1px solid var(--rule2)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: "max-content" }}>
-              <span className="sf" style={{ fontSize: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.2em", color: "var(--ink5)", flexShrink: 0 }}>Sector:</span>
-              <Link href="/startup" className={`pill ${!sectorFilter ? "on" : ""}`}>All</Link>
-              {SECTORS.map((s, i) => (
-                <Link
-                  key={i}
-                  href={`?sector=${encodeURIComponent(s.name)}`}
-                  className={`pill ${sectorFilter === s.name ? "on" : ""}`}
-                  style={sectorFilter !== s.name && s.hot ? { borderColor: "rgba(180,83,9,.3)", color: "var(--gold)" } : {}}
-                >
-                  {s.hot && sectorFilter !== s.name && <span style={{ fontSize: 8 }}>🔥</span>}
-                  {s.name}
-                </Link>
-              ))}
-              {sectorFilter && (
-                <Link href="/startup" className="sf" style={{ fontSize: 10, color: "var(--ink5)", textDecoration: "underline", flexShrink: 0, marginLeft: 4 }}>
-                  Clear ×
-                </Link>
-              )}
+          {/* ECOSYSTEM PULSE */}
+          <div className="a1 pulse-grid" style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 0, borderBottom: "1px solid var(--rule2)", alignItems: "stretch" }}>
+            <div style={{ padding: "clamp(24px,4vw,42px) clamp(0px,3vw,40px) clamp(24px,4vw,42px) 0", borderRight: "1px solid var(--rule2)" }}>
+              <div className="sh" style={{ marginBottom: 10 }}>
+                <span className="ldot" />
+                <span className="sh-l" style={{ color: "#15803D" }}>Ecosystem Pulse · March 2026</span>
+                <div className="sh-r" />
+              </div>
+              <p className="pf" style={{ fontSize: "clamp(1.1rem,2.5vw,1.9rem)", fontWeight: 700, color: "var(--ink)", lineHeight: 1.25, marginBottom: 8 }}>{insights.ecosystemPulse.headline}</p>
+              <p className="rp" style={{ fontSize: 12.5, color: "var(--ink4)", lineHeight: 1.7 }}>{insights.ecosystemPulse.context}</p>
+            </div>
+            <div className="pulse-stat" style={{ padding: "clamp(24px,4vw,42px) 0 clamp(24px,4vw,42px) clamp(24px,3vw,44px)", display: "flex", flexDirection: "column", justifyContent: "center", minWidth: "clamp(120px,18vw,200px)" }}>
+              <p className="pf" style={{ fontSize: "clamp(2.2rem,5vw,4.5rem)", fontWeight: 900, color: "var(--ink)", lineHeight: 1, marginBottom: 6 }}>{insights.ecosystemPulse.stat}</p>
+              <p className="sf" style={{ fontSize: 8.5, color: "var(--ink5)", textTransform: "uppercase", letterSpacing: "0.18em", fontWeight: 600 }}>& counting in India</p>
             </div>
           </div>
 
-          {/* RESULTS HEADER */}
-          <div className="a1" style={{ display: "flex", alignItems: "center", gap: 10, margin: "22px 0 18px" }}>
-            <span className="sh-l">
-              {sectorFilter || "All Startups"}
-            </span>
-            <span className="rp" style={{ fontSize: 11, fontStyle: "italic", color: "var(--gold2)", fontWeight: 400 }}>
-              — {totalCount.toLocaleString()} profiles
-            </span>
-            <div className="sh-r" />
-            <span className="sf" style={{ fontSize: 8.5, color: "var(--ink5)", flexShrink: 0, fontWeight: 700, letterSpacing: "0.12em" }}>
-              Pg. {currentPage} / {totalPages || 1}
-            </span>
-          </div>
-
-          <PageTransition key={`${sectorFilter}-${currentPage}`}>
-
-            {/* ══════════════════════════════
-                FEATURED TOP 3
-            ══════════════════════════════ */}
-            {featuredStartups.length === 3 && (
-              <div className="a2" style={{ marginBottom: 28 }}>
-
-                {/* Label above */}
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                  <Star style={{ width: 10, height: 10, color: "var(--gold2)" }} />
-                  <span className="sh-l">Featured in This Edition</span>
-                  <div className="sh-r" />
-                </div>
-
-                <div className="feat-grid">
-                  {featuredStartups.map((startup, fi) => (
-                    <Link key={startup.id} href={`/startup/${startup.slug}`} className="feat-card">
-
-                      {/* Image strip */}
-                      <div className="feat-img">
-                        {startup.logo_url ? (
-                          <img src={startup.logo_url} alt={startup.name} />
-                        ) : (
-                          <div style={{
-                            width: "100%", height: "100%",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            background: ["#E8E0D0", "#E0D8CC", "#D8D0C4"][fi],
-                          }}>
-                            <span className="pf" style={{ fontSize: "4rem", fontWeight: 900, color: "rgba(26,18,8,0.10)" }}>
-                              {startup.name.charAt(0)}
-                            </span>
-                          </div>
-                        )}
-                        {/* Gradient overlay */}
-                        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(26,18,8,0.82) 0%, rgba(26,18,8,0.1) 55%, transparent 100%)" }} />
-
-                        {/* Edition badge */}
-                        <div className="sf" style={{
-                          position: "absolute", top: 12, left: 12,
-                          background: "var(--ink)", color: "white",
-                          fontSize: 7, fontWeight: 800, letterSpacing: "0.2em",
-                          textTransform: "uppercase", padding: "3px 9px",
-                          border: "1px solid rgba(255,255,255,0.12)",
-                        }}>
-                          No.{String(fi + 1).padStart(2, "0")}
-                        </div>
-
-                        {/* Verified on image */}
-                        <div style={{ position: "absolute", top: 12, right: 12 }}>
-                          <BadgeCheck style={{ width: 14, height: 14, color: "#4ADE80" }} />
-                        </div>
-
-                        {/* Sector + name on image */}
-                        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 14px 13px" }}>
-                          <span className="sf" style={{ fontSize: 7.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.2em", color: "rgba(255,255,255,0.55)", display: "block", marginBottom: 4 }}>
-                            {startup.industry || startup.category || "Startup"}
-                          </span>
-                          <h2 className="pf" style={{ fontSize: "1.18rem", fontWeight: 700, color: "white", lineHeight: 1.15, margin: 0 }}>
-                            {startup.name}
-                          </h2>
-                        </div>
-                      </div>
-
-                      {/* Body */}
-                      <div style={{ padding: "16px 16px 15px", flex: 1, display: "flex", flexDirection: "column" }}>
-                        <p className="rp" style={{
-                          fontSize: 12, color: "var(--ink3)", lineHeight: 1.82,
-                          flex: 1, marginBottom: 14,
-                          display: "-webkit-box", WebkitLineClamp: 3,
-                          WebkitBoxOrient: "vertical" as const, overflow: "hidden",
-                        }}>
-                          {startup.description || "Building for India's next decade."}
-                        </p>
-
-                        {/* Meta row */}
-                        <div style={{
-                          display: "flex", alignItems: "center", justifyContent: "space-between",
-                          paddingTop: 11, borderTop: "1px solid var(--rule2)",
-                        }}>
-                          <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                            {startup.founded_year && (
-                              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                                <Calendar style={{ width: 9, height: 9, color: "var(--ink5)" }} />
-                                <span className="sf" style={{ fontSize: 8.5, color: "var(--ink5)" }}>{startup.founded_year}</span>
-                              </div>
-                            )}
-                            {startup.city && (
-                              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                                <MapPin style={{ width: 9, height: 9, color: "var(--ink5)" }} />
-                                <span className="sf" style={{ fontSize: 8.5, color: "var(--ink5)" }}>{startup.city}</span>
-                              </div>
-                            )}
-                          </div>
-                          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                            <span className="vbadge"><BadgeCheck style={{ width: 8, height: 8 }} /> Verified</span>
-                            <ArrowUpRight style={{ width: 13, height: 13, color: "var(--ink4)" }} />
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
+          {/* WHY THIS EXISTS */}
+          <div className="a2 two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0, borderBottom: "1px solid var(--rule2)" }}>
+            <div style={{ borderRight: "1px solid var(--rule2)", paddingRight: "clamp(16px,3vw,44px)", paddingTop: "clamp(28px,4vw,44px)", paddingBottom: "clamp(28px,4vw,44px)" }}>
+              <div className="imgf" style={{ height: 210, marginBottom: 22 }}>
+                <img src={IMAGES.problem} alt="The fragmented startup data problem in India" />
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top,rgba(26,18,8,.72) 0%,transparent 55%)" }} />
+                <div style={{ position: "absolute", bottom: 12, left: 14 }}>
+                  <span className="sf" style={{ fontSize: 7.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.2em", color: "var(--gold2)" }}>The Problem</span>
                 </div>
               </div>
-            )}
-
-            {/* ══════════════════════════════
-                ALL STARTUPS GRID — desktop
-            ══════════════════════════════ */}
-            {gridStartups.length > 0 && (
-              <>
-                {showFeatured && (
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                    <span className="sh-l">All Startups</span>
-                    <div className="sh-r" />
-                  </div>
-                )}
-
-                <div className="a3 card-grid hide-mob">
-                  {gridStartups.map((startup) => (
-                    <Link key={startup.id} href={`/startup/${startup.slug}`} className="s-card">
-
-                      {/* Header: logo + name + sector */}
-                      <div style={{
-                        padding: "15px 15px 12px",
-                        display: "flex", alignItems: "center", gap: 12,
-                        borderBottom: "1px solid var(--rule2)",
-                      }}>
-                        <div className="logo-circle">
-                          {startup.logo_url ? (
-                            <img src={startup.logo_url} alt={startup.name} />
-                          ) : (
-                            <span className="pf" style={{ fontSize: "1.05rem", fontWeight: 900, color: "var(--ink4)" }}>
-                              {startup.name.charAt(0)}
-                            </span>
-                          )}
-                        </div>
-                        <div style={{ minWidth: 0, flex: 1 }}>
-                          <h3 className="pf" style={{
-                            fontSize: "0.9rem", fontWeight: 700, color: "var(--ink)",
-                            lineHeight: 1.2, marginBottom: 3,
-                            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                          }}>
-                            {startup.name}
-                          </h3>
-                          <span className="sf" style={{
-                            fontSize: 7.5, color: "var(--ink5)",
-                            textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700,
-                            overflow: "hidden", textOverflow: "ellipsis",
-                            whiteSpace: "nowrap", display: "block",
-                          }}>
-                            {(startup.industry || startup.category || "Startup").slice(0, 22)}
-                          </span>
-                        </div>
-                        <BadgeCheck style={{ width: 12, height: 12, color: "#15803D", flexShrink: 0 }} />
-                      </div>
-
-                      {/* Body: description + meta */}
-                      <div style={{ padding: "12px 15px 14px", flex: 1, display: "flex", flexDirection: "column" }}>
-                        <p className="rp" style={{
-                          fontSize: 11.5, color: "var(--ink3)", lineHeight: 1.78,
-                          flex: 1, marginBottom: 12,
-                          display: "-webkit-box", WebkitLineClamp: 3,
-                          WebkitBoxOrient: "vertical" as const, overflow: "hidden",
-                        }}>
-                          {startup.description || "Building for India's next decade."}
-                        </p>
-
-                        {/* Footer meta */}
-                        <div style={{
-                          display: "flex", alignItems: "center",
-                          justifyContent: "space-between",
-                          paddingTop: 10, borderTop: "1px solid var(--rule2)",
-                        }}>
-                          <div style={{ display: "flex", gap: 9, alignItems: "center" }}>
-                            {startup.founded_year && (
-                              <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                                <Calendar style={{ width: 7.5, height: 7.5, color: "var(--ink5)" }} />
-                                <span className="sf" style={{ fontSize: 8, color: "var(--ink5)" }}>{startup.founded_year}</span>
-                              </div>
-                            )}
-                            {startup.city && (
-                              <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                                <MapPin style={{ width: 7.5, height: 7.5, color: "var(--ink5)" }} />
-                                <span className="sf" style={{ fontSize: 8, color: "var(--ink5)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 64 }}>
-                                  {startup.city}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                          <ArrowUpRight style={{ width: 11, height: 11, color: "var(--ink5)" }} />
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </>
-            )}
-
-            {/* MOBILE LIST */}
-            <div className="show-mob a3" style={{ display: "none", flexDirection: "column", border: "1.5px solid var(--ink)" }}>
-              {(startups || []).map((startup, idx) => (
-                <Link key={startup.id} href={`/startup/${startup.slug}`} className="m-row"
-                  style={{ borderBottom: idx < (startups?.length || 0) - 1 ? "1px solid var(--rule2)" : "none" }}>
-                  <div style={{
-                    width: 38, height: 38, borderRadius: "50%", flexShrink: 0,
-                    border: "1.5px solid var(--rule2)", background: "var(--parch2)",
-                    display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden",
-                  }}>
-                    {startup.logo_url
-                      ? <img src={startup.logo_url} alt={startup.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      : <span className="pf" style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--ink4)" }}>{startup.name.charAt(0)}</span>
-                    }
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 3 }}>
-                      <span className="pf" style={{ fontSize: "0.9rem", fontWeight: 700, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{startup.name}</span>
-                      <BadgeCheck style={{ width: 9, height: 9, color: "#15803D", flexShrink: 0 }} />
+              <div className="sh"><span className="sh-l">Why UpForge Exists</span><div className="sh-r" /></div>
+              <h2 className="pf" style={{ fontSize: "clamp(1.1rem,2.2vw,1.65rem)", fontWeight: 700, color: "var(--ink)", lineHeight: 1.22, marginBottom: 20 }}>India's startup data was fragmented, unverified, and buried.</h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                {insights.whyRegistry.map((item: any, i: number) => (
+                  <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "12px 0", borderBottom: "1px solid var(--rule2)" }}>
+                    <div className="sf" style={{ width: 20, height: 20, background: "var(--ink)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8.5, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{i + 1}</div>
+                    <div>
+                      <p className="rp" style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)", marginBottom: 2, lineHeight: 1.4 }}>{item.point}</p>
+                      <p className="sf" style={{ fontSize: 10.5, color: "var(--ink5)" }}>{item.data}</p>
                     </div>
-                    <span className="sf" style={{ fontSize: 8, color: "var(--ink5)", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>
-                      {startup.industry || startup.category || "Startup"}
-                      {startup.founded_year && ` · ${startup.founded_year}`}
-                    </span>
                   </div>
-                  <ChevronRight style={{ width: 11, height: 11, color: "var(--ink5)", flexShrink: 0 }} />
-                </Link>
-              ))}
+                ))}
+              </div>
             </div>
 
-            {/* EMPTY STATE */}
-            {(!startups || startups.length === 0) && (
-              <div style={{
-                display: "flex", flexDirection: "column", alignItems: "center",
-                justifyContent: "center", padding: "80px 24px",
-                textAlign: "center", border: "1.5px solid var(--ink)",
-                background: "var(--white)",
-              }}>
-                <span className="pf" style={{ fontSize: "3.5rem", color: "rgba(26,18,8,0.06)", fontWeight: 900, lineHeight: 1, marginBottom: 18 }}>?</span>
-                <h3 className="pf" style={{ fontSize: "1.3rem", fontWeight: 700, color: "var(--ink)", marginBottom: 8 }}>No startups found</h3>
-                <p className="rp" style={{ fontSize: 13, color: "var(--ink4)", marginBottom: 24, maxWidth: 300, lineHeight: 1.75 }}>
-                  No results for {sectorFilter ? `"${sectorFilter}"` : "this filter"}. Try a different sector.
-                </p>
-                <Link href="/startup" style={{
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  border: "2px solid var(--ink)", padding: "10px 24px",
-                  fontSize: 10, fontWeight: 700, color: "var(--ink)",
-                  textTransform: "uppercase", letterSpacing: "0.14em",
-                  fontFamily: "system-ui", background: "transparent", textDecoration: "none",
-                }}>
-                  View all sectors
-                </Link>
-              </div>
-            )}
-
-            {/* PAGINATION */}
-            {totalPages > 1 && (
-              <div className="a3" style={{ marginTop: 40, display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
-                <Link
-                  href={`?page=${Math.max(1, currentPage - 1)}${sectorFilter ? `&sector=${encodeURIComponent(sectorFilter)}` : ""}`}
-                  className={`pg ${currentPage === 1 ? "off" : ""}`}
-                >
-                  <ChevronLeft style={{ width: 10, height: 10 }} /> Prev
-                </Link>
-
-                <div style={{ display: "flex", gap: 4 }}>
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let p: number;
-                    if (totalPages <= 5)                     p = i + 1;
-                    else if (currentPage <= 3)               p = i + 1;
-                    else if (currentPage >= totalPages - 2)  p = totalPages - 4 + i;
-                    else                                     p = currentPage - 2 + i;
-                    return (
-                      <Link key={p}
-                        href={`?page=${p}${sectorFilter ? `&sector=${encodeURIComponent(sectorFilter)}` : ""}`}
-                        className={`pg ${p === currentPage ? "on" : ""}`}
-                        style={{ padding: "8px 13px", minWidth: 36, justifyContent: "center" }}
-                      >
-                        <span className="sf" style={{ fontSize: 11 }}>{p}</span>
-                      </Link>
-                    );
-                  })}
+            <div style={{ paddingLeft: "clamp(16px,3vw,44px)", paddingTop: "clamp(28px,4vw,44px)", paddingBottom: "clamp(28px,4vw,44px)" }}>
+              <div className="imgf" style={{ height: 210, marginBottom: 22 }}>
+                <img src={IMAGES.answer} alt="Startup India — UpForge's answer to the registry gap" />
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top,rgba(26,18,8,.72) 0%,transparent 55%)" }} />
+                <div style={{ position: "absolute", bottom: 12, left: 14 }}>
+                  <span className="sf" style={{ fontSize: 7.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.2em", color: "var(--gold2)" }}>Our Answer</span>
                 </div>
-
-                <Link
-                  href={`?page=${Math.min(totalPages, currentPage + 1)}${sectorFilter ? `&sector=${encodeURIComponent(sectorFilter)}` : ""}`}
-                  className={`pg ${currentPage === totalPages ? "off" : ""}`}
-                >
-                  Next <ChevronRight style={{ width: 10, height: 10 }} />
-                </Link>
               </div>
-            )}
-
-          </PageTransition>
-
-          {/* ── INSIGHT STRIP ── */}
-          <div style={{ marginTop: "clamp(52px,7vw,80px)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-              <span className="sh-l">UpForge Registry Insights</span>
-              <div className="sh-r" />
+              <div className="sh"><span className="sh-l">One Independent Record</span><div className="sh-r" /></div>
+              <p className="rp" style={{ fontSize: 13, color: "var(--ink3)", lineHeight: 1.82, marginBottom: 20 }}>
+                UpForge is India's independent startup registry — not a media outlet, not an accelerator. We document data in a neutral, permanently accessible format.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {[
+                  { icon: BadgeCheck, text: "Every profile manually verified before listing", c: "#15803D" },
+                  { icon: Shield, text: "No paid rankings, no sponsored placements", c: "#2563EB" },
+                  { icon: Globe, text: "Publicly indexed and permanently accessible", c: "#7C3AED" },
+                  { icon: Sparkles, text: "AI-powered growth analysis for every startup", c: "var(--gold)" },
+                  { icon: Calculator, text: "Free valuation tool for early-stage founders", c: "#DC2626" },
+                ].map((item, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <item.icon style={{ width: 13, height: 13, color: item.c, flexShrink: 0 }} />
+                    <span className="rp" style={{ fontSize: 12.5, color: "var(--ink3)" }}>{item.text}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div style={{
-              display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))",
-              border: "1.5px solid var(--ink)", background: "var(--ink)", gap: 1.5,
-            }}>
+          </div>
+
+          {/* CORE PRINCIPLES */}
+          <div className="a3" style={{ padding: "clamp(28px,4vw,44px) 0", borderBottom: "1px solid var(--rule2)" }}>
+            <div className="sh"><span className="sh-l">Core Principles</span><div className="sh-r" /></div>
+            <div className="principles-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 1, background: "var(--rule2)", border: "1px solid var(--rule2)" }}>
               {[
-                { v: "~80%",  l: "First-gen founders",    b: "India's unicorn builders mostly had no inherited capital — built with pure conviction." },
-                { v: "$950B", l: "Value created under 40", b: "Founders under 40 manage businesses worth more than Switzerland's entire GDP." },
-                { v: "126+",  l: "Indian unicorns",        b: "India crossed 126 unicorns. Every founder reading this could build the next one." },
+                { icon: Users, title: "Built for Builders", desc: "Every listed startup represents independent execution." },
+                { icon: Shield, title: "Structured Credibility", desc: "Profiles designed as institutional records." },
+                { icon: TrendingUp, title: "Independent First", desc: "We spotlight founders before headlines do." },
+                { icon: Award, title: "Long-Term Vision", desc: "Trust, quality, and permanence." },
               ].map((item, i) => (
-                <div key={i} style={{ padding: "22px 22px 20px", background: "var(--white)", position: "relative" }}>
-                  <div style={{ position: "absolute", top: 0, left: 0, bottom: 0, width: 3, background: "var(--gold2)" }} />
-                  <p className="pf" style={{ fontSize: "2.3rem", fontWeight: 900, color: "var(--ink)", lineHeight: 1, marginBottom: 6 }}>{item.v}</p>
-                  <p className="sf" style={{ fontSize: 7.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.22em", color: "var(--gold2)", marginBottom: 9 }}>{item.l}</p>
-                  <p className="rp" style={{ fontSize: 12, color: "var(--ink3)", lineHeight: 1.78 }}>{item.b}</p>
+                <div key={i} className="pc-wrap" style={{ background: "var(--white)", padding: "24px 22px", position: "relative" }}>
+                  <div className="pc-icon" style={{ width: 34, height: 34, background: "var(--parch2)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14 }}>
+                    <item.icon style={{ width: 15, height: 15, color: "var(--ink4)" }} />
+                  </div>
+                  <h3 className="pf" style={{ fontSize: "1rem", fontWeight: 700, color: "var(--ink)", marginBottom: 8 }}>{item.title}</h3>
+                  <p className="rp" style={{ fontSize: 11.5, color: "var(--ink3)", lineHeight: 1.75 }}>{item.desc}</p>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* MILESTONES */}
+          <div className="a3" style={{ borderBottom: "1px solid var(--rule2)", padding: "clamp(28px,4vw,44px) 0" }}>
+            <div className="imgf" style={{ height: "clamp(160px,22vw,290px)", marginBottom: 28 }}>
+              <img src={IMAGES.builders} alt="Indian startup builders — from 10000 to a global ecosystem" />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(26,18,8,.78) 0%, rgba(26,18,8,.15) 60%, transparent 100%)" }} />
+              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", padding: "0 clamp(20px,4vw,52px)" }}>
+                <p className="pf" style={{ fontSize: "clamp(1.2rem,3vw,2.4rem)", fontWeight: 900, color: "white" }}>From 10,000 startups<br />to a global ecosystem.</p>
+              </div>
+            </div>
+            <div className="sh"><span className="sh-l">Ecosystem Milestones</span><div className="sh-r" /></div>
+            <div className="milestone-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(155px,1fr))", gap: 1, background: "var(--rule2)", border: "1px solid var(--rule2)" }}>
+              {insights.milestones.map((m: any, i: number) => {
+                const isLast = i === insights.milestones.length - 1;
+                return (
+                  <div key={i} style={{ background: isLast ? "var(--ink)" : "var(--white)", padding: "18px 16px" }}>
+                    <p className="pf" style={{ fontSize: "1.45rem", fontWeight: 900, color: isLast ? "var(--gold2)" : "var(--ink)" }}>{m.year}</p>
+                    <p className="rp" style={{ fontSize: 11, color: isLast ? "rgba(255,255,255,.65)" : "var(--ink3)" }}>{m.event}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* WHO WE SERVE */}
+          <div className="a4" style={{ padding: "clamp(28px,4vw,44px) 0", borderBottom: "1px solid var(--rule2)" }}>
+            <div className="sh"><span className="sh-l">Who Uses UpForge</span><div className="sh-r" /></div>
+            <div className="serve-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 1, background: "var(--rule2)", border: "1px solid var(--rule2)" }}>
+              {[
+                { type: "Founders", headline: "Build your paper trail", dark: true, href: "/submit" },
+                { type: "Investors", headline: "Discover before the crowd", dark: false, href: "/startup" },
+                { type: "Press", headline: "Cite with confidence", dark: false, href: "/reports" },
+              ].map((aud, i) => (
+                <div key={i} style={{ background: aud.dark ? "var(--ink)" : "var(--white)", padding: "24px 22px" }}>
+                  <p className="sf" style={{ fontSize: 8, fontWeight: 700, color: aud.dark ? "var(--gold2)" : "var(--ink5)", textTransform: "uppercase", letterSpacing: "0.16em", marginBottom: 8 }}>{aud.type}</p>
+                  <h3 className="pf" style={{ fontSize: "1.1rem", fontWeight: 700, color: aud.dark ? "white" : "var(--ink)", marginBottom: 16 }}>{aud.headline}</h3>
+                  <Link href={aud.href} style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 10, fontWeight: 700, color: aud.dark ? "var(--gold2)" : "var(--ink)", textDecoration: "none" }}>
+                    Explore <ArrowRight style={{ width: 11, height: 11 }} />
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── FAQ SECTION (SEO) ── */}
+          <section className="a4" style={{ padding: "clamp(28px,4vw,44px) 0", borderBottom: "1px solid var(--rule2)" }}>
+            <div className="sh"><span className="sh-l">Frequently Asked Questions</span><div className="sh-r" /></div>
+            <div style={{ border: "1px solid var(--rule2)", background: "var(--white)", padding: "0 clamp(16px,3vw,28px)" }}>
+              {FAQ_ITEMS.map((faq, i) => (
+                <details key={i} className="faq-item" style={{ borderBottom: i === FAQ_ITEMS.length - 1 ? "none" : "1px solid var(--rule2)" }}>
+                  <summary className="faq-q" style={{ listStyle: "none", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "16px 0", cursor: "pointer" }}>
+                    <span className="rp faq-q-text" style={{ fontSize: "clamp(13px,1.6vw,14.5px)", fontWeight: 600, color: "var(--ink3)", lineHeight: 1.4 }}>{faq.q}</span>
+                    <svg className="faq-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
+                      <path d="M2 4L6 8L10 4" stroke="var(--ink4)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </summary>
+                  <div className="faq-a">
+                    <p className="rp" style={{ fontSize: 13, color: "var(--ink4)", lineHeight: 1.82, paddingBottom: 14 }}>{faq.a}</p>
+                  </div>
+                </details>
+              ))}
+            </div>
+          </section>
+
+          {/* BELIEF & QUICK LINKS */}
+          <div className="a4" style={{ padding: "clamp(28px,4vw,44px) 0" }}>
+            <div className="two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0 }}>
+              <div style={{ paddingRight: "clamp(16px,3vw,52px)", borderRight: "1px solid var(--rule2)" }}>
+                <div className="imgf" style={{ height: 200, marginBottom: 24 }}>
+                  <img src={IMAGES.believe} alt="UpForge — not a directory, a structured record" />
+                </div>
+                <h3 className="pf" style={{ fontSize: "1.6rem", fontWeight: 900, marginBottom: 12 }}>This is not a <em style={{ color: "var(--gold)" }}>directory.</em></h3>
+                <p className="rp" style={{ fontSize: 13.5, color: "var(--ink3)", marginBottom: 24 }}>A structured record of India's emerging companies.</p>
+                <Link href="/submit" style={{ display: "inline-block", background: "var(--ink)", color: "white", padding: "12px 22px", textDecoration: "none", fontSize: 10, fontWeight: 700, fontFamily: "system-ui", textTransform: "uppercase", letterSpacing: "0.14em" }}>
+                  List Your Startup
+                </Link>
+              </div>
+
+              <div style={{ paddingLeft: "clamp(16px,3vw,52px)" }}>
+                <div className="sh"><span className="sh-l">Everything We Offer</span><div className="sh-r" /></div>
+                <div style={{ border: "1px solid var(--rule2)", background: "var(--white)" }}>
+                  {[
+                    { l: "Registry", s: `Browse ${totalStartups || 0} startups`, h: "/startup" },
+                    { l: "Valuation", s: "Free estimate", h: "/valuation" },
+                    { l: "Reports", s: "AI analysis", h: "/reports" },
+                  ].map((item, i) => (
+                    <Link key={i} href={item.h} className="rlink" style={{ display: "flex", padding: "14px 16px", borderBottom: i === 2 ? "none" : "1px solid var(--rule2)", textDecoration: "none", transition: "background .15s" }}>
+                      <div>
+                        <p className="rp" style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>{item.l}</p>
+                        <p className="sf" style={{ fontSize: 9.5, color: "var(--ink5)" }}>{item.s}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
           {/* ── CTA BLOCK ── */}
           <div style={{
-            marginTop: "clamp(28px,5vw,48px)",
             padding: "clamp(24px,4vw,40px)",
             background: "var(--ink)", position: "relative", overflow: "hidden",
-            border: "1.5px solid var(--ink)",
+            border: "1.5px solid var(--ink)", marginBottom: "clamp(28px,4vw,44px)",
           }}>
-            {/* Gold rule top */}
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2.5, background: `linear-gradient(90deg, var(--gold3), var(--gold2), #E8C547, var(--gold2), var(--gold3))` }} />
-
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2.5, background: "linear-gradient(90deg, var(--gold3), var(--gold2), #E8C547, var(--gold2), var(--gold3))" }} />
             <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 24, alignItems: "center" }}>
               <div>
-                <p className="sf" style={{ fontSize: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.3em", color: "rgba(232,197,71,0.8)", marginBottom: 10 }}>
-                  UpForge Registry
-                </p>
+                <p className="sf" style={{ fontSize: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.3em", color: "rgba(232,197,71,0.8)", marginBottom: 10 }}>UpForge Registry</p>
                 <p className="pf" style={{ fontSize: "clamp(1.1rem,2.8vw,1.7rem)", fontWeight: 700, color: "white", lineHeight: 1.22, marginBottom: 9 }}>
                   Your founder story starts with a verified profile.
                 </p>
@@ -719,33 +567,29 @@ export default async function StartupPage({ searchParams }: Props) {
                   Independently verified and indexed in India's most trusted startup registry. Free forever.
                 </p>
               </div>
-              <Link
-                href="/submit"
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  background: "var(--gold2)", color: "var(--ink)",
-                  padding: "13px 24px", fontSize: 10, fontWeight: 800,
-                  textTransform: "uppercase", letterSpacing: "0.14em",
-                  fontFamily: "system-ui", whiteSpace: "nowrap",
-                  boxShadow: "3px 3px 0 var(--gold3)", textDecoration: "none",
-                }}
-              >
+              <Link href="/submit" style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                background: "var(--gold2)", color: "var(--ink)",
+                padding: "13px 24px", fontSize: 10, fontWeight: 800,
+                textTransform: "uppercase", letterSpacing: "0.14em",
+                fontFamily: "system-ui", whiteSpace: "nowrap",
+                boxShadow: "3px 3px 0 var(--gold3)", textDecoration: "none",
+              }}>
                 List Free →
               </Link>
             </div>
           </div>
 
           {/* ── FOOTER NAV ── */}
-          <nav aria-label="Registry navigation" style={{ padding: "16px 0", borderTop: "2px solid var(--ink)", marginTop: "clamp(28px,4vw,44px)" }}>
-            <ul style={{ display: "flex", flexWrap: "wrap", gap: "8px 20px", listStyle: "none", margin: 0, padding: 0 }}>
+          <nav aria-label="About page navigation" style={{ padding: "14px 0", borderTop: "2px solid var(--ink)" }}>
+            <ul style={{ display: "flex", flexWrap: "wrap", gap: "8px 18px", listStyle: "none", padding: 0, margin: 0 }}>
               {[
-                { l: "Indian Startup Founders 2026", h: "/"                    },
-                { l: "Top AI Startups India",        h: "/top-ai-startups"     },
-                { l: "Indian Unicorns List",          h: "/indian-unicorns"     },
-                { l: "Best SaaS Startups",            h: "/best-saas-startups" },
-                { l: "Fintech Startups India",        h: "/fintech-startups"   },
-                { l: "Edtech Founders India",         h: "/edtech-startups"    },
-                { l: "Submit Your Startup",           h: "/submit"             },
+                { l: "Startup Registry", h: "/startup" },
+                { l: "Home", h: "/" },
+                { l: "Indian Unicorns", h: "/indian-unicorns" },
+                { l: "Submit Startup", h: "/submit" },
+                { l: "Valuation Tool", h: "/valuation" },
+                { l: "Reports", h: "/reports" },
               ].map(lnk => (
                 <li key={lnk.h}>
                   <Link href={lnk.h} className="sf" style={{ fontSize: 8.5, color: "var(--ink5)", textTransform: "uppercase", letterSpacing: "0.14em", textDecoration: "none" }}>
