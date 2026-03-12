@@ -242,7 +242,7 @@ export default async function StartupPage({ searchParams }: Props) {
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 12 }}>
                 <div style={{ height: 1, width: 48, background: "var(--rule)" }} />
                 <span className="sf" style={{ fontSize: 8.5, letterSpacing: "0.36em", textTransform: "uppercase", color: "var(--ink5)", fontWeight: 700 }}>
-                  UpForge · India Edition · 2026
+                  India Edition
                 </span>
                 <div style={{ height: 1, width: 48, background: "var(--rule)" }} />
               </div>
