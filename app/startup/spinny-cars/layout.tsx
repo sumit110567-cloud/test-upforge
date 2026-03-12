@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     description: "Fixing India's broken used car market — one transparent transaction at a time. Spinny founder story, $1.8B valuation, Tiger Global backing & insights on UpForge.",
     url: "https://upforge.in/startup/spinny-cars",
     siteName: "UpForge",
-    images: [{ url: "https://upforge.in/og/spinny-cars.png", width: 1200, height: 630 }],
+    images: [{ url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxhEGcchrkMFMKY10CKmOUHWAIo3T06-9dPA&s", width: 1200, height: 630 }],
     locale: "en_IN",
     type: "article",
   },
