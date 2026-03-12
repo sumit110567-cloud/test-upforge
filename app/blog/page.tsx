@@ -14,55 +14,68 @@ export const metadata: Metadata = {
     "startup funding guide India",
     "Indian unicorns blog",
   ],
-  alternates: { canonical: "https://upforge.in/blog" },
+  alternates: { canonical: "https://www.upforge.in/blog" },
   openGraph: {
     title: "The Forge — Startup Intelligence by UpForge",
-    description:
-      "Deep analysis on Indian startups, founder stories, funding guides, unicorn profiles, and leadership lessons.",
-    url: "https://upforge.in/blog",
+    description: "Deep analysis on Indian startups, founder stories, funding guides, unicorn profiles, and leadership lessons.",
+    url: "https://www.upforge.in/blog",
     siteName: "UpForge",
-    images: [{ url: "https://upforge.in/og-blog.png", width: 1200, height: 630 }],
+    images: [{ url: "https://www.upforge.in/og-blog.png", width: 1200, height: 630 }],
     locale: "en_IN",
     type: "website",
   },
+  robots: { index: true, follow: true },
 };
 
-const jsonLd = {
+// Structured data — Blog + BreadcrumbList only, NO FAQPage
+const JSON_LD = {
   "@context": "https://schema.org",
-  "@type": "Blog",
-  name: "The Forge — UpForge Intelligence",
-  url: "https://upforge.in/blog",
-  description: "Startup analysis, founder stories, and business strategy for India's builders.",
-  publisher: {
-    "@type": "Organization",
-    name: "UpForge",
-    logo: { "@type": "ImageObject", url: "https://upforge.in/logo.jpg" },
-  },
-  blogPost: [
-    { "@type": "BlogPosting", headline: "India Startup Ecosystem 2026: State of the Nation",          url: "https://upforge.in/blog/india-startup-ecosystem-2026" },
-    { "@type": "BlogPosting", headline: "How to Get Startup Funding in India 2026",                    url: "https://upforge.in/blog/how-to-get-startup-funding-india-2026" },
-    { "@type": "BlogPosting", headline: "Top Indian Unicorns 2026: Ranked & Profiled",                 url: "https://upforge.in/blog/top-indian-unicorns-2026" },
-    { "@type": "BlogPosting", headline: "25 Best Indian Startup Founders to Follow 2026",              url: "https://upforge.in/blog/best-indian-startup-founders-to-follow-2026" },
-    { "@type": "BlogPosting", headline: "IND vs NZ Final 2026: 7 Leadership Lessons",                  url: "https://upforge.in/blog/leadership-lessons-ind-vs-nz-final-2026" },
-    { "@type": "BlogPosting", headline: "5 Startup Ideas Inspired by IND vs NZ Final 2026",            url: "https://upforge.in/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026" },
+  "@graph": [
+    {
+      "@type": "Blog",
+      "@id": "https://www.upforge.in/blog",
+      "name": "The Forge — UpForge Intelligence",
+      "url": "https://www.upforge.in/blog",
+      "description": "Startup analysis, founder stories, and business strategy for India's builders.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "UpForge",
+        "url": "https://www.upforge.in",
+        "logo": { "@type": "ImageObject", "url": "https://www.upforge.in/logo.jpg" },
+      },
+      "blogPost": [
+        { "@type": "BlogPosting", "headline": "India Startup Ecosystem 2026: State of the Nation",       "url": "https://www.upforge.in/blog/india-startup-ecosystem-2026" },
+        { "@type": "BlogPosting", "headline": "How to Get Startup Funding in India 2026",                "url": "https://www.upforge.in/blog/how-to-get-startup-funding-india-2026" },
+        { "@type": "BlogPosting", "headline": "Top Indian Unicorns 2026: Ranked & Profiled",             "url": "https://www.upforge.in/blog/top-indian-unicorns-2026" },
+        { "@type": "BlogPosting", "headline": "25 Best Indian Startup Founders to Follow 2026",          "url": "https://www.upforge.in/blog/best-indian-startup-founders-to-follow-2026" },
+        { "@type": "BlogPosting", "headline": "IND vs NZ Final 2026: 7 Leadership Lessons",              "url": "https://www.upforge.in/blog/leadership-lessons-ind-vs-nz-final-2026" },
+        { "@type": "BlogPosting", "headline": "5 Startup Ideas Inspired by IND vs NZ Final 2026",        "url": "https://www.upforge.in/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026" },
+      ],
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "UpForge", "item": "https://www.upforge.in/" },
+        { "@type": "ListItem", "position": 2, "name": "The Forge — Blog", "item": "https://www.upforge.in/blog" },
+      ],
+    },
   ],
 };
 
-// ─── FEATURED HERO POST ───────────────────────────────────────────────────────
-// Changed to the highest-traffic article (Ecosystem Report) as cover story
+// ── DATA ────────────────────────────────────────────────────────────────────
+
 const HERO_POST = {
-  title:     "India Startup Ecosystem 2026: The Complete State of the Nation Report",
-  subtitle:  "650,000 startups. 125 unicorns. $3.44B raised in Q1 alone. The definitive data-driven picture of where India's startup ecosystem stands, where it's going, and what every founder and investor must understand right now.",
-  slug:      "/blog/india-startup-ecosystem-2026",
-  category:  "Annual Report",
-  date:      "March 2026",
-  readTime:  "20 min",
-  img:       "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&q=85",
-  tag:       "Must Read",
-  topics:    ["Funding Trends", "Top Sectors", "City Rankings", "5 Macro Trends", "Policy Landscape"],
+  title:    "India Startup Ecosystem 2026: The Complete State of the Nation Report",
+  subtitle: "650,000 startups. 125 unicorns. $3.44B raised in Q1 alone. The definitive data-driven picture of where India's startup ecosystem stands, where it's going, and what every founder and investor must understand right now.",
+  slug:     "/blog/india-startup-ecosystem-2026",
+  category: "Annual Report",
+  date:     "March 2026",
+  readTime: "20 min",
+  img:      "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&q=85",
+  tag:      "Must Read",
+  topics:   ["Funding Trends", "Top Sectors", "City Rankings", "5 Macro Trends", "Policy Landscape"],
 };
 
-// ─── SECONDARY 2-COL STRIP ───────────────────────────────────────────────────
 const SECONDARY_POSTS = [
   {
     title:    "How to Get Startup Funding in India 2026: Complete Founder's Guide",
@@ -73,7 +86,7 @@ const SECONDARY_POSTS = [
     readTime: "12 min",
     img:      "https://images.unsplash.com/photo-1556761175-4b46a572b786?w=900&q=80",
     tag:      "High Traffic",
-    tagStyle: "new",   // green badge
+    tagStyle: "new",
   },
   {
     title:    "Top Indian Unicorns 2026: Every ₹1B+ Startup Ranked & Profiled",
@@ -84,94 +97,84 @@ const SECONDARY_POSTS = [
     readTime: "15 min",
     img:      "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=900&q=80",
     tag:      "Trending",
-    tagStyle: "trending",  // gold badge
+    tagStyle: "trending",
   },
 ];
 
-// ─── 4-CARD GRID ─────────────────────────────────────────────────────────────
 const GRID_POSTS = [
   {
-    title:    "25 Best Indian Startup Founders to Follow in 2026",
-    excerpt:  "Philosophies, playbooks, and patterns of India's most influential builders — from Alakh Pandey to Nithin Kamath to Kunal Shah.",
-    slug:     "/blog/best-indian-startup-founders-to-follow-2026",
-    category: "Founder Profiles",
-    date:     "March 2026",
-    readTime: "18 min",
-    img:      "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&q=80",
-    accent:   "#2563EB",
+    title:   "25 Best Indian Startup Founders to Follow in 2026",
+    excerpt: "Philosophies, playbooks, and patterns of India's most influential builders — from Alakh Pandey to Nithin Kamath to Kunal Shah.",
+    slug:    "/blog/best-indian-startup-founders-to-follow-2026",
+    category:"Founder Profiles",
+    date:    "March 2026",
+    readTime:"18 min",
+    img:     "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&q=80",
+    accent:  "#2563EB",
   },
   {
-    title:    "IND vs NZ Final 2026: 7 Leadership Lessons Every Startup Founder Must Learn",
-    excerpt:  "Calm under pressure, team strategy, resilience — seven principles born from the crease that define both great captains and great founders.",
-    slug:     "/blog/leadership-lessons-ind-vs-nz-final-2026",
-    category: "Leadership",
-    date:     "March 2026",
-    readTime: "7 min",
-    img:      "https://wpleague.in/wp-content/uploads/2026/03/Josh-Folder-2026-03-05T232154.662-1772733178087-1024x536.webp",
-    accent:   "#B45309",
+    title:   "IND vs NZ Final 2026: 7 Leadership Lessons Every Startup Founder Must Learn",
+    excerpt: "Calm under pressure, team strategy, resilience — seven principles born from the crease that define both great captains and great founders.",
+    slug:    "/blog/leadership-lessons-ind-vs-nz-final-2026",
+    category:"Leadership",
+    date:    "March 2026",
+    readTime:"7 min",
+    img:     "https://wpleague.in/wp-content/uploads/2026/03/Josh-Folder-2026-03-05T232154.662-1772733178087-1024x536.webp",
+    accent:  "#B45309",
   },
   {
-    title:    "5 Startup Ideas Inspired by the IND vs NZ Final 2026",
-    excerpt:  "From AI cricket analytics to youth talent discovery — five businesses someone should build right now, born from the most-watched match of 2026.",
-    slug:     "/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026",
-    category: "Startup Ideas",
-    date:     "March 2026",
-    readTime: "6 min",
-    img:      "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=600&q=80",
-    accent:   "#059669",
+    title:   "5 Startup Ideas Inspired by the IND vs NZ Final 2026",
+    excerpt: "From AI cricket analytics to youth talent discovery — five businesses someone should build right now, born from the most-watched match of 2026.",
+    slug:    "/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026",
+    category:"Startup Ideas",
+    date:    "March 2026",
+    readTime:"6 min",
+    img:     "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=600&q=80",
+    accent:  "#059669",
   },
   {
-    title:    "How Nithin Kamath Built Zerodha Without Raising a Rupee",
-    excerpt:  "India's largest stockbroker was built bootstrapped with calm, contrarian decisions. The story no MBA teaches.",
-    slug:     "/startup/zerodha",
-    category: "Founder Story",
-    date:     "February 2026",
-    readTime: "5 min",
-    img:      "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=600&q=80",
-    accent:   "#2563EB",
+    title:   "How Nithin Kamath Built Zerodha Without Raising a Rupee",
+    excerpt: "India's largest stockbroker was built bootstrapped with calm, contrarian decisions. The story no MBA teaches.",
+    slug:    "/startup/zerodha",
+    category:"Founder Story",
+    date:    "February 2026",
+    readTime:"5 min",
+    img:     "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=600&q=80",
+    accent:  "#2563EB",
   },
 ];
 
-// ─── OPINION / ANALYSIS COLUMN ───────────────────────────────────────────────
 const OPINION_POSTS = [
-  { num: "I",   title: "Why India's Startup Valuations Are Being Re-Set — and What It Means for Founders",     category: "Opinion",          date: "Mar 2026", slug: "/blog/india-startup-ecosystem-2026" },
-  { num: "II",  title: "The Bootstrapped Advantage: Why 2026 May Be the Best Year to Build Without VC",        category: "Analysis",         date: "Mar 2026", slug: "/blog/how-to-get-startup-funding-india-2026" },
-  { num: "III", title: "Sports Tech in India: The ₹50,000Cr Market That Doesn't Exist Yet",                    category: "Sector Deep Dive", date: "Feb 2026", slug: "/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026" },
-  { num: "IV",  title: "What the IND vs NZ Final Tells Us About Indian Consumer Attention in 2026",            category: "Trend Watch",      date: "Mar 2026", slug: "/blog/leadership-lessons-ind-vs-nz-final-2026" },
-  { num: "V",   title: "Founder-Market Fit: Why Domain Obsession Beats MBA Strategy Every Time",               category: "Strategy",         date: "Mar 2026", slug: "/blog/best-indian-startup-founders-to-follow-2026" },
-  { num: "VI",  title: "Bharat Is the New Engine: Why Tier 2 Startups Will Define India's Next Decade",        category: "Trend Watch",      date: "Mar 2026", slug: "/blog/india-startup-ecosystem-2026" },
+  { num: "I",   title: "Why India's Startup Valuations Are Being Re-Set — and What It Means for Founders",  category: "Opinion",          date: "Mar 2026", slug: "/blog/india-startup-ecosystem-2026" },
+  { num: "II",  title: "The Bootstrapped Advantage: Why 2026 May Be the Best Year to Build Without VC",    category: "Analysis",         date: "Mar 2026", slug: "/blog/how-to-get-startup-funding-india-2026" },
+  { num: "III", title: "Sports Tech in India: The ₹50,000Cr Market That Doesn't Exist Yet",                category: "Sector Deep Dive", date: "Feb 2026", slug: "/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026" },
+  { num: "IV",  title: "What the IND vs NZ Final Tells Us About Indian Consumer Attention in 2026",        category: "Trend Watch",      date: "Mar 2026", slug: "/blog/leadership-lessons-ind-vs-nz-final-2026" },
+  { num: "V",   title: "Founder-Market Fit: Why Domain Obsession Beats MBA Strategy Every Time",           category: "Strategy",         date: "Mar 2026", slug: "/blog/best-indian-startup-founders-to-follow-2026" },
+  { num: "VI",  title: "Bharat Is the New Engine: Why Tier 2 Startups Will Define India's Next Decade",   category: "Trend Watch",      date: "Mar 2026", slug: "/blog/india-startup-ecosystem-2026" },
 ];
 
-// ─── ALL PUBLISHED — archive table ───────────────────────────────────────────
 const ALL_POSTS = [
-  { title: "India Startup Ecosystem 2026: State of the Nation",         slug: "/blog/india-startup-ecosystem-2026",                    category: "Annual Report",    date: "Mar 2026", readTime: "20 min" },
-  { title: "How to Get Startup Funding in India 2026",                  slug: "/blog/how-to-get-startup-funding-india-2026",            category: "Funding Guide",    date: "Mar 2026", readTime: "12 min" },
-  { title: "Top Indian Unicorns 2026: Ranked & Profiled",               slug: "/blog/top-indian-unicorns-2026",                        category: "Unicorn Report",   date: "Mar 2026", readTime: "15 min" },
-  { title: "25 Best Indian Startup Founders to Follow 2026",            slug: "/blog/best-indian-startup-founders-to-follow-2026",     category: "Founder Profiles", date: "Mar 2026", readTime: "18 min" },
-  { title: "IND vs NZ Final 2026: 7 Leadership Lessons",                slug: "/blog/leadership-lessons-ind-vs-nz-final-2026",         category: "Leadership",       date: "Mar 2026", readTime: "7 min"  },
-  { title: "5 Startup Ideas Inspired by IND vs NZ Final 2026",          slug: "/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026",  category: "Startup Ideas",    date: "Mar 2026", readTime: "6 min"  },
+  { title: "India Startup Ecosystem 2026: State of the Nation",       slug: "/blog/india-startup-ecosystem-2026",                   category: "Annual Report",    date: "Mar 2026", readTime: "20 min" },
+  { title: "How to Get Startup Funding in India 2026",                slug: "/blog/how-to-get-startup-funding-india-2026",           category: "Funding Guide",    date: "Mar 2026", readTime: "12 min" },
+  { title: "Top Indian Unicorns 2026: Ranked & Profiled",             slug: "/blog/top-indian-unicorns-2026",                       category: "Unicorn Report",   date: "Mar 2026", readTime: "15 min" },
+  { title: "25 Best Indian Startup Founders to Follow 2026",          slug: "/blog/best-indian-startup-founders-to-follow-2026",    category: "Founder Profiles", date: "Mar 2026", readTime: "18 min" },
+  { title: "IND vs NZ Final 2026: 7 Leadership Lessons",              slug: "/blog/leadership-lessons-ind-vs-nz-final-2026",        category: "Leadership",       date: "Mar 2026", readTime: "7 min"  },
+  { title: "5 Startup Ideas Inspired by IND vs NZ Final 2026",        slug: "/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026", category: "Startup Ideas",    date: "Mar 2026", readTime: "6 min"  },
 ];
 
-// ─── CATEGORY PILLS ───────────────────────────────────────────────────────────
 const CATEGORIES = [
-  { name: "All",             active: true  },
-  { name: "Annual Report",   active: false },
-  { name: "Funding Guide",   active: false },
-  { name: "Unicorn Report",  active: false },
-  { name: "Founder Profiles",active: false },
-  { name: "Leadership",      active: false },
-  { name: "Startup Ideas",   active: false },
-  { name: "Analysis",        active: false },
-  { name: "Opinion",         active: false },
+  "All", "Annual Report", "Funding Guide", "Unicorn Report",
+  "Founder Profiles", "Leadership", "Startup Ideas", "Analysis", "Opinion",
 ];
 
-// ─── PAGE ─────────────────────────────────────────────────────────────────────
+// ── PAGE ─────────────────────────────────────────────────────────────────────
+
 export default function BlogIndexPage() {
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
       />
 
       <style>{`
@@ -199,167 +202,102 @@ export default function BlogIndexPage() {
           --green:  #15803D;
         }
 
-        /* ── ANIMATIONS ── */
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(10px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
+        body { background: var(--parch); }
+
+        @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
         .a0 { animation: fadeUp .45s .00s cubic-bezier(.16,1,.3,1) both; }
         .a1 { animation: fadeUp .45s .07s cubic-bezier(.16,1,.3,1) both; }
         .a2 { animation: fadeUp .45s .14s cubic-bezier(.16,1,.3,1) both; }
         .a3 { animation: fadeUp .45s .20s cubic-bezier(.16,1,.3,1) both; }
         .a4 { animation: fadeUp .45s .27s cubic-bezier(.16,1,.3,1) both; }
 
-        /* ── LIVE DOT ── */
-        .ldot {
-          width: 7px; height: 7px; border-radius: 50%;
-          background: #22C55E; display: inline-block;
-          flex-shrink: 0; position: relative;
-        }
-        .ldot::after {
-          content: ''; position: absolute; inset: -3px;
-          border-radius: 50%; background: rgba(34,197,94,.22);
-          animation: lp 2.2s ease-in-out infinite;
-        }
+        .ldot { width:7px;height:7px;border-radius:50%;background:#22C55E;display:inline-block;flex-shrink:0;position:relative; }
+        .ldot::after { content:'';position:absolute;inset:-3px;border-radius:50%;background:rgba(34,197,94,.22);animation:lp 2.2s ease-in-out infinite; }
         @keyframes lp { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(2.2);opacity:0} }
 
-        /* ── IMAGE FRAME ── */
-        .imgf { position: relative; overflow: hidden; }
-        .imgf img {
-          position: absolute; inset: 0; width: 100%; height: 100%;
-          object-fit: cover; object-position: center;
-          filter: sepia(12%) contrast(108%);
-          transition: transform .65s ease;
-        }
-        .imgf:hover img { transform: scale(1.04); }
+        .imgf { position:relative;overflow:hidden; }
+        .imgf img { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:sepia(12%) contrast(108%);transition:transform .65s ease; }
+        .imgf:hover img { transform:scale(1.04); }
 
-        /* ── SECTION HEAD ── */
-        .sh { display: flex; align-items: center; gap: 10px; }
-        .sh-l { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .3em; color: var(--ink5); font-family: system-ui; white-space: nowrap; }
-        .sh-r { flex: 1; height: 1px; background: var(--rule2); }
+        .sh { display:flex;align-items:center;gap:10px; }
+        .sh-l { font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.3em;color:var(--ink5);font-family:system-ui;white-space:nowrap; }
+        .sh-r { flex:1;height:1px;background:var(--rule2); }
 
-        /* ── CATEGORY PILL ── */
-        .cpill {
-          display: inline-flex; align-items: center;
-          font-size: 8.5px; font-weight: 700; letter-spacing: .12em;
-          text-transform: uppercase; padding: 5px 13px;
-          border: 1px solid var(--rule2); background: var(--white);
-          color: var(--ink4); font-family: system-ui;
-          transition: all .15s; white-space: nowrap;
-          text-decoration: none; cursor: pointer;
-        }
-        .cpill:hover { border-color: var(--ink); color: var(--ink); }
-        .cpill.on { background: var(--ink); color: white; border-color: var(--ink); }
-        .scroll-strip { overflow-x: auto; scrollbar-width: none; }
-        .scroll-strip::-webkit-scrollbar { display: none; }
+        .cpill { display:inline-flex;align-items:center;font-size:8.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:5px 13px;border:1px solid var(--rule2);background:var(--white);color:var(--ink4);font-family:system-ui;transition:all .15s;white-space:nowrap;text-decoration:none;cursor:pointer; }
+        .cpill:hover { border-color:var(--ink);color:var(--ink); }
+        .cpill.on { background:var(--ink);color:white;border-color:var(--ink); }
+        .scroll-strip { overflow-x:auto;scrollbar-width:none; }
+        .scroll-strip::-webkit-scrollbar { display:none; }
 
-        /* ── TAG BADGE ── */
-        .tag-badge {
-          display: inline-block; font-size: 7px; font-weight: 800;
-          letter-spacing: .22em; text-transform: uppercase;
-          padding: 2px 8px; font-family: system-ui;
-        }
-        .tag-trending { background: #FEFCE8; color: #854D0E; border: 1px solid rgba(133,77,14,.25); }
-        .tag-new      { background: #F0FDF4; color: var(--green); border: 1px solid rgba(21,128,61,.25); }
-        .tag-mustread { background: var(--goldlt); color: var(--gold3); border: 1px solid rgba(180,83,9,.3); }
+        .tag-badge { display:inline-block;font-size:7px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;padding:2px 8px;font-family:system-ui; }
+        .tag-trending { background:#FEFCE8;color:#854D0E;border:1px solid rgba(133,77,14,.25); }
+        .tag-new      { background:#F0FDF4;color:var(--green);border:1px solid rgba(21,128,61,.25); }
+        .tag-mustread { background:var(--goldlt);color:var(--gold3);border:1px solid rgba(180,83,9,.3); }
 
-        /* ── CATEGORY LABEL ── */
-        .cat-label {
-          font-size: 7.5px; font-weight: 700; letter-spacing: .2em;
-          text-transform: uppercase; color: var(--gold2);
-          font-family: system-ui;
-        }
+        .cat-label { font-size:7.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold2);font-family:system-ui; }
 
-        /* ── HERO CARD ── */
-        .hero-card {
-          display: grid; grid-template-columns: 1fr 440px;
-          border: 1.5px solid var(--ink); overflow: hidden;
-          background: var(--white); position: relative;
-          text-decoration: none;
-          transition: transform .2s, box-shadow .2s;
-        }
-        .hero-card::before {
-          content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3.5px;
-          background: linear-gradient(90deg, var(--gold3), var(--gold2), #E8C547, var(--gold2), var(--gold3));
-        }
-        .hero-card:hover { box-shadow: 5px 5px 0 var(--ink); transform: translate(-2px,-2px); }
+        /* HERO CARD */
+        .hero-card { display:grid;grid-template-columns:1fr 440px;border:1.5px solid var(--ink);overflow:hidden;background:var(--white);position:relative;text-decoration:none;transition:transform .2s,box-shadow .2s; }
+        .hero-card::before { content:'';position:absolute;top:0;left:0;right:0;height:3.5px;background:linear-gradient(90deg,var(--gold3),var(--gold2),#E8C547,var(--gold2),var(--gold3)); }
+        .hero-card:hover { box-shadow:5px 5px 0 var(--ink);transform:translate(-2px,-2px); }
 
-        /* ── SECONDARY CARDS ── */
-        .sec-card {
-          background: var(--white); text-decoration: none; display: flex; flex-direction: column;
-          position: relative; overflow: hidden;
-          transition: transform .15s, box-shadow .15s;
-        }
-        .sec-card::before {
-          content: ''; position: absolute; top: 0; left: 0; right: 0;
-          height: 2.5px; background: transparent; transition: background .15s;
-        }
-        .sec-card:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--ink); z-index: 1; }
-        .sec-card:hover::before { background: var(--gold2); }
+        /* SECONDARY CARDS */
+        .sec-card { background:var(--white);text-decoration:none;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s; }
+        .sec-card::before { content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:transparent;transition:background .15s; }
+        .sec-card:hover { transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--ink);z-index:1; }
+        .sec-card:hover::before { background:var(--gold2); }
 
-        /* ── GRID CARD ── */
-        .grid-card {
-          background: var(--white); text-decoration: none; display: flex; flex-direction: column;
-          position: relative; overflow: hidden;
-          transition: transform .15s, box-shadow .15s;
-        }
-        .grid-card::before {
-          content: ''; position: absolute; top: 0; left: 0; right: 0;
-          height: 2px; background: transparent; transition: background .15s;
-        }
-        .grid-card:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--ink); z-index: 1; }
-        .grid-card:hover::before { background: var(--gold2); }
+        /* GRID CARD */
+        .grid-card { background:var(--white);text-decoration:none;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s; }
+        .grid-card::before { content:'';position:absolute;top:0;left:0;right:0;height:2px;background:transparent;transition:background .15s; }
+        .grid-card:hover { transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--ink);z-index:1; }
+        .grid-card:hover::before { background:var(--gold2); }
 
-        /* ── ARCHIVE ROW ── */
-        .arch-row {
-          display: grid; grid-template-columns: 1fr 150px 90px 75px;
-          align-items: center; gap: 16px;
-          padding: 13px 16px; border-bottom: 1px solid var(--rule2);
-          text-decoration: none; background: var(--white);
-          transition: background .12s, padding-left .15s;
-        }
-        .arch-row:last-child { border-bottom: none; }
-        .arch-row:hover { background: var(--parch2); padding-left: 22px; }
+        /* ARCHIVE ROW */
+        .arch-row { display:grid;grid-template-columns:1fr 150px 90px 75px;align-items:center;gap:16px;padding:13px 16px;border-bottom:1px solid var(--rule2);text-decoration:none;background:var(--white);transition:background .12s,padding-left .15s; }
+        .arch-row:last-child { border-bottom:none; }
+        .arch-row:hover { background:var(--parch2);padding-left:22px; }
 
-        /* ── OPINION ROW ── */
-        .op-row {
-          display: flex; align-items: flex-start; gap: 16px;
-          padding: 16px 0; border-bottom: 1px solid var(--rule2);
-          text-decoration: none; transition: padding-left .15s;
-        }
-        .op-row:last-child { border-bottom: none; padding-bottom: 0; }
-        .op-row:hover { padding-left: 6px; }
+        /* OPINION ROW */
+        .op-row { display:flex;align-items:flex-start;gap:16px;padding:16px 0;border-bottom:1px solid var(--rule2);text-decoration:none;transition:padding-left .15s; }
+        .op-row:last-child { border-bottom:none;padding-bottom:0; }
+        .op-row:hover { padding-left:6px; }
 
-        /* ── NEWSLETTER BOX ── */
-        .nl-box {
-          background: var(--ink); position: relative; overflow: hidden;
-          padding: clamp(22px,4vw,40px);
-        }
-        .nl-box::before {
-          content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-          background: linear-gradient(90deg, var(--gold3), var(--gold2), #E8C547, var(--gold2), var(--gold3));
-        }
+        /* NL BOX */
+        .nl-box { background:var(--ink);position:relative;overflow:hidden;padding:clamp(22px,4vw,40px); }
+        .nl-box::before { content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold3),var(--gold2),#E8C547,var(--gold2),var(--gold3)); }
 
-        /* ── RESPONSIVE ── */
-        @media (max-width: 900px) {
-          .hero-card { grid-template-columns: 1fr !important; }
-          .hero-card .hero-img { height: 260px !important; border-right: none !important; border-bottom: 1.5px solid var(--ink) !important; order: -1; }
-          .sec-grid { grid-template-columns: 1fr !important; }
-          .main-grid { grid-template-columns: 1fr !important; }
+        /* RESPONSIVE */
+        @media (max-width:900px) {
+          .hero-card { grid-template-columns:1fr !important; }
+          .hero-card .hero-img { height:260px !important;border-right:none !important;border-bottom:1.5px solid var(--ink) !important;order:-1; }
+          .sec-grid { grid-template-columns:1fr !important; }
+          .main-grid { grid-template-columns:1fr !important; }
         }
-        @media (max-width: 640px) {
-          .grid-4 { grid-template-columns: 1fr 1fr !important; }
-          .arch-row { grid-template-columns: 1fr !important; }
-          .arch-meta { display: none !important; }
+        @media (max-width:640px) {
+          .grid-4 { grid-template-columns:1fr 1fr !important; }
+          .arch-row { grid-template-columns:1fr !important; }
+          .arch-meta { display:none !important; }
         }
-        @media (max-width: 400px) {
-          .grid-4 { grid-template-columns: 1fr !important; }
+        @media (max-width:400px) {
+          .grid-4 { grid-template-columns:1fr !important; }
         }
       `}</style>
 
       <div className="rp" style={{ minHeight: "100vh", background: "var(--parch)" }}>
 
-        {/* ══ MASTHEAD ══════════════════════════════════════════════════════════ */}
+        {/* BREADCRUMB */}
+        <nav className="sf a0" style={{ background: "var(--parch2)", borderBottom: "1px solid var(--rule2)", padding: "8px 0" }}>
+          <div style={{ maxWidth: 1340, margin: "0 auto", padding: "0 clamp(16px,3vw,36px)" }}>
+            <ol style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 9, color: "var(--ink5)", textTransform: "uppercase", letterSpacing: "0.18em", listStyle: "none", margin: 0, padding: 0 }}>
+              <li><Link href="/" style={{ color: "var(--ink5)", textDecoration: "none" }}>UpForge</Link></li>
+              <li style={{ color: "var(--rule)" }}>/</li>
+              <li style={{ color: "var(--ink4)", fontWeight: 700 }}>The Forge</li>
+            </ol>
+          </div>
+        </nav>
+
+        {/* MASTHEAD */}
         <header className="a0" style={{ background: "var(--parch)", borderBottom: "3px solid var(--ink)" }}>
           <div style={{ maxWidth: 1340, margin: "0 auto", padding: "0 clamp(16px,3vw,36px)" }}>
 
@@ -376,10 +314,10 @@ export default function BlogIndexPage() {
               </div>
               <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
                 {[
-                  { l: "Registry", h: "/startup"        },
-                  { l: "Unicorns", h: "/indian-unicorns" },
-                  { l: "Submit",   h: "/submit"          },
-                  { l: "Valuation",h: "/report"          },
+                  { l: "Registry", h: "/startup"         },
+                  { l: "Unicorns", h: "/indian-unicorns"  },
+                  { l: "Submit",   h: "/submit"           },
+                  { l: "Valuation",h: "/report"           },
                 ].map(n => (
                   <Link key={n.h} href={n.h} className="sf" style={{ fontSize: 8.5, color: "var(--ink4)", textTransform: "uppercase", letterSpacing: "0.14em", fontWeight: 700, textDecoration: "none" }}>
                     {n.l}
@@ -409,25 +347,23 @@ export default function BlogIndexPage() {
             <div className="scroll-strip a1" style={{ padding: "11px 0" }}>
               <div style={{ display: "flex", gap: 6, minWidth: "max-content" }}>
                 {CATEGORIES.map((c, i) => (
-                  <span key={i} className={`cpill ${c.active ? "on" : ""}`}>{c.name}</span>
+                  <span key={i} className={`cpill ${i === 0 ? "on" : ""}`}>{c}</span>
                 ))}
               </div>
             </div>
           </div>
         </header>
 
-        {/* ══ MAIN ══════════════════════════════════════════════════════════════ */}
+        {/* MAIN */}
         <main style={{ maxWidth: 1340, margin: "0 auto", padding: "0 clamp(16px,3vw,36px) clamp(56px,8vw,100px)" }}>
 
-          {/* ── HERO ── */}
+          {/* HERO */}
           <div style={{ padding: "clamp(20px,3vw,36px) 0 0" }}>
             <div className="sh a2" style={{ marginBottom: 14 }}>
               <span className="sh-l">Cover Story · Most Comprehensive</span>
               <div className="sh-r" />
             </div>
-
             <Link href={HERO_POST.slug} className="hero-card a2">
-              {/* Content */}
               <div style={{ padding: "clamp(24px,3.5vw,48px)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
@@ -442,14 +378,12 @@ export default function BlogIndexPage() {
                   <p className="rp" style={{ fontSize: "clamp(13px,1.6vw,15px)", color: "var(--ink3)", lineHeight: 1.85, marginBottom: 20, maxWidth: 520 }}>
                     {HERO_POST.subtitle}
                   </p>
-                  {/* Topic pills */}
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                     {HERO_POST.topics.map(t => (
                       <span key={t} className="sf" style={{ fontSize: 8, color: "var(--ink4)", border: "1px solid var(--rule2)", padding: "3px 9px", background: "var(--parch2)" }}>{t}</span>
                     ))}
                   </div>
                 </div>
-                {/* Meta */}
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 18, marginTop: 20, borderTop: "1px solid var(--rule2)" }}>
                   <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
                     <span className="sf" style={{ fontSize: 9, color: "var(--ink5)", letterSpacing: "0.1em" }}>{HERO_POST.date}</span>
@@ -461,7 +395,6 @@ export default function BlogIndexPage() {
                   </span>
                 </div>
               </div>
-              {/* Image */}
               <div className="hero-img imgf" style={{ borderLeft: "1.5px solid var(--ink)", minHeight: 380 }}>
                 <img src={HERO_POST.img} alt={HERO_POST.title} />
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to left, transparent 55%, rgba(26,18,8,.08) 100%)" }} />
@@ -469,7 +402,7 @@ export default function BlogIndexPage() {
             </Link>
           </div>
 
-          {/* ── SECONDARY 2-COL ── */}
+          {/* SECONDARY 2-COL */}
           <div style={{ marginTop: "clamp(18px,3vw,28px)" }}>
             <div className="sh a3" style={{ marginBottom: 14 }}>
               <span className="sh-l">Essential Reads · High Traffic</span>
@@ -508,7 +441,7 @@ export default function BlogIndexPage() {
             </div>
           </div>
 
-          {/* ── MAIN 2-COL: 4-CARD GRID + OPINION SIDEBAR ── */}
+          {/* MAIN 2-COL: 4-CARD GRID + OPINION SIDEBAR */}
           <div className="main-grid" style={{ marginTop: "clamp(22px,3.5vw,36px)", display: "grid", gridTemplateColumns: "1fr 340px", gap: "clamp(18px,2.5vw,28px)", alignItems: "start" }}>
 
             {/* LEFT: 4-card grid */}
@@ -523,7 +456,6 @@ export default function BlogIndexPage() {
                     <div className="imgf" style={{ height: 130, borderBottom: "1px solid var(--rule2)" }}>
                       <img src={post.img} alt={post.title} />
                       <div style={{ position: "absolute", inset: 0, background: "rgba(26,18,8,.12)" }} />
-                      {/* Per-post accent line */}
                       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: post.accent }} />
                       <div style={{ position: "absolute", bottom: 8, left: 10 }}>
                         <span className="cat-label" style={{ color: "#E8C547", fontSize: 7 }}>{post.category}</span>
@@ -552,16 +484,11 @@ export default function BlogIndexPage() {
                 <span className="sh-l">Analysis & Opinion</span>
                 <div className="sh-r" />
               </div>
-
               <div style={{ border: "1.5px solid var(--ink)", background: "var(--white)" }}>
                 <div style={{ background: "var(--ink)", padding: "14px 18px" }}>
                   <div style={{ height: 2, background: "linear-gradient(90deg,var(--gold3),var(--gold2),#E8C547)", marginBottom: 10 }} />
-                  <p className="pf" style={{ fontSize: "1rem", fontWeight: 700, color: "white", lineHeight: 1.25, fontStyle: "italic" }}>
-                    The UpForge<br />Perspective
-                  </p>
-                  <p className="sf" style={{ fontSize: 8, color: "rgba(255,255,255,.35)", textTransform: "uppercase", letterSpacing: "0.16em", marginTop: 6 }}>
-                    India · Startups · 2026
-                  </p>
+                  <p className="pf" style={{ fontSize: "1rem", fontWeight: 700, color: "white", lineHeight: 1.25, fontStyle: "italic" }}>The UpForge<br />Perspective</p>
+                  <p className="sf" style={{ fontSize: 8, color: "rgba(255,255,255,.35)", textTransform: "uppercase", letterSpacing: "0.16em", marginTop: 6 }}>India · Startups · 2026</p>
                 </div>
                 <div style={{ padding: "6px 18px 18px" }}>
                   {OPINION_POSTS.map((op, i) => (
@@ -573,9 +500,7 @@ export default function BlogIndexPage() {
                         <span className="sf" style={{ fontSize: 7.5, fontWeight: 700, color: "var(--gold2)", textTransform: "uppercase", letterSpacing: "0.14em", display: "block", marginBottom: 5 }}>
                           {op.category}
                         </span>
-                        <p className="pf" style={{ fontSize: "0.87rem", fontWeight: 700, color: "var(--ink)", lineHeight: 1.28, marginBottom: 5 }}>
-                          {op.title}
-                        </p>
+                        <p className="pf" style={{ fontSize: "0.87rem", fontWeight: 700, color: "var(--ink)", lineHeight: 1.28, marginBottom: 5 }}>{op.title}</p>
                         <span className="sf" style={{ fontSize: 8, color: "var(--ink5)", letterSpacing: "0.1em" }}>{op.date}</span>
                       </div>
                     </Link>
@@ -583,7 +508,7 @@ export default function BlogIndexPage() {
                 </div>
               </div>
 
-              {/* Valuation CTA in sidebar */}
+              {/* Valuation CTA */}
               <div style={{ marginTop: 12, background: "var(--ink)", padding: "20px 18px", border: "1.5px solid var(--ink)" }}>
                 <p className="sf" style={{ fontSize: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.24em", color: "rgba(232,197,71,.6)", marginBottom: 8 }}>Free AI Tool</p>
                 <p className="pf" style={{ fontSize: "1rem", fontWeight: 700, color: "white", lineHeight: 1.3, marginBottom: 10 }}>
@@ -599,15 +524,13 @@ export default function BlogIndexPage() {
             </div>
           </div>
 
-          {/* ── ALL PUBLISHED ARTICLES — archive table ── */}
+          {/* ALL PUBLISHED ARTICLES */}
           <div style={{ marginTop: "clamp(28px,4vw,44px)" }}>
             <div className="sh a4" style={{ marginBottom: 14 }}>
               <span className="sh-l">All Published Articles — {ALL_POSTS.length} Articles · March 2026</span>
               <div className="sh-r" />
             </div>
-
             <div style={{ border: "1.5px solid var(--ink)", background: "var(--ink)", display: "flex", flexDirection: "column", gap: "1.5px" }}>
-              {/* Table header */}
               <div style={{ background: "var(--ink)", padding: "8px 16px", display: "grid", gridTemplateColumns: "1fr 150px 90px 75px", gap: 16 }}>
                 {["Article", "Category", "Published", "Read Time"].map(h => (
                   <span key={h} className="sf" style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,.28)" }}>{h}</span>
@@ -624,7 +547,7 @@ export default function BlogIndexPage() {
             </div>
           </div>
 
-          {/* ── CTA STRIP ── */}
+          {/* CTA STRIP */}
           <div className="nl-box a4" style={{ marginTop: "clamp(28px,5vw,52px)" }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 24, alignItems: "center" }}>
               <div>
@@ -650,14 +573,14 @@ export default function BlogIndexPage() {
             </div>
           </div>
 
-          {/* ── STATS TICKER ── */}
-          <div style={{ marginTop: "clamp(24px,4vw,44px)", border: "1.5px solid var(--ink)", background: "var(--ink)", display: "flex", overflow: "hidden" }}>
+          {/* STATS TICKER */}
+          <div style={{ marginTop: "clamp(24px,4vw,44px)", border: "1.5px solid var(--ink)", background: "var(--ink)", display: "flex", overflow: "hidden", flexWrap: "wrap" }}>
             {[
-              { v: "6",       l: "Articles Published" },
-              { v: "650K+",   l: "Registered Startups" },
-              { v: "125+",    l: "Indian Unicorns"      },
-              { v: "₹950B",   l: "Value Tracked"        },
-              { v: "$3.44B",  l: "Q1 2026 Funding"      },
+              { v: "6",      l: "Articles Published" },
+              { v: "650K+",  l: "Registered Startups" },
+              { v: "125+",   l: "Indian Unicorns"      },
+              { v: "₹950B",  l: "Value Tracked"        },
+              { v: "$3.44B", l: "Q1 2026 Funding"      },
             ].map((s, i) => (
               <div key={i} style={{ padding: "14px 24px", borderRight: "1px solid rgba(255,255,255,.07)", flex: 1, textAlign: "center", minWidth: 100 }}>
                 <p className="pf" style={{ fontSize: "1.4rem", fontWeight: 900, color: "white", lineHeight: 1, marginBottom: 4 }}>{s.v}</p>
@@ -666,23 +589,23 @@ export default function BlogIndexPage() {
             ))}
           </div>
 
-          {/* ── FOOTER NAV ── */}
+          {/* FOOTER NAV */}
           <nav aria-label="Blog navigation" style={{ padding: "16px 0", borderTop: "2px solid var(--ink)", marginTop: "clamp(28px,4vw,44px)" }}>
-            <ul style={{ display: "flex", flexWrap: "wrap", gap: "8px 20px", listStyle: "none" }}>
+            <ul style={{ display: "flex", flexWrap: "wrap", gap: "8px 20px", listStyle: "none", margin: 0, padding: 0 }}>
               {[
-                { l: "Startup Registry",          h: "/startup"                                             },
-                { l: "Indian Unicorns 2026",       h: "/blog/top-indian-unicorns-2026"                      },
-                { l: "Startup Funding Guide 2026", h: "/blog/how-to-get-startup-funding-india-2026"          },
-                { l: "Founders to Follow 2026",    h: "/blog/best-indian-startup-founders-to-follow-2026"   },
-                { l: "Ecosystem Report 2026",      h: "/blog/india-startup-ecosystem-2026"                  },
-                { l: "Leadership Lessons Blog",    h: "/blog/leadership-lessons-ind-vs-nz-final-2026"       },
-                { l: "Startup Ideas Blog",         h: "/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026"},
-                { l: "Free Valuation Tool",        h: "/report"                                             },
-                { l: "Submit Your Startup",        h: "/submit"                                             },
-                { l: "AI Startups India",          h: "/startup?sector=AI%2FML"                             },
-                { l: "FinTech Startups",           h: "/startup?sector=FinTech"                             },
+                { l: "Startup Registry",          h: "/startup"                                              },
+                { l: "Indian Unicorns 2026",       h: "/blog/top-indian-unicorns-2026"                       },
+                { l: "Startup Funding Guide 2026", h: "/blog/how-to-get-startup-funding-india-2026"           },
+                { l: "Founders to Follow 2026",    h: "/blog/best-indian-startup-founders-to-follow-2026"    },
+                { l: "Ecosystem Report 2026",      h: "/blog/india-startup-ecosystem-2026"                   },
+                { l: "Leadership Lessons Blog",    h: "/blog/leadership-lessons-ind-vs-nz-final-2026"        },
+                { l: "Startup Ideas Blog",         h: "/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026" },
+                { l: "Free Valuation Tool",        h: "/report"                                              },
+                { l: "Submit Your Startup",        h: "/submit"                                              },
+                { l: "AI Startups India",          h: "/startup?sector=AI%2FML"                              },
+                { l: "FinTech Startups",           h: "/startup?sector=FinTech"                              },
               ].map(lnk => (
-                <li key={lnk.h}>
+                <li key={lnk.h + lnk.l}>
                   <Link href={lnk.h} className="sf" style={{ fontSize: 8.5, color: "var(--ink5)", textTransform: "uppercase", letterSpacing: "0.14em", textDecoration: "none" }}>
                     {lnk.l}
                   </Link>
