@@ -21,7 +21,7 @@ const JSON_LD = {
       "datePublished": "2026-03-01T00:00:00+05:30",
       "dateModified": "2026-03-10T00:00:00+05:30",
       "inLanguage": "en-IN",
-      "image": { "@type": "ImageObject", "url": "https://upforge.in/og/boat.png", "width": 1200, "height": 630 },
+      "image": { "@type": "ImageObject", "url": "https://www.cheggindia.com/wp-content/uploads/2023/06/eo-35893-founder-of-boat-v2-1024x683.png", "width": 1200, "height": 630 },
       "publisher": {
         "@type": "Organization", "name": "UpForge", "url": "https://upforge.in",
         "logo": { "@type": "ImageObject", "url": "https://upforge.in/logo.png" }
