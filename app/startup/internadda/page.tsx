@@ -1,3 +1,4 @@
+"use client"
 // app/startup/internadda/page.tsx
 // UpForge — InternAdda · Lucky Tiwari Founder Chronicle
 
