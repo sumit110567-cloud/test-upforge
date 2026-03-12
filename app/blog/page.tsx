@@ -264,7 +264,7 @@ export default function BlogIndexPage() {
         .op-row:hover { padding-left:6px; }
 
         /* NL BOX */
-        .nl-box { background:var(--ink);position:relative;overflow:hidden;padding:clamp(22px,4vw,40px); }
+        .nl-box { background:var(--ink);position:relative;overflow:hidden;padding:clamp(16px,2.8vw,28px); }
         .nl-box::before { content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold3),var(--gold2),#E8C547,var(--gold2),var(--gold3)); }
 
         /* RESPONSIVE */
@@ -287,7 +287,7 @@ export default function BlogIndexPage() {
       <div className="rp" style={{ minHeight: "100vh", background: "var(--parch)" }}>
 
         {/* BREADCRUMB */}
-        <nav className="sf a0" style={{ background: "var(--parch2)", borderBottom: "1px solid var(--rule2)", padding: "8px 0" }}>
+        <nav className="sf a0" style={{ background: "var(--parch2)", borderBottom: "1px solid var(--rule2)", padding: "6px 0" }}>
           <div style={{ maxWidth: 1340, margin: "0 auto", padding: "0 clamp(16px,3vw,36px)" }}>
             <ol style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 9, color: "var(--ink5)", textTransform: "uppercase", letterSpacing: "0.18em", listStyle: "none", margin: 0, padding: 0 }}>
               <li><Link href="/" style={{ color: "var(--ink5)", textDecoration: "none" }}>UpForge</Link></li>
@@ -327,15 +327,15 @@ export default function BlogIndexPage() {
             </div>
 
             {/* Nameplate */}
-            <div style={{ textAlign: "center", padding: "clamp(20px,3.5vw,40px) 0 clamp(14px,2.5vw,24px)", borderBottom: "1px solid var(--rule2)" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 14 }}>
+            <div style={{ textAlign: "center", padding: "clamp(14px,2.2vw,26px) 0 clamp(10px,1.6vw,16px)", borderBottom: "1px solid var(--rule2)" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 10 }}>
                 <div style={{ height: 1, width: 60, background: "var(--rule)" }} />
                 <span className="sf" style={{ fontSize: 8, letterSpacing: "0.42em", textTransform: "uppercase", color: "var(--ink5)", fontWeight: 700 }}>
                   UpForge · Intelligence
                 </span>
                 <div style={{ height: 1, width: 60, background: "var(--rule)" }} />
               </div>
-              <h1 className="pf" style={{ fontSize: "clamp(2.8rem,8vw,6.5rem)", fontWeight: 900, lineHeight: 0.88, color: "var(--ink)", letterSpacing: "-0.03em", marginBottom: 16 }}>
+              <h1 className="pf" style={{ fontSize: "clamp(2.8rem,8vw,6.5rem)", fontWeight: 900, lineHeight: 0.88, color: "var(--ink)", letterSpacing: "-0.03em", marginBottom: 10 }}>
                 The Forge
               </h1>
               <p className="rp" style={{ fontSize: "clamp(12px,1.6vw,15px)", fontStyle: "italic", color: "var(--ink4)", letterSpacing: "0.02em" }}>
@@ -355,27 +355,27 @@ export default function BlogIndexPage() {
         </header>
 
         {/* MAIN */}
-        <main style={{ maxWidth: 1340, margin: "0 auto", padding: "0 clamp(16px,3vw,36px) clamp(56px,8vw,100px)" }}>
+        <main style={{ maxWidth: 1340, margin: "0 auto", padding: "0 clamp(16px,3vw,36px) clamp(32px,5vw,60px)" }}>
 
           {/* HERO */}
-          <div style={{ padding: "clamp(20px,3vw,36px) 0 0" }}>
+          <div style={{ padding: "clamp(12px,1.8vw,20px) 0 0" }}>
             <div className="sh a2" style={{ marginBottom: 14 }}>
               <span className="sh-l">Cover Story · Most Comprehensive</span>
               <div className="sh-r" />
             </div>
             <Link href={HERO_POST.slug} className="hero-card a2">
-              <div style={{ padding: "clamp(24px,3.5vw,48px)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+              <div style={{ padding: "clamp(16px,2.4vw,30px)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                 <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
                     <span className="cat-label">{HERO_POST.category}</span>
                     <div style={{ width: 1, height: 11, background: "var(--rule)" }} />
                     <span className="tag-badge tag-mustread">{HERO_POST.tag}</span>
                   </div>
-                  <h2 className="pf" style={{ fontSize: "clamp(1.5rem,3.2vw,2.6rem)", fontWeight: 900, lineHeight: 1.08, color: "var(--ink)", letterSpacing: "-0.02em", marginBottom: 18 }}>
+                  <h2 className="pf" style={{ fontSize: "clamp(1.5rem,3.2vw,2.6rem)", fontWeight: 900, lineHeight: 1.08, color: "var(--ink)", letterSpacing: "-0.02em", marginBottom: 12 }}>
                     {HERO_POST.title}
                   </h2>
-                  <div style={{ width: 40, height: 3, background: "var(--gold2)", marginBottom: 18 }} />
-                  <p className="rp" style={{ fontSize: "clamp(13px,1.6vw,15px)", color: "var(--ink3)", lineHeight: 1.85, marginBottom: 20, maxWidth: 520 }}>
+                  <div style={{ width: 40, height: 3, background: "var(--gold2)", marginBottom: 12 }} />
+                  <p className="rp" style={{ fontSize: "clamp(13px,1.6vw,15px)", color: "var(--ink3)", lineHeight: 1.82, marginBottom: 14, maxWidth: 520 }}>
                     {HERO_POST.subtitle}
                   </p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -384,7 +384,7 @@ export default function BlogIndexPage() {
                     ))}
                   </div>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 18, marginTop: 20, borderTop: "1px solid var(--rule2)" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 12, marginTop: 14, borderTop: "1px solid var(--rule2)" }}>
                   <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
                     <span className="sf" style={{ fontSize: 9, color: "var(--ink5)", letterSpacing: "0.1em" }}>{HERO_POST.date}</span>
                     <div style={{ width: 1, height: 10, background: "var(--rule)" }} />
@@ -403,7 +403,7 @@ export default function BlogIndexPage() {
           </div>
 
           {/* SECONDARY 2-COL */}
-          <div style={{ marginTop: "clamp(18px,3vw,28px)" }}>
+          <div style={{ marginTop: "clamp(14px,2vw,20px)" }}>
             <div className="sh a3" style={{ marginBottom: 14 }}>
               <span className="sh-l">Essential Reads · High Traffic</span>
               <div className="sh-r" />
@@ -411,7 +411,7 @@ export default function BlogIndexPage() {
             <div className="sec-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", border: "1.5px solid var(--ink)", background: "var(--ink)", gap: 1.5 }}>
               {SECONDARY_POSTS.map((post, i) => (
                 <Link key={i} href={post.slug} className="sec-card">
-                  <div className="imgf" style={{ height: "clamp(160px,18vw,220px)", borderBottom: "1px solid var(--rule2)" }}>
+                  <div className="imgf" style={{ height: "clamp(130px,14vw,175px)", borderBottom: "1px solid var(--rule2)" }}>
                     <img src={post.img} alt={post.title} />
                     <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(26,18,8,.65) 0%, transparent 55%)" }} />
                     <div style={{ position: "absolute", top: 12, left: 14, display: "flex", gap: 7, alignItems: "center" }}>
@@ -424,14 +424,14 @@ export default function BlogIndexPage() {
                       <span className="sf" style={{ fontSize: 8, color: "rgba(255,255,255,.5)", letterSpacing: "0.1em" }}>{post.readTime} read</span>
                     </div>
                   </div>
-                  <div style={{ padding: "clamp(14px,2vw,22px)", flex: 1, display: "flex", flexDirection: "column" }}>
-                    <h3 className="pf" style={{ fontSize: "clamp(1rem,1.8vw,1.28rem)", fontWeight: 700, color: "var(--ink)", lineHeight: 1.22, marginBottom: 10 }}>
+                  <div style={{ padding: "clamp(12px,1.6vw,16px)", flex: 1, display: "flex", flexDirection: "column" }}>
+                    <h3 className="pf" style={{ fontSize: "clamp(1rem,1.8vw,1.28rem)", fontWeight: 700, color: "var(--ink)", lineHeight: 1.22, marginBottom: 7 }}>
                       {post.title}
                     </h3>
-                    <p className="rp" style={{ fontSize: 12.5, color: "var(--ink4)", lineHeight: 1.75, flex: 1, marginBottom: 14, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>
+                    <p className="rp" style={{ fontSize: 12.5, color: "var(--ink4)", lineHeight: 1.72, flex: 1, marginBottom: 10, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>
                       {post.excerpt}
                     </p>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 12, borderTop: "1px solid var(--rule2)" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 9, borderTop: "1px solid var(--rule2)" }}>
                       <span className="sf" style={{ fontSize: 8.5, color: "var(--ink5)", letterSpacing: "0.1em" }}>{post.date}</span>
                       <span className="sf" style={{ fontSize: 8.5, color: "var(--gold2)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>Read →</span>
                     </div>
@@ -442,7 +442,7 @@ export default function BlogIndexPage() {
           </div>
 
           {/* MAIN 2-COL: 4-CARD GRID + OPINION SIDEBAR */}
-          <div className="main-grid" style={{ marginTop: "clamp(22px,3.5vw,36px)", display: "grid", gridTemplateColumns: "1fr 340px", gap: "clamp(18px,2.5vw,28px)", alignItems: "start" }}>
+          <div className="main-grid" style={{ marginTop: "clamp(14px,2.2vw,22px)", display: "grid", gridTemplateColumns: "1fr 340px", gap: "clamp(14px,2vw,22px)", alignItems: "start" }}>
 
             {/* LEFT: 4-card grid */}
             <div>
@@ -453,7 +453,7 @@ export default function BlogIndexPage() {
               <div className="grid-4" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", border: "1.5px solid var(--ink)", background: "var(--ink)", gap: 1.5 }}>
                 {GRID_POSTS.map((post, i) => (
                   <Link key={i} href={post.slug} className="grid-card">
-                    <div className="imgf" style={{ height: 130, borderBottom: "1px solid var(--rule2)" }}>
+                    <div className="imgf" style={{ height: 110, borderBottom: "1px solid var(--rule2)" }}>
                       <img src={post.img} alt={post.title} />
                       <div style={{ position: "absolute", inset: 0, background: "rgba(26,18,8,.12)" }} />
                       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: post.accent }} />
@@ -461,7 +461,7 @@ export default function BlogIndexPage() {
                         <span className="cat-label" style={{ color: "#E8C547", fontSize: 7 }}>{post.category}</span>
                       </div>
                     </div>
-                    <div style={{ padding: "13px 14px 14px", flex: 1, display: "flex", flexDirection: "column" }}>
+                    <div style={{ padding: "10px 12px 12px", flex: 1, display: "flex", flexDirection: "column" }}>
                       <h4 className="pf" style={{ fontSize: "0.92rem", fontWeight: 700, color: "var(--ink)", lineHeight: 1.22, marginBottom: 8, flex: 1 }}>
                         {post.title}
                       </h4>
@@ -525,7 +525,7 @@ export default function BlogIndexPage() {
           </div>
 
           {/* ALL PUBLISHED ARTICLES */}
-          <div style={{ marginTop: "clamp(28px,4vw,44px)" }}>
+          <div style={{ marginTop: "clamp(18px,2.8vw,30px)" }}>
             <div className="sh a4" style={{ marginBottom: 14 }}>
               <span className="sh-l">All Published Articles — {ALL_POSTS.length} Articles · March 2026</span>
               <div className="sh-r" />
@@ -548,7 +548,7 @@ export default function BlogIndexPage() {
           </div>
 
           {/* CTA STRIP */}
-          <div className="nl-box a4" style={{ marginTop: "clamp(28px,5vw,52px)" }}>
+          <div className="nl-box a4" style={{ marginTop: "clamp(18px,3vw,30px)" }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 24, alignItems: "center" }}>
               <div>
                 <p className="sf" style={{ fontSize: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.3em", color: "rgba(232,197,71,.65)", marginBottom: 10 }}>
@@ -574,7 +574,7 @@ export default function BlogIndexPage() {
           </div>
 
           {/* STATS TICKER */}
-          <div style={{ marginTop: "clamp(24px,4vw,44px)", border: "1.5px solid var(--ink)", background: "var(--ink)", display: "flex", overflow: "hidden", flexWrap: "wrap" }}>
+          <div style={{ marginTop: "clamp(14px,2.5vw,24px)", border: "1.5px solid var(--ink)", background: "var(--ink)", display: "flex", overflow: "hidden", flexWrap: "wrap" }}>
             {[
               { v: "6",      l: "Articles Published" },
               { v: "650K+",  l: "Registered Startups" },
@@ -590,7 +590,7 @@ export default function BlogIndexPage() {
           </div>
 
           {/* FOOTER NAV */}
-          <nav aria-label="Blog navigation" style={{ padding: "16px 0", borderTop: "2px solid var(--ink)", marginTop: "clamp(28px,4vw,44px)" }}>
+          <nav aria-label="Blog navigation" style={{ padding: "12px 0", borderTop: "2px solid var(--ink)", marginTop: "clamp(16px,2.5vw,26px)" }}>
             <ul style={{ display: "flex", flexWrap: "wrap", gap: "8px 20px", listStyle: "none", margin: 0, padding: 0 }}>
               {[
                 { l: "Startup Registry",          h: "/startup"                                              },
