@@ -1,783 +1,973 @@
 // app/indian-startups/page.tsx
-// ─── THE FOUNDER CHRONICLE DESIGN SYSTEM ──────────────────────────────────────
-// Background:   #F3EFE5  (parchment)
-// Breadcrumb:   #EDE9DF
-// Primary ink:  #1A1208  (warm near-black)
-// Secondary:    #6B5C40 / #5A4A30
-// Muted:        #AAA, #BBB0A0
-// Rule/border:  #C8C2B4, #D8D2C4
-// Gold label:   #E8C547
-// Gold link:    #B45309
-// White card:   #FDFCF9
-// Fonts: Playfair Display (display) · Georgia (body) · system-ui (chrome)
-// ─────────────────────────────────────────────────────────────────────────────
-
-import type { Metadata } from "next"
-import Link from "next/link"
-import { ArrowRight, ChevronRight, BadgeCheck } from "lucide-react"
+import Link from "next/link";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Indian Startups — Complete Guide to India's Startup Ecosystem 2026 | UpForge",
+  title: "Indian Startups 2026: The Complete Guide to India's Startup Ecosystem | UpForge",
   description:
-    "Everything about Indian startups in 2026 — 650,000+ startups, 126 unicorns, $11.6B raised in 2025. Sector guide, city breakdown, top funded companies, unicorn tracker and more.",
-  keywords:
-    "indian startups, startups in India, Indian startup ecosystem 2026, India startup funding, list of startups in India, new startups in India, startup India, Indian unicorns, Bengaluru startups, fintech India, edtech India, AI startups India",
-  alternates: { canonical: "https://www.upforge.in/indian-startups" },
+    "Everything you need to know about Indian startups in 2026 — the ecosystem overview, top companies by sector, funding trends, unicorn count, city-wise breakdown, and the founders reshaping India's economy. The most comprehensive Indian startup guide online.",
+  keywords: [
+    "Indian startups 2026",
+    "India startup ecosystem",
+    "best startups in India",
+    "Indian startup companies list",
+    "top Indian startups to watch 2026",
+    "Indian startup funding 2026",
+    "startup ecosystem India overview",
+    "Indian founders 2026",
+    "India startup hubs Bangalore Mumbai Delhi",
+    "Indian startup news 2026",
+    "how many startups in India 2026",
+    "India third largest startup ecosystem",
+  ].join(", "),
+  alternates: { canonical: "https://upforge.in/indian-startups" },
   openGraph: {
-    title: "Indian Startups 2026 — Complete Ecosystem Guide | UpForge",
-    description: "650,000+ startups. 126 unicorns. $11.6B raised in 2025. The complete guide to India's startup ecosystem.",
-    url: "https://www.upforge.in/indian-startups",
+    title: "Indian Startups 2026: The Complete Guide to India's Startup Ecosystem",
+    description:
+      "India has 140,000+ startups, 111 unicorns, and the world's third-largest startup ecosystem. This is the complete guide — sectors, cities, founders, funding, and the stories behind India's most important companies.",
+    url: "https://upforge.in/indian-startups",
     siteName: "UpForge",
+    images: [{ url: "https://upforge.in/og-indian-startups.png", width: 1200, height: 630 }],
     locale: "en_IN",
-    type: "article",
-    images: [{ url: "https://www.upforge.in/og/indian-startups.png", width: 1200, height: 630 }],
+    type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    site: "@upforge_in",
-    title: "Indian Startups 2026 | UpForge",
-    images: ["https://www.upforge.in/og/indian-startups.png"],
+    title: "Indian Startups 2026: Complete Ecosystem Guide | UpForge",
+    description:
+      "140,000+ startups. 111 unicorns. $340B+ in combined value. India's startup revolution — the definitive guide on UpForge.",
   },
-}
+};
 
-// ─── DATA ─────────────────────────────────────────────────────────────────────
+/* ─────────────────────────────────────────────
+   IMAGES
+───────────────────────────────────────────── */
+const IMGS = {
+  hero:       "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1600&q=85&auto=format",
+  bangalore:  "https://images.unsplash.com/photo-1596176530529-78163a4f7af2?w=900&q=80&auto=format",
+  mumbai:     "https://images.unsplash.com/photo-1529253355930-ddbe423a2ac7?w=900&q=80&auto=format",
+  delhi:      "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=900&q=80&auto=format",
+  hyderabad:  "https://images.unsplash.com/photo-1626808642875-0aa545482dfb?w=900&q=80&auto=format",
+  fintech:    "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=900&q=80&auto=format",
+  edtech:     "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=900&q=80&auto=format",
+  saas:       "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=900&q=80&auto=format",
+  d2c:        "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=900&q=80&auto=format",
+  ai:         "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=900&q=80&auto=format",
+  health:     "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=900&q=80&auto=format",
+  nithin:     "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=900&q=80&auto=format",
+  deepinder:  "https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?w=900&q=80&auto=format",
+  falguni:    "https://images.unsplash.com/photo-1573497620053-ea5300f94f21?w=900&q=80&auto=format",
+  banner:     "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1600&q=80&auto=format",
+};
 
-const ECOSYSTEM_STATS = [
-  { v: "650,000+", l: "DPIIT-Recognized Startups",   sub: "As of March 2026" },
-  { v: "126",      l: "Unicorns",                     sub: "3rd globally" },
-  { v: "$11.6B",   l: "Funding in 2025",              sub: "+18% YoY" },
-  { v: "3rd",      l: "Largest Ecosystem",            sub: "After US & China" },
-]
+/* ─────────────────────────────────────────────
+   TOP-LINE STATS
+───────────────────────────────────────────── */
+const MACRO_STATS = [
+  { val: "140,000+", label: "Registered Startups in India" },
+  { val: "111",      label: "Unicorns ($1B+ Companies)" },
+  { val: "#3",       label: "World's Largest Startup Ecosystem" },
+  { val: "$14B+",    label: "VC Funding in India (2024)" },
+];
 
+/* ─────────────────────────────────────────────
+   SECTOR HUB CARDS
+───────────────────────────────────────────── */
 const SECTORS = [
   {
-    name: "Fintech", count: "23 unicorns", funding: "$1.6B in 2025",
-    examples: "Razorpay · CRED · Groww · PhonePe",
-    accent: "#2563EB", accentBg: "#EFF6FF", accentBorder: "#BFDBFE",
-    img: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=480&q=80&auto=format&fit=crop",
-    imgAlt: "Digital payments fintech India",
-    why: "India's UPI stack and 900M+ banked citizens create a uniquely captive fintech market. Payments, lending, and wealthtech dominate.",
+    name: "FinTech",
+    count: "22 Unicorns",
+    desc: "Payments, lending, wealth, insurance — India's most funded sector.",
+    accent: "#B45309",
+    bg: "#FEF3C7",
+    img: IMGS.fintech,
+    href: "/fintech-startups",
+    examples: ["Zerodha", "Razorpay", "CRED", "PhonePe", "Groww"],
   },
   {
-    name: "SaaS / Enterprise", count: "15 unicorns", funding: "$1.1B in 2025",
-    examples: "Zoho · Freshworks · Darwinbox · BrowserStack",
-    accent: "#D97706", accentBg: "#FFFBEB", accentBorder: "#FDE68A",
-    img: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=480&q=80&auto=format&fit=crop",
-    imgAlt: "SaaS enterprise software India",
-    why: "India's engineering talent and English fluency make it the world's SaaS factory. B2B software ships globally from Chennai and Bengaluru.",
+    name: "EdTech",
+    count: "11 Unicorns",
+    desc: "Online learning platforms disrupting India's ₹2L Cr education market.",
+    accent: "#7C3AED",
+    bg: "#F5F3FF",
+    img: IMGS.edtech,
+    href: "/edtech-startups",
+    examples: ["PhysicsWallah", "Unacademy", "Vedantu", "Scaler", "Skill-Lync"],
   },
   {
-    name: "AI / Deeptech", count: "3 unicorns + rising", funding: "$643M in 2025",
-    examples: "Krutrim · Sarvam AI · Neysa · Fractal",
-    accent: "#7C3AED", accentBg: "#F5F3FF", accentBorder: "#C4B5FD",
-    img: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=480&q=80&auto=format&fit=crop",
-    imgAlt: "AI deep tech startup India",
-    why: "Government IndiaAI Mission, IIT talent pipeline, and enterprise demand are converging. India's AI story is just beginning.",
+    name: "SaaS",
+    count: "14 Unicorns",
+    desc: "Indian software built for global enterprises — from Chennai to San Francisco.",
+    accent: "#059669",
+    bg: "#ECFDF5",
+    img: IMGS.saas,
+    href: "/best-saas-startups",
+    examples: ["Freshworks", "Chargebee", "Postman", "BrowserStack", "Zoho"],
   },
   {
-    name: "E-commerce / D2C", count: "18 unicorns", funding: "$800M+ in 2025",
-    examples: "Meesho · Nykaa · Lenskart · FirstCry",
-    accent: "#DC2626", accentBg: "#FEF2F2", accentBorder: "#FCA5A5",
-    img: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=480&q=80&auto=format&fit=crop",
-    imgAlt: "D2C e-commerce India startup",
-    why: "500M internet users and a fast-growing middle class make India the world's most exciting e-commerce growth story outside China.",
+    name: "D2C Brands",
+    count: "800+ Funded",
+    desc: "Consumer brands built for Indian tastes, at Indian prices, with global ambition.",
+    accent: "#DB2777",
+    bg: "#FDF2F8",
+    img: IMGS.d2c,
+    href: "/d2c-startups",
+    examples: ["Mamaearth", "boAt", "Lenskart", "Sugar", "Wakefit"],
   },
   {
-    name: "Edtech", count: "7 unicorns", funding: "$400M in 2025",
-    examples: "PhysicsWallah · upGrad · Eruditus",
-    accent: "#059669", accentBg: "#ECFDF5", accentBorder: "#6EE7B7",
-    img: "https://images.unsplash.com/photo-1588072432836-e10032774350?w=480&q=80&auto=format&fit=crop",
-    imgAlt: "Edtech online learning India",
-    why: "350M+ students and massive competitive exam culture drive demand. The post-BYJU's era favours profitability-first models.",
+    name: "AI & Deep Tech",
+    count: "7 Unicorns",
+    desc: "Indic language models, drone AI, and enterprise automation — India's fastest growing sector.",
+    accent: "#1D4ED8",
+    bg: "#EFF6FF",
+    img: IMGS.ai,
+    href: "/top-ai-startups",
+    examples: ["Krutrim", "Sarvam AI", "ideaForge", "Frugal AI", "Haptik"],
   },
   {
-    name: "Healthtech", count: "6 unicorns", funding: "$500M in 2025",
-    examples: "Qure.ai · Practo · Pristyn Care · 1mg",
-    accent: "#0D9488", accentBg: "#F0FDFA", accentBorder: "#99F6E4",
-    img: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=480&q=80&auto=format&fit=crop",
-    imgAlt: "Healthtech digital health India",
-    why: "Massive underserved market — India has 1 doctor per 1,800 patients. Digital health, diagnostics AI, and telemedicine are filling the gap.",
+    name: "HealthTech",
+    count: "9 Unicorns",
+    desc: "Telemedicine, diagnostics, pharma delivery — democratising healthcare for 1.4 billion.",
+    accent: "#0F766E",
+    bg: "#F0FDFA",
+    img: IMGS.health,
+    href: "/startup?sector=healthtech",
+    examples: ["Practo", "PharmEasy", "Pristyn Care", "MediBuddy", "1mg"],
   },
-  {
-    name: "Quick Commerce", count: "9 unicorns", funding: "$600M in 2025",
-    examples: "Zepto · Porter · Shiprocket · Delhivery",
-    accent: "#EA580C", accentBg: "#FFF7ED", accentBorder: "#FDBA74",
-    img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=480&q=80&auto=format&fit=crop",
-    imgAlt: "Quick commerce delivery logistics India",
-    why: "India's dark store revolution — Zepto's 10-minute delivery model has been copied globally. Logistics infrastructure is the backbone of the digital economy.",
-  },
-  {
-    name: "Defence / Deeptech", count: "Emerging", funding: "$311M in H1 2025",
-    examples: "Pixxel · Skyroot · Ideaforge",
-    accent: "#475569", accentBg: "#F8FAFC", accentBorder: "#CBD5E1",
-    img: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=480&q=80&auto=format&fit=crop",
-    imgAlt: "Defence aerospace deeptech India",
-    why: "$311M raised in H1 2025 alone. Government's Make-in-India defence push is creating a new category of well-funded hardware startups.",
-  },
-]
+];
 
+/* ─────────────────────────────────────────────
+   CITY HUB
+───────────────────────────────────────────── */
 const CITIES = [
   {
-    name: "Bengaluru", unicorns: 52, label: "Silicon Valley of India",
-    detail: "AI, SaaS, Fintech, Deeptech — the undisputed startup capital of India.",
-    img: "https://images.unsplash.com/photo-1596176530529-78163a4f7af2?w=400&q=80&auto=format&fit=crop",
-    imgAlt: "Bengaluru city skyline startup hub",
-    accent: "#2563EB",
+    name: "Bengaluru",
+    nickname: "India's Silicon Valley",
+    startups: "15,000+",
+    unicorns: "60+",
+    known: "SaaS, FinTech, AI, E-Commerce",
+    img: IMGS.bangalore,
+    companies: ["Flipkart","Zerodha","Razorpay","Swiggy","Unacademy","Postman"],
   },
   {
-    name: "Delhi-NCR", unicorns: 40, label: "Policy & Enterprise Hub",
-    detail: "Edtech, logistics, and enterprise tech dominate. Proximity to regulators is a real advantage.",
-    img: "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=400&q=80&auto=format&fit=crop",
-    imgAlt: "Delhi NCR city startup hub India",
-    accent: "#DC2626",
+    name: "Mumbai",
+    nickname: "India's Financial Capital",
+    startups: "12,000+",
+    unicorns: "22+",
+    known: "FinTech, D2C, Media, HealthTech",
+    img: IMGS.mumbai,
+    companies: ["Nykaa","BrowserStack","Zepto","Jupiter","Meesho"],
   },
   {
-    name: "Mumbai", unicorns: 18, label: "FinTech & Media Capital",
-    detail: "BFSI startups, quick commerce, and D2C brands. Raised $8.2M per deal on average in 2025.",
-    img: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=400&q=80&auto=format&fit=crop",
-    imgAlt: "Mumbai skyline fintech startup hub",
-    accent: "#D97706",
+    name: "Delhi NCR",
+    nickname: "India's Commerce Hub",
+    startups: "11,000+",
+    unicorns: "18+",
+    known: "E-Commerce, D2C, EdTech, Logistics",
+    img: IMGS.delhi,
+    companies: ["Zomato","OYO","boAt","PhysicsWallah","Noise","Lenskart"],
   },
   {
-    name: "Hyderabad", unicorns: 8, label: "Deeptech & Healthcare",
-    detail: "Darwinbox, Qure.ai, and strong pharma-adjacent startups define Hyderabad's identity.",
-    img: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80&auto=format&fit=crop",
-    imgAlt: "Hyderabad tech city startup India",
-    accent: "#7C3AED",
+    name: "Hyderabad",
+    nickname: "HITEC City's Rising Ecosystem",
+    startups: "6,000+",
+    unicorns: "8+",
+    known: "SaaS, HealthTech, AI, AgriTech",
+    img: IMGS.hyderabad,
+    companies: ["LeadSquared","Darwinbox","Zetwerk","Global-e"],
+  },
+];
+
+/* ─────────────────────────────────────────────
+   FEATURED FOUNDER SPOTLIGHTS
+───────────────────────────────────────────── */
+const FOUNDERS = [
+  {
+    name: "Nithin Kamath",
+    company: "Zerodha",
+    role: "Co-Founder & CEO",
+    val: "$3.6B",
+    city: "Bengaluru",
+    sector: "FinTech",
+    img: IMGS.nithin,
+    slug: "zerodha",
+    quote: "Bootstrapped India's largest stockbroker without a single rupee of VC funding — by making contrarian bets that turned out to be obvious in hindsight.",
+    lesson: "Zero brokerage on delivery trades was not a gimmick. It was the product.",
+    accentColor: "#B45309",
   },
   {
-    name: "Pune", unicorns: 8, label: "Product-First Culture",
-    detail: "Engineering-led startups with strong product culture. Growing quickly as Bengaluru overflows.",
-    img: "https://images.unsplash.com/photo-1622050756792-5b1180bab37b?w=400&q=80&auto=format&fit=crop",
-    imgAlt: "Pune startup city India",
-    accent: "#059669",
+    name: "Deepinder Goyal",
+    company: "Zomato",
+    role: "Founder & CEO",
+    val: "$17B",
+    city: "Gurugram",
+    sector: "Food & Quick Commerce",
+    img: IMGS.deepinder,
+    slug: "zomato",
+    quote: "Started by photographing restaurant menus in his office and uploading them online. Ended up building India's most resilient consumer internet company.",
+    lesson: "Zomato has been written off six times. Stubborn resilience is the only unfair advantage that can't be copied.",
+    accentColor: "#DC2626",
   },
   {
-    name: "Chennai", unicorns: 5, label: "SaaS Origin City",
-    detail: "Freshworks, Zoho, Chargebee — Chennai is where Indian SaaS was invented.",
-    img: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=400&q=80&auto=format&fit=crop",
-    imgAlt: "Chennai SaaS startup city India",
-    accent: "#0D9488",
+    name: "Falguni Nayar",
+    company: "Nykaa",
+    role: "Founder & CEO",
+    val: "$6.5B",
+    city: "Mumbai",
+    sector: "Beauty & D2C",
+    img: IMGS.falguni,
+    slug: "nykaa",
+    quote: "Quit her investment banking career at 49 to start Nykaa — proving that entrepreneurship has no age limit and that the best founders often come with the sharpest industry insight.",
+    lesson: "The best time to start a company is when you understand the customer better than the market does.",
+    accentColor: "#DB2777",
   },
-]
+];
 
-const TOP_FUNDED = [
-  { name: "Ola Cabs",    funding: "$3.8B", sector: "Mobility",        accent: "#EA580C" },
-  { name: "OYO",         funding: "$3.7B", sector: "Hospitality",     accent: "#DC2626" },
-  { name: "Zepto",       funding: "$2.5B", sector: "Quick Commerce",  accent: "#D97706" },
-  { name: "Lenskart",    funding: "$1.8B", sector: "D2C / Eyewear",   accent: "#059669" },
-  { name: "Meesho",      funding: "$1.6B", sector: "Social Commerce", accent: "#7C3AED" },
-  { name: "CRED",        funding: "$1.4B", sector: "Fintech",         accent: "#111827" },
-  { name: "Razorpay",    funding: "$1.4B", sector: "Payments",        accent: "#2563EB" },
-  { name: "Groww",       funding: "$1.2B", sector: "WealthTech",      accent: "#0D9488" },
-]
+/* ─────────────────────────────────────────────
+   FUNDING TIMELINE
+───────────────────────────────────────────── */
+const FUNDING_YEARS = [
+  { year: "2015", amt: "$5.5B",  note: "E-Commerce & OTA dominate" },
+  { year: "2017", amt: "$13.7B", note: "Paytm, Flipkart mega rounds" },
+  { year: "2019", amt: "$14.5B", note: "SaaS & FinTech accelerate" },
+  { year: "2021", amt: "$42B",   note: "Peak year — 44 new unicorns" },
+  { year: "2022", amt: "$24B",   note: "Correction begins globally" },
+  { year: "2023", amt: "$8.6B",  note: "Quality over quantity era" },
+  { year: "2024", amt: "$14.2B", note: "Recovery — AI leads new cycle" },
+  { year: "2025", amt: "$18B+",  note: "AI, D2C, quick commerce surge" },
+];
+const MAX_FUND = 42;
 
-const TRENDS = [
-  { num: "01", title: "IPO Supercycle",                            accent: "#2563EB",
-    body: "More than 18 Indian startups went public in 2025. 2026 will see the second wave — Groww, Zerodha, and multiple SaaS companies are in the pipeline. Public markets are now a viable and preferred exit route." },
-  { num: "02", title: "Profitability Over Growth",                 accent: "#059669",
-    body: "Over one-third of Indian startups chose runway extension over fundraising in 2025. The 'grow at all costs' era is over. Investors now ask for EBITDA visibility as a baseline expectation at every stage." },
-  { num: "03", title: "Reverse Flips",                            accent: "#D97706",
-    body: "Indian startups that had incorporated in Singapore or Delaware are moving their legal domicile back to India. Listing domestically is no longer a compromise — it's the smartest path for many." },
-  { num: "04", title: "Tier-2 City Surge",                        accent: "#DC2626",
-    body: "Jaipur, Indore, Kochi, Chandigarh — Tier-2 cities saw 45% YoY growth in startup registrations in 2025. The next generation of Indian founders is not from Bengaluru." },
-  { num: "05", title: "AI: From Experimentation to Accountability", accent: "#7C3AED",
-    body: "2026 will separate defensible AI businesses from surface-level wrappers. Startups that show measurable ROI from AI — not just a product with 'AI inside' — will attract capital." },
-  { num: "06", title: "Defence Tech Breakthrough",                 accent: "#475569",
-    body: "$311M raised by defence tech startups in H1 2025 alone — an unprecedented figure. The Make-in-India defence push is creating a funded hardware startup category for the first time." },
-]
+/* ─────────────────────────────────────────────
+   WHY NOW CARDS
+───────────────────────────────────────────── */
+const WHY_NOW = [
+  { icon: "📱", title: "850M+ Smartphone Users", body: "India's internet infrastructure is now world-class — 5G, cheap data, and a smartphone in nearly every adult hand." },
+  { icon: "🏛️", title: "India Stack", body: "UPI, Aadhaar, DigiLocker, Account Aggregator — the government built the infrastructure layer that startups build products on top of." },
+  { icon: "🧑‍💻", title: "Deepest Tech Talent Pool", body: "India produces more software engineers per year than any country on earth. The talent required to build world-class tech companies is local and abundant." },
+  { icon: "💰", title: "Domestic Capital Growing", body: "Indian HNIs, family offices, and domestic VCs now deploy ₹10,000Cr+ annually — reducing dependence on US-dollar capital." },
+  { icon: "🌍", title: "Global Ambition, Local Origin", body: "The Freshworks, Postman, and Zerodha generations proved Indian companies can compete globally. That proof point unlocks a new generation of ambition." },
+  { icon: "📊", title: "Consumption-Led Growth", body: "India's middle class is adding 50M households per decade — the largest organic consumer market expansion happening anywhere on earth." },
+];
 
-const FAQS = [
-  { q: "How many startups are in India?",
-    a: "India has over 650,000 DPIIT-recognized startups as of March 2026, making it the world's third-largest startup ecosystem after the US and China." },
-  { q: "How many unicorns are in India?",
-    a: "India has 126 unicorns as of March 2026. The most recent is Neysa (February 2026), an AI cloud company. India is third globally in unicorn count." },
-  { q: "Which is India's startup capital?",
-    a: "Bengaluru, with 52 unicorns and the highest deal volume, is India's undisputed startup capital — followed by Delhi-NCR (40 unicorns) and Mumbai (18 unicorns)." },
-  { q: "How do I list my startup on UpForge?",
-    a: "Listing on UpForge is completely free. Visit upforge.in/submit, fill in your startup details, and get independently verified, publicly indexed, and added to India's trusted registry." },
-]
+/* ─────────────────────────────────────────────
+   QUICK-ACCESS REGISTRY ROWS
+───────────────────────────────────────────── */
+const REGISTRY = [
+  { name:"Flipkart",      sector:"E-Commerce",    city:"Bengaluru", stage:"Walmart-Owned",  slug:"flipkart"      },
+  { name:"Zomato",        sector:"Food Delivery",  city:"Gurugram",  stage:"NSE Listed",     slug:"zomato"        },
+  { name:"Razorpay",      sector:"FinTech",        city:"Bengaluru", stage:"Series F",       slug:"razorpay"      },
+  { name:"CRED",          sector:"FinTech",        city:"Bengaluru", stage:"Series F",       slug:"cred"          },
+  { name:"PhysicsWallah", sector:"EdTech",         city:"Noida",     stage:"Series B",       slug:"physicswallah" },
+  { name:"Zerodha",       sector:"FinTech",        city:"Bengaluru", stage:"Bootstrapped",   slug:"zerodha"       },
+  { name:"boAt",          sector:"Consumer Tech",  city:"New Delhi", stage:"Pre-IPO",        slug:"boat"          },
+  { name:"Lenskart",      sector:"D2C Eyewear",    city:"New Delhi", stage:"Series J",       slug:"lenskart"      },
+  { name:"Zepto",         sector:"Quick Commerce", city:"Mumbai",    stage:"Series F",       slug:"zepto"         },
+  { name:"Mamaearth",     sector:"D2C Beauty",     city:"Gurugram",  stage:"NSE Listed",     slug:"mamaearth"     },
+  { name:"Postman",       sector:"Dev Tools",      city:"Bengaluru", stage:"Series D",       slug:"postman"       },
+  { name:"Krutrim",       sector:"AI / LLMs",      city:"Bengaluru", stage:"Series A",       slug:"krutrim"       },
+  { name:"Chargebee",     sector:"SaaS",           city:"Chennai",   stage:"Series G",       slug:"chargebee"     },
+  { name:"Groww",         sector:"WealthTech",     city:"Bengaluru", stage:"Series F",       slug:"groww"         },
+  { name:"OYO",           sector:"HospTech",       city:"Gurugram",  stage:"Pre-IPO",        slug:"oyo"           },
+  { name:"Meesho",        sector:"Social Commerce",city:"Bengaluru", stage:"Series F",       slug:"meesho"        },
+  { name:"BrowserStack",  sector:"QA / DevOps",    city:"Mumbai",    stage:"Series B",       slug:"browserstack"  },
+  { name:"Swiggy",        sector:"Food Delivery",  city:"Bengaluru", stage:"NSE Listed",     slug:"swiggy"        },
+  { name:"Unacademy",     sector:"EdTech",         city:"Bengaluru", stage:"Series J",       slug:"unacademy"     },
+  { name:"Sarvam AI",     sector:"AI / Voice",     city:"Bengaluru", stage:"Series A",       slug:"sarvam-ai"     },
+];
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebPage",
-      "@id": "https://www.upforge.in/indian-startups",
-      url: "https://www.upforge.in/indian-startups",
-      name: "Indian Startups — Complete Ecosystem Guide 2026 | UpForge",
-      dateModified: "2026-03-07",
-      isPartOf: { "@type": "WebSite", name: "UpForge", url: "https://www.upforge.in" },
-      breadcrumb: {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home",            item: "https://www.upforge.in" },
-          { "@type": "ListItem", position: 2, name: "Indian Startups", item: "https://www.upforge.in/indian-startups" },
-        ],
-      },
-    },
-    {
-      "@type": "Article",
-      headline: "Indian Startups 2026 — Complete Ecosystem Guide",
-      author: { "@type": "Organization", name: "UpForge", url: "https://www.upforge.in" },
-      datePublished: "2026-01-01",
-      dateModified: "2026-03-07",
-      description: "Everything you need to know about India's startup ecosystem in 2026.",
-    },
-    {
-      "@type": "FAQPage",
-      mainEntity: FAQS.map(f => ({
-        "@type": "Question",
-        name: f.q,
-        acceptedAnswer: { "@type": "Answer", text: f.a },
-      })),
-    },
-  ],
-}
-
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
-
-function SH({ marker, title }: { marker: string; title: string }) {
-  return (
-    <div className="flex items-center gap-3 mb-0"
-      style={{ paddingTop: "clamp(28px,4vw,44px)", paddingBottom: 20, borderTop: "2px solid #1A1208" }}>
-      <span style={{ fontSize: 8, fontWeight: 800, color: "#B45309", letterSpacing: ".28em", fontFamily: "system-ui,sans-serif", flexShrink: 0 }}>
-        {marker}
-      </span>
-      <h2 className="pf" style={{ fontSize: "clamp(1.05rem,2vw,1.4rem)", fontWeight: 900, color: "#1A1208", margin: 0, lineHeight: 1.1 }}>
-        {title}
-      </h2>
-      <div className="flex-1 h-px" style={{ background: "#C8C2B4" }} />
-    </div>
-  )
-}
-
-// ─── PAGE ─────────────────────────────────────────────────────────────────────
 export default function IndianStartupsPage() {
   return (
-    <div style={{ minHeight: "100vh", background: "#F3EFE5", fontFamily: "'Georgia','Times New Roman',serif", color: "#1A1208" }}>
-
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-
+    <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
-        .pf { font-family: 'Playfair Display', Georgia, serif !important; }
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap');
+
+        .pf  { font-family:'Playfair Display',Georgia,serif !important; }
+        .rp  { font-family:'Georgia','Times New Roman',serif; }
+        .sf  { font-family:system-ui,-apple-system,sans-serif; }
+
+        :root {
+          --parch:  #F5F1E8;
+          --parch2: #EDE9DF;
+          --parch3: #E6E1D6;
+          --ink:    #1A1208;
+          --ink2:   #2C2010;
+          --ink3:   #5A4A30;
+          --ink4:   #8C7D65;
+          --ink5:   #BBB0A0;
+          --rule:   #C8C2B4;
+          --rule2:  #D8D2C4;
+          --gold:   #B45309;
+          --gold2:  #D97706;
+          --gold3:  #92400E;
+          --white:  #FDFCF9;
+        }
+
+        body { background:var(--parch); }
 
         @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(16px); }
-          to   { opacity: 1; transform: translateY(0); }
+          from { opacity:0; transform:translateY(16px); }
+          to   { opacity:1; transform:translateY(0); }
         }
-        .fu  { animation: fadeUp .55s cubic-bezier(.22,.68,0,1.2) both; }
-        .fu1 { animation-delay: .00s; }
-        .fu2 { animation-delay: .07s; }
-        .fu3 { animation-delay: .14s; }
-        .fu4 { animation-delay: .21s; }
-        .fu5 { animation-delay: .28s; }
-        .fu6 { animation-delay: .35s; }
-
-        .hc { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
-        .hc:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 #1A1208; border-color: #1A1208 !important; z-index: 1; }
-
-        .img-cover { object-fit: cover; object-position: center; width: 100%; height: 100%; transition: transform .4s ease; }
-        .img-wrap:hover .img-cover { transform: scale(1.03); }
-
-        .sector-img-wrap { overflow: hidden; position: relative; }
-
-        details summary::-webkit-details-marker { display: none; }
-        details[open] .faq-chev { transform: rotate(90deg); }
-        .faq-chev { transition: transform .2s ease; }
-
-        .explore-link { transition: border-color .15s, background .15s; }
-        .explore-link:hover { border-color: #1A1208 !important; background: #FDFCF9 !important; }
-
-        .funded-row:hover { background: #F3EFE5 !important; }
-        .funded-row { transition: background .15s; }
-
-        ::-webkit-scrollbar { width: 3px; }
-        ::-webkit-scrollbar-thumb { background: #C8C2B4; }
-
-        .intro-drop::first-letter {
-          font-family: 'Playfair Display', Georgia, serif;
-          font-size: 4em; font-weight: 900;
-          line-height: 0.82; float: left;
-          margin-right: 0.07em; margin-top: 0.05em;
-          color: #1A1208;
+        @keyframes shimmer {
+          0%   { background-position:-200% center; }
+          100% { background-position:200% center; }
+        }
+        @keyframes barRise {
+          from { height:0; }
+          to   { height:var(--h); }
+        }
+        @keyframes barGrow {
+          from { width:0; }
+          to   { width:var(--w); }
+        }
+        @keyframes pulse {
+          0%,100% { opacity:1; }
+          50%     { opacity:.55; }
         }
 
-        @media (min-width: 768px) {
-          .ncols-2 { columns: 2; column-gap: 2.5rem; column-rule: 1px solid #D8D2C4; }
-          .ncols-3 { columns: 3; column-gap: 2rem; column-rule: 1px solid #D8D2C4; }
+        .a0 { animation:fadeUp .44s .00s cubic-bezier(.16,1,.3,1) both; }
+        .a1 { animation:fadeUp .44s .08s cubic-bezier(.16,1,.3,1) both; }
+        .a2 { animation:fadeUp .44s .16s cubic-bezier(.16,1,.3,1) both; }
+        .a3 { animation:fadeUp .44s .24s cubic-bezier(.16,1,.3,1) both; }
+
+        /* ── image frame ── */
+        .imgf { position:relative; overflow:hidden; }
+        .imgf img {
+          position:absolute; inset:0; width:100%; height:100%;
+          object-fit:cover; object-position:center;
+          filter:sepia(12%) contrast(108%);
+          transition:transform .6s ease;
+        }
+        .imgf:hover img { transform:scale(1.04); }
+
+        /* ── hero live badge ── */
+        .live-badge {
+          display:inline-flex; align-items:center; gap:6px;
+          background:rgba(255,255,255,.12);
+          border:1px solid rgba(255,255,255,.2);
+          padding:5px 12px;
+        }
+        .live-dot {
+          width:6px; height:6px; border-radius:50%;
+          background:#4ADE80;
+          animation:pulse 1.8s ease infinite;
         }
 
-        .city-card-img { height: 120px; overflow: hidden; position: relative; }
-        @media (max-width: 639px) {
-          .city-card-img { height: 90px; }
+        /* ── section header ── */
+        .sh { display:flex; align-items:center; gap:10px; }
+        .sh-l { font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.28em; color:var(--ink5); font-family:system-ui; white-space:nowrap; }
+        .sh-r { flex:1; height:1px; background:var(--rule2); }
+
+        /* ── stat box ── */
+        .stat-box {
+          border:1.5px solid var(--ink); background:var(--white);
+          padding:22px 18px; text-align:center;
+          position:relative; overflow:hidden;
+          transition:transform .15s,box-shadow .15s;
+        }
+        .stat-box:hover { transform:translate(-2px,-2px); box-shadow:4px 4px 0 var(--ink); }
+        .stat-box::before {
+          content:''; position:absolute; top:0; left:0; right:0; height:3px;
+          background:linear-gradient(90deg,var(--gold3),var(--gold2),#E8C547);
+          background-size:200% auto;
+          animation:shimmer 3s linear infinite;
         }
 
-        .trend-bar { width: 2px; flex-shrink: 0; align-self: stretch; }
-
-        @keyframes barFill {
-          from { width: 0; }
-          to { width: var(--w); }
+        /* ── sector hub card ── */
+        .sector-card {
+          border:1.5px solid var(--ink); background:var(--white);
+          overflow:hidden; position:relative;
+          transition:transform .15s,box-shadow .15s;
+          text-decoration:none; color:inherit;
+          display:flex; flex-direction:column;
         }
-        .bar-fill { animation: barFill 1s .6s cubic-bezier(.4,0,.2,1) both; }
+        .sector-card:hover { transform:translate(-2px,-2px); box-shadow:4px 4px 0 var(--ink); }
+        .sector-card::before {
+          content:''; position:absolute; top:0; left:0; right:0; height:3px;
+          transition:background .15s;
+        }
 
-        @media (max-width: 639px) {
-          .hide-mob { display: none !important; }
+        /* ── city card ── */
+        .city-card {
+          border:1.5px solid var(--ink); background:var(--white);
+          overflow:hidden; position:relative;
+          transition:transform .15s,box-shadow .15s;
+        }
+        .city-card:hover { transform:translate(-2px,-2px); box-shadow:4px 4px 0 var(--ink); }
+
+        /* ── founder card ── */
+        .founder-card {
+          border:1.5px solid var(--ink); background:var(--white);
+          overflow:hidden; position:relative;
+          transition:transform .15s,box-shadow .15s;
+        }
+        .founder-card:hover { transform:translate(-2px,-2px); box-shadow:4px 4px 0 var(--ink); }
+
+        /* ── why now card ── */
+        .why-card {
+          border:1.5px solid var(--rule2); background:var(--white);
+          padding:20px 18px;
+          transition:transform .15s,box-shadow .15s;
+        }
+        .why-card:hover { transform:translate(-2px,-2px); box-shadow:3px 3px 0 var(--ink); border-color:var(--ink); }
+
+        /* ── bar chart ── */
+        .bar-col { display:flex; flex-direction:column; align-items:center; gap:6px; flex:1; }
+        .bar-col-fill {
+          width:100%; background:var(--gold2);
+          animation:barRise 1.2s cubic-bezier(.16,1,.3,1) .4s both;
+          position:relative;
+        }
+        .bar-col-fill.peak { background:linear-gradient(to top,var(--gold3),#E8C547); }
+
+        /* ── registry table ── */
+        .reg-row {
+          display:grid;
+          grid-template-columns:1fr 130px 110px 120px;
+          align-items:center;
+          padding:9px 14px;
+          border-bottom:1px solid var(--rule2);
+          background:var(--white);
+          transition:background .1s;
+          text-decoration:none; color:inherit;
+        }
+        .reg-row:hover { background:var(--parch2); }
+        .reg-row.hdr { background:var(--ink); color:white; }
+
+        /* ── tags ── */
+        .tag {
+          display:inline-block; padding:2px 8px;
+          border:1px solid rgba(180,83,9,.28); background:#FEF3C7;
+          font-size:7.5px; font-weight:700; text-transform:uppercase;
+          letter-spacing:.12em; color:var(--gold3); font-family:system-ui;
+        }
+
+        /* ── pull quote ── */
+        .pull-quote {
+          background:var(--ink); border-left:4px solid var(--gold2);
+          padding:16px 20px; margin-top:14px;
+        }
+
+        @media (max-width:1024px) {
+          .sector-grid { grid-template-columns:repeat(3,1fr) !important; }
+        }
+        @media (max-width:900px) {
+          .sector-grid  { grid-template-columns:repeat(2,1fr) !important; }
+          .city-grid    { grid-template-columns:repeat(2,1fr) !important; }
+          .stat-grid    { grid-template-columns:repeat(2,1fr) !important; }
+          .founder-grid { grid-template-columns:1fr !important; }
+          .why-grid     { grid-template-columns:repeat(2,1fr) !important; }
+          .reg-row      { grid-template-columns:1fr 110px !important; }
+          .reg-hide     { display:none !important; }
+        }
+        @media (max-width:600px) {
+          .sector-grid { grid-template-columns:1fr !important; }
+          .city-grid   { grid-template-columns:1fr !important; }
+          .stat-grid   { grid-template-columns:1fr !important; }
+          .why-grid    { grid-template-columns:1fr !important; }
         }
       `}</style>
 
-      {/* BREADCRUMB */}
-      <nav style={{ background: "#EDE9DF", borderBottom: "1px solid #C8C2B4", fontFamily: "system-ui,sans-serif" }} aria-label="Breadcrumb">
-        <div className="max-w-[1160px] mx-auto px-4 sm:px-8 py-2.5">
-          <ol className="flex flex-wrap items-center gap-1.5" itemScope itemType="https://schema.org/BreadcrumbList">
-            {[["Home", "/"], ["Startup Registry", "/startup"], ["Indian Startups", "#"]].map(([label, href], i) => (
-              <li key={label} className="flex items-center gap-1.5" itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                {href === "#"
-                  ? <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "#1A1208" }} itemProp="name">{label}</span>
-                  : <Link href={href} className="text-[10px] uppercase tracking-wider transition-colors hover:text-[#1A1208]" style={{ color: "#AAA" }} itemProp="item"><span itemProp="name">{label}</span></Link>
-                }
-                <meta itemProp="position" content={String(i + 1)} />
-                {i < 2 && <ChevronRight className="w-3 h-3 flex-shrink-0" style={{ color: "#C8C2B4" }} aria-hidden="true" />}
-              </li>
-            ))}
-          </ol>
-        </div>
-      </nav>
+      <main
+        itemScope
+        itemType="https://schema.org/CollectionPage"
+        style={{ minHeight:"100vh", background:"var(--parch)" }}
+      >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            "@context":"https://schema.org",
+            "@type":"CollectionPage",
+            name:"Indian Startups 2026: Complete Ecosystem Guide",
+            description:"The most comprehensive guide to India's startup ecosystem — sectors, cities, unicorns, founders, funding trends, and the companies reshaping India's economy.",
+            url:"https://upforge.in/indian-startups",
+            publisher:{ "@type":"Organization", name:"UpForge", url:"https://upforge.in" },
+            dateModified:new Date().toISOString().split("T")[0],
+            about:{ "@type":"Thing", name:"Indian Startup Ecosystem" },
+            keywords:"Indian startups 2026, India startup ecosystem, Indian unicorns, top startups India",
+          })}}
+        />
 
-      <div className="max-w-[1160px] mx-auto px-4 sm:px-8 pb-24">
-
-        {/* MASTHEAD */}
-        <header className="fu fu1" style={{ borderBottom: "3px solid #1A1208" }}>
-
-          <div className="text-center px-4 pt-10 sm:pt-14 pb-6 sm:pb-8" style={{ borderBottom: "1px solid #C8C2B4" }}>
-            <p className="text-[8px] tracking-[0.44em] text-[#AAA] uppercase mb-3" style={{ fontFamily: "system-ui,sans-serif" }}>
-              UpForge Intelligence · Independent Startup Registry
-            </p>
-            <h1 className="pf font-black leading-[1.02] tracking-tight text-[#1A1208]"
-              style={{ fontSize: "clamp(2rem,5.5vw,4.6rem)", marginBottom: 12 }}>
-              Indian Startups
-            </h1>
-            <p className="pf italic" style={{ fontSize: "clamp(1rem,2vw,1.5rem)", color: "#B45309", marginBottom: 16 }}>
-              The Complete Ecosystem Guide — 2026
-            </p>
-            <div className="flex items-center justify-center gap-3">
-              <div className="h-px w-16 sm:w-36" style={{ background: "#C8C2B4" }} />
-              <span style={{ color: "#C8C2B4", fontSize: 13 }} aria-hidden="true">✦</span>
-              <div className="h-px w-16 sm:w-36" style={{ background: "#C8C2B4" }} />
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-4 px-1 py-2.5" style={{ borderBottom: "1px solid #C8C2B4", fontFamily: "system-ui,sans-serif" }}>
-            <span className="text-[8px] font-black tracking-[0.28em] uppercase px-3 py-1 text-white" style={{ background: "#1A1208" }}>
-              Ecosystem Report
-            </span>
-            {["650K+ Startups", "126 Unicorns", "$11.6B Raised 2025", "March 2026"].map((t, i) => (
-              <span key={i} className="flex items-center gap-2 text-[8px] text-[#AAA] uppercase tracking-wider">
-                {i > 0 && <span style={{ color: "#C8C2B4" }}>·</span>}
-                {t}
-              </span>
-            ))}
-          </div>
-
-          <div className="grid lg:grid-cols-[1fr_1.8px_320px] xl:grid-cols-[1fr_1.8px_360px] py-8 gap-0">
-
-            <div className="lg:pr-8">
-              <div className="img-wrap relative w-full mb-6 overflow-hidden" style={{ height: "clamp(200px,28vw,340px)" }}>
-                {/* Hero image — no onError needed, Unsplash URLs are stable */}
-                <img
-                  src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=900&q=85&auto=format&fit=crop"
-                  alt="India startup ecosystem founders technology 2026"
-                  className="img-cover"
-                  width={900}
-                  height={340}
-                  loading="eager"
-                />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(26,18,8,0.82) 0%, rgba(26,18,8,0.15) 55%, transparent 100%)" }} />
-                <div className="absolute bottom-0 left-0 right-0 px-5 pb-5">
-                  <p className="pf font-black text-white leading-tight" style={{ fontSize: "clamp(1.1rem,2.2vw,1.55rem)", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>
-                    650,000 companies.<br />126 unicorns. One story.
-                  </p>
-                  <p className="text-white/60 text-[10px] uppercase tracking-wider mt-1.5" style={{ fontFamily: "system-ui,sans-serif" }}>
-                    India's startup ecosystem — 2026 edition
-                  </p>
-                </div>
-              </div>
-
-              <div className="ncols-3">
-                <p className="intro-drop leading-[1.88] text-[#2C2010] mb-3" style={{ fontSize: "clamp(12px,1.2vw,13.5px)", fontFamily: "'Georgia','Times New Roman',serif" }}>
-                  India is the world's third-largest startup ecosystem — a status earned through two decades of relentless founder ambition, engineering talent, and a domestic market large enough to sustain billion-dollar businesses.
-                </p>
-                <p className="leading-[1.88] text-[#2C2010] mb-3" style={{ fontSize: "clamp(12px,1.2vw,13.5px)" }}>
-                  With 650,000+ DPIIT-recognized startups, 126 unicorns, and $11.6B raised in 2025 alone, India's startup story is no longer a future promise — it is a documented present. The ecosystem spans eight major sectors, six cities, and every income level of the Indian economy.
-                </p>
-                <p className="leading-[1.88] text-[#2C2010]" style={{ fontSize: "clamp(12px,1.2vw,13.5px)" }}>
-                  This is UpForge's authoritative reference to understanding what's being built, where, by whom — and what comes next. Verified data, editorial depth, no paid placements.
-                </p>
-              </div>
-            </div>
-
-            <div className="hidden lg:block" style={{ background: "#C8C2B4", width: "1.5px", margin: "0 0" }} />
-
-            <div className="hidden lg:flex flex-col gap-0 pl-8 pt-0">
-              <div style={{ border: "2px solid #1A1208", marginBottom: 16 }}>
-                <div className="px-4 py-2" style={{ background: "#1A1208" }}>
-                  <p className="text-[8px] font-black uppercase tracking-[0.3em] text-white" style={{ fontFamily: "system-ui,sans-serif" }}>By the Numbers</p>
-                </div>
-                <dl className="grid grid-cols-2 divide-x divide-y" style={{ borderColor: "#D8D2C4" }}>
-                  {ECOSYSTEM_STATS.map((s, i) => (
-                    <div key={i} className="px-4 py-4" style={{ borderColor: "#D8D2C4", background: "#FDFCF9" }}>
-                      <dt className="text-[7.5px] text-[#AAA] uppercase tracking-[0.16em] mb-1" style={{ fontFamily: "system-ui,sans-serif" }}>{s.l}</dt>
-                      <dd className="pf font-black text-[#1A1208] leading-none" style={{ fontSize: "clamp(1.3rem,1.8vw,1.8rem)" }}>{s.v}</dd>
-                      <p className="text-[8px] text-[#B45309] mt-1" style={{ fontFamily: "system-ui,sans-serif" }}>{s.sub}</p>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-
-              <div style={{ border: "1px solid #D8D2C4", background: "#FDFCF9", marginBottom: 16 }}>
-                <div className="px-4 py-2" style={{ borderBottom: "1.5px solid #1A1208" }}>
-                  <p className="text-[8px] font-black uppercase tracking-[0.3em] text-[#1A1208]" style={{ fontFamily: "system-ui,sans-serif" }}>Top Cities</p>
-                </div>
-                {CITIES.slice(0, 3).map((c, i) => (
-                  <div key={i} className="flex items-center justify-between px-4 py-3" style={{ borderBottom: i < 2 ? "1px solid #EDE9DF" : "none" }}>
-                    <div>
-                      <p className="pf font-bold text-[#1A1208]" style={{ fontSize: 12.5 }}>{c.name}</p>
-                      <p className="text-[8.5px] text-[#AAA] uppercase tracking-wider" style={{ fontFamily: "system-ui,sans-serif" }}>{c.label}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="pf font-black text-[#1A1208] leading-none" style={{ fontSize: "1.3rem" }}>{c.unicorns}</p>
-                      <p className="text-[7.5px] text-[#AAA] uppercase tracking-wider" style={{ fontFamily: "system-ui,sans-serif" }}>unicorns</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="px-4 py-4" style={{ background: "#EFF6FF", border: "1px solid #BFDBFE" }}>
-                <p className="text-[7.5px] font-black uppercase tracking-[0.26em] mb-2" style={{ color: "#2563EB", fontFamily: "system-ui,sans-serif" }}>The Insight</p>
-                <p className="pf italic text-[#1A1208] leading-snug" style={{ fontSize: 12.5 }}>
-                  "India doesn't lack founders. It lacks the infrastructure to make them visible."
-                </p>
-                <p className="text-[8px] text-[#AAA] mt-2 uppercase tracking-wider" style={{ fontFamily: "system-ui,sans-serif" }}>— UpForge Editorial</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="lg:hidden grid grid-cols-2 gap-[1.5px] mb-6" style={{ background: "#1A1208", border: "2px solid #1A1208" }}>
-            {ECOSYSTEM_STATS.map((s, i) => (
-              <div key={i} style={{ background: "#FDFCF9", padding: "clamp(10px,2.5vw,16px)" }}>
-                <p className="pf font-black leading-none" style={{ fontSize: "clamp(1.4rem,5vw,1.8rem)", color: "#1A1208", marginBottom: 4 }}>{s.v}</p>
-                <p className="text-[8.5px] uppercase tracking-[0.14em]" style={{ color: "#AAA", fontFamily: "system-ui,sans-serif", marginBottom: 2 }}>{s.l}</p>
-                <p className="text-[8px]" style={{ color: "#B45309", fontFamily: "system-ui,sans-serif" }}>{s.sub}</p>
-              </div>
-            ))}
-          </div>
-        </header>
-
-        {/* §01 — SECTOR BREAKDOWN */}
-        <section className="fu fu2" style={{ borderBottom: "1px solid #C8C2B4" }} aria-labelledby="sectors-heading">
-          <SH marker="§01" title="India's Startup Sectors — Where the Capital Flows" />
-          <p className="text-[9px] uppercase tracking-[0.24em] mb-6" style={{ color: "#AAA", fontFamily: "system-ui,sans-serif" }}>
-            8 dominant verticals · 2026 funding data
-          </p>
-
-          <div className="grid sm:grid-cols-2 gap-[1.5px]" style={{ background: "#1A1208", border: "1.5px solid #1A1208", marginBottom: "clamp(20px,4vw,36px)" }}>
-            {SECTORS.map((s, i) => (
-              <div key={i} className="hc" style={{ background: "#FDFCF9", borderTop: `3px solid ${s.accent}`, cursor: "default" }}>
-                {/* ✅ FIX: removed onError handler — not allowed in Server Components */}
-                <div className="sector-img-wrap img-wrap" style={{ height: 130, overflow: "hidden", position: "relative" }}>
-                  <img
-                    src={s.img}
-                    alt={s.imgAlt}
-                    className="img-cover"
-                    width={480}
-                    height={130}
-                    loading="lazy"
-                    style={{ display: "block", objectFit: "cover", width: "100%", height: "100%" }}
-                  />
-                  <div className="absolute inset-0 pointer-events-none"
-                    style={{ background: `linear-gradient(to right, ${s.accentBg}cc 0%, transparent 70%)` }} />
-                  <div className="absolute top-3 left-3">
-                    <span className="text-[8px] font-black uppercase tracking-[0.2em] px-2 py-1 text-white"
-                      style={{ background: s.accent, fontFamily: "system-ui,sans-serif" }}>
-                      {s.count}
-                    </span>
-                  </div>
-                </div>
-
-                <div style={{ padding: "clamp(14px,2.2vw,20px)" }}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className="pf font-bold" style={{ fontSize: "clamp(13px,1.4vw,15px)", color: "#1A1208", margin: 0 }}>{s.name}</h3>
-                    <span className="flex-1 h-px" style={{ background: "#D8D2C4" }} />
-                    <span style={{ fontSize: 9, color: s.accent, fontFamily: "system-ui,sans-serif", fontWeight: 700 }}>{s.funding}</span>
-                  </div>
-                  <p style={{ fontSize: "clamp(11px,1.1vw,12.5px)", color: "#5A4A30", lineHeight: 1.72, marginBottom: 10, fontFamily: "system-ui,sans-serif" }}>
-                    {s.why}
-                  </p>
-                  <p style={{ fontSize: 9, color: "#AAA", fontFamily: "system-ui,sans-serif" }}>
-                    <span style={{ color: "#6B5C40", fontWeight: 600 }}>Notable: </span>{s.examples}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* §02 — STARTUP CITIES */}
-        <section className="fu fu3" style={{ borderBottom: "1px solid #C8C2B4" }} aria-labelledby="cities-heading">
-          <SH marker="§02" title="Startup Cities of India" />
-          <p className="text-[9px] uppercase tracking-[0.24em] mb-6" style={{ color: "#AAA", fontFamily: "system-ui,sans-serif" }}>
-            6 cities · unicorn count · sector identity
-          </p>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-[1.5px]"
-            style={{ background: "#1A1208", border: "1.5px solid #1A1208", marginBottom: "clamp(20px,4vw,36px)" }}>
-            {CITIES.map((c, i) => (
-              <div key={i} className="hc" style={{ background: "#FDFCF9", cursor: "default" }}>
-                {/* ✅ FIX: removed onError handler — not allowed in Server Components */}
-                <div className="city-card-img img-wrap" style={{ borderTop: `3px solid ${c.accent}`, overflow: "hidden", position: "relative" }}>
-                  <img
-                    src={c.img}
-                    alt={c.imgAlt}
-                    className="img-cover"
-                    width={400}
-                    height={120}
-                    loading="lazy"
-                    style={{ display: "block", objectFit: "cover", width: "100%", height: "100%" }}
-                  />
-                  <div className="absolute inset-0 pointer-events-none"
-                    style={{ background: "linear-gradient(to top, rgba(26,18,8,0.72) 0%, transparent 60%)" }} />
-                  <div className="absolute bottom-2 left-3 right-3 flex items-end justify-between">
-                    <p className="pf font-black text-white leading-none" style={{ fontSize: "clamp(14px,1.6vw,17px)" }}>{c.name}</p>
-                    <div className="text-right">
-                      <p className="pf font-black text-white leading-none" style={{ fontSize: "clamp(1.4rem,2.5vw,2rem)" }}>{c.unicorns}</p>
-                      <p className="text-white/50 text-[8px] uppercase tracking-wider leading-none" style={{ fontFamily: "system-ui,sans-serif" }}>unicorns</p>
-                    </div>
-                  </div>
-                </div>
-                <div style={{ padding: "clamp(12px,2vw,16px)" }}>
-                  <p className="text-[8.5px] font-black uppercase tracking-[0.22em] mb-2" style={{ color: c.accent, fontFamily: "system-ui,sans-serif" }}>
-                    {c.label}
-                  </p>
-                  <p style={{ fontSize: "clamp(11px,1.1vw,12px)", color: "#5A4A30", lineHeight: 1.65, fontFamily: "system-ui,sans-serif", margin: 0 }}>
-                    {c.detail}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* §03 — MOST FUNDED */}
-        <section className="fu fu3" style={{ borderBottom: "1px solid #C8C2B4" }} aria-labelledby="funded-heading">
-          <SH marker="§03" title="Most Funded Indian Startups" />
-          <p className="text-[9px] uppercase tracking-[0.24em] mb-6" style={{ color: "#AAA", fontFamily: "system-ui,sans-serif" }}>
-            Total capital raised · all rounds
-          </p>
-
-          <div style={{ border: "1.5px solid #1A1208", marginBottom: "clamp(20px,4vw,36px)" }}>
-            <div className="grid grid-cols-[28px_1fr_auto_auto] gap-4 px-5 py-3 items-center"
-              style={{ background: "#1A1208", fontFamily: "system-ui,sans-serif" }}>
-              <span className="text-[7.5px] font-black uppercase tracking-[0.2em] text-white/30">#</span>
-              <span className="text-[7.5px] font-black uppercase tracking-[0.2em] text-white/30">Company</span>
-              <span className="text-[7.5px] font-black uppercase tracking-[0.2em] text-white/30">Sector</span>
-              <span className="text-[7.5px] font-black uppercase tracking-[0.2em] text-white/30">Raised</span>
-            </div>
-            {TOP_FUNDED.map((s, i) => (
-              <div key={i} className="funded-row grid grid-cols-[28px_1fr_auto_auto] gap-4 px-5 items-center"
-                style={{ background: i % 2 === 0 ? "#FDFCF9" : "#F8F5EF", borderBottom: i < TOP_FUNDED.length - 1 ? "1px solid #EDE9DF" : "none", padding: "clamp(10px,1.8vw,15px) 20px" }}>
-                <span className="font-mono font-bold" style={{ fontSize: 11, color: "#C8C2B4", fontFamily: "system-ui,sans-serif" }}>
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <div>
-                  <p className="pf font-bold" style={{ fontSize: "clamp(12px,1.3vw,14px)", color: "#1A1208", margin: 0 }}>{s.name}</p>
-                  <div className="h-1 mt-1.5 rounded-sm" style={{ width: `${85 - i * 9}%`, background: s.accent, opacity: 0.35 }} />
-                </div>
-                <span className="text-[9px] uppercase tracking-wider px-2 py-0.5"
-                  style={{ color: s.accent, background: `${s.accent}18`, border: `1px solid ${s.accent}33`, fontFamily: "system-ui,sans-serif", fontWeight: 700, whiteSpace: "nowrap" }}>
-                  {s.sector}
-                </span>
-                <span className="pf font-black" style={{ fontSize: "clamp(1rem,1.5vw,1.2rem)", color: "#059669", whiteSpace: "nowrap" }}>
-                  {s.funding}
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* §04 — INSIGHT STRIP */}
-        <section className="fu fu4" style={{ borderBottom: "1px solid #C8C2B4" }} aria-label="UpForge ecosystem insights">
-          <SH marker="§04" title="UpForge Ecosystem Insights" />
-
-          <div className="grid sm:grid-cols-3 gap-4" style={{ marginBottom: "clamp(20px,4vw,36px)" }}>
-            {[
-              { v: "~80%", l: "First-generation founders",
-                b: "India's under-40 unicorn builders mostly had no inherited capital or legacy networks. They built in public — which is exactly why their stories are worth studying." },
-              { v: "$950B", l: "Value created by under-40s",
-                b: "Avendus-Hurun India 2025: founders under 40 manage businesses worth more than Switzerland's entire GDP — and most started with nothing." },
-              { v: "126",   l: "Unicorns — and rising",
-                b: "India just crossed 126 unicorns. The founders reading this today will build the next 126. UpForge exists to help them get discovered." },
-            ].map((item, i) => (
-              <div key={i} className="hc" style={{ background: "#FDFCF9", border: "1px solid #D8D2C4", padding: "clamp(16px,2.5vw,24px)", cursor: "default" }}>
-                <p className="pf font-black text-[#1A1208] leading-none mb-2" style={{ fontSize: "clamp(1.8rem,3vw,2.4rem)" }}>{item.v}</p>
-                <p className="text-[8px] font-black uppercase tracking-[0.18em] mb-3" style={{ color: "#E8C547", fontFamily: "system-ui,sans-serif" }}>{item.l}</p>
-                <p style={{ fontSize: "clamp(11px,1.1vw,12px)", color: "#6B5C40", lineHeight: 1.72, fontFamily: "system-ui,sans-serif", margin: 0 }}>{item.b}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* §05 — 2026 TRENDS */}
-        <section className="fu fu5" style={{ borderBottom: "1px solid #C8C2B4" }} aria-labelledby="trends-heading">
-          <SH marker="§05" title="Key Trends Shaping India's Startup Story in 2026" />
-          <p className="text-[9px] uppercase tracking-[0.24em] mb-6" style={{ color: "#AAA", fontFamily: "system-ui,sans-serif" }}>
-            Six forces founders must understand
-          </p>
-
-          <div style={{ border: "1.5px solid #1A1208", marginBottom: "clamp(20px,4vw,36px)" }}>
-            {TRENDS.map((t, i) => (
-              <div key={t.num} className="flex gap-0"
-                style={{ background: i % 2 === 0 ? "#FDFCF9" : "#F8F5EF", borderBottom: i < TRENDS.length - 1 ? "1.5px solid #1A1208" : "none" }}>
-                <div className="trend-bar flex-shrink-0" style={{ background: t.accent, width: 4 }} />
-                <div className="flex-shrink-0 flex items-center justify-center px-4 py-4 hide-mob"
-                  style={{ borderRight: "1px solid #EDE9DF", minWidth: 52 }}>
-                  <span className="pf font-black text-[#C8C2B4] leading-none" style={{ fontSize: "1.1rem" }}>{t.num}</span>
-                </div>
-                <div style={{ padding: "clamp(14px,2.2vw,20px) clamp(14px,2vw,20px)" }}>
-                  <h3 className="pf font-bold mb-2" style={{ fontSize: "clamp(13px,1.4vw,15px)", color: "#1A1208", margin: "0 0 8px 0" }}>
-                    {t.title}
-                  </h3>
-                  <p style={{ fontSize: "clamp(11.5px,1.2vw,13px)", color: "#5A4A30", lineHeight: 1.76, fontFamily: "system-ui,sans-serif", margin: 0 }}>
-                    {t.body}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* §06 — FAQ */}
-        <section className="fu fu6" style={{ borderBottom: "1px solid #C8C2B4" }} aria-labelledby="faq-heading">
-          <SH marker="§06" title="Frequently Asked Questions" />
-          <p className="text-[9px] uppercase tracking-[0.24em] mb-6" style={{ color: "#AAA", fontFamily: "system-ui,sans-serif" }}>
-            About India's startup ecosystem
-          </p>
-
-          <div style={{ border: "1.5px solid #1A1208", marginBottom: "clamp(20px,4vw,36px)" }}>
-            {FAQS.map((f, i) => (
-              <details key={i} style={{ background: i % 2 === 0 ? "#FDFCF9" : "#F8F5EF", borderBottom: i < FAQS.length - 1 ? "1px solid #EDE9DF" : "none" }}>
-                <summary className="flex items-center justify-between cursor-pointer"
-                  style={{ padding: "clamp(13px,2vw,18px) clamp(16px,2.5vw,24px)", listStyle: "none" }}>
-                  <span className="pf font-bold" style={{ fontSize: "clamp(12.5px,1.3vw,14.5px)", color: "#1A1208", paddingRight: 12 }}>{f.q}</span>
-                  <ChevronRight className="faq-chev w-4 h-4 flex-shrink-0" style={{ color: "#C8C2B4" }} aria-hidden="true" />
-                </summary>
-                <div style={{ padding: "0 clamp(16px,2.5vw,24px) clamp(13px,2vw,18px)", borderTop: "1px solid #EDE9DF" }}>
-                  <p style={{ fontSize: "clamp(12px,1.2vw,13px)", color: "#5A4A30", lineHeight: 1.76, paddingTop: 12, fontFamily: "system-ui,sans-serif", margin: 0 }}>
-                    {f.a}
-                  </p>
-                </div>
-              </details>
-            ))}
-          </div>
-        </section>
-
-        {/* PULL QUOTE */}
-        <div className="fu fu6 text-center py-8 my-2" style={{ borderTop: "3px solid #1A1208", borderBottom: "1px solid #C8C2B4" }}>
-          <span style={{ display: "block", color: "#C8C2B4", fontSize: 16, marginBottom: 12 }} aria-hidden="true">❧</span>
-          <blockquote className="pf italic text-[#1A1208] leading-[1.7] max-w-2xl mx-auto px-4"
-            style={{ fontSize: "clamp(15px,2.2vw,21px)" }}>
-            "India doesn't lack founders. It lacks the infrastructure to make them visible."
-          </blockquote>
-          <span style={{ display: "block", color: "#C8C2B4", fontSize: 16, margin: "12px 0 8px" }} aria-hidden="true">❧</span>
-          <p className="text-[8.5px] uppercase tracking-[0.24em] text-[#AAA]" style={{ fontFamily: "system-ui,sans-serif" }}>
-            — UpForge Editorial · Why This Registry Exists
-          </p>
-        </div>
-
-        {/* INTERNAL LINKS */}
-        <nav className="fu fu6 py-8" style={{ borderBottom: "1px solid #C8C2B4" }} aria-label="Related startup lists on UpForge">
-          <p className="text-[8.5px] tracking-[0.3em] uppercase text-[#AAA] mb-4" style={{ fontFamily: "system-ui,sans-serif" }}>
-            Explore on UpForge
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {[
-              { l: "Top AI Startups India",  h: "/top-ai-startups",    desc: "Best AI companies 2026" },
-              { l: "Best SaaS Startups",     h: "/best-saas-startups", desc: "B2B SaaS unicorns" },
-              { l: "Indian Unicorns 2026",   h: "/indian-unicorns",    desc: "All 126 unicorns" },
-              { l: "Startup Registry",       h: "/startup",            desc: "Full verified database" },
-              { l: "Edtech Startups",        h: "/edtech-startups",    desc: "PhysicsWallah & more" },
-              { l: "Fintech Startups",       h: "/fintech-startups",   desc: "Zerodha, CRED, Paytm" },
-              { l: "Founder Chronicles",     h: "/",                   desc: "Editorial founder profiles" },
-              { l: "Submit Your Startup",    h: "/submit",             desc: "Get listed free" },
-            ].map((lnk) => (
-              <Link key={lnk.h} href={lnk.h}
-                className="explore-link flex flex-col gap-1 p-3"
-                style={{ border: "1px solid #D8D2C4", background: "white", textDecoration: "none", color: "#1A1208" }}>
-                <span className="text-[9.5px] font-bold uppercase tracking-wider text-[#1A1208] flex items-center gap-1" style={{ fontFamily: "system-ui,sans-serif" }}>
-                  {lnk.l} <ChevronRight className="w-2.5 h-2.5 flex-shrink-0" aria-hidden="true" />
-                </span>
-                <span className="text-[8.5px] text-[#AAA]" style={{ fontFamily: "system-ui,sans-serif" }}>{lnk.desc}</span>
-              </Link>
-            ))}
+        {/* ══ BREADCRUMB ══ */}
+        <nav className="sf a0" style={{ background:"var(--parch2)", borderBottom:"1px solid var(--rule2)", padding:"8px 0" }}>
+          <div style={{ maxWidth:1100, margin:"0 auto", padding:"0 clamp(16px,3vw,36px)" }}>
+            <ol style={{ display:"flex", alignItems:"center", gap:6, fontSize:9, color:"var(--ink5)", textTransform:"uppercase", letterSpacing:"0.18em", listStyle:"none", margin:0, padding:0 }}>
+              <li><Link href="/" style={{ color:"var(--ink5)", textDecoration:"none" }}>UpForge</Link></li>
+              <li style={{ color:"var(--rule)" }}>/</li>
+              <li style={{ color:"var(--ink4)", fontWeight:700 }}>Indian Startups 2026</li>
+            </ol>
           </div>
         </nav>
 
-        {/* CTA */}
-        <section className="fu fu6 pt-7 grid sm:grid-cols-2 gap-6 items-center" style={{ marginTop: 8 }} aria-label="List your startup on UpForge">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <BadgeCheck className="w-4 h-4" style={{ color: "#E8C547" }} />
-              <p className="text-[8px] font-black uppercase tracking-[0.24em]" style={{ color: "#E8C547", fontFamily: "system-ui,sans-serif" }}>UpForge Registry</p>
-            </div>
-            <p className="pf font-bold text-[#1A1208] leading-snug mb-2" style={{ fontSize: "clamp(1.1rem,2vw,1.3rem)" }}>
-              Your startup belongs in this list.
-            </p>
-            <p style={{ fontSize: "clamp(11px,1.1vw,12.5px)", color: "#6B5C40", fontFamily: "system-ui,sans-serif", lineHeight: 1.65, maxWidth: 400 }}>
-              Get independently verified and indexed in India's most trusted startup registry. Free forever. Google-indexed. Trusted by founders and investors.
-            </p>
-          </div>
-          <div className="flex flex-col sm:items-end gap-3">
-            <Link href="/submit"
-              className="inline-flex items-center gap-2 px-5 py-3.5 text-white font-bold uppercase tracking-wider hover:opacity-90 transition-opacity"
-              style={{ background: "#1A1208", fontSize: "clamp(9px,1vw,11px)", fontFamily: "system-ui,sans-serif", textDecoration: "none" }}
-              aria-label="List your Indian startup on UpForge for free">
-              List Your Startup — Free <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
-            </Link>
-          </div>
-        </section>
+        {/* ══ HERO ══ */}
+        <div className="a0" style={{ borderBottom:"3px solid var(--ink)" }}>
+          <div className="imgf" style={{ height:"clamp(300px,42vw,540px)" }}>
+            <img src={IMGS.hero} alt="Indian Startups 2026 — Complete Ecosystem Guide" />
+            <div style={{ position:"absolute", inset:0, background:"linear-gradient(160deg,rgba(26,18,8,.3) 0%,rgba(26,18,8,.92) 100%)" }} />
 
-        {/* FOOTER */}
-        <footer className="mt-7 pb-2">
-          <p className="text-[8.5px] leading-relaxed"
-            style={{ color: "#BBB0A0", fontFamily: "system-ui,sans-serif", borderTop: "1px solid #D8D2C4", paddingTop: "1rem" }}>
-            * Statistics sourced from Tracxn, Inc42, DPIIT, Growthlist, and public company disclosures as of March 2026.
-            UpForge is an independent registry — no paid placements, no sponsored rankings.
-            Startup valuations are approximate and reflect latest available public data.
-          </p>
-          <nav aria-label="Footer navigation" className="mt-4">
-            <ul className="flex flex-wrap gap-x-4 gap-y-2">
+            <div style={{
+              position:"absolute", inset:0,
+              display:"flex", flexDirection:"column",
+              alignItems:"center", justifyContent:"center",
+              padding:"0 clamp(16px,5vw,72px)", textAlign:"center",
+            }}>
+              {/* Live badge */}
+              <div className="live-badge sf" style={{ marginBottom:20, fontSize:8, fontWeight:700, letterSpacing:"0.18em", textTransform:"uppercase", color:"rgba(255,255,255,.7)" }}>
+                <div className="live-dot" />
+                Live Registry · Updated {new Date().toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})}
+              </div>
+
+              {/* Category tags */}
+              <div style={{ display:"flex", gap:8, marginBottom:20, flexWrap:"wrap", justifyContent:"center" }}>
+                {["Ecosystem Guide","111 Unicorns","140,000+ Startups","FinTech · EdTech · SaaS · AI · D2C"].map(t=>(
+                  <span key={t} className="sf" style={{ fontSize:8, fontWeight:700, letterSpacing:"0.18em", textTransform:"uppercase", color:"rgba(255,255,255,0.6)", border:"1px solid rgba(255,255,255,0.18)", padding:"3px 10px" }}>{t}</span>
+                ))}
+              </div>
+
+              <h1 className="pf" itemProp="name" style={{
+                fontSize:"clamp(2rem,6vw,4.8rem)",
+                fontWeight:900, lineHeight:.98,
+                color:"white", letterSpacing:"-0.03em",
+                marginBottom:20, maxWidth:920,
+              }}>
+                Indian Startups 2026:{" "}
+                <em style={{ color:"#E8C547", fontStyle:"italic" }}>The Definitive Guide to India's Startup Ecosystem</em>
+              </h1>
+
+              <p className="rp" style={{
+                fontSize:"clamp(13px,1.9vw,17px)",
+                color:"rgba(255,255,255,0.6)", fontStyle:"italic",
+                maxWidth:600, lineHeight:1.65,
+              }}>
+                From a bootstrapped stockbroker in Bengaluru to 44 unicorns in a single year — everything you need to understand the most exciting startup story on earth.
+              </p>
+            </div>
+
+            <div className="sf" style={{ position:"absolute", top:18, right:18, background:"rgba(26,18,8,.7)", border:"1px solid rgba(255,255,255,.1)", padding:"5px 12px", fontSize:8, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:"rgba(255,255,255,.55)" }}>
+              UpForge · Ecosystem Intelligence
+            </div>
+          </div>
+
+          {/* Meta strip */}
+          <div style={{ background:"var(--ink)" }}>
+            <div style={{ maxWidth:1100, margin:"0 auto", padding:"0 clamp(16px,3vw,36px)" }}>
+              <div style={{ display:"flex", flexWrap:"wrap", alignItems:"center" }}>
+                {[
+                  { l:"Registry Updated",  v:new Date().toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"}) },
+                  { l:"Total Startups",    v:"140,000+ Registered" },
+                  { l:"Unicorns",          v:"111 Companies" },
+                  { l:"Combined Value",    v:"$340B+" },
+                  { l:"Ecosystem Rank",    v:"#3 Globally" },
+                ].map((m,i)=>(
+                  <div key={i} style={{ padding:"12px 18px", borderRight:"1px solid rgba(255,255,255,.07)" }}>
+                    <p className="sf" style={{ fontSize:7, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.18em", color:"rgba(255,255,255,.28)", marginBottom:3 }}>{m.l}</p>
+                    <p className="sf" style={{ fontSize:11, color:"rgba(255,255,255,.6)", fontWeight:700 }}>{m.v}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ══ MAIN CONTENT ══ */}
+        <div style={{ maxWidth:1100, margin:"0 auto", padding:"0 clamp(16px,3vw,36px) clamp(56px,8vw,100px)" }}>
+
+          {/* ── INTRO + TOC ── */}
+          <div className="a1" style={{
+            display:"grid", gridTemplateColumns:"1fr 260px",
+            gap:0, borderBottom:"1px solid var(--rule2)", alignItems:"start",
+          }}>
+            <div style={{ padding:"clamp(28px,4vw,52px) clamp(16px,3vw,40px) clamp(28px,4vw,52px) 0", borderRight:"1px solid var(--rule2)" }}>
+              <div className="sh" style={{ marginBottom:20 }}>
+                <span className="sh-l">India's Startup Story</span>
+                <div className="sh-r" />
+              </div>
+              <p className="pf" itemProp="description" style={{ fontSize:"clamp(1.05rem,2.2vw,1.38rem)", fontWeight:400, lineHeight:1.72, color:"var(--ink)", marginBottom:18, maxWidth:720 }}>
+                India became the world's third-largest startup ecosystem in under a decade. It happened not because of government policy, not because of a single investor, and not because of one industry. It happened because an entire generation of smart, ambitious Indians looked at broken markets — stock broking, food delivery, education, eyewear, credit cards — and decided to fix them.
+              </p>
+              <p className="rp" style={{ fontSize:13.5, color:"var(--ink3)", lineHeight:1.88, maxWidth:680, marginBottom:16 }}>
+                This is UpForge's master guide to the Indian startup ecosystem in 2026 — covering every sector, every major startup hub, the founders who built the most important companies, and the structural forces that make India the most compelling startup market on earth right now.
+              </p>
+              <p className="rp" style={{ fontSize:13, color:"var(--ink4)", lineHeight:1.85, maxWidth:680, fontStyle:"italic" }}>
+                Whether you're a founder, investor, researcher, or simply someone trying to understand what is happening to the Indian economy — this is the guide you need.
+              </p>
+            </div>
+
+            {/* TOC */}
+            <div style={{ padding:"clamp(24px,3vw,44px) 0 clamp(24px,3vw,44px) clamp(16px,3vw,32px)" }}>
+              <div className="sh" style={{ marginBottom:16 }}>
+                <span className="sh-l">In This Guide</span>
+                <div className="sh-r" />
+              </div>
               {[
-                { l: "Indian Startup Founders", h: "/" },
-                { l: "Startup Registry India",  h: "/startup" },
-                { l: "Indian Unicorns 2026",    h: "/indian-unicorns" },
-                { l: "Top AI Startups",         h: "/top-ai-startups" },
-                { l: "Fintech Startups India",  h: "/fintech-startups" },
-                { l: "Edtech Founders",         h: "/edtech-startups" },
-                { l: "Submit Startup",          h: "/submit" },
-              ].map(lnk => (
-                <li key={lnk.h + lnk.l}>
-                  <Link href={lnk.h}
-                    className="text-[8.5px] text-[#AAA] hover:text-[#1A1208] uppercase tracking-wider transition-colors"
-                    style={{ fontFamily: "system-ui,sans-serif" }}>
-                    {lnk.l}
+                { label:"Ecosystem at a Glance",   anchor:"#stats"    },
+                { label:"Startup Sectors",          anchor:"#sectors"  },
+                { label:"India Startup Hubs",       anchor:"#cities"   },
+                { label:"Funding Timeline",         anchor:"#funding"  },
+                { label:"Featured Founders",        anchor:"#founders" },
+                { label:"Why India, Why Now",       anchor:"#why"      },
+                { label:"Quick Registry (20)",      anchor:"#registry" },
+                { label:"Indian Unicorns List",     anchor:"/indian-unicorns" },
+              ].map((item,i)=>(
+                <a key={i} href={item.anchor} style={{ display:"flex", alignItems:"baseline", gap:8, marginBottom:10, textDecoration:"none" }}>
+                  <span className="sf" style={{ fontSize:8, fontWeight:800, color:"var(--gold2)", flexShrink:0, minWidth:16 }}>
+                    {String(i+1).padStart(2,"0")}
+                  </span>
+                  <span className="rp" style={{ fontSize:11.5, color:"var(--ink4)", lineHeight:1.4 }}>{item.label}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* ── MACRO STATS ── */}
+          <div id="stats" className="a2" style={{ padding:"clamp(28px,4vw,48px) 0", borderBottom:"1px solid var(--rule2)" }}>
+            <div className="sh" style={{ marginBottom:20 }}>
+              <span className="sh-l">Ecosystem at a Glance · 2026</span>
+              <div className="sh-r" />
+            </div>
+            <div className="stat-grid" style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14 }}>
+              {MACRO_STATS.map((s,i)=>(
+                <div key={i} className="stat-box">
+                  <p className="pf" style={{ fontSize:"clamp(1.5rem,2.8vw,2.3rem)", fontWeight:900, color:"var(--ink)", marginBottom:8, lineHeight:1 }}>{s.val}</p>
+                  <p className="sf" style={{ fontSize:9.5, color:"var(--ink4)", lineHeight:1.55, textTransform:"uppercase", letterSpacing:"0.1em" }}>{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── SECTOR HUBS ── */}
+          <div id="sectors" style={{ padding:"clamp(28px,4vw,48px) 0", borderBottom:"1px solid var(--rule2)" }}>
+            <div className="sh" style={{ marginBottom:8 }}>
+              <span className="sh-l">Startup Sectors · Explore by Industry</span>
+              <div className="sh-r" />
+            </div>
+            <p className="rp" style={{ fontSize:13, color:"var(--ink4)", marginBottom:22, fontStyle:"italic" }}>
+              Every major sector of India's startup economy — click to explore full rankings, profiles, and founder stories.
+            </p>
+
+            <div className="sector-grid" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:14 }}>
+              {SECTORS.map((sec,i)=>(
+                <Link key={i} href={sec.href} className="sector-card" style={{ "--accent-col":sec.accent } as React.CSSProperties}>
+                  <style>{`.sector-card:nth-child(${i+1})::before{background:${sec.accent};}`}</style>
+
+                  {/* Sector image */}
+                  <div className="imgf" style={{ height:140 }}>
+                    <img src={sec.img} alt={sec.name} />
+                    <div style={{ position:"absolute", inset:0, background:`linear-gradient(to bottom,rgba(26,18,8,0) 40%,rgba(26,18,8,.75) 100%)` }} />
+                    <div style={{ position:"absolute", bottom:12, left:14, right:14 }}>
+                      <p className="sf" style={{ fontSize:9, fontWeight:800, textTransform:"uppercase", letterSpacing:"0.14em", color:sec.accent === "#B45309" ? "#FCD34D" : "rgba(255,255,255,.85)", marginBottom:2 }}>{sec.count}</p>
+                    </div>
+                  </div>
+
+                  <div style={{ padding:"14px 16px 18px", flex:1, display:"flex", flexDirection:"column", justifyContent:"space-between" }}>
+                    <div>
+                      <h2 className="pf" style={{ fontSize:"1.1rem", fontWeight:700, color:"var(--ink)", marginBottom:6, lineHeight:1.1 }}>{sec.name}</h2>
+                      <p className="rp" style={{ fontSize:12, color:"var(--ink4)", lineHeight:1.65, marginBottom:12 }}>{sec.desc}</p>
+                      <div style={{ display:"flex", flexWrap:"wrap", gap:4 }}>
+                        {sec.examples.map(e=>(
+                          <span key={e} className="sf" style={{ fontSize:8, color:"var(--ink5)", background:"var(--parch2)", border:"1px solid var(--rule2)", padding:"1px 6px", fontWeight:600 }}>{e}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <div style={{ marginTop:14, display:"flex", alignItems:"center", gap:6 }}>
+                      <span className="sf" style={{ fontSize:8.5, fontWeight:800, color:sec.accent, textTransform:"uppercase", letterSpacing:"0.12em" }}>
+                        Explore {sec.name} →
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* ── CITY HUBS ── */}
+          <div id="cities" style={{ padding:"clamp(28px,4vw,48px) 0", borderBottom:"1px solid var(--rule2)" }}>
+            <div className="sh" style={{ marginBottom:8 }}>
+              <span className="sh-l">India Startup Hubs · City-by-City</span>
+              <div className="sh-r" />
+            </div>
+            <p className="rp" style={{ fontSize:13, color:"var(--ink4)", marginBottom:22, fontStyle:"italic" }}>
+              India's startup geography — four cities that account for 80%+ of all venture capital deployed.
+            </p>
+
+            <div className="city-grid" style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14 }}>
+              {CITIES.map((city,i)=>(
+                <div key={i} className="city-card">
+                  <div className="imgf" style={{ height:160 }}>
+                    <img src={city.img} alt={city.name} />
+                    <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom,rgba(26,18,8,.1) 0%,rgba(26,18,8,.8) 100%)" }} />
+                    <div style={{ position:"absolute", bottom:12, left:12, right:12 }}>
+                      <h2 className="pf" style={{ fontSize:"1.15rem", fontWeight:900, color:"white", lineHeight:1.1, marginBottom:2 }}>{city.name}</h2>
+                      <p className="sf" style={{ fontSize:8, color:"rgba(255,255,255,.55)", textTransform:"uppercase", letterSpacing:"0.14em", fontWeight:600 }}>{city.nickname}</p>
+                    </div>
+                  </div>
+                  <div style={{ padding:"14px" }}>
+                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:12 }}>
+                      <div>
+                        <p className="sf" style={{ fontSize:7.5, textTransform:"uppercase", letterSpacing:"0.12em", color:"var(--ink5)", marginBottom:2 }}>Startups</p>
+                        <p className="sf" style={{ fontSize:13, fontWeight:800, color:"var(--ink)" }}>{city.startups}</p>
+                      </div>
+                      <div>
+                        <p className="sf" style={{ fontSize:7.5, textTransform:"uppercase", letterSpacing:"0.12em", color:"var(--ink5)", marginBottom:2 }}>Unicorns</p>
+                        <p className="sf" style={{ fontSize:13, fontWeight:800, color:"var(--gold2)" }}>{city.unicorns}</p>
+                      </div>
+                    </div>
+                    <p className="sf" style={{ fontSize:9, color:"var(--ink5)", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:8, fontWeight:600 }}>Known For</p>
+                    <p className="rp" style={{ fontSize:11.5, color:"var(--ink4)", lineHeight:1.55, marginBottom:10 }}>{city.known}</p>
+                    <div style={{ display:"flex", flexWrap:"wrap", gap:4 }}>
+                      {city.companies.slice(0,4).map(c=>(
+                        <span key={c} className="sf" style={{ fontSize:7.5, color:"var(--ink5)", background:"var(--parch2)", border:"1px solid var(--rule2)", padding:"1px 5px" }}>{c}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── FUNDING TIMELINE BAR CHART ── */}
+          <div id="funding" style={{ padding:"clamp(28px,4vw,48px) 0", borderBottom:"1px solid var(--rule2)" }}>
+            <div className="sh" style={{ marginBottom:8 }}>
+              <span className="sh-l">India Startup Funding · 2015 → 2025</span>
+              <div className="sh-r" />
+            </div>
+            <p className="rp" style={{ fontSize:13, color:"var(--ink4)", marginBottom:28, fontStyle:"italic" }}>
+              Annual venture capital deployed in Indian startups — from the first wave to the AI-led recovery.
+            </p>
+
+            {/* Bar chart */}
+            <div style={{ border:"1.5px solid var(--ink)", background:"var(--white)", padding:"28px 24px 20px" }}>
+              <div style={{ display:"flex", alignItems:"flex-end", gap:clamp("6px","1.2vw","14px"), height:200, marginBottom:12 }}>
+                {FUNDING_YEARS.map((y,i)=>{
+                  const pct = Math.round((parseFloat(y.amt)/MAX_FUND)*100);
+                  const isPeak = y.year === "2021";
+                  return (
+                    <div key={i} className="bar-col">
+                      <div
+                        className={`bar-col-fill${isPeak?" peak":""}`}
+                        style={{ "--h":`${pct*2}px`, height:`${pct*2}px` } as React.CSSProperties}
+                        title={`${y.year}: ${y.amt}`}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+              {/* X-axis labels */}
+              <div style={{ display:"flex", gap:clamp("6px","1.2vw","14px") }}>
+                {FUNDING_YEARS.map((y,i)=>(
+                  <div key={i} style={{ flex:1, textAlign:"center" }}>
+                    <p className="sf" style={{ fontSize:8.5, fontWeight:y.year==="2021"?800:600, color:y.year==="2021"?"var(--gold2)":"var(--ink5)", marginBottom:2 }}>{y.year}</p>
+                    <p className="sf" style={{ fontSize:8, color:y.year==="2021"?"var(--gold2)":"var(--ink4)", fontWeight:700 }}>{y.amt}</p>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop:14, paddingTop:12, borderTop:"1px solid var(--rule2)" }}>
+                {FUNDING_YEARS.map((y,i)=>(
+                  <div key={i} style={{ display:"flex", gap:8, marginBottom:4, flexWrap:"wrap" }}>
+                    <span className="sf" style={{ fontSize:8.5, fontWeight:700, color:"var(--gold2)", minWidth:32 }}>{y.year}</span>
+                    <span className="rp" style={{ fontSize:11.5, color:"var(--ink4)", fontStyle:"italic" }}>{y.note}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ── FEATURED FOUNDERS ── */}
+          <div id="founders" style={{ padding:"clamp(28px,4vw,48px) 0", borderBottom:"1px solid var(--rule2)" }}>
+            <div className="sh" style={{ marginBottom:8 }}>
+              <span className="sh-l">Featured Founders · Three Stories That Define Indian Startups</span>
+              <div className="sh-r" />
+            </div>
+            <p className="rp" style={{ fontSize:13, color:"var(--ink4)", marginBottom:22, fontStyle:"italic" }}>
+              Three founders. Three radically different companies. One common thread: they all bet on India before India believed in itself.
+            </p>
+
+            <div className="founder-grid" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:14 }}>
+              {FOUNDERS.map((f,i)=>(
+                <div key={i} className="founder-card" style={{ position:"relative" }}>
+                  <div style={{ position:"absolute", top:0, left:0, right:0, height:3, background:`linear-gradient(90deg,${f.accentColor},${f.accentColor}99)` }} />
+
+                  <div className="imgf" style={{ height:200 }}>
+                    <img src={f.img} alt={f.company} />
+                    <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom,rgba(26,18,8,0) 30%,rgba(26,18,8,.85) 100%)" }} />
+                    <div style={{ position:"absolute", bottom:14, left:14, right:14 }}>
+                      <p className="pf" style={{ fontSize:"1.25rem", fontWeight:900, color:"white", lineHeight:1.1, marginBottom:3 }}>{f.name}</p>
+                      <p className="sf" style={{ fontSize:8, color:"rgba(255,255,255,.55)", textTransform:"uppercase", letterSpacing:"0.16em", fontWeight:700 }}>{f.role} · {f.company}</p>
+                    </div>
+                  </div>
+
+                  <div style={{ padding:"16px" }}>
+                    <div style={{ display:"flex", gap:12, marginBottom:12 }}>
+                      <div>
+                        <p className="sf" style={{ fontSize:7.5, textTransform:"uppercase", letterSpacing:"0.12em", color:"var(--ink5)", marginBottom:2 }}>Valuation</p>
+                        <p className="sf" style={{ fontSize:13, fontWeight:800, color:f.accentColor }}>{f.val}</p>
+                      </div>
+                      <div>
+                        <p className="sf" style={{ fontSize:7.5, textTransform:"uppercase", letterSpacing:"0.12em", color:"var(--ink5)", marginBottom:2 }}>Sector</p>
+                        <p className="sf" style={{ fontSize:11, fontWeight:700, color:"var(--ink)" }}>{f.sector}</p>
+                      </div>
+                    </div>
+
+                    <p className="rp" style={{ fontSize:12.5, color:"var(--ink3)", lineHeight:1.75, marginBottom:0 }}>{f.quote}</p>
+
+                    <div className="pull-quote">
+                      <p className="rp" style={{ fontSize:11.5, color:"rgba(255,255,255,.75)", fontStyle:"italic", lineHeight:1.65 }}>{f.lesson}</p>
+                    </div>
+
+                    <Link href={`/startup/${f.slug}`} style={{ display:"inline-flex", marginTop:14, alignItems:"center", gap:6, fontSize:8.5, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.12em", color:f.accentColor, textDecoration:"none", fontFamily:"system-ui" }}>
+                      Read Full Story →
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── WHY INDIA WHY NOW ── */}
+          <div id="why" style={{ padding:"clamp(28px,4vw,48px) 0", borderBottom:"1px solid var(--rule2)" }}>
+            <div className="sh" style={{ marginBottom:8 }}>
+              <span className="sh-l">Why India. Why Now. · 6 Structural Forces</span>
+              <div className="sh-r" />
+            </div>
+            <p className="rp" style={{ fontSize:13, color:"var(--ink4)", marginBottom:22, fontStyle:"italic" }}>
+              India's startup boom is not a cyclical phenomenon. It is driven by structural forces that took two decades to converge — and will take decades more to fully play out.
+            </p>
+            <div className="why-grid" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12 }}>
+              {WHY_NOW.map((w,i)=>(
+                <div key={i} className="why-card">
+                  <div style={{ fontSize:"1.8rem", marginBottom:10 }}>{w.icon}</div>
+                  <h3 className="sf" style={{ fontSize:11, fontWeight:800, color:"var(--ink)", marginBottom:8, textTransform:"uppercase", letterSpacing:"0.08em" }}>{w.title}</h3>
+                  <p className="rp" style={{ fontSize:12.5, color:"var(--ink4)", lineHeight:1.72 }}>{w.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── QUICK REGISTRY ── */}
+          <div id="registry" style={{ padding:"clamp(28px,4vw,48px) 0", borderBottom:"1px solid var(--rule2)" }}>
+            <div className="sh" style={{ marginBottom:8 }}>
+              <span className="sh-l">Quick Registry · 20 Companies to Know</span>
+              <div className="sh-r" />
+            </div>
+            <p className="rp" style={{ fontSize:13, color:"var(--ink4)", marginBottom:18, fontStyle:"italic" }}>
+              The 20 Indian startups that every founder, investor, and analyst should understand. Click any row for the full story.
+            </p>
+
+            <div style={{ border:"1.5px solid var(--ink)", overflow:"hidden" }}>
+              <div className="reg-row hdr">
+                <span className="sf" style={{ fontSize:8, fontWeight:800, letterSpacing:"0.18em", textTransform:"uppercase", color:"rgba(255,255,255,.4)" }}>Company</span>
+                <span className="sf reg-hide" style={{ fontSize:8, fontWeight:800, letterSpacing:"0.18em", textTransform:"uppercase", color:"rgba(255,255,255,.4)" }}>Sector</span>
+                <span className="sf reg-hide" style={{ fontSize:8, fontWeight:800, letterSpacing:"0.18em", textTransform:"uppercase", color:"rgba(255,255,255,.4)" }}>City</span>
+                <span className="sf" style={{ fontSize:8, fontWeight:800, letterSpacing:"0.18em", textTransform:"uppercase", color:"rgba(255,255,255,.4)" }}>Stage</span>
+              </div>
+              {REGISTRY.map((r,i)=>(
+                <Link key={i} href={`/startup/${r.slug}`} className="reg-row">
+                  <span className="sf" style={{ fontSize:12, fontWeight:800, color:"var(--ink)" }}>{r.name}</span>
+                  <span className="sf reg-hide" style={{ fontSize:10, color:"var(--ink4)", fontWeight:600 }}>{r.sector}</span>
+                  <span className="sf reg-hide" style={{ fontSize:10, color:"var(--ink5)" }}>{r.city}</span>
+                  <span className="sf" style={{ fontSize:9.5, color:"var(--gold2)", fontWeight:700 }}>{r.stage}</span>
+                </Link>
+              ))}
+              <div style={{ background:"var(--parch2)", padding:"12px 14px", borderTop:"1px solid var(--rule2)", textAlign:"center" }}>
+                <Link href="/startup" className="sf" style={{ fontSize:9, fontWeight:700, color:"var(--gold2)", textTransform:"uppercase", letterSpacing:"0.14em", textDecoration:"none" }}>
+                  Browse All 140,000+ Startups in the Full Registry →
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* ── RELATED PAGES ── */}
+          <div style={{ padding:"clamp(28px,4vw,48px) 0", borderBottom:"1px solid var(--rule2)" }}>
+            <div className="sh" style={{ marginBottom:20 }}>
+              <span className="sh-l">Explore by Sector · Deep Dive Pages</span>
+              <div className="sh-r" />
+            </div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))", border:"1.5px solid var(--ink)", background:"var(--ink)", gap:1.5 }}>
+              {[
+                { l:"Top AI Startups",     h:"/top-ai-startups",    tag:"3,200+ AI Companies" },
+                { l:"Best SaaS Startups",  h:"/best-saas-startups", tag:"$50B by 2030"        },
+                { l:"EdTech Startups",     h:"/edtech-startups",    tag:"250M Students"       },
+                { l:"FinTech Startups",    h:"/fintech-startups",   tag:"22 Unicorns"         },
+                { l:"D2C Startups",        h:"/d2c-startups",       tag:"800+ Funded Brands"  },
+                { l:"Indian Unicorns",     h:"/indian-unicorns",    tag:"111 Companies"       },
+              ].map((p,i)=>(
+                <Link key={i} href={p.h} style={{
+                  display:"flex", flexDirection:"column", justifyContent:"space-between",
+                  background:"var(--white)", textDecoration:"none",
+                  padding:"18px 16px 16px",
+                  transition:"transform .15s,box-shadow .15s",
+                  borderBottom:"none",
+                  position:"relative",
+                }}>
+                  <style>{`a:nth-child(${i+1}):hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--ink);z-index:1;}`}</style>
+                  <div>
+                    <p className="sf" style={{ fontSize:8.5, fontWeight:700, color:"var(--gold2)", textTransform:"uppercase", letterSpacing:"0.14em", marginBottom:6 }}>{p.tag}</p>
+                    <h3 className="pf" style={{ fontSize:"1rem", fontWeight:700, color:"var(--ink)", lineHeight:1.2, marginBottom:10 }}>{p.l}</h3>
+                  </div>
+                  <span className="sf" style={{ fontSize:8.5, fontWeight:700, color:"var(--ink5)", textTransform:"uppercase", letterSpacing:"0.1em" }}>
+                    Explore →
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* ── CLOSING BANNER ── */}
+          <div style={{ marginTop:"clamp(36px,6vw,64px)", border:"1.5px solid var(--ink)", background:"var(--ink)", position:"relative", overflow:"hidden" }}>
+            <div style={{ position:"absolute", top:0, left:0, right:0, height:4, background:"linear-gradient(90deg,var(--gold3),var(--gold),var(--gold2),#E8C547,#FCD34D,#E8C547,var(--gold2),var(--gold3))", backgroundSize:"200% auto", animation:"shimmer 4s linear infinite" }} />
+            <div className="imgf" style={{ height:220 }}>
+              <img src={IMGS.banner} alt="India startup ecosystem" style={{ filter:"sepia(40%) brightness(0.28) contrast(1.15)" }} />
+              <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"0 clamp(20px,5vw,72px)", textAlign:"center", gap:16 }}>
+                <p className="pf" style={{ fontSize:"clamp(1.3rem,3.2vw,2.4rem)", fontWeight:900, color:"white", lineHeight:1.15, fontStyle:"italic", maxWidth:780 }}>
+                  "The Indian startup story is not about the companies that were built.{" "}
+                  <em style={{ color:"#E8C547" }}>It is about the ones being built right now — by someone who has not been on this page yet.</em>"
+                </p>
+              </div>
+            </div>
+            <div style={{ padding:"clamp(20px,3vw,40px)", borderTop:"1px solid rgba(255,255,255,.08)" }}>
+              <div style={{ display:"flex", flexWrap:"wrap", gap:20, alignItems:"center", justifyContent:"space-between" }}>
+                <p className="rp" style={{ fontSize:13.5, color:"rgba(255,255,255,.65)", lineHeight:1.85, maxWidth:680 }}>
+                  UpForge tracks every significant startup in India — from seed-stage companies to NASDAQ-listed giants. Our registry is updated continuously, our founder stories are written with depth, and our mission is simple: help India's builders understand the ecosystem they are a part of.
+                </p>
+                <div style={{ display:"flex", gap:12, flexWrap:"wrap" }}>
+                  <Link href="/startup" style={{ display:"inline-flex", alignItems:"center", gap:8, background:"var(--gold2)", color:"var(--ink)", padding:"11px 22px", textDecoration:"none", fontSize:10, fontWeight:800, textTransform:"uppercase", letterSpacing:"0.16em", fontFamily:"system-ui" }}>
+                    Browse All Startups →
                   </Link>
-                </li>
+                  <Link href="/submit" style={{ display:"inline-flex", alignItems:"center", gap:8, background:"transparent", color:"rgba(255,255,255,.7)", border:"1px solid rgba(255,255,255,.25)", padding:"11px 22px", textDecoration:"none", fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.16em", fontFamily:"system-ui" }}>
+                    Submit Your Startup
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ── FOOTER NAV ── */}
+          <nav aria-label="Ecosystem navigation" style={{ padding:"18px 0", borderTop:"2px solid var(--ink)", marginTop:"clamp(32px,5vw,52px)" }}>
+            <ul style={{ display:"flex", flexWrap:"wrap", gap:"10px 24px", listStyle:"none", margin:0, padding:0 }}>
+              {[
+                { l:"Top AI Startups",     h:"/top-ai-startups"    },
+                { l:"Best SaaS Startups",  h:"/best-saas-startups" },
+                { l:"EdTech Startups",     h:"/edtech-startups"    },
+                { l:"FinTech Startups",    h:"/fintech-startups"   },
+                { l:"D2C Startups",        h:"/d2c-startups"       },
+                { l:"Indian Unicorns",     h:"/indian-unicorns"    },
+                { l:"Startup Registry",    h:"/startup"            },
+                { l:"Indian Unicorns 2026",h:"/indian-unicorns"    },
+                { l:"Submit Startup",      h:"/submit"             },
+                { l:"Valuation Tool",      h:"/valuation"          },
+                { l:"Blog",               h:"/blog"               },
+              ].map(lnk=>(
+                <li key={lnk.h}><Link href={lnk.h} className="sf" style={{ fontSize:8.5, color:"var(--ink5)", textTransform:"uppercase", letterSpacing:"0.14em", textDecoration:"none" }}>{lnk.l}</Link></li>
               ))}
             </ul>
           </nav>
-        </footer>
 
-      </div>
-    </div>
-  )
+        </div>
+      </main>
+    </>
+  );
 }
+
+/* tiny helper so clamp() works inside JS strings */
+function clamp(min:string,val:string,max:string){ return `clamp(${min},${val},${max})`; }
