@@ -8,19 +8,25 @@ import { useEffect } from "react"
 import Link from "next/link"
 import { ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react"
 
+// Updated video ID from https://youtu.be/c8Dc6vRE7VI
+const VIDEO_ID = "c8Dc6vRE7VI"
+
+// Updated founder image
+const FOUNDER_IMG = "https://static.businessworld.in/sarvam_20250427233307_original_image_44.webp"
+
 const JSON_LD = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "Article",
       "@id": "https://upforge.in/startup/sarvam-ai#article",
-      "headline": "Sarvam AI — Building India's Sovereign Large Language Models",
-      "description": "Sarvam AI co-founders Vivek Raghavan and Pratyush Kumar are building India's own LLMs for 22 Indian languages. Funded by Peak XV, Lightspeed and others. Full founder story on UpForge.",
+      "headline": "Sarvam AI — How Vivek Raghavan & Pratyush Kumar Are Building India's Sovereign LLMs for 22 Indian Languages",
+      "description": "Sarvam AI founders Vivek Raghavan and Pratyush Kumar are building India's own large language models for 22 Indian languages. Backed by Peak XV, Lightspeed and India's IndiaAI Mission. Valued at $1B+, $70M raised. Full founder story, funding timeline and vision on UpForge.",
       "url": "https://upforge.in/startup/sarvam-ai",
       "datePublished": "2026-03-01T00:00:00+05:30",
       "dateModified": "2026-03-10T00:00:00+05:30",
       "inLanguage": "en-IN",
-      "image": { "@type": "ImageObject", "url": "https://upforge.in/og/sarvam-ai.png", "width": 1200, "height": 630 },
+      "image": { "@type": "ImageObject", "url": FOUNDER_IMG, "width": 1200, "height": 630 },
       "publisher": {
         "@type": "Organization",
         "name": "UpForge",
@@ -36,7 +42,7 @@ const JSON_LD = {
         },
         {
           "@type": "Person", "name": "Pratyush Kumar",
-          "jobTitle": "Co-Founder", "worksFor": { "@type": "Organization", "name": "Sarvam AI" }
+          "jobTitle": "Co-Founder & CTO", "worksFor": { "@type": "Organization", "name": "Sarvam AI" }
         }
       ],
       "mentions": {
@@ -45,7 +51,7 @@ const JSON_LD = {
         "url": "https://www.sarvam.ai",
         "foundingDate": "2023",
         "foundingLocation": { "@type": "Place", "addressLocality": "Bengaluru", "addressCountry": "IN" },
-        "description": "Sarvam AI builds large language models optimised for Indian languages and use cases.",
+        "description": "Sarvam AI builds sovereign large language models optimised for 22 Indian languages and Indian enterprise, government and consumer use cases.",
         "numberOfEmployees": { "@type": "QuantitativeValue", "minValue": 100 },
         "sameAs": ["https://www.sarvam.ai", "https://twitter.com/sarvam_ai"]
       }
@@ -65,22 +71,27 @@ const JSON_LD = {
         {
           "@type": "Question",
           "name": "Who founded Sarvam AI?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Sarvam AI was co-founded by Vivek Raghavan and Pratyush Kumar in 2023 in Bengaluru, India. Both founders previously worked on AI4Bharat, a government-backed initiative to build language technology for Indian languages." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Sarvam AI was co-founded in 2023 by Vivek Raghavan (CEO) and Pratyush Kumar (CTO) in Bengaluru, India. Both founders previously led AI4Bharat at IIT Madras — a government-backed initiative to build open-source language technology for all 22 scheduled Indian languages. Their academic and research background directly informs Sarvam's architecture decisions." }
         },
         {
           "@type": "Question",
-          "name": "How much funding has Sarvam AI raised?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Sarvam AI has raised over $70M in funding, including from investors like Peak XV Partners (formerly Sequoia India), Lightspeed India, and the Government of India's IndiaAI Mission." }
+          "name": "How much funding has Sarvam AI raised and what is its valuation?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Sarvam AI has raised over $70 million in total funding. The Series A of $41M was led by Peak XV Partners (formerly Sequoia India) and Lightspeed India. The company also secured anchor funding from India's IndiaAI Mission — a $1.2B national initiative. As of 2025, Sarvam AI is valued at over $1 billion, making it one of India's newest AI unicorns." }
         },
         {
           "@type": "Question",
           "name": "What does Sarvam AI build?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Sarvam AI builds large language models (LLMs) optimised for Indian languages including Hindi, Tamil, Telugu, Bengali, Kannada, Malayalam, and more. Their models are designed for Indian government services, enterprise applications, and consumer platforms." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Sarvam AI builds large language models (LLMs) trained from scratch on 22 Indian languages including Hindi, Tamil, Telugu, Bengali, Kannada, Malayalam, Odia, Marathi and more. Unlike fine-tuned Western models, Sarvam's LLMs understand Dravidian and Indo-Aryan grammatical structures natively. Their products include voice AI, conversational APIs, and enterprise tools deployed in government citizen services, healthcare, and agriculture." }
         },
         {
           "@type": "Question",
-          "name": "What is Sarvam AI's valuation?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Sarvam AI is valued at over $1 billion as of 2025, making it one of India's AI unicorns. The company received support from India's national AI Mission." }
+          "name": "Is Sarvam AI a unicorn?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. As of 2025, Sarvam AI is valued at over $1 billion, making it one of India's AI unicorns. The company achieved unicorn status within two years of founding — one of the fastest in Indian startup history — driven by its IndiaAI Mission partnership and Series A funding from Peak XV and Lightspeed." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the IndiaAI Mission and how is Sarvam AI involved?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The IndiaAI Mission is a Government of India initiative with a $1.2 billion budget to build sovereign AI infrastructure for the country. Sarvam AI was selected as the primary model development partner, giving it access to state capacity, government datasets and sovereign deployment rights across Indian public services." }
         }
       ]
     }
@@ -97,11 +108,11 @@ const STATS = [
 ]
 
 const TIMELINE = [
-  { year: "2023", event: "Sarvam AI founded in Bengaluru by Vivek Raghavan & Pratyush Kumar" },
-  { year: "Early 2024", event: "Sarvam-1 model launched — first Indian LLM trained on Indic languages at scale" },
-  { year: "Mid 2024", event: "$41M Series A raised. Peak XV & Lightspeed lead the round" },
-  { year: "Late 2024", event: "Partnered with Government of India's IndiaAI Mission as anchor partner" },
-  { year: "2025", event: "Total funding crosses $70M. Valuation exceeds $1 billion. Sarvam declared India's sovereign AI layer" },
+  { year: "2023", event: "Sarvam AI founded in Bengaluru by Vivek Raghavan & Pratyush Kumar, both ex-AI4Bharat, IIT Madras" },
+  { year: "Early 2024", event: "Sarvam-1 model launched — first Indian LLM trained on 22 Indic languages at scale, not just fine-tuned" },
+  { year: "Mid 2024", event: "$41M Series A raised. Peak XV & Lightspeed India lead the round" },
+  { year: "Late 2024", event: "Selected as anchor partner for Government of India's IndiaAI Mission — a $1.2B national AI initiative" },
+  { year: "2025", event: "Total funding crosses $70M. Valuation exceeds $1 billion. Sarvam declared India's sovereign AI infrastructure layer" },
 ]
 
 const RELATED = [
@@ -135,10 +146,11 @@ const LESSON = "In the AI era, the country that owns the infrastructure layer ow
 const INVESTORS = ["Peak XV Partners (Sequoia India)", "Lightspeed India", "IndiaAI Mission (Govt.)", "Surge", "Individual Angels"]
 
 const FAQS = [
-  { q: "Who are the founders of Sarvam AI?", a: "Sarvam AI was co-founded by Vivek Raghavan and Pratyush Kumar in 2023. Both previously led AI4Bharat, the IIT Madras initiative building language technology for Indian languages. Raghavan serves as CEO; Kumar leads the technical research." },
-  { q: "How much funding has Sarvam AI raised?", a: "Sarvam AI has raised over $70M in total funding. The Series A of $41M was led by Peak XV Partners (formerly Sequoia India) and Lightspeed India. The company also secured funding through India's IndiaAI Mission." },
-  { q: "What makes Sarvam AI different from other AI companies?", a: "Sarvam AI trains LLMs from scratch on Indian language data — rather than fine-tuning Western models. Their models understand the grammatical structures of Dravidian and Indo-Aryan languages and outperform global models on Hindi, Tamil, and Telugu benchmarks." },
-  { q: "Is Sarvam AI a unicorn?", a: "Yes. As of 2025, Sarvam AI is valued at over $1 billion, making it one of India's AI unicorns. The valuation was achieved within two years of founding." },
+  { q: "Who are the founders of Sarvam AI?", a: "Sarvam AI was co-founded by Vivek Raghavan (CEO) and Pratyush Kumar (CTO) in 2023. Both previously led AI4Bharat at IIT Madras — the open-source initiative building language technology for all 22 scheduled Indian languages. Raghavan leads strategy and partnerships; Kumar leads model research and technical architecture." },
+  { q: "How much funding has Sarvam AI raised?", a: "Sarvam AI has raised over $70M in total funding. The Series A of $41M was led by Peak XV Partners (formerly Sequoia India) and Lightspeed India. The company also secured anchor funding through India's IndiaAI Mission — a $1.2B national initiative. Valuation crossed $1 billion in 2025." },
+  { q: "What makes Sarvam AI different from other AI companies?", a: "Sarvam AI trains LLMs from scratch on Indian language data — rather than fine-tuning Western models. Their models natively understand the grammatical structures of Dravidian and Indo-Aryan languages and outperform global models on Hindi, Tamil, and Telugu benchmarks. They also hold a unique position as India's government-backed sovereign AI infrastructure partner." },
+  { q: "Is Sarvam AI a unicorn?", a: "Yes. As of 2025, Sarvam AI is valued at over $1 billion, making it one of India's AI unicorns — achieved within just two years of founding, one of the fastest in Indian startup history." },
+  { q: "What is the IndiaAI Mission and why does it matter for Sarvam AI?", a: "The IndiaAI Mission is a Government of India programme with a $1.2B budget to build sovereign AI infrastructure. Sarvam AI was selected as the primary model development partner, granting access to government datasets, state compute infrastructure, and deployment rights across Indian public services — a structural advantage no other Indian AI startup has." },
 ]
 
 export default function SarvamAIPage() {
@@ -179,7 +191,7 @@ export default function SarvamAIPage() {
         ::-webkit-scrollbar { width:3px; } ::-webkit-scrollbar-thumb { background:#C8C2B4; }
       `}</style>
 
-      <h1 className="sr-only">Sarvam AI Founder Story — Vivek Raghavan & Pratyush Kumar | India's Sovereign AI | UpForge</h1>
+      <h1 className="sr-only">Sarvam AI Founder Story — Vivek Raghavan &amp; Pratyush Kumar | India's Sovereign LLM Unicorn | UpForge</h1>
 
       {/* BREADCRUMB */}
       <nav aria-label="Breadcrumb" className="px-4 sm:px-8 py-2"
@@ -249,8 +261,8 @@ export default function SarvamAIPage() {
               style={{ fontSize: "clamp(14px,1.9vw,17px)", borderBottom: "1px solid #C8C2B4" }}>
               Sarvam AI is building the foundational AI infrastructure India needs — large language models
               designed not just to translate Indian languages, but to <em>think</em> in them.
-              With $70M raised and India's government as a partner, Vivek Raghavan and Pratyush Kumar
-              are building the GPT-equivalent for 1.4 billion people.
+              With $70M raised, India's government as anchor partner, and a $1B+ valuation, Vivek Raghavan
+              and Pratyush Kumar are building the sovereign AI layer for 1.4 billion people.
             </p>
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-8" style={{ fontFamily: "system-ui,sans-serif" }}>
               {["By UpForge Editorial", "Bengaluru, KA", "Est. 2023", "India's Sovereign AI"].map((t, i, a) => (
@@ -263,8 +275,8 @@ export default function SarvamAIPage() {
 
             {/* MOBILE PHOTO */}
             <div className="lg:hidden mb-8">
-              <img src="https://static.businessworld.in/sarvam_20250427233307_original_image_44.webp"
-                alt="Vivek Raghavan, Co-Founder and CEO of Sarvam AI"
+              <img src={FOUNDER_IMG}
+                alt="Vivek Raghavan and Pratyush Kumar, Co-Founders of Sarvam AI — India's Sovereign LLM Startup"
                 className="w-full object-cover object-top" style={{ height: "min(300px,60vw)" }} loading="eager" />
               <div className="px-4 py-3" style={{ background: "#1A1208" }}>
                 <p className="pf text-white font-bold" style={{ fontSize: 13 }}>Vivek Raghavan & Pratyush Kumar</p>
@@ -308,14 +320,14 @@ export default function SarvamAIPage() {
                 Watch · Sarvam AI in Conversation
               </p>
               <div className="relative w-full" style={{ paddingBottom: "56.25%", background: "#000" }}>
-                <iframe src="https://www.youtube.com/embed/l7pDuakyskI?si=ldN2OI7y4ciehvsq"
-                  title="Sarvam AI — Vivek Raghavan on Building India's Sovereign LLM | UpForge"
+                <iframe src={`https://www.youtube.com/embed/${VIDEO_ID}?si=zBilS3qJcqpL7YCq`}
+                  title="Sarvam AI — Vivek Raghavan on Building India's Sovereign LLM for 22 Indian Languages | UpForge Founder Interview"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen className="absolute inset-0 w-full h-full" loading="lazy"
                   style={{ border: "none" }} />
               </div>
               <p className="text-[10px] text-[#AAA] mt-2 italic" style={{ fontFamily: "system-ui,sans-serif" }}>
-                Vivek Raghavan on building India's AI sovereign infrastructure — UpForge Featured Interview
+                Vivek Raghavan on building India's sovereign AI infrastructure, IndiaAI Mission, and the future of Indic LLMs — UpForge Featured Interview
               </p>
             </div>
 
@@ -360,32 +372,32 @@ export default function SarvamAIPage() {
           <aside className="hidden lg:block pl-8 pt-8 pb-8">
             <div className="sticky top-4 flex flex-col gap-5">
               <div className="relative w-full overflow-hidden" style={{ height: 340 }}>
-                <img src="https://static.businessworld.in/sarvam_20250427233307_original_image_44.webp"
-                  alt="Vivek Raghavan, Co-Founder and CEO of Sarvam AI — UpForge Founder Chronicle"
+                <img src={FOUNDER_IMG}
+                  alt="Vivek Raghavan and Pratyush Kumar, Co-Founders of Sarvam AI — UpForge Founder Chronicle"
                   className="w-full h-full object-cover object-top" loading="eager" />
                 <div className="absolute bottom-0 left-0 right-0 px-4 py-3.5"
                   style={{ background: "linear-gradient(to top, rgba(12,7,2,0.96) 60%, transparent)" }}>
-                  <p className="pf text-white font-bold" style={{ fontSize: 14 }}>Vivek Raghavan</p>
-                  <p className="text-white/40 text-[9px] uppercase tracking-wide mt-0.5" style={{ fontFamily: "system-ui,sans-serif" }}>Co-Founder & CEO · Sarvam AI</p>
+                  <p className="pf text-white font-bold" style={{ fontSize: 14 }}>Vivek Raghavan & Pratyush Kumar</p>
+                  <p className="text-white/40 text-[9px] uppercase tracking-wide mt-0.5" style={{ fontFamily: "system-ui,sans-serif" }}>Co-Founders · Sarvam AI</p>
                 </div>
               </div>
 
               <div>
                 <p className="text-[8px] font-black uppercase tracking-[0.26em] mb-2" style={{ color: accent, fontFamily: "system-ui,sans-serif" }}>Featured Watch</p>
-                <a href="https://youtu.be/l7pDuakyskI" target="_blank" rel="noopener noreferrer"
-                  className="block relative group" aria-label="Watch Sarvam AI interview on YouTube">
-                  <img src="https://img.youtube.com/vi/l7pDuakyskI/maxresdefault.jpg"
-                    alt="Sarvam AI — Vivek Raghavan interview"
+                <a href={`https://youtu.be/${VIDEO_ID}`} target="_blank" rel="noopener noreferrer"
+                  className="block relative group" aria-label="Watch Sarvam AI founder Vivek Raghavan interview on YouTube">
+                  <img src={`https://img.youtube.com/vi/${VIDEO_ID}/maxresdefault.jpg`}
+                    alt="Sarvam AI — Vivek Raghavan on building India's sovereign LLM and IndiaAI Mission"
                     className="w-full object-cover" style={{ height: 140, border: `1px solid ${accentBorder}` }}
                     loading="lazy"
-                    onError={(e) => { (e.target as HTMLImageElement).src = "https://img.youtube.com/vi/l7pDuakyskI/hqdefault.jpg" }} />
+                    onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${VIDEO_ID}/hqdefault.jpg` }} />
                   <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.3)" }}>
                     <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,0,0,0.9)" }}>
                       <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white ml-0.5"><path d="M8 5v14l11-7z" /></svg>
                     </div>
                   </div>
                 </a>
-                <p className="text-[9px] text-[#AAA] mt-1.5 italic" style={{ fontFamily: "system-ui,sans-serif" }}>Vivek Raghavan on India's sovereign AI mission</p>
+                <p className="text-[9px] text-[#AAA] mt-1.5 italic" style={{ fontFamily: "system-ui,sans-serif" }}>Vivek Raghavan on India's sovereign AI mission and Indic LLMs</p>
               </div>
 
               <div style={{ border: "2px solid #1A1208" }}>
