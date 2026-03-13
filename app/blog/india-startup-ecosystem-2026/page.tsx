@@ -1,355 +1,380 @@
 // app/blog/india-startup-ecosystem-2026/page.tsx
-import type { Metadata } from "next";
 import Link from "next/link";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "India Startup Ecosystem 2026: The Complete State of the Nation Report | UpForge",
+  title: "India Startup Ecosystem 2026: The Complete Overview | UpForge Blog",
   description:
-    "The definitive overview of India's startup ecosystem in 2026 — funding data, top sectors, emerging cities, policy changes, and what every founder and investor needs to know right now.",
+    "India's startup ecosystem in 2026 — 140,000+ startups, 111 unicorns, $340B+ in combined value. A deep-dive into the sectors, cities, funding trends, government policy, and the structural forces shaping India's startup revolution.",
   keywords: [
-    "India startup ecosystem 2026",
-    "Indian startup market 2026",
-    "startup India 2026 report",
-    "Indian startup funding trends 2026",
-    "best startup cities India 2026",
-    "Indian startup sectors 2026",
-    "India tech startup growth",
-    "startup India DPIIT 2026",
-    "emerging startup hubs India",
-    "Indian startup statistics 2026",
-  ],
-  openGraph: {
-    title: "India Startup Ecosystem 2026: Complete State of the Nation | UpForge",
-    description: "650,000 startups. 125 unicorns. $3.44B raised in Q1 alone. The complete data-driven picture of India's startup ecosystem in 2026.",
-    url: "https://upforge.in/blog/india-startup-ecosystem-2026",
-    type: "article",
-    images: [{ url: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&q=85", width: 1200, height: 630, alt: "India startup ecosystem 2026 overview" }],
-  },
+    "india startup ecosystem 2026",
+    "indian startup ecosystem overview",
+    "india startup funding 2026",
+    "india third largest startup ecosystem",
+    "startup india dpiit 2026",
+    "indian startup hubs 2026",
+    "india unicorn count 2026",
+    "indian vc funding trends",
+    "startup india policy 2026",
+  ].join(", "),
   alternates: { canonical: "https://upforge.in/blog/india-startup-ecosystem-2026" },
-};
-
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Article",
-  headline: "India Startup Ecosystem 2026: The Complete State of the Nation Report",
-  datePublished: "2026-03-09",
-  dateModified: "2026-03-09",
-  author: { "@type": "Organization", name: "UpForge Editorial", url: "https://upforge.in" },
-  publisher: { "@type": "Organization", name: "UpForge", logo: { "@type": "ImageObject", url: "https://upforge.in/logo.jpg" } },
-  mainEntityOfPage: { "@type": "WebPage", "@id": "https://upforge.in/blog/india-startup-ecosystem-2026" },
-  breadcrumb: {
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://upforge.in" },
-      { "@type": "ListItem", position: 2, name: "Blog", item: "https://upforge.in/blog" },
-      { "@type": "ListItem", position: 3, name: "India Startup Ecosystem 2026", item: "https://upforge.in/blog/india-startup-ecosystem-2026" },
-    ],
+  openGraph: {
+    title: "India Startup Ecosystem 2026: The Complete Overview",
+    description: "A definitive deep-dive into India's startup revolution — 140,000 companies, 111 unicorns, and the structural forces making India the world's third-largest startup nation.",
+    url: "https://upforge.in/blog/india-startup-ecosystem-2026",
+    siteName: "UpForge",
+    images: [{ url: "https://upforge.in/og-blog-ecosystem.png", width: 1200, height: 630 }],
+    locale: "en_IN", type: "article",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "India Startup Ecosystem 2026: Complete Overview | UpForge",
+    description: "140,000 startups. 111 unicorns. $340B+ value. Everything you need to understand India's startup revolution.",
   },
 };
 
-const T = { parch: "#F5F1E8", parch2: "#EDE9DF", ink: "#1A1208", ink2: "#2C2010", ink3: "#5A4A30", ink4: "#8C7D65", ink5: "#BBB0A0", rule: "#C8C2B4", rule2: "#D8D2C4", gold: "#B45309", gold2: "#D97706", gold3: "#92400E", goldlt: "#FEF3C7", white: "#FDFCF9", green: "#15803D", red: "#B91C1C" };
+const IMGS = {
+  hero:      "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1600&q=85&auto=format",
+  bangalore: "https://images.unsplash.com/photo-1596176530529-78163a4f7af2?w=900&q=80&auto=format",
+  funding:   "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=900&q=80&auto=format",
+  policy:    "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=900&q=80&auto=format",
+  talent:    "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=900&q=80&auto=format",
+  future:    "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=900&q=80&auto=format",
+  closing:   "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=1600&q=80&auto=format",
+};
 
-export default function BlogEcosystemReport() {
+const SECTIONS = [
+  {
+    num: "01",
+    title: "The Scale of the Opportunity",
+    keyword: "India Startup Ecosystem 2026",
+    img: IMGS.bangalore,
+    body: `India's startup ecosystem did not happen overnight. It was built across two decades of infrastructure investment, talent creation, and policy reform — culminating in a 2026 landscape where 140,000+ registered startups compete across every sector of the economy.
+
+To understand the scale: India adds approximately 1,300 new startups every single month. The country now sits at #3 globally in startup density, behind only the United States and China. And unlike the previous two positions on that list, India's ecosystem is still in its early-growth phase — the infrastructure improvements of the next decade will be more consequential than those of the last.`,
+    stat: { val: "140,000+", label: "Registered Startups in India as of 2026" },
+    insight: "India is not catching up to Silicon Valley. It is building something different — and potentially more durable.",
+  },
+  {
+    num: "02",
+    title: "The Unicorn Economy",
+    keyword: "Indian Unicorns 2026",
+    img: IMGS.funding,
+    body: `India's unicorn count reached 111 in 2026 — representing $340B+ in combined valuation. Twelve of those have crossed the $10B threshold to become decacorns, including Flipkart, Zomato, PhonePe, and Swiggy.
+
+The 2021 super-cycle that produced 44 unicorns in a single year was followed by a necessary correction — funding dropped from $42B to $8.6B between 2021 and 2023. But what emerged from that correction is an ecosystem with stronger fundamentals: better unit economics, more capital-efficient growth, and a generation of founders who have been tested by difficulty and emerged with more discipline.`,
+    stat: { val: "111", label: "Indian Unicorns — #3 Globally Behind US & China" },
+    insight: "The correction of 2022–2023 was not the end of the India story. It was the editing phase.",
+  },
+  {
+    num: "03",
+    title: "The Sectors Leading India's Startup Revolution",
+    keyword: "India Startup Sectors 2026",
+    img: IMGS.talent,
+    body: `No single sector defines India's startup story. FinTech leads with 22 unicorns — built on the India Stack infrastructure of UPI, Aadhaar, and Account Aggregator that the government quietly assembled over a decade. SaaS has produced global champions like Freshworks, Postman, and Chargebee who compete not just in India but on every continent.
+
+EdTech exploded after COVID, consolidated painfully in 2022, and is now emerging with a more sustainable model — PhysicsWallah's ₹999/year JEE course being the clearest proof that radical affordability, not premium pricing, is the winning strategy. D2C brands like Mamaearth, boAt, and Lenskart have demonstrated that Indian consumer companies can build globally competitive brands without a century of distribution advantages.
+
+The newest and fastest-growing sector is AI — with Krutrim, Sarvam AI, and a wave of enterprise AI companies positioning India to be not just a consumer of AI tools but a builder of them.`,
+    stat: { val: "22", label: "FinTech Unicorns — India's Most Valuable Startup Sector" },
+    insight: "The breadth of India's startup ecosystem is its greatest strength — and its biggest differentiator from every previous tech boom.",
+  },
+  {
+    num: "04",
+    title: "The Four Startup Hubs",
+    keyword: "India Startup Hubs Bangalore Mumbai Delhi",
+    img: IMGS.bangalore,
+    body: `India's startup activity is concentrated in four metropolitan areas that have developed distinct identities and specialisations.
+
+Bengaluru is India's Silicon Valley — home to 60+ unicorns and the birthplace of Flipkart, Zerodha, Razorpay, Unacademy, and the country's entire SaaS sector. The city's combination of IIT/IISc talent, a mature VC ecosystem, and a culture of technical ambition makes it the natural centre of India's startup universe.
+
+Mumbai brings financial capital, media, and D2C brand-building expertise — Nykaa, BrowserStack, Zepto, and Jupiter were all built here. Delhi-NCR has a commerce and logistics strength — Zomato, OYO, boAt, and Lenskart all chose the capital region for its access to distribution networks and government proximity. Hyderabad is the quiet achiever — a growing SaaS and HealthTech hub with significantly lower operating costs than its peers.`,
+    stat: { val: "60+", label: "Unicorns from Bengaluru — India's #1 Startup City" },
+    insight: "India's startup hubs are specialised, not interchangeable. Where you build determines what you can build.",
+  },
+  {
+    num: "05",
+    title: "Government Policy: Startup India & DPIIT",
+    keyword: "Startup India Policy DPIIT 2026",
+    img: IMGS.policy,
+    body: `The Indian government's Startup India initiative, launched in 2016 and administered through the Department for Promotion of Industry and Internal Trade (DPIIT), has been one of the most consequential policy interventions in the history of the Indian economy.
+
+DPIIT-recognised startups receive a three-year income tax holiday, exemption from capital gains tax on qualifying investments, and access to a ₹10,000Cr Fund of Funds for Startups through SIDBI. More than 140,000 startups have received DPIIT recognition — a number that has grown 15x since 2016.
+
+The India Stack — UPI, Aadhaar, DigiLocker, ONDC, Account Aggregator — represents the most ambitious government-built technology infrastructure programme in history. It is the foundation on which every Indian FinTech, HealthTech, and commerce startup is built. Without India Stack, there is no PhonePe. Without Aadhaar, there is no instant KYC. The government built the pipes. Startups built the water.`,
+    stat: { val: "₹10,000Cr", label: "Government Fund of Funds for Startups (SIDBI)" },
+    insight: "India Stack is the most important piece of startup infrastructure ever built by any government. Full stop.",
+  },
+  {
+    num: "06",
+    title: "The Talent Engine",
+    keyword: "India Startup Talent 2026",
+    img: IMGS.talent,
+    body: `India produces 1.5 million engineering graduates per year — more than any country on earth. The IIT system, NITs, BITS Pilani, and a network of state engineering colleges create a deep bench of technical talent that gives Indian startups a structural cost and capability advantage over competitors in the US, Europe, or Southeast Asia.
+
+Beyond raw engineering talent, India now has a maturing second generation of startup operators — people who joined Flipkart or Paytm in 2013, left in 2017 to join Series A companies, and are now founding their own businesses with playbooks built from direct experience. This is the Flipkart Mafia, the Paytm Mafia, the Razorpay Mafia — each generation of successful companies producing the founders of the next.
+
+The talent multiplier effect is compounding. And it will continue to compound for decades.`,
+    stat: { val: "1.5M", label: "Engineering Graduates India Produces Every Year" },
+    insight: "India's talent advantage is not just depth. It is the institutional memory that compounds with every generation of successful startups.",
+  },
+  {
+    num: "07",
+    title: "The Road Ahead: What 2026–2030 Looks Like",
+    keyword: "India Startup Future 2026 2030",
+    img: IMGS.future,
+    body: `The next phase of India's startup ecosystem will be defined by five convergent forces: the maturation of AI-native startups, the global expansion of Indian SaaS companies, the D2C brand buildout into offline markets, the emergence of deep tech in defence and space, and the financialisation of India's 300M+ middle class through wealth management products.
+
+India's IPO market is maturing — Freshworks, Zomato, Nykaa, Mamaearth, Swiggy have all demonstrated that Indian startup companies can access public capital at scale. The exit ecosystem that was missing five years ago is now functioning.
+
+The final frontier is global domination. Freshworks and Postman have already shown it is possible. The next decade will tell us whether India can produce not just regional champions but global category leaders in AI, SaaS, and consumer technology — the equivalent of what Israel produced in cybersecurity or what South Korea produced in consumer electronics. The fundamentals suggest it can. The ambition is clearly there. The only question is execution.`,
+    stat: { val: "$500B+", label: "Projected India Startup Ecosystem Value by 2030" },
+    insight: "India's startup story is not in its third act. It is still in the first.",
+  },
+];
+
+const RELATED = [
+  { name: "Indian Unicorns 2026",         slug: "/indian-unicorns",     sector: "Rankings"  },
+  { name: "How to Get Startup Funding",   slug: "/blog/how-to-get-startup-funding-india-2026", sector: "Guide" },
+  { name: "Top Indian Founders 2026",     slug: "/blog/best-indian-startup-founders-to-follow-2026", sector: "People" },
+  { name: "Top FinTech Startups",         slug: "/fintech-startups",    sector: "FinTech"   },
+];
+
+export default function BlogEcosystem() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <article style={{ background: T.parch, fontFamily: "'Georgia','Times New Roman',serif", color: T.ink, lineHeight: 1.75 }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap');
+        .pf{font-family:'Playfair Display',Georgia,serif!important}
+        .rp{font-family:'Georgia','Times New Roman',serif}
+        .sf{font-family:system-ui,-apple-system,sans-serif}
+        :root{
+          --parch:#F5F1E8;--parch2:#EDE9DF;--ink:#1A1208;--ink3:#5A4A30;
+          --ink4:#8C7D65;--ink5:#BBB0A0;--rule:#C8C2B4;--rule2:#D8D2C4;
+          --gold:#B45309;--gold2:#D97706;--gold3:#92400E;--white:#FDFCF9;
+        }
+        body{background:var(--parch)}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+        .a0{animation:fadeUp .44s .00s cubic-bezier(.16,1,.3,1) both}
+        .a1{animation:fadeUp .44s .08s cubic-bezier(.16,1,.3,1) both}
+        .a2{animation:fadeUp .44s .16s cubic-bezier(.16,1,.3,1) both}
+        .imgf{position:relative;overflow:hidden}
+        .imgf img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:sepia(14%) contrast(108%);transition:transform .6s ease}
+        .imgf:hover img{transform:scale(1.03)}
+        .lesson-card{border:1.5px solid var(--ink);background:var(--white);overflow:hidden;position:relative}
+        .lesson-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold3),var(--gold2),#E8C547)}
+        .stat-pill{display:flex;align-items:center;gap:14px;background:var(--ink);padding:14px 18px;margin:16px 0}
+        .insight{display:inline-flex;align-items:center;gap:8px;background:#FEF3C7;border:1px solid rgba(180,83,9,.25);padding:9px 14px;width:100%}
+        .sh{display:flex;align-items:center;gap:10px}
+        .sh-l{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.28em;color:var(--ink5);font-family:system-ui;white-space:nowrap}
+        .sh-r{flex:1;height:1px;background:var(--rule2)}
+        .rel-card{display:flex;flex-direction:column;background:var(--white);text-decoration:none;border:none;transition:transform .15s,box-shadow .15s;position:relative}
+        .rel-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:transparent;transition:background .15s}
+        .rel-card:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--ink);z-index:1}
+        .rel-card:hover::before{background:var(--gold2)}
+        .dropcap::first-letter{font-family:'Playfair Display',Georgia,serif;font-size:3.8em;font-weight:900;float:left;line-height:.82;margin-right:8px;margin-top:6px;color:var(--ink)}
+        @media(max-width:900px){.lesson-two{grid-template-columns:1fr!important}}
+      `}</style>
 
-        {/* Breadcrumb */}
-        <div style={{ background: T.parch2, borderBottom: `1px solid ${T.rule}`, padding: "10px clamp(16px,4vw,40px)" }}>
-          <nav>
-            <ol style={{ display: "flex", gap: 6, listStyle: "none", margin: 0, padding: 0, flexWrap: "wrap" }}>
-              {[["Home", "/"], ["Blog", "/blog"], ["Ecosystem 2026", "#"]].map(([label, href], i, arr) => (
-                <li key={label as string} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  {href === "#" ? <span style={{ fontSize: 11, color: T.ink4, fontFamily: "system-ui" }}>{label}</span> : <Link href={href as string} style={{ fontSize: 11, color: T.gold, textDecoration: "none", fontFamily: "system-ui" }}>{label}</Link>}
-                  {i < arr.length - 1 && <span style={{ color: T.rule, fontSize: 10 }}>›</span>}
-                </li>
-              ))}
+      <article itemScope itemType="https://schema.org/Article" style={{ minHeight:"100vh", background:"var(--parch)" }}>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context":"https://schema.org","@type":"Article",
+          headline:"India Startup Ecosystem 2026: The Complete Overview",
+          description:"A definitive deep-dive into India's startup revolution — 140,000 companies, 111 unicorns, and the structural forces making India the world's third-largest startup nation.",
+          author:{"@type":"Organization","name":"UpForge"},
+          publisher:{"@type":"Organization","name":"UpForge","url":"https://upforge.in"},
+          datePublished:new Date().toISOString().split("T")[0],
+          url:"https://upforge.in/blog/india-startup-ecosystem-2026",
+          keywords:"india startup ecosystem 2026, indian unicorns, startup india dpiit, india startup funding",
+          image:"https://upforge.in/og-blog-ecosystem.png",
+        })}} />
+
+        {/* BREADCRUMB */}
+        <nav className="sf a0" style={{ background:"var(--parch2)", borderBottom:"1px solid var(--rule2)", padding:"8px 0" }}>
+          <div style={{ maxWidth:1080, margin:"0 auto", padding:"0 clamp(16px,3vw,36px)" }}>
+            <ol style={{ display:"flex", alignItems:"center", gap:6, fontSize:9, color:"var(--ink5)", textTransform:"uppercase", letterSpacing:"0.18em", listStyle:"none", margin:0, padding:0 }}>
+              <li><Link href="/" style={{ color:"var(--ink5)", textDecoration:"none" }}>UpForge</Link></li>
+              <li style={{ color:"var(--rule)" }}>/</li>
+              <li><Link href="/blog" style={{ color:"var(--ink5)", textDecoration:"none" }}>Blog</Link></li>
+              <li style={{ color:"var(--rule)" }}>/</li>
+              <li style={{ color:"var(--ink4)", fontWeight:700, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:220 }}>India Startup Ecosystem 2026</li>
             </ol>
-          </nav>
-        </div>
+          </div>
+        </nav>
 
-        <div style={{ maxWidth: 1160, margin: "0 auto", padding: "0 clamp(16px,4vw,40px)" }}>
-
-          {/* Masthead */}
-          <header style={{ borderBottom: `3px solid ${T.ink}`, padding: "clamp(28px,5vw,56px) 0 clamp(20px,4vw,36px)" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingBottom: 10, borderBottom: `1px solid ${T.rule}`, marginBottom: "clamp(18px,3vw,32px)", flexWrap: "wrap", gap: 8 }}>
-              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".22em", textTransform: "uppercase", color: T.ink4, fontFamily: "system-ui", margin: 0 }}>9 March 2026 · UpForge · Annual Report</p>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ width: 6, height: 6, borderRadius: "50%", background: T.green, display: "inline-block" }} />
-                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: T.green, fontFamily: "system-ui" }}>Live Data</span>
+        {/* HERO */}
+        <div className="a0" style={{ borderBottom:"3px solid var(--ink)" }}>
+          <div className="imgf" style={{ height:"clamp(280px,38vw,480px)" }}>
+            <img src={IMGS.hero} alt="India Startup Ecosystem 2026 — Complete Overview" />
+            <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom,rgba(26,18,8,.35) 0%,rgba(26,18,8,.88) 100%)" }} />
+            <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"0 clamp(16px,5vw,64px)", textAlign:"center" }}>
+              <div style={{ display:"flex", gap:8, marginBottom:18, flexWrap:"wrap", justifyContent:"center" }}>
+                {["Ecosystem","India 2026","Deep Dive"].map(t=>(
+                  <span key={t} className="sf" style={{ fontSize:8, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:"rgba(255,255,255,0.65)", border:"1px solid rgba(255,255,255,0.2)", padding:"3px 10px" }}>{t}</span>
+                ))}
               </div>
-            </div>
-
-            <div style={{ textAlign: "center", paddingBottom: "clamp(18px,3vw,32px)", borderBottom: `1px solid ${T.rule}`, marginBottom: "clamp(16px,3vw,28px)" }}>
-              <h1 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(2rem,5.5vw,4.2rem)", fontWeight: 900, lineHeight: 1.06, letterSpacing: "-.02em", color: T.ink, margin: "0 0 14px" }}>
-                India Startup Ecosystem 2026<br />
-                <em style={{ fontStyle: "italic", color: T.gold }}>State of the Nation</em>
+              <h1 className="pf" itemProp="headline" style={{ fontSize:"clamp(1.8rem,5.5vw,4.2rem)", fontWeight:900, lineHeight:1.02, color:"white", letterSpacing:"-0.02em", marginBottom:18, maxWidth:860 }}>
+                India Startup Ecosystem 2026:{" "}
+                <em style={{ color:"#E8C547", fontStyle:"italic" }}>The Complete Overview</em>
               </h1>
-              <p style={{ fontSize: "clamp(14px,1.8vw,17px)", color: T.ink3, maxWidth: 680, margin: "0 auto", fontStyle: "italic" }}>
-                650,000 startups. 125 unicorns. $3.44B raised in Q1 alone. The data-driven picture of where Indian startups stand, where they are going, and what it means for founders and investors.
+              <p className="rp" style={{ fontSize:"clamp(13px,1.8vw,16px)", color:"rgba(255,255,255,0.62)", fontStyle:"italic", maxWidth:560, lineHeight:1.6 }}>
+                140,000 startups. 111 unicorns. $340B+ in combined value. Everything you need to understand India's startup revolution.
               </p>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginTop: 18 }}>
-                <div style={{ height: 1, width: "clamp(40px,8vw,100px)", background: T.rule }} />
-                <span style={{ color: T.rule, fontSize: 14 }}>✦</span>
-                <div style={{ height: 1, width: "clamp(40px,8vw,100px)", background: T.rule }} />
-              </div>
             </div>
-
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 20px", fontSize: 11, color: T.ink4, fontFamily: "system-ui" }}>
-              <span>By <strong style={{ color: T.ink3 }}>UpForge Research</strong></span>
-              <span style={{ color: T.rule }}>·</span>
-              <span>20 min read</span>
-              <span style={{ color: T.rule }}>·</span>
-              <span>Data: Tracxn, DPIIT, Startup India, GrowthList</span>
+            <div className="sf" style={{ position:"absolute", top:18, right:18, background:"rgba(26,18,8,.7)", border:"1px solid rgba(255,255,255,.1)", padding:"5px 12px", fontSize:8, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:"rgba(255,255,255,.55)" }}>
+              UpForge · Blog
             </div>
-          </header>
-
-          {/* Hero Image */}
-          <figure style={{ margin: "clamp(20px,4vw,36px) 0", borderBottom: `1px solid ${T.rule}`, paddingBottom: "clamp(20px,4vw,36px)" }}>
-            <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&q=85" alt="India startup ecosystem overview" style={{ width: "100%", height: "clamp(200px,32vw,440px)", objectFit: "cover", display: "block", filter: "sepia(12%) contrast(106%)" }} />
-            <figcaption style={{ fontSize: 10, color: T.ink5, marginTop: 8, fontFamily: "system-ui", fontStyle: "italic" }}>India crossed 650,000 registered startups in 2025–2026, overtaking all countries except the United States and China in absolute startup count.</figcaption>
-          </figure>
-
-          {/* Mega Stats Grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", border: `1.5px solid ${T.ink}`, background: T.ink, gap: "1.5px", marginBottom: "clamp(24px,4vw,40px)" }}>
-            {[
-              ["650,860", "Registered Startups", "As of March 2026, DPIIT"],
-              ["125", "Unicorns", "Companies valued $1B+"],
-              ["$629B", "Total VC Raised", "All funding rounds, all time"],
-              ["$3.44B", "Q1 2026 Funding", "Jan–Mar 2026 equity rounds"],
-              ["350", "Funding Rounds", "Q1 2026 alone"],
-              ["33,464", "Funded Companies", "Received external capital"],
-              ["5,437", "Acquisitions", "Total, all time"],
-              ["5,725", "IPOs", "Total, all time"],
-            ].map(([v, l, s]) => (
-              <div key={l as string} style={{ background: T.white, padding: "16px 14px", textAlign: "center" }}>
-                <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,2rem)", fontWeight: 900, color: T.gold, margin: "0 0 4px", lineHeight: 1 }}>{v}</p>
-                <p style={{ fontSize: 11, fontWeight: 700, color: T.ink, margin: "0 0 3px", fontFamily: "system-ui" }}>{l}</p>
-                <p style={{ fontSize: 9, color: T.ink5, margin: 0, fontFamily: "system-ui" }}>{s}</p>
-              </div>
-            ))}
           </div>
-
-          {/* Intro */}
-          <section style={{ maxWidth: 820, marginBottom: "clamp(24px,4vw,40px)" }}>
-            <p style={{ fontSize: "clamp(14px,1.6vw,16px)", lineHeight: 1.85, marginBottom: 16, color: T.ink2 }}>
-              <span style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(2.8rem,5vw,4rem)", fontWeight: 900, float: "left", lineHeight: 0.82, marginRight: 8, marginTop: 8, color: T.ink }}>T</span>
-              he India startup story in 2026 is no longer a story of potential — it is a story of delivery. India's third-largest startup ecosystem has crossed every early milestone: the unicorn count, the IPO wave, the deep-tech pivot, and the globalisation of Indian SaaS. What comes next is harder and more consequential: turning India's startup base into a globally competitive innovation engine that solves Indian problems first and exports those solutions second.
-            </p>
-            <p style={{ fontSize: "clamp(14px,1.6vw,16px)", lineHeight: 1.85, marginBottom: 0, color: T.ink2 }}>
-              This report maps the current state comprehensively — funding trends, sector breakdowns, city-by-city analysis, policy landscape, and the five macro trends every Indian founder and investor must understand heading into the rest of 2026.
-            </p>
-          </section>
-
-          {/* §1 — Funding Trends */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 20px", paddingTop: "clamp(16px,3vw,24px)", borderTop: `2px solid ${T.ink}` }}>
-            <span style={{ fontSize: 9, fontWeight: 800, color: T.gold, letterSpacing: ".2em", fontFamily: "system-ui" }}>§01</span>
-            <h2 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,1.8rem)", fontWeight: 900, margin: 0, color: T.ink }}>Funding Trends: Quality Over Quantity</h2>
-            <div style={{ flex: 1, height: 1, background: T.rule }} />
-          </div>
-
-          <p style={{ fontSize: "clamp(14px,1.6vw,15.5px)", lineHeight: 1.85, marginBottom: 16, color: T.ink2 }}>
-            India's 2026 funding landscape has matured decisively. Q1 2026 saw $3.44 billion across 350 rounds — a 34% decrease from the same period last year in volume, but with larger average deal sizes. This is not a contraction; it is a correction. The 2021–2022 peak that flooded capital into unprofitable ventures has been followed by a disciplined new era: investors prioritising unit economics, profitability pathways, and genuine defensibility over pure growth metrics.
-          </p>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5px", border: `1.5px solid ${T.ink}`, background: T.ink, marginBottom: 24 }}>
-            {[
-              { label: "What's Getting Funded", color: T.green, items: ["AI-integrated startups (2-3x premium valuation)", "B2B SaaS with positive unit economics", "Climate tech with revenue, not just grants", "FinTech in credit, insurance, wealth management", "Deep tech with IP and government contracts"] },
-              { label: "What Investors Are Passing On", color: T.red, items: ["Consumer apps without clear monetisation", "E-commerce without differentiated supply chain", "EdTech without retention data post-pandemic", "Crypto and Web3 without institutional use cases", "Any startup with CAC > LTV or payback > 24 months"] },
-            ].map(({ label, color, items }) => (
-              <div key={label} style={{ background: T.white, padding: "16px 18px", borderTop: `3px solid ${color}` }}>
-                <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 14, fontWeight: 700, color: T.ink, margin: "0 0 12px" }}>{label}</p>
-                {items.map((item, i) => (
-                  <div key={i} style={{ display: "flex", gap: 8, marginBottom: 7 }}>
-                    <span style={{ color, fontSize: 12, flexShrink: 0 }}>{color === T.green ? "✓" : "✗"}</span>
-                    <p style={{ fontSize: 12, color: T.ink3, margin: 0, fontFamily: "system-ui", lineHeight: 1.6 }}>{item}</p>
+          <div style={{ background:"var(--ink)" }}>
+            <div style={{ maxWidth:1080, margin:"0 auto", padding:"0 clamp(16px,3vw,36px)" }}>
+              <div style={{ display:"flex", flexWrap:"wrap", alignItems:"center" }}>
+                {[
+                  { l:"Published", v:new Date().toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"}) },
+                  { l:"Reading Time", v:"~10 min" },
+                  { l:"Category", v:"Ecosystem · Analysis" },
+                  { l:"Keywords", v:"India Startup Ecosystem 2026" },
+                ].map((m,i)=>(
+                  <div key={i} style={{ padding:"12px 20px", borderRight:"1px solid rgba(255,255,255,.07)" }}>
+                    <p className="sf" style={{ fontSize:7.5, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.18em", color:"rgba(255,255,255,.3)", marginBottom:3 }}>{m.l}</p>
+                    <p className="sf" style={{ fontSize:11, color:"rgba(255,255,255,.6)", fontWeight:600 }}>{m.v}</p>
                   </div>
                 ))}
               </div>
-            ))}
+            </div>
+          </div>
+        </div>
+
+        {/* MAIN */}
+        <div style={{ maxWidth:1080, margin:"0 auto", padding:"0 clamp(16px,3vw,36px) clamp(48px,8vw,96px)" }}>
+
+          {/* INTRO + TOC */}
+          <div className="a1" style={{ display:"grid", gridTemplateColumns:"1fr auto", gap:0, borderBottom:"1px solid var(--rule2)", alignItems:"start" }}>
+            <div style={{ padding:"clamp(28px,4vw,48px) clamp(16px,3vw,40px) clamp(28px,4vw,48px) 0", borderRight:"1px solid var(--rule2)" }}>
+              <div className="sh" style={{ marginBottom:18 }}><span className="sh-l">Introduction</span><div className="sh-r" /></div>
+              <p className="pf" itemProp="description" style={{ fontSize:"clamp(1.05rem,2.2vw,1.35rem)", fontWeight:400, lineHeight:1.72, color:"var(--ink)", marginBottom:18 }}>
+                India's startup ecosystem in 2026 is not a story about a single company, a single founder, or a single moment. It is a story about a decade of structural change converging simultaneously — and creating the conditions for the most exciting entrepreneurial environment on earth.
+              </p>
+              <p className="rp" style={{ fontSize:13.5, color:"var(--ink3)", lineHeight:1.85 }}>
+                This article covers everything you need to understand where India's startup ecosystem stands today, why it reached this point, and what the next decade looks like for the founders, investors, and companies building within it.
+              </p>
+            </div>
+            <div style={{ padding:"clamp(24px,3vw,40px) 0 clamp(24px,3vw,40px) clamp(16px,3vw,32px)", minWidth:"clamp(200px,26vw,280px)" }}>
+              <div className="sh" style={{ marginBottom:14 }}><span className="sh-l">In This Article</span><div className="sh-r" /></div>
+              {SECTIONS.map((s,i)=>(
+                <a key={i} href={`#section-${s.num}`} style={{ display:"flex", alignItems:"baseline", gap:8, marginBottom:9, textDecoration:"none" }}>
+                  <span className="sf" style={{ fontSize:8, fontWeight:700, color:"var(--gold2)", flexShrink:0, minWidth:18 }}>{s.num}</span>
+                  <span className="rp" style={{ fontSize:11.5, color:"var(--ink4)", lineHeight:1.4 }}>{s.title}</span>
+                </a>
+              ))}
+            </div>
           </div>
 
-          {/* Average deal sizes */}
-          <h3 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.1rem,2vw,1.35rem)", fontWeight: 700, color: T.ink, margin: "24px 0 14px" }}>
-            Average Deal Sizes by Stage in 2026
-          </h3>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", border: `1.5px solid ${T.ink}`, background: T.ink, gap: "1.5px", marginBottom: 28 }}>
-            {[["Pre-Seed", "$200K–$500K"], ["Seed", "$500K–$2M"], ["Series A", "$5M–$15M"], ["Series B", "$15M–$40M"], ["Series C+", "$40M–$100M+"]].map(([stage, range]) => (
-              <div key={stage} style={{ background: T.parch2, padding: "14px 12px", textAlign: "center" }}>
-                <p style={{ fontFamily: "system-ui", fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".12em", color: T.ink4, margin: "0 0 6px" }}>{stage}</p>
-                <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(0.9rem,1.5vw,1.1rem)", fontWeight: 900, color: T.gold, margin: 0, lineHeight: 1.2 }}>{range}</p>
-              </div>
-            ))}
-          </div>
+          {/* SECTIONS */}
+          <div style={{ marginTop:"clamp(32px,5vw,56px)" }}>
+            {SECTIONS.map((sec,idx)=>(
+              <div key={idx} id={`section-${sec.num}`} className="lesson-card" style={{ marginBottom:20 }}>
+                <div className="lesson-two" style={{ display:"grid", gridTemplateColumns:idx%2===0?"1fr 340px":"340px 1fr", gap:0, minHeight:340 }}>
+                  {idx%2!==0&&(
+                    <div className="imgf" style={{ borderRight:"1.5px solid var(--ink)", minHeight:300 }}>
+                      <img src={sec.img} alt={sec.title} />
+                      <div style={{ position:"absolute", inset:0, background:"linear-gradient(to right,rgba(26,18,8,.6) 0%,transparent 60%)" }} />
+                      <div style={{ position:"absolute", bottom:20, left:20 }}>
+                        <span className="pf" style={{ fontSize:"4rem", fontWeight:900, color:"rgba(255,255,255,0.12)", lineHeight:1 }}>{sec.num}</span>
+                      </div>
+                    </div>
+                  )}
 
-          {/* §2 — Sectors */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "clamp(24px,4vw,36px) 0 20px", paddingTop: "clamp(16px,3vw,24px)", borderTop: `1px solid ${T.rule}` }}>
-            <span style={{ fontSize: 9, fontWeight: 800, color: T.gold, letterSpacing: ".2em", fontFamily: "system-ui" }}>§02</span>
-            <h2 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,1.8rem)", fontWeight: 900, margin: 0, color: T.ink }}>Sector-by-Sector Breakdown</h2>
-            <div style={{ flex: 1, height: 1, background: T.rule }} />
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5px", border: `1.5px solid ${T.ink}`, background: T.ink, marginBottom: "clamp(24px,4vw,40px)" }}>
-            {[
-              { sector: "AI / Machine Learning", heat: "🔥🔥🔥", funding: "$1.1B Q1 2026", trend: "India's AI ecosystem accelerated with Sarvam AI, Krutrim, and Neysa attracting both domestic and international capital. The 'AI premium' — 2–3x higher valuations for AI-integrated companies — is sector-agnostic. Indian AI/ML talent density makes this sustainable.", note: "Highest investor interest" },
-              { sector: "FinTech", heat: "🔥🔥🔥", funding: "$950M Q1 2026", trend: "UPI processing 15B+ transactions monthly has created derivative opportunities in credit analytics, insurance-tech, and embedded finance. MSME lending remains the largest unaddressed opportunity with ₹20–70 lakh credit gap for small businesses.", note: "India-specific moat" },
-              { sector: "Quick Commerce", heat: "🔥🔥", funding: "$420M Q1 2026", trend: "Zepto, Blinkit, and Swiggy Instamart have proven the model in metros. The next phase is whether quick commerce can be profitable in Tier 2 cities, where density economics are different. Zepto at $5B+ valuation signals continued investor conviction.", note: "Profitability test in 2026" },
-              { sector: "SaaS / B2B Tech", heat: "🔥🔥🔥", funding: "$780M Q1 2026", trend: "Indian SaaS has gone global. Freshworks, Postman, and Druva demonstrated that India-built enterprise software can scale internationally. The next wave combines AI features with vertical SaaS — purpose-built software for logistics, manufacturing, and healthcare.", note: "Most globally scalable" },
-              { sector: "Climate Tech", heat: "🔥🔥", funding: "$310M Q1 2026", trend: "Climate tech has matured from idealism to revenue. Startups integrating carbon-neutral operations into core products — EV logistics, green packaging, solar-as-a-service — are attracting impact capital alongside traditional VC.", note: "Fastest-growing sub-sector" },
-              { sector: "Defence Tech", heat: "🔥🔥", funding: "$280M Q1 2026", trend: "India's homegrown defence production hit ₹1.27 lakh crore in FY24. Bangalore-based startups like Ammunic Systems are building smart weapon subsystems. The government is actively supporting private defence startups with procurement guarantees.", note: "Emerging high-potential" },
-            ].map(({ sector, heat, funding, trend, note }, i) => (
-              <div key={i} style={{ background: T.white, padding: "clamp(14px,3vw,22px)", display: "grid", gridTemplateColumns: "1fr 130px", gap: 16, alignItems: "start" }}>
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, flexWrap: "wrap" }}>
-                    <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.1rem,2vw,1.3rem)", fontWeight: 700, color: T.ink, margin: 0 }}>{sector}</p>
-                    <span style={{ fontSize: 14, lineHeight: 1 }}>{heat}</span>
-                    <span style={{ fontSize: 9, fontWeight: 700, color: T.green, border: `1px solid ${T.green}`, padding: "2px 7px", fontFamily: "system-ui", letterSpacing: ".08em" }}>{note}</span>
+                  <div style={{ padding:"clamp(20px,3vw,36px)", display:"flex", flexDirection:"column", justifyContent:"space-between" }}>
+                    <div>
+                      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
+                        <span className="sf" style={{ fontSize:9, fontWeight:800, letterSpacing:"0.2em", textTransform:"uppercase", color:"var(--gold2)" }}>Section {sec.num}</span>
+                        <div style={{ flex:1, height:1, background:"var(--rule2)" }} />
+                        <span className="sf" style={{ fontSize:8, color:"var(--ink5)", fontWeight:600, letterSpacing:"0.1em", textTransform:"uppercase" }}>{sec.keyword}</span>
+                      </div>
+                      <h2 className="pf" style={{ fontSize:"clamp(1.2rem,2.5vw,1.75rem)", fontWeight:700, color:"var(--ink)", lineHeight:1.15, marginBottom:18 }}>{sec.title}</h2>
+                      {sec.body.split("\n\n").map((para,pi)=>(
+                        <p key={pi} className={`rp${pi===0?" dropcap":""}`} style={{ fontSize:13.5, color:"var(--ink3)", lineHeight:1.88, marginBottom:14 }}>{para}</p>
+                      ))}
+                    </div>
+                    <div style={{ marginTop:16 }}>
+                      <div className="stat-pill">
+                        <p className="pf" style={{ fontSize:"1.8rem", fontWeight:900, color:"#E8C547", lineHeight:1, flexShrink:0 }}>{sec.stat.val}</p>
+                        <p className="sf" style={{ fontSize:10, color:"rgba(255,255,255,.6)", textTransform:"uppercase", letterSpacing:"0.1em", lineHeight:1.5 }}>{sec.stat.label}</p>
+                      </div>
+                      <div className="insight">
+                        <div style={{ width:3, height:3, borderRadius:"50%", background:"var(--gold2)", flexShrink:0 }} />
+                        <p className="rp" style={{ fontSize:12, color:"var(--gold3)", fontStyle:"italic", lineHeight:1.6 }}>{sec.insight}</p>
+                      </div>
+                    </div>
                   </div>
-                  <p style={{ fontSize: 12.5, color: T.ink3, margin: 0, lineHeight: 1.7 }}>{trend}</p>
-                </div>
-                <div style={{ textAlign: "center", padding: "12px", background: T.parch2 }}>
-                  <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase", color: T.ink4, margin: "0 0 4px", fontFamily: "system-ui" }}>Q1 2026</p>
-                  <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(0.9rem,1.5vw,1.1rem)", fontWeight: 900, color: T.gold, margin: 0, lineHeight: 1.2 }}>{funding}</p>
+
+                  {idx%2===0&&(
+                    <div className="imgf" style={{ borderLeft:"1.5px solid var(--ink)", minHeight:300 }}>
+                      <img src={sec.img} alt={sec.title} />
+                      <div style={{ position:"absolute", inset:0, background:"linear-gradient(to left,rgba(26,18,8,.6) 0%,transparent 60%)" }} />
+                      <div style={{ position:"absolute", bottom:20, right:20, textAlign:"right" }}>
+                        <span className="pf" style={{ fontSize:"4rem", fontWeight:900, color:"rgba(255,255,255,0.12)", lineHeight:1 }}>{sec.num}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
           </div>
 
-          {/* §3 — Cities */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "clamp(24px,4vw,36px) 0 20px", paddingTop: "clamp(16px,3vw,24px)", borderTop: `1px solid ${T.rule}` }}>
-            <span style={{ fontSize: 9, fontWeight: 800, color: T.gold, letterSpacing: ".2em", fontFamily: "system-ui" }}>§03</span>
-            <h2 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,1.8rem)", fontWeight: 900, margin: 0, color: T.ink }}>India's Startup Cities: The Pecking Order</h2>
-            <div style={{ flex: 1, height: 1, background: T.rule }} />
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1.5px", border: `1.5px solid ${T.ink}`, background: T.ink, marginBottom: "clamp(24px,4vw,40px)" }}>
-            {[
-              { city: "Bengaluru", rank: "01", tag: "Undisputed Capital", desc: "Home to India's highest concentration of VC offices, engineering talent, and deep-tech startups. Dominates SaaS, AI, and biotech. IISc, IIM, and IIMB alumni networks fund and build here.", strengths: "SaaS, AI/ML, BioTech, Deep Tech" },
-              { city: "Mumbai", rank: "02", tag: "Finance & Consumer", desc: "India's financial capital powers FinTech, D2C brands, and media startups. Proximity to banking infrastructure and consumer markets is irreplaceable.", strengths: "FinTech, D2C, Media, E-commerce" },
-              { city: "Delhi NCR", rank: "03", tag: "Policy & Scale", desc: "Government proximity drives EdTech, GovTech, and enterprise SaaS. Noida and Gurgaon host major unicorns including Zomato, OYO, and Paytm.", strengths: "EdTech, GovTech, Enterprise, FinTech" },
-              { city: "Hyderabad", rank: "04", tag: "Pharma & Deep Tech", desc: "T-Hub acceleration and pharma industry proximity make Hyderabad the rising city for biotech, healthtech, and hardware startups.", strengths: "HealthTech, BioTech, Hardware, SaaS" },
-              { city: "Pune", rank: "05", tag: "Automotive & Manufacturing", desc: "Tata, Bajaj, and Mahindra ecosystem enables automotive tech, EV startups, and manufacturing SaaS. Growing AI talent from COEP and Symbiosis.", strengths: "Auto Tech, EV, Manufacturing SaaS" },
-              { city: "Tier 2 Cities", rank: "↑", tag: "The Rising Wave", desc: "Lucknow (PhysicsWallah), Jaipur (Udaan), Bhopal, Ahmedabad are proving that unicorn-scale companies can be built outside the top 5. Government schemes specifically target Tier 2 startups.", strengths: "EdTech, AgriTech, HealthTech, D2C" },
-            ].map(({ city, rank, tag, desc, strengths }) => (
-              <div key={city} style={{ background: T.white, padding: "16px 18px", borderTop: `3px solid ${T.gold}` }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-                  <div>
-                    <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 16, fontWeight: 900, color: T.ink, margin: "0 0 2px" }}>{city}</p>
-                    <span style={{ fontSize: 9, fontWeight: 700, color: T.green, fontFamily: "system-ui", textTransform: "uppercase", letterSpacing: ".1em" }}>{tag}</span>
-                  </div>
-                  <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 24, fontWeight: 900, color: T.gold, margin: 0, lineHeight: 1 }}>{rank}</p>
-                </div>
-                <p style={{ fontSize: 11.5, color: T.ink3, margin: "0 0 8px", lineHeight: 1.6 }}>{desc}</p>
-                <p style={{ fontSize: 10, color: T.ink4, margin: 0, fontFamily: "system-ui", fontStyle: "italic" }}>Strong in: {strengths}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* §4 — 5 Macro Trends */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "clamp(24px,4vw,36px) 0 20px", paddingTop: "clamp(16px,3vw,24px)", borderTop: `1px solid ${T.rule}` }}>
-            <span style={{ fontSize: 9, fontWeight: 800, color: T.gold, letterSpacing: ".2em", fontFamily: "system-ui" }}>§04</span>
-            <h2 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,1.8rem)", fontWeight: 900, margin: 0, color: T.ink }}>5 Macro Trends Defining 2026</h2>
-            <div style={{ flex: 1, height: 1, background: T.rule }} />
-          </div>
-
-          {[
-            {
-              no: "01", trend: "The AI Premium Is Real — and Widening",
-              body: "Startups integrating genuine AI into their core product are receiving 2–3x higher valuations than sector peers at the same revenue level. This is not because investors are naive — it is because AI integration creates compounding moats. Each user interaction improves the model. Each model improvement widens the gap from non-AI competitors. For Indian founders, the question is not whether to integrate AI — it is how to do it in a way that creates data advantages rather than just wrapping a ChatGPT API.",
-              implication: "Founders: Build proprietary data sets, not just AI features. Investors: Distinguish genuine AI integration from AI-washing.",
-            },
-            {
-              no: "02", trend: "Bharat Is the New Engine of Growth",
-              body: "Metro India built the first wave of Indian startups. Bharat — the 800M+ people in Tier 2, 3, and rural India — is building the second wave. PhysicsWallah proved you can build a $2.8B EdTech company from Lucknow. Zelio proved you can build a profitable EV company for Tier 2 commuters. Government schemes are explicitly targeting non-metro startups. The market that was once considered 'too price-sensitive' is now the most sought-after demographic.",
-              implication: "Founders: Stop assuming your user lives in Bengaluru. The Bharat user is the growth lever. Investors: Increase allocation to Tier 2 and 3 founders.",
-            },
-            {
-              no: "03", trend: "Profitability Has Replaced Growth as the North Star",
-              body: "The 2022 funding winter permanently changed Indian investor psychology. Growth-at-all-costs died in Q3 2022. What replaced it is a two-tier ecosystem: companies with positive unit economics raise at healthy valuations; companies without face down rounds or are simply not raising. Zerodha — ₹4,700 crore profit without a single rupee of VC money — became the aspirational model. Indian VCs are actively coaching portfolio companies on burn discipline, not just growth metrics.",
-              implication: "Founders: Know your CAC payback period, your gross margin, and your path to profitability. These are no longer optional metrics.",
-            },
-            {
-              no: "04", trend: "India-Built AI for Indian Languages Is a Global Opportunity",
-              body: "India has 22 official languages and 1.4 billion people. The global AI stack — built primarily on English data — does not serve this market adequately. Sarvam AI, Krutrim, and a dozen less-known startups are building LLMs trained on Indian language corpora. This is not a niche play — it is a market of 800M+ people who think, transact, and seek information in non-English languages. The startup that solves multilingual AI for India will also solve it for Southeast Asia, Africa, and Latin America.",
-              implication: "This is an open goal. The global AI incumbents cannot move fast enough on Indian languages. The opportunity for India-specific AI is the biggest in the next 5 years.",
-            },
-            {
-              no: "05", trend: "The IPO Window Is Creating a New Class of Exited Founders",
-              body: "India's startup IPO wave in 2025 — 315 IPOs in the year — created India's first large cohort of exited startup founders. This matters enormously for the ecosystem: exited founders become the next generation of angel investors, mentors, and serial founders. The 42 acquisitions in Q1 2026 alone are seeding the next class of founders with capital, networks, and hard-won experience. India is developing the flywheel that Silicon Valley took 30 years to build.",
-              implication: "The next 5 years will see India's most experienced founders reinvesting into the ecosystem. Angel networks will deepen. Mentorship quality will improve dramatically.",
-            },
-          ].map(({ no, trend, body, implication }, i) => (
-            <div key={i} style={{ marginBottom: 20, border: `1.5px solid ${T.ink}` }}>
-              <div style={{ background: T.ink, padding: "12px 18px", display: "flex", alignItems: "baseline", gap: 12 }}>
-                <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 22, fontWeight: 900, color: T.gold, margin: 0, lineHeight: 1 }}>{no}</p>
-                <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1rem,2vw,1.2rem)", fontWeight: 700, color: "#FDFCF9", margin: 0, lineHeight: 1.3 }}>{trend}</p>
-              </div>
-              <div style={{ background: T.white, padding: "18px 20px" }}>
-                <p style={{ fontSize: "clamp(13px,1.5vw,15px)", color: T.ink2, margin: "0 0 14px", lineHeight: 1.8 }}>{body}</p>
-                <div style={{ background: T.goldlt, border: `1px solid #FDE68A`, padding: "10px 14px", borderLeft: `3px solid ${T.gold}` }}>
-                  <p style={{ fontSize: 10.5, fontWeight: 700, color: T.gold3, fontFamily: "system-ui", textTransform: "uppercase", letterSpacing: ".1em", margin: "0 0 4px" }}>Implication for Founders & Investors</p>
-                  <p style={{ fontSize: 12, color: T.gold3, margin: 0, fontFamily: "system-ui", lineHeight: 1.6 }}>{implication}</p>
-                </div>
+          {/* CLOSING */}
+          <div style={{ marginTop:"clamp(36px,6vw,64px)", border:"1.5px solid var(--ink)", background:"var(--ink)", position:"relative", overflow:"hidden" }}>
+            <div style={{ position:"absolute", top:0, left:0, right:0, height:3, background:"linear-gradient(90deg,var(--gold3),var(--gold2),#E8C547,var(--gold2),var(--gold3))" }} />
+            <div className="imgf" style={{ height:200 }}>
+              <img src={IMGS.closing} alt="India startup future" style={{ filter:"sepia(40%) brightness(0.35) contrast(1.1)" }} />
+              <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 clamp(20px,5vw,60px)", textAlign:"center" }}>
+                <p className="pf" style={{ fontSize:"clamp(1.3rem,3vw,2.2rem)", fontWeight:700, color:"white", lineHeight:1.22, fontStyle:"italic" }}>
+                  "India's startup story is not in its third act.{" "}
+                  <em style={{ color:"#E8C547" }}>It is still in the first.</em>"
+                </p>
               </div>
             </div>
-          ))}
-
-          {/* §5 — Policy */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "clamp(24px,4vw,36px) 0 20px", paddingTop: "clamp(16px,3vw,24px)", borderTop: `1px solid ${T.rule}` }}>
-            <span style={{ fontSize: 9, fontWeight: 800, color: T.gold, letterSpacing: ".2em", fontFamily: "system-ui" }}>§05</span>
-            <h2 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,1.8rem)", fontWeight: 900, margin: 0, color: T.ink }}>Policy & Government Support in 2026</h2>
-            <div style={{ flex: 1, height: 1, background: T.rule }} />
+            <div style={{ padding:"clamp(24px,4vw,40px)" }}>
+              <p className="rp" style={{ fontSize:14, color:"rgba(255,255,255,.75)", lineHeight:1.88, maxWidth:760 }}>
+                Whether you are a founder choosing which sector to enter, an investor evaluating the India opportunity, or simply someone trying to understand where the world's most exciting economy is headed — the Indian startup ecosystem in 2026 offers more opportunity, more complexity, and more human ambition per square kilometre than almost anywhere else on earth.
+              </p>
+            </div>
           </div>
 
-          <p style={{ fontSize: "clamp(14px,1.6vw,15.5px)", lineHeight: 1.85, marginBottom: 16, color: T.ink2 }}>
-            India's government support for startups in 2026 is the most comprehensive it has ever been. The DPIIT has recognised 1,97,692 startups. The SISFS corpus stands at ₹945 crore. The Fund of Funds 2.0 received a fresh ₹10,000 crore corpus allocation. State governments from Tamil Nadu to Rajasthan to Karnataka are competing to attract startup founders with grants, incubator networks, and simplified compliance.
-          </p>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1.5px", border: `1.5px solid ${T.ink}`, background: T.ink, marginBottom: "clamp(24px,4vw,40px)" }}>
-            {[
-              { scheme: "SISFS", amount: "₹20–70L", type: "Non-dilutive grant", eligibility: "DPIIT-recognised, PoC or commercialisation stage" },
-              { scheme: "DPIIT Fund of Funds 2.0", amount: "₹10,000Cr corpus", type: "Through SEBI-registered AIFs", eligibility: "Via VC funds investing in startups" },
-              { scheme: "Section 80-IAC", amount: "100% tax exemption", type: "3 consecutive years", eligibility: "DPIIT-recognised, incorporated after 2016" },
-              { scheme: "Patent Fee Rebate", amount: "80% discount", type: "Patent & trademark filing", eligibility: "All DPIIT-recognised startups" },
-              { scheme: "Self-Certification", amount: "6 labour laws", type: "Compliance relaxation", eligibility: "All DPIIT-recognised startups" },
-              { scheme: "State Grants", amount: "₹10–50L", type: "Varies by state", eligibility: "TANSEED, Elevate, KSUM, MahaFund — check state eligibility" },
-            ].map(({ scheme, amount, type, eligibility }) => (
-              <div key={scheme} style={{ background: T.white, padding: "14px 16px" }}>
-                <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 14, fontWeight: 700, color: T.ink, margin: "0 0 4px" }}>{scheme}</p>
-                <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 16, fontWeight: 900, color: T.gold, margin: "0 0 4px", lineHeight: 1 }}>{amount}</p>
-                <p style={{ fontSize: 10, fontWeight: 700, color: T.green, margin: "0 0 4px", fontFamily: "system-ui" }}>{type}</p>
-                <p style={{ fontSize: 10.5, color: T.ink4, margin: 0, fontFamily: "system-ui", fontStyle: "italic" }}>{eligibility}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Verdict */}
-          <div style={{ background: T.ink, padding: "clamp(20px,4vw,36px)", margin: "clamp(24px,4vw,40px) 0" }}>
-            <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".2em", textTransform: "uppercase", color: T.gold, fontFamily: "system-ui", margin: "0 0 14px" }}>✦ UpForge Research Verdict</p>
-            <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1rem,2vw,1.25rem)", fontStyle: "italic", color: "rgba(253,252,249,.88)", lineHeight: 1.75, margin: 0 }}>
-              "The India startup story in 2026 is more interesting than the numbers suggest. Beneath the $3.44B in Q1 funding is a structural shift: the ecosystem is learning to build companies that last, not just companies that raise. The founders getting funded today are solving harder problems, with better unit economics, for larger markets. India's best startup decade is not behind us — it is just starting. The 2030s will be defined by companies being built right now."
-            </p>
-          </div>
-
-          {/* Internal Links */}
-          <div style={{ borderTop: `1px solid ${T.rule}`, paddingTop: "clamp(16px,3vw,28px)", marginBottom: "clamp(24px,4vw,48px)" }}>
-            <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".2em", textTransform: "uppercase", color: T.ink4, fontFamily: "system-ui", marginBottom: 14 }}>Continue Reading</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              {[
-                ["India's Top Unicorns 2026", "/blog/top-indian-unicorns-2026"],
-                ["How to Get Startup Funding India 2026", "/blog/how-to-get-startup-funding-india-2026"],
-                ["Top Indian Startup Founders to Follow", "/blog/best-indian-startup-founders-to-follow-2026"],
-                ["Browse the Startup Registry", "/startup"],
-                ["Generate Your Free Valuation Report", "/report"],
-                ["Top AI Startups India 2026", "/blog/top-ai-startups-india-2026"],
-              ].map(([label, href]) => (
-                <Link key={label as string} href={href as string} style={{ display: "flex", alignItems: "center", gap: 7, padding: "10px 12px", background: T.parch2, border: `1px solid ${T.rule2}`, textDecoration: "none", color: T.gold, fontSize: 11.5, fontFamily: "system-ui", fontWeight: 600 }}>
-                  <span>›</span> {label}
+          {/* RELATED */}
+          <div style={{ marginTop:"clamp(44px,6vw,72px)" }}>
+            <div className="sh" style={{ marginBottom:16 }}><span className="sh-l">Related Reading on UpForge</span><div className="sh-r" /></div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))", border:"1.5px solid var(--ink)", background:"var(--ink)", gap:1.5 }}>
+              {RELATED.map((r,i)=>(
+                <Link key={i} href={r.slug} className="rel-card">
+                  <div style={{ height:80, background:["#E8E0D0","#E0D8CC","#D8D0C4","#D0C8BC"][i], display:"flex", alignItems:"center", justifyContent:"center", borderBottom:"1px solid var(--rule2)" }}>
+                    <span className="pf" style={{ fontSize:"2.8rem", fontWeight:900, color:"rgba(26,18,8,0.1)" }}>{r.name.charAt(0)}</span>
+                  </div>
+                  <div style={{ padding:"13px 14px 12px" }}>
+                    <h3 className="pf" style={{ fontSize:"0.9rem", fontWeight:700, color:"var(--ink)", marginBottom:4, lineHeight:1.2 }}>{r.name}</h3>
+                    <span className="sf" style={{ fontSize:8, color:"var(--ink5)", textTransform:"uppercase", letterSpacing:"0.12em", fontWeight:700 }}>{r.sector}</span>
+                    <div style={{ marginTop:8 }}><span className="sf" style={{ fontSize:8.5, color:"var(--gold2)", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.1em" }}>Read →</span></div>
+                  </div>
                 </Link>
               ))}
             </div>
           </div>
+
+          {/* FOOTER NAV */}
+          <nav aria-label="Blog navigation" style={{ padding:"16px 0", borderTop:"2px solid var(--ink)", marginTop:"clamp(32px,5vw,52px)" }}>
+            <ul style={{ display:"flex", flexWrap:"wrap", gap:"8px 20px", listStyle:"none", margin:0, padding:0 }}>
+              {[
+                { l:"Indian Startups",      h:"/indian-startups"    },
+                { l:"Indian Unicorns 2026", h:"/indian-unicorns"    },
+                { l:"FinTech Startups",     h:"/fintech-startups"   },
+                { l:"D2C Startups",         h:"/d2c-startups"       },
+                { l:"Top AI Startups",      h:"/top-ai-startups"    },
+                { l:"Back to Blog",         h:"/blog"               },
+              ].map(lnk=>(
+                <li key={lnk.h}><Link href={lnk.h} className="sf" style={{ fontSize:8.5, color:"var(--ink5)", textTransform:"uppercase", letterSpacing:"0.14em", textDecoration:"none" }}>{lnk.l}</Link></li>
+              ))}
+            </ul>
+          </nav>
         </div>
       </article>
     </>
