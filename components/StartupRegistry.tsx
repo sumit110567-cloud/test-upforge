@@ -81,7 +81,7 @@ export default function StartupRegistry({
   const [sortOpen,      setSortOpen]      = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [mounted,       setMounted]       = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => { setMounted(true); }, []);
 
