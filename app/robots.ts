@@ -1,15 +1,10 @@
-import { MetadataRoute } from 'next'
-
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: [
-        '/admin/', 
-        '/api/',
-      ],
+      disallow: ['/admin/', '/api/'],
     },
-    sitemap: 'https://upforge.in/sitemap.xml',
+    sitemap: 'https://www.upforge.in/sitemap.xml', // 'www' add karein consistency ke liye
   }
 }
