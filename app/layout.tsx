@@ -22,14 +22,12 @@ export const metadata: Metadata = {
   // Sabhi links ko 'www' par force karne ke liye
   metadataBase: new URL("https://www.upforge.in"),
 
-  title: {
-    default: "The Founder Chronicle — India's Greatest Startup Builders 2026 | UpForge",
+title: {
+    default: "The Founder Chronicle | India's Startup Registry 2026",
     template: "%s | UpForge",
   },
 
-  description:
-    "Verified stories and deep-dive chronicles of India's most influential startup founders — Zepto, PhysicsWallah, Zomato, Zerodha, InternAdda and more. Independent registry by UpForge.",
-
+ description: "Verified stories of India's top startup founders including Zepto, Zomato, and Zerodha. Explore the 2026 edition of The Founder Chronicle.",
   keywords: [
     "Indian startup founders",
     "Indian entrepreneurs 2026",
