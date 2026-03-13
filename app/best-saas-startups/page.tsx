@@ -1,228 +1,459 @@
 // app/best-saas-startups/page.tsx
-// ─── TARGET KEYWORDS ──────────────────────────────────────────────────────────
-// "best SaaS startups India"          ~18,000/mo
-// "top SaaS companies India 2026"     ~11,000/mo
-// "SaaS unicorns India"               ~5,400/mo
-// "Indian SaaS companies list"        ~7,800/mo
-// "SaaS startups India Bengaluru"     ~3,600/mo
-// "B2B SaaS companies India"          ~4,100/mo
-// ─────────────────────────────────────────────────────────────────────────────
-
-import type { Metadata } from "next"
-import Link from "next/link"
-import { ArrowRight, ChevronRight, ExternalLink, BadgeCheck, TrendingUp, Globe, Building2 } from "lucide-react"
+import Link from "next/link";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Best SaaS Startups in India 2026 — Ranked List | UpForge",
+  title: "Best SaaS Startups in India 2026: Top B2B Software Companies Ranked | UpForge",
   description:
-    "The definitive list of India's best SaaS startups in 2026 — Zoho, Freshworks, Chargebee, Darwinbox, Postman and more. 15 SaaS unicorns, $26B market by 2026. Verified by UpForge.",
-  keywords: "best SaaS startups India, top SaaS companies India 2026, SaaS unicorns India, Indian SaaS companies list, B2B SaaS India, Zoho, Freshworks, Chargebee, Darwinbox, Postman, BrowserStack, CleverTap, SaaS market India, enterprise software India, SaaS funding India 2026",
+    "Explore India's best SaaS startups in 2026 — from HR tech and marketing automation to DevOps and customer success platforms. Profiles, funding rounds, ARR milestones, and founder stories.",
+  keywords: [
+    "best SaaS startups India 2026",
+    "top B2B software companies India",
+    "Indian SaaS unicorns 2026",
+    "SaaS startup funding India",
+    "India SaaS ARR leaders",
+    "best Indian SaaS products",
+    "B2B SaaS founders India",
+    "SaaS companies Bangalore Hyderabad",
+  ].join(", "),
   alternates: { canonical: "https://upforge.in/best-saas-startups" },
   openGraph: {
-    title: "Best SaaS Startups India 2026 | UpForge",
-    description: "India has 15 SaaS unicorns & a $26B market. Verified list of the best B2B SaaS companies — funding, revenue, investors & IPO watch. March 2026.",
+    title: "Best SaaS Startups in India 2026: Top B2B Software Companies Ranked",
+    description:
+      "India's top SaaS startups — ARR, funding, founder stories, and why each company is worth watching in 2026.",
     url: "https://upforge.in/best-saas-startups",
-    siteName: "UpForge", locale: "en_IN", type: "article",
-    images: [{ url: "https://upforge.in/og/best-saas-startups.png", width: 1200, height: 630 }],
+    siteName: "UpForge",
+    images: [{ url: "https://upforge.in/og-saas-startups.png", width: 1200, height: 630 }],
+    locale: "en_IN",
+    type: "website",
   },
-  twitter: { card: "summary_large_image", site: "@upforge_in", title: "Best SaaS Startups India 2026 | UpForge", images: ["https://upforge.in/og/best-saas-startups.png"] },
-  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large" } },
-}
+  twitter: {
+    card: "summary_large_image",
+    title: "Best SaaS Startups India 2026 | UpForge",
+    description: "India's best SaaS startups ranked — Freshworks, Chargebee, Postman, Zoho, and the next generation of B2B builders.",
+  },
+};
+
+const IMGS = {
+  hero: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&q=85&auto=format",
+  freshworks: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=900&q=80&auto=format",
+  chargebee: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=900&q=80&auto=format",
+  postman: "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=900&q=80&auto=format",
+  leadsquared: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=900&q=80&auto=format",
+  browserstack: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=900&q=80&auto=format",
+  banner: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&q=80&auto=format",
+};
 
 const STARTUPS = [
-  { rank: 1, name: "Zoho", slug: "zoho", sector: "Full-Stack Business SaaS", stage: "Bootstrapped", funding: "Self-Funded", valuation: "$15B+", founded: 1996, hq: "Chennai", badge: "Bootstrapped", hot: false, website: "https://zoho.com", revenue: "$1B+ ARR", investors: "None — fully bootstrapped", what: "The world's most successful bootstrapped SaaS company. 55+ business apps, 100M+ users, 15,000+ employees. Zoho proved Indian founders don't need VC money to build global category leaders." },
-  { rank: 2, name: "Freshworks", slug: "freshworks", sector: "CX & IT Service SaaS", stage: "IPO", funding: "$1.03B pre-IPO", valuation: "~$5B market cap", founded: 2010, hq: "Chennai", badge: "IPO", hot: false, website: "https://freshworks.com", revenue: "$763M FY24", investors: "NASDAQ listed (FRSH)", what: "India's first SaaS company to list on NASDAQ. Full suite for customer support, CRM, and ITSM targeting SMBs. Now adding AI-driven CX products to drive next growth wave." },
-  { rank: 3, name: "Chargebee", slug: "chargebee", sector: "Subscription Billing & Revenue Ops", stage: "Series F", funding: "$700M+", valuation: "$3.5B", founded: 2011, hq: "Chennai", badge: "Unicorn", hot: false, website: "https://chargebee.com", revenue: "$100M+ ARR", investors: "Tiger Global, Insight Partners, Steadview", what: "The subscription management layer for thousands of SaaS businesses — billing, invoicing, revenue recognition. Acquired Stripe Billing's enterprise book in 2023 to expand global reach." },
-  { rank: 4, name: "BrowserStack", slug: "browserstack", sector: "Developer Tools / QA SaaS", stage: "Series B", funding: "$200M+", valuation: "$3.4B", founded: 2011, hq: "Mumbai", badge: "Unicorn", hot: false, website: "https://browserstack.com", revenue: "$100M+ ARR", investors: "Insight Partners, Bond Capital, Accel", what: "The world's leading cloud web and mobile testing platform — 50,000+ customers including Microsoft, Twitter, and Spotify. Grew to unicorn purely on product-led growth." },
-  { rank: 5, name: "Postman", slug: "postman", sector: "API Development Platform", stage: "Series D", funding: "$433M", valuation: "$2B+", founded: 2014, hq: "Bengaluru / SF", badge: "Unicorn", hot: false, website: "https://postman.com", revenue: "100M+ users", investors: "Insight Partners, Nexus Venture Partners, CRV", what: "Started as a Bengaluru side project, now the world's #1 API platform. 100M+ users, 500K+ companies. A textbook product-led growth story from Indian founders." },
-  { rank: 6, name: "Darwinbox", slug: "darwinbox", sector: "HR Tech / People Management SaaS", stage: "Series D", funding: "$280M+", valuation: "$1B+", founded: 2015, hq: "Hyderabad", badge: "Unicorn", hot: true, website: "https://darwinbox.com", revenue: "$60M+ ARR", investors: "Microsoft, Salesforce Ventures, Sequoia", what: "Asia-Pacific's fastest-growing HCM platform — serves 1,000+ global enterprises including Samsung, Tokopedia, and Accenture. Backed by Microsoft and Salesforce Ventures." },
-  { rank: 7, name: "CleverTap", slug: "clevertap", sector: "Customer Engagement & Analytics SaaS", stage: "Series D", funding: "$182M", valuation: "$1.2B", founded: 2013, hq: "Mumbai", badge: "Unicorn", hot: false, website: "https://clevertap.com", revenue: "$80M+ ARR", investors: "Tiger Global, Sequoia Capital India, CDPQ", what: "Real-time customer engagement platform serving Disney+ Hotstar, Domino's, and Sony. Processes 200B+ data points monthly to power personalised user journeys." },
-  { rank: 8, name: "Innovaccer", slug: "innovaccer", sector: "Healthcare Data SaaS", stage: "Series F", funding: "$375M+", valuation: "$3.5B", founded: 2014, hq: "Noida / SF", badge: "Unicorn", hot: false, website: "https://innovaccer.com", revenue: "$100M+ ARR", investors: "General Atlantic, Tiger Global, Steadview", what: "Healthcare data activation platform — unifies patient records across systems to enable value-based care. Serves 40+ of the top US health systems." },
-  { rank: 9, name: "LeadSquared", slug: "leadsquared", sector: "CRM / Sales Automation SaaS", stage: "Series C", funding: "$153M", valuation: "$1B+", founded: 2011, hq: "Bengaluru", badge: "Unicorn", hot: false, website: "https://leadsquared.com", revenue: "$50M+ ARR", investors: "Gaja Capital, WestBridge Capital", what: "CRM and marketing automation purpose-built for high-velocity businesses — education, healthcare, financial services. 1,000+ customers across 40 countries." },
-  { rank: 10, name: "Kissflow", slug: "kissflow", sector: "No-Code / Low-Code SaaS", stage: "Series A", funding: "$32M", valuation: "$100M+", founded: 2012, hq: "Chennai", badge: "Rising", hot: true, website: "https://kissflow.com", revenue: "$25M+ ARR", investors: "WestBridge Capital", what: "No-code workflow automation platform helping 10,000+ businesses automate approvals, processes, and projects without writing a line of code. 70% YoY growth track record." },
-]
+  {
+    rank: "01",
+    name: "Freshworks",
+    founder: "Girish Mathrubootham",
+    sector: "CRM · Customer Support SaaS",
+    city: "Chennai / San Mateo",
+    founded: 2010,
+    arr: "$700M+ ARR",
+    stage: "NASDAQ: FRSH",
+    slug: "freshworks",
+    img: IMGS.freshworks,
+    what: "Freshworks builds CRM, ITSM, and customer support software used by 68,000+ businesses globally — from local SMBs to enterprises like Bridgestone and Vicaima.",
+    why: "The first Indian SaaS company to IPO on NASDAQ, Freshworks proved the India SaaS thesis to the world. Girish built a $12B company without a single rupee of revenue from India for the first five years.",
+    tags: ["CRM", "ITSM", "Public Company"],
+    metric: { label: "Global Customers", val: "68,000+" },
+  },
+  {
+    rank: "02",
+    name: "Chargebee",
+    founder: "Krish Subramanian",
+    sector: "Subscription Billing SaaS",
+    city: "Chennai",
+    founded: 2011,
+    arr: "$100M+ ARR",
+    stage: "Series G · Unicorn",
+    slug: "chargebee",
+    img: IMGS.chargebee,
+    what: "Chargebee is the operating system for subscription revenue — managing billing, dunning, revenue recognition, and growth analytics for 6,500+ SaaS businesses worldwide.",
+    why: "Every SaaS company in the world needs billing infrastructure. Chargebee chose to build the best in the world, not just the best for India — and that ambition made them a unicorn.",
+    tags: ["Billing", "RevOps", "Unicorn"],
+    metric: { label: "SaaS Customers", val: "6,500+" },
+  },
+  {
+    rank: "03",
+    name: "Postman",
+    founder: "Abhinav Asthana",
+    sector: "API Development Platform",
+    city: "San Francisco (founded India)",
+    founded: 2014,
+    arr: "$150M+ ARR",
+    stage: "Series D · $5.6B Valuation",
+    slug: "postman",
+    img: IMGS.postman,
+    what: "Postman is the world's leading API platform — used by 30 million developers across 500,000 companies to design, test, and document APIs.",
+    why: "Abhinav built a free tool that developers loved, then built a business around it. Postman is proof that India can build developer-first products that win globally without a single sales call.",
+    tags: ["Developer Tools", "APIs", "PLG"],
+    metric: { label: "Developers", val: "30 Million" },
+  },
+  {
+    rank: "04",
+    name: "LeadSquared",
+    founder: "Nilesh Patel",
+    sector: "Sales Automation · CRM",
+    city: "Bengaluru",
+    founded: 2011,
+    arr: "$50M+ ARR",
+    stage: "Series C · Unicorn",
+    slug: "leadsquared",
+    img: IMGS.leadsquared,
+    what: "LeadSquared is India's leading sales execution CRM — purpose-built for high-velocity, field-heavy sales teams in healthcare, education, financial services, and real estate.",
+    why: "Most CRMs are built for Western sales motions. LeadSquared built for India's — where salespeople ride bikes to client offices and field ops matter as much as email sequences.",
+    tags: ["Sales CRM", "India-first", "Field Sales"],
+    metric: { label: "Enterprises", val: "2,000+" },
+  },
+  {
+    rank: "05",
+    name: "BrowserStack",
+    founder: "Ritesh Arora & Nakul Aggarwal",
+    sector: "Testing Infrastructure SaaS",
+    city: "Mumbai",
+    founded: 2011,
+    arr: "$100M+ ARR",
+    stage: "Series B · Unicorn",
+    slug: "browserstack",
+    img: IMGS.browserstack,
+    what: "BrowserStack is the world's largest cloud-based browser and device testing platform — used by Microsoft, Twitter, and Expedia to test apps across 3,000+ device-browser combinations.",
+    why: "The founders built the exact tool developers needed and priced it to convert. BrowserStack raised almost no money for a decade, grew to unicorn status on the back of a product that simply worked.",
+    tags: ["QA Testing", "DevOps", "Bootstrapped Origins"],
+    metric: { label: "Companies", val: "50,000+" },
+  },
+];
 
 const STATS = [
-  { v: "15+", l: "Indian SaaS Unicorns" },
-  { v: "$26B", l: "India SaaS Market 2026" },
-  { v: "26,000+", l: "SaaS Startups in India" },
-  { v: "$50B", l: "Projected ARR by 2030" },
-]
+  { val: "$50B+", label: "Indian SaaS Revenue by 2030 (projected)" },
+  { val: "1,000+", label: "SaaS Startups in India" },
+  { val: "16", label: "SaaS Unicorns from India" },
+  { val: "#2", label: "India's Global Rank in SaaS Talent Density" },
+];
 
-const BADGE_COLORS: Record<string, string> = {
-  "Unicorn": "bg-amber-50 text-amber-800 border border-amber-200",
-  "IPO": "bg-sky-50 text-sky-800 border border-sky-200",
-  "Bootstrapped": "bg-lime-50 text-lime-800 border border-lime-200",
-  "Pre-Unicorn": "bg-emerald-50 text-emerald-800 border border-emerald-200",
-  "Rising": "bg-stone-100 text-stone-600 border border-stone-200",
-}
-
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    { "@type": "WebPage", "@id": "https://upforge.in/best-saas-startups", url: "https://upforge.in/best-saas-startups", name: "Best SaaS Startups in India 2026 | UpForge", dateModified: "2026-03-07", isPartOf: { "@type": "WebSite", name: "UpForge", url: "https://upforge.in" }, breadcrumb: { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: "https://upforge.in" }, { "@type": "ListItem", position: 2, name: "Best SaaS Startups India 2026", item: "https://upforge.in/best-saas-startups" }] } },
-    { "@type": "ItemList", name: "Best SaaS Startups in India 2026", numberOfItems: 10, itemListElement: STARTUPS.map((s, i) => ({ "@type": "ListItem", position: i + 1, item: { "@type": "Organization", name: s.name, description: s.what, url: s.website } })) },
-    { "@type": "Article", headline: "Best SaaS Startups in India 2026", author: { "@type": "Organization", name: "UpForge", url: "https://upforge.in" }, datePublished: "2026-01-01", dateModified: "2026-03-07" },
-  ],
-}
+const MILESTONES = [
+  { year: "2013", event: "Freshworks hits $1M ARR — India's first SaaS milestone" },
+  { year: "2016", event: "Zoho reaches 15M users globally without a single VC dollar" },
+  { year: "2019", event: "Chargebee raises Series D — India SaaS goes global" },
+  { year: "2021", event: "Freshworks IPOs on NASDAQ — India SaaS moment of truth" },
+  { year: "2024", event: "India has 16 SaaS unicorns — more than all of Europe" },
+  { year: "2026", event: "Next wave: AI-native SaaS companies emerge from Bengaluru & Hyderabad" },
+];
 
 export default function BestSaaSStartupsPage() {
   return (
-    <div className="min-h-screen bg-[#F7F5F0]" style={{ fontFamily: "'Georgia','Times New Roman',serif" }}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+    <>
       <style>{`
-        @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-        .fu{animation:fadeUp .5s ease both}
-        .fu1{animation-delay:.04s}.fu2{animation-delay:.12s}.fu3{animation-delay:.2s}.fu4{animation-delay:.3s}
-        .card:hover{background:white;border-color:#1C1C1C;box-shadow:0 2px 16px rgba(0,0,0,.06)}
-        .card{transition:all .15s ease}
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap');
+
+        .pf  { font-family: 'Playfair Display', Georgia, serif !important; }
+        .rp  { font-family: 'Georgia', 'Times New Roman', serif; }
+        .sf  { font-family: system-ui, -apple-system, sans-serif; }
+
+        :root {
+          --parch:  #F5F1E8;
+          --parch2: #EDE9DF;
+          --ink:    #1A1208;
+          --ink2:   #2C2010;
+          --ink3:   #5A4A30;
+          --ink4:   #8C7D65;
+          --ink5:   #BBB0A0;
+          --rule:   #C8C2B4;
+          --rule2:  #D8D2C4;
+          --gold:   #B45309;
+          --gold2:  #D97706;
+          --gold3:  #92400E;
+          --accent: #059669;
+          --accentlt: #ECFDF5;
+          --white:  #FDFCF9;
+        }
+
+        body { background: var(--parch); }
+
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(14px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .a0 { animation: fadeUp .44s .00s cubic-bezier(.16,1,.3,1) both; }
+        .a1 { animation: fadeUp .44s .10s cubic-bezier(.16,1,.3,1) both; }
+        .a2 { animation: fadeUp .44s .20s cubic-bezier(.16,1,.3,1) both; }
+
+        .imgf { position: relative; overflow: hidden; }
+        .imgf img {
+          position: absolute; inset: 0; width: 100%; height: 100%;
+          object-fit: cover; object-position: center;
+          filter: sepia(12%) contrast(108%);
+          transition: transform .6s ease;
+        }
+        .imgf:hover img { transform: scale(1.04); }
+
+        .startup-card {
+          border: 1.5px solid var(--ink);
+          background: var(--white);
+          overflow: hidden; position: relative;
+          transition: transform .15s, box-shadow .15s;
+        }
+        .startup-card:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--ink); }
+        .startup-card::before {
+          content: ''; position: absolute; top: 0; left: 0; right: 0;
+          height: 3px;
+          background: linear-gradient(90deg, #047857, var(--accent), #34D399);
+        }
+
+        .stat-box {
+          border: 1.5px solid var(--ink); background: var(--white);
+          padding: 22px 18px; text-align: center; position: relative; overflow: hidden;
+        }
+        .stat-box::after {
+          content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+          height: 2px; background: linear-gradient(90deg, #047857, #34D399);
+        }
+
+        .timeline-dot {
+          width: 10px; height: 10px; border-radius: 50%;
+          background: var(--accent); border: 2px solid var(--white);
+          flex-shrink: 0; box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        .tag {
+          display: inline-block; padding: 2px 8px;
+          border: 1px solid rgba(5,150,105,.35);
+          background: var(--accentlt);
+          font-size: 8px; font-weight: 700; text-transform: uppercase;
+          letter-spacing: .12em; color: #047857; font-family: system-ui;
+        }
+
+        .sh { display: flex; align-items: center; gap: 10px; }
+        .sh-l { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .28em; color: var(--ink5); font-family: system-ui; white-space: nowrap; }
+        .sh-r { flex: 1; height: 1px; background: var(--rule2); }
+
+        @media (max-width: 900px) { .card-grid { grid-template-columns: 1fr !important; } .stat-grid { grid-template-columns: repeat(2,1fr) !important; } }
+        @media (max-width: 600px) { .stat-grid { grid-template-columns: 1fr !important; } }
       `}</style>
 
-      {/* Breadcrumb */}
-      <div className="border-b border-[#D5D0C8] bg-[#F7F5F0]">
-        <div className="max-w-[1100px] mx-auto px-4 sm:px-6 py-3 flex items-center gap-1.5" style={{ fontFamily: "system-ui,sans-serif" }}>
-          <Link href="/" className="text-[10px] text-[#999] hover:text-[#1C1C1C] uppercase tracking-wider transition-colors">Home</Link>
-          <ChevronRight className="w-3 h-3 text-[#CCC]" />
-          <span className="text-[10px] text-[#1C1C1C] font-semibold uppercase tracking-wider">Best SaaS Startups India 2026</span>
-        </div>
-      </div>
+      <main
+        itemScope
+        itemType="https://schema.org/CollectionPage"
+        style={{ minHeight: "100vh", background: "var(--parch)" }}
+      >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "CollectionPage",
+              name: "Best SaaS Startups in India 2026",
+              description: "India's top B2B SaaS startups ranked by ARR, innovation, and global impact.",
+              url: "https://upforge.in/best-saas-startups",
+              publisher: { "@type": "Organization", name: "UpForge", url: "https://upforge.in" },
+              dateModified: new Date().toISOString().split("T")[0],
+            }),
+          }}
+        />
 
-      <div className="max-w-[1100px] mx-auto px-4 sm:px-6 pb-20">
-
-        {/* ── HEADER ── */}
-        <header className="border-b-2 border-[#1C1C1C] py-10 sm:py-14 fu fu1">
-          <div className="flex items-center gap-2 mb-5">
-            <span className="w-8 h-px bg-[#1C1C1C]" />
-            <span className="text-[9px] tracking-[0.3em] text-[#888] uppercase" style={{ fontFamily: "system-ui,sans-serif" }}>UpForge Intelligence · March 2026</span>
-          </div>
-          <h1 className="text-[2.6rem] sm:text-[3.6rem] lg:text-[4.4rem] font-bold leading-[1.0] tracking-tight text-[#1C1C1C] mb-6">
-            Best SaaS Startups<br />
-            <span className="text-[#A89060] italic">in India</span> — 2026
-          </h1>
-          <p className="text-[15px] sm:text-base text-[#555] max-w-2xl leading-relaxed mb-8" style={{ fontFamily: "system-ui,sans-serif" }}>
-            India is the world's second-largest SaaS ecosystem with <strong className="text-[#1C1C1C]">26,000+ SaaS startups</strong>, <strong className="text-[#1C1C1C]">15 unicorns</strong>, and a projected market of <strong className="text-[#1C1C1C]">$26.4B by 2026</strong>. From bootstrapped giants like Zoho to NASDAQ-listed Freshworks, this verified list ranks India's most consequential B2B software companies.
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 border border-[#1C1C1C] divide-x divide-y sm:divide-y-0 divide-[#1C1C1C]">
-            {STATS.map((s, i) => (
-              <div key={i} className="px-5 py-4">
-                <p className="text-2xl sm:text-3xl font-bold text-[#1C1C1C] leading-none mb-1.5">{s.v}</p>
-                <p className="text-[9px] text-[#999] uppercase tracking-[0.18em]" style={{ fontFamily: "system-ui,sans-serif" }}>{s.l}</p>
-              </div>
-            ))}
-          </div>
-        </header>
-
-        {/* ── CONTEXT ── */}
-        <section className="py-8 border-b border-[#D5D0C8] fu fu2">
-          <div className="grid sm:grid-cols-3 gap-4">
-            {[
-              { icon: Globe, title: "India Builds for the World", body: "Indian SaaS companies serve customers in 150+ countries. Zoho, Freshworks, and Chargebee have proven the model: hire in India, sell globally, compound for decades." },
-              { icon: TrendingUp, title: "IPO Supercycle Incoming", body: "2026 will see India's biggest SaaS IPO wave — Fractal Analytics, Capillary, and CleverTap are all preparing for listings on domestic exchanges rather than NASDAQ, signalling a maturing local market." },
-              { icon: Building2, title: "Vertical SaaS Rising", body: "The next wave isn't horizontal — it's deep verticals. Healthcare SaaS (Innovaccer), HR SaaS (Darwinbox), and BFSI SaaS (Vymo) are commanding premium valuations because of irreplaceable workflow integration." },
-            ].map((item, i) => (
-              <div key={i} className="bg-white border border-[#E2DDD5] p-5">
-                <item.icon className="w-4 h-4 text-[#CCC] mb-3" />
-                <h2 className="text-[13px] font-bold text-[#1C1C1C] mb-2" style={{ fontFamily: "'Georgia',serif" }}>{item.title}</h2>
-                <p className="text-[11.5px] text-[#666] leading-relaxed" style={{ fontFamily: "system-ui,sans-serif" }}>{item.body}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ── RANKED LIST ── */}
-        <section className="pt-8 fu fu3">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-[10px] font-bold tracking-[0.24em] uppercase text-[#888]" style={{ fontFamily: "system-ui,sans-serif" }}>Top 10 · Ranked by Valuation & Global Impact</h2>
-            <div className="flex items-center gap-1.5" style={{ fontFamily: "system-ui,sans-serif" }}>
-              <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute h-full w-full rounded-full bg-emerald-400 opacity-75" /><span className="relative h-1.5 w-1.5 rounded-full bg-emerald-500" /></span>
-              <span className="text-[9px] text-[#AAA] uppercase tracking-wider">Verified · March 2026</span>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            {STARTUPS.map((s) => (
-              <article key={s.rank} className="card border border-[#E2DDD5] bg-white/70 p-5 sm:p-6">
-                <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
-                  <div className="flex-shrink-0 w-9 pt-0.5 text-center">
-                    <span className="text-[11px] font-mono text-[#CCC]" style={{ fontFamily: "system-ui,sans-serif" }}>{String(s.rank).padStart(2,"0")}</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      <h3 className="text-[1.05rem] font-bold text-[#1C1C1C] leading-tight">{s.name}</h3>
-                      {s.hot && <span className="text-[7.5px] bg-[#1C1C1C] text-[#E8C547] px-1.5 py-0.5 font-black uppercase tracking-[0.15em]" style={{ fontFamily: "system-ui,sans-serif" }}>🔥 Hot</span>}
-                      <span className={`text-[8.5px] px-2 py-0.5 font-bold uppercase tracking-[0.1em] ${BADGE_COLORS[s.badge] || "bg-stone-100 text-stone-600 border border-stone-200"}`} style={{ fontFamily: "system-ui,sans-serif" }}>{s.badge}</span>
-                    </div>
-                    <div className="flex flex-wrap gap-x-3 gap-y-0.5 mb-3" style={{ fontFamily: "system-ui,sans-serif" }}>
-                      <span className="text-[10px] font-semibold text-[#888] uppercase tracking-wider">{s.sector}</span>
-                      <span className="text-[#DDD]">·</span><span className="text-[10px] text-[#AAA]">{s.hq}</span>
-                      <span className="text-[#DDD]">·</span><span className="text-[10px] text-[#AAA]">Est. {s.founded}</span>
-                    </div>
-                    <p className="text-[12.5px] text-[#444] leading-relaxed mb-4" style={{ fontFamily: "system-ui,sans-serif" }}>{s.what}</p>
-                    <div className="flex flex-wrap items-end gap-x-5 gap-y-2" style={{ fontFamily: "system-ui,sans-serif" }}>
-                      {[
-                        { label: "Funding", value: s.funding, cls: "text-[#1C1C1C] font-bold" },
-                        { label: "Valuation", value: s.valuation, cls: "text-emerald-700 font-bold" },
-                        { label: "Revenue", value: s.revenue, cls: "text-[#555] font-semibold" },
-                      ].map((m, i) => (
-                        <div key={i}>
-                          <span className="text-[8.5px] text-[#BBB] uppercase tracking-wider block mb-0.5">{m.label}</span>
-                          <span className={`text-[13px] ${m.cls}`}>{m.value}</span>
-                        </div>
-                      ))}
-                      <div className="flex-1 min-w-[120px]">
-                        <span className="text-[8.5px] text-[#BBB] uppercase tracking-wider block mb-0.5">Investors</span>
-                        <span className="text-[11.5px] text-[#666]">{s.investors}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex-shrink-0 flex sm:flex-col gap-2">
-                    <Link href={`/startup/${s.slug}`} className="inline-flex items-center gap-1 px-3 py-2 bg-[#1C1C1C] text-white text-[9.5px] font-bold uppercase tracking-wider hover:bg-[#333] transition-colors" style={{ fontFamily: "system-ui,sans-serif" }}>
-                      Profile <ArrowRight className="w-3 h-3" />
-                    </Link>
-                    {s.website && (
-                      <a href={s.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-3 py-2 border border-[#D5D0C8] text-[#888] text-[9.5px] font-bold uppercase tracking-wider hover:border-[#1C1C1C] hover:text-[#1C1C1C] transition-colors" style={{ fontFamily: "system-ui,sans-serif" }}>
-                        Site <ExternalLink className="w-3 h-3" />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* Internal nav */}
-        <nav className="mt-12 border-t border-[#D5D0C8] pt-8 fu fu4" aria-label="Related startup lists">
-          <p className="text-[9px] tracking-[0.24em] uppercase text-[#AAA] mb-4" style={{ fontFamily: "system-ui,sans-serif" }}>More UpForge Lists</p>
-          <div className="flex flex-wrap gap-2">
-            {[
-              { label: "Top AI Startups India", href: "/top-ai-startups" },
-              { label: "Indian Startups Overview", href: "/indian-startups" },
-              { label: "Indian Unicorns 2026", href: "/indian-unicorns" },
-              { label: "Top Funded Startups", href: "/top-funded-startups" },
-              { label: "Browse All Startups", href: "/startup" },
-            ].map((l) => (
-              <Link key={l.href} href={l.href} className="inline-flex items-center gap-1 px-3 py-1.5 border border-[#D5D0C8] text-[10px] text-[#666] hover:border-[#1C1C1C] hover:text-[#1C1C1C] transition-colors bg-white" style={{ fontFamily: "system-ui,sans-serif" }}>
-                {l.label} <ChevronRight className="w-3 h-3" />
-              </Link>
-            ))}
+        {/* BREADCRUMB */}
+        <nav className="sf a0" style={{ background: "var(--parch2)", borderBottom: "1px solid var(--rule2)", padding: "8px 0" }}>
+          <div style={{ maxWidth: 1080, margin: "0 auto", padding: "0 clamp(16px,3vw,36px)" }}>
+            <ol style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 9, color: "var(--ink5)", textTransform: "uppercase", letterSpacing: "0.18em", listStyle: "none", margin: 0, padding: 0 }}>
+              <li><Link href="/" style={{ color: "var(--ink5)", textDecoration: "none" }}>UpForge</Link></li>
+              <li style={{ color: "var(--rule)" }}>/</li>
+              <li style={{ color: "var(--ink4)", fontWeight: 700 }}>Best SaaS Startups</li>
+            </ol>
           </div>
         </nav>
 
-        {/* CTA */}
-        <div className="mt-10 bg-[#1C1C1C] p-7 sm:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-2"><BadgeCheck className="w-4 h-4 text-[#E8C547]" /><span className="text-[9px] text-white/30 uppercase tracking-[0.22em]" style={{ fontFamily: "system-ui,sans-serif" }}>UpForge Registry</span></div>
-            <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">Building a SaaS startup in India?</h2>
-            <p className="text-[12.5px] text-white/50 max-w-sm" style={{ fontFamily: "system-ui,sans-serif" }}>Get verified and listed in India's most trusted independent startup registry. Free forever. Indexed by Google.</p>
+        {/* HERO */}
+        <div className="a0" style={{ borderBottom: "3px solid var(--ink)" }}>
+          <div className="imgf" style={{ height: "clamp(280px,38vw,480px)" }}>
+            <img src={IMGS.hero} alt="Best SaaS Startups India 2026" />
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(4,47,46,.4) 0%, rgba(4,47,46,.88) 100%)" }} />
+            <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 clamp(16px,5vw,64px)", textAlign: "center" }}>
+              <div style={{ display: "flex", gap: 8, marginBottom: 18, flexWrap: "wrap", justifyContent: "center" }}>
+                {["SaaS", "B2B Software", "India 2026"].map(tag => (
+                  <span key={tag} className="sf" style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.65)", border: "1px solid rgba(255,255,255,0.2)", padding: "3px 10px" }}>{tag}</span>
+                ))}
+              </div>
+              <h1 className="pf" itemProp="name" style={{ fontSize: "clamp(1.8rem,5.5vw,4.2rem)", fontWeight: 900, lineHeight: 1.02, color: "white", letterSpacing: "-0.02em", marginBottom: 18, maxWidth: 860 }}>
+                Best SaaS Startups in India 2026:{" "}
+                <em style={{ color: "#34D399", fontStyle: "italic" }}>B2B Software at Global Scale</em>
+              </h1>
+              <p className="rp" style={{ fontSize: "clamp(13px,1.8vw,16px)", color: "rgba(255,255,255,0.62)", fontStyle: "italic", maxWidth: 560, lineHeight: 1.6 }}>
+                India's software builders are no longer just serving the world — they are leading it.
+              </p>
+            </div>
+            <div className="sf" style={{ position: "absolute", top: 18, right: 18, background: "rgba(4,47,46,.75)", border: "1px solid rgba(255,255,255,.1)", padding: "5px 12px", fontSize: 8, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,.55)" }}>
+              UpForge · SaaS Intelligence
+            </div>
           </div>
-          <Link href="/submit" className="flex-shrink-0 inline-flex items-center gap-2 px-6 py-3.5 bg-[#E8C547] text-[#111] text-sm font-bold tracking-wide hover:bg-[#F5D55A] transition-colors" style={{ fontFamily: "system-ui,sans-serif" }}>
-            List Your Startup — Free <ArrowRight className="w-4 h-4" />
-          </Link>
+          <div style={{ background: "var(--ink)" }}>
+            <div style={{ maxWidth: 1080, margin: "0 auto", padding: "0 clamp(16px,3vw,36px)" }}>
+              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center" }}>
+                {[
+                  { l: "Updated", v: new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }) },
+                  { l: "Companies Ranked", v: "5 Featured · 1,000+ Tracked" },
+                  { l: "Category", v: "SaaS · B2B Software" },
+                  { l: "Focus", v: "ARR · Global Expansion" },
+                ].map((m, i) => (
+                  <div key={i} style={{ padding: "12px 20px", borderRight: "1px solid rgba(255,255,255,.07)" }}>
+                    <p className="sf" style={{ fontSize: 7.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.18em", color: "rgba(255,255,255,.3)", marginBottom: 3 }}>{m.l}</p>
+                    <p className="sf" style={{ fontSize: 11, color: "rgba(255,255,255,.6)", fontWeight: 600 }}>{m.v}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
-        <p className="mt-6 text-[9.5px] text-[#C8C3BC] leading-relaxed" style={{ fontFamily: "system-ui,sans-serif" }}>* Data sourced from SaaSBoomi, Tracxn, Inc42, public company disclosures as of March 2026. Rankings are editorial. UpForge accepts no paid placements.</p>
-      </div>
-    </div>
-  )
+        {/* MAIN */}
+        <div style={{ maxWidth: 1080, margin: "0 auto", padding: "0 clamp(16px,3vw,36px) clamp(48px,8vw,96px)" }}>
+
+          {/* INTRO */}
+          <div className="a1" style={{ padding: "clamp(28px,4vw,48px) 0", borderBottom: "1px solid var(--rule2)" }}>
+            <div className="sh" style={{ marginBottom: 18 }}>
+              <span className="sh-l">The India SaaS Story</span>
+              <div className="sh-r" />
+            </div>
+            <p className="pf" itemProp="description" style={{ fontSize: "clamp(1.05rem,2.2vw,1.35rem)", fontWeight: 400, lineHeight: 1.72, color: "var(--ink)", marginBottom: 18, maxWidth: 760 }}>
+              India's SaaS sector is now a global force. Freshworks trades on NASDAQ. Postman has 30 million developers. Chargebee, BrowserStack, and Zoho compete not just in India but on every continent.
+            </p>
+            <p className="rp" style={{ fontSize: 13.5, color: "var(--ink3)", lineHeight: 1.85, maxWidth: 720 }}>
+              This is UpForge's ranking of India's best SaaS startups — evaluated on ARR trajectory, product depth, founder quality, and international expansion. Not just the largest — the most significant.
+            </p>
+          </div>
+
+          {/* STATS */}
+          <div className="a2" style={{ padding: "clamp(24px,4vw,40px) 0", borderBottom: "1px solid var(--rule2)" }}>
+            <div className="sh" style={{ marginBottom: 20 }}><span className="sh-l">India SaaS by the Numbers</span><div className="sh-r" /></div>
+            <div className="stat-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12 }}>
+              {STATS.map((s, i) => (
+                <div key={i} className="stat-box">
+                  <p className="pf" style={{ fontSize: "clamp(1.4rem,2.5vw,2rem)", fontWeight: 900, color: "var(--ink)", marginBottom: 6, lineHeight: 1 }}>{s.val}</p>
+                  <p className="sf" style={{ fontSize: 9.5, color: "var(--ink4)", lineHeight: 1.5, textTransform: "uppercase", letterSpacing: "0.1em" }}>{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* TIMELINE */}
+          <div className="a2" style={{ padding: "clamp(24px,4vw,40px) 0", borderBottom: "1px solid var(--rule2)" }}>
+            <div className="sh" style={{ marginBottom: 20 }}><span className="sh-l">India SaaS · A Decade of Milestones</span><div className="sh-r" /></div>
+            <div style={{ position: "relative", paddingLeft: 28 }}>
+              <div style={{ position: "absolute", left: 4, top: 6, bottom: 6, width: 2, background: "var(--rule2)" }} />
+              {MILESTONES.map((m, i) => (
+                <div key={i} style={{ display: "flex", gap: 16, marginBottom: 14, alignItems: "flex-start" }}>
+                  <div className="timeline-dot" style={{ marginTop: 3 }} />
+                  <div>
+                    <span className="sf" style={{ fontSize: 8.5, fontWeight: 800, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.15em" }}>{m.year}</span>
+                    <p className="rp" style={{ fontSize: 13, color: "var(--ink3)", lineHeight: 1.6, marginTop: 2 }}>{m.event}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* STARTUPS */}
+          <div style={{ marginTop: "clamp(32px,5vw,56px)" }}>
+            <div className="sh" style={{ marginBottom: 20 }}><span className="sh-l">Featured SaaS Startups · India 2026</span><div className="sh-r" /></div>
+
+            {STARTUPS.map((s, idx) => (
+              <div key={idx} className="startup-card" style={{ marginBottom: 20 }}>
+                <div className="card-grid" style={{ display: "grid", gridTemplateColumns: idx % 2 === 0 ? "1fr 300px" : "300px 1fr", gap: 0, minHeight: 300 }}>
+                  {idx % 2 !== 0 && (
+                    <div className="imgf" style={{ borderRight: "1.5px solid var(--ink)", minHeight: 280 }}>
+                      <img src={s.img} alt={s.name} />
+                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(4,47,46,.65) 0%, transparent 60%)" }} />
+                      <div style={{ position: "absolute", bottom: 20, left: 20 }}>
+                        <span className="pf" style={{ fontSize: "4rem", fontWeight: 900, color: "rgba(255,255,255,0.1)", lineHeight: 1 }}>{s.rank}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ padding: "clamp(20px,3vw,32px)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                        <span className="sf" style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--accent)" }}>Rank {s.rank}</span>
+                        <div style={{ flex: 1, height: 1, background: "var(--rule2)" }} />
+                        <span className="sf" style={{ fontSize: 8, color: "var(--ink5)", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>{s.city} · Est. {s.founded}</span>
+                      </div>
+                      <h2 className="pf" style={{ fontSize: "clamp(1.3rem,2.5vw,1.9rem)", fontWeight: 700, color: "var(--ink)", lineHeight: 1.1, marginBottom: 6 }}>{s.name}</h2>
+                      <p className="sf" style={{ fontSize: 10, color: "var(--ink4)", marginBottom: 14, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 600 }}>{s.sector}</p>
+                      <p className="rp" style={{ fontSize: 13.5, color: "var(--ink3)", lineHeight: 1.85, marginBottom: 12 }}>{s.what}</p>
+                      <p className="rp" style={{ fontSize: 13, color: "var(--ink4)", lineHeight: 1.8, fontStyle: "italic" }}>{s.why}</p>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 14 }}>
+                        {s.tags.map(t => <span key={t} className="tag">{t}</span>)}
+                      </div>
+                    </div>
+
+                    <div style={{ marginTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+                      <div style={{ display: "flex", gap: 16 }}>
+                        <div>
+                          <p className="sf" style={{ fontSize: 7.5, textTransform: "uppercase", letterSpacing: "0.15em", color: "var(--ink5)", marginBottom: 2 }}>ARR</p>
+                          <p className="sf" style={{ fontSize: 13, fontWeight: 800, color: "var(--accent)" }}>{s.arr}</p>
+                        </div>
+                        <div>
+                          <p className="sf" style={{ fontSize: 7.5, textTransform: "uppercase", letterSpacing: "0.15em", color: "var(--ink5)", marginBottom: 2 }}>{s.metric.label}</p>
+                          <p className="sf" style={{ fontSize: 13, fontWeight: 800, color: "var(--ink)" }}>{s.metric.val}</p>
+                        </div>
+                      </div>
+                      <Link href={`/startup/${s.slug}`} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--ink)", color: "white", padding: "8px 16px", textDecoration: "none", fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", fontFamily: "system-ui" }}>
+                        Full Profile →
+                      </Link>
+                    </div>
+                  </div>
+
+                  {idx % 2 === 0 && (
+                    <div className="imgf" style={{ borderLeft: "1.5px solid var(--ink)", minHeight: 280 }}>
+                      <img src={s.img} alt={s.name} />
+                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to left, rgba(4,47,46,.65) 0%, transparent 60%)" }} />
+                      <div style={{ position: "absolute", bottom: 20, right: 20, textAlign: "right" }}>
+                        <span className="pf" style={{ fontSize: "4rem", fontWeight: 900, color: "rgba(255,255,255,0.1)", lineHeight: 1 }}>{s.rank}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* CLOSING */}
+          <div style={{ marginTop: "clamp(36px,6vw,64px)", border: "1.5px solid var(--ink)", background: "var(--ink)", position: "relative", overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg, #047857, var(--accent), #34D399, var(--accent), #047857)" }} />
+            <div className="imgf" style={{ height: 180 }}>
+              <img src={IMGS.banner} alt="India SaaS ecosystem" style={{ filter: "sepia(30%) brightness(0.35) contrast(1.1)" }} />
+              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 clamp(20px,5vw,60px)", textAlign: "center" }}>
+                <p className="pf" style={{ fontSize: "clamp(1.2rem,2.8vw,2rem)", fontWeight: 700, color: "white", lineHeight: 1.25, fontStyle: "italic" }}>
+                  "India's SaaS founders are not building for India. They are building{" "}
+                  <em style={{ color: "#34D399" }}>for the world — from India.</em>"
+                </p>
+              </div>
+            </div>
+            <div style={{ padding: "clamp(20px,3vw,36px)" }}>
+              <p className="rp" style={{ fontSize: 13.5, color: "rgba(255,255,255,.7)", lineHeight: 1.85, maxWidth: 720 }}>
+                UpForge tracks India's SaaS landscape in full — from bootstrapped products to NASDAQ listings. Explore the complete startup registry, ARR milestones, and the founders who built them.
+              </p>
+            </div>
+          </div>
+
+          {/* FOOTER NAV */}
+          <nav aria-label="Page navigation" style={{ padding: "16px 0", borderTop: "2px solid var(--ink)", marginTop: "clamp(32px,5vw,52px)" }}>
+            <ul style={{ display: "flex", flexWrap: "wrap", gap: "8px 20px", listStyle: "none", margin: 0, padding: 0 }}>
+              {[
+                { l: "Top AI Startups", h: "/top-ai-startups" },
+                { l: "EdTech Startups", h: "/edtech-startups" },
+                { l: "FinTech Startups", h: "/fintech-startups" },
+                { l: "Indian Unicorns 2026", h: "/indian-unicorns" },
+                { l: "All Startups", h: "/startup" },
+                { l: "Submit Startup", h: "/submit" },
+              ].map(lnk => (
+                <li key={lnk.h}><Link href={lnk.h} className="sf" style={{ fontSize: 8.5, color: "var(--ink5)", textTransform: "uppercase", letterSpacing: "0.14em", textDecoration: "none" }}>{lnk.l}</Link></li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+      </main>
+    </>
+  );
 }
