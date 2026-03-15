@@ -304,6 +304,7 @@ export default function BlogUnicorns() {
               </p>
               <p className="rp" style={{ fontSize:13.5, color:"var(--ink3)", lineHeight:1.85 }}>
                 This article profiles seven of those companies in depth — not the fundraise numbers, not the PowerPoint milestones, but the actual founding stories.
+              </p>
             </div>
             <div style={{ padding:"clamp(24px,3vw,40px) 0 clamp(24px,3vw,40px) clamp(16px,3vw,32px)", minWidth:"clamp(200px,26vw,280px)" }}>
               <div className="sh" style={{ marginBottom:14 }}><span className="sh-l">7 Unicorn Stories</span><div className="sh-r" /></div>
