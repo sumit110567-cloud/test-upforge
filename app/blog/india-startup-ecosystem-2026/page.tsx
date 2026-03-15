@@ -38,7 +38,7 @@ const IMGS = {
   bangalore: "https://images.unsplash.com/photo-1596176530529-78163a4f7af2?w=900&q=80&auto=format",
   funding:   "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=900&q=80&auto=format",
   policy:    "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=900&q=80&auto=format",
-  talent:    "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=900&q=80&auto=format",
+  talent:    "https://www.careercounsellingiicc.com/images/service/banner_1696336393.webp",
   future:    "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=900&q=80&auto=format",
   closing:   "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=1600&q=80&auto=format",
 };
