@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button"
 // ---------------------------------------------------------------------------
 // TYPES
 // ---------------------------------------------------------------------------
-type RelatedStartup = Pick
+type RelatedStartup = Pick<
   Startup,
   "name" | "slug" | "description" | "logo_url" | "category"
 >
