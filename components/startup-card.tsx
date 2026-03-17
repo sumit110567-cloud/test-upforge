@@ -3,7 +3,6 @@
 import Link from "next/link"
 import { ArrowUpRight, Sparkles, ShieldCheck } from "lucide-react"
 import type { Startup } from "@/types/startup"
-import { motion } from "framer-motion"
 
 interface StartupCardProps {
   startup: Startup
@@ -12,15 +11,17 @@ interface StartupCardProps {
 
 export function StartupCard({ startup, featured = false }: StartupCardProps) {
   const getDisplayFounder = () => {
-    if (!startup.founders) return { name: "Institutional Lead", hasMore: false }
-    if (typeof startup.founders === 'string') {
-      const parts = startup.founders.split(",")
-      return { name: parts[0], hasMore: parts.length > 1 }
+    // 1. Handle null or empty string
+    if (!startup.founders || startup.founders.trim() === "") {
+      return { name: "Institutional Lead", hasMore: false }
     }
-    if (Array.isArray(startup.founders)) {
-      return { name: startup.founders[0], hasMore: startup.founders.length > 1 }
+
+    // 2. Handle string parsing (since type is string | null)
+    const parts = startup.founders.split(",")
+    return { 
+      name: parts[0].trim(), 
+      hasMore: parts.length > 1 
     }
-    return { name: "View details", hasMore: false }
   }
 
   const founderInfo = getDisplayFounder()
@@ -46,7 +47,7 @@ export function StartupCard({ startup, featured = false }: StartupCardProps) {
           </div>
         )}
 
-        {/* Logo Section - Clean, No Rings */}
+        {/* Logo Section */}
         <div className="mb-6 flex items-start justify-between">
           <div className={`flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border bg-white transition-colors ${
             featured ? "border-slate-100 shadow-sm" : "border-slate-50 shadow-none"
@@ -118,7 +119,7 @@ export function StartupCard({ startup, featured = false }: StartupCardProps) {
           </div>
         </div>
 
-        {/* Clean underline animation for both types */}
+        {/* Bottom underline animation */}
         <div className="absolute bottom-0 left-6 right-6 h-0.5 scale-x-0 bg-slate-900 transition-transform duration-500 group-hover:scale-x-100" />
       </article>
     </Link>
