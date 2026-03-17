@@ -1,7 +1,29 @@
 /* app/globals.css */
 @import "tailwindcss";
-
 @custom-variant dark (&:is(.dark *));
+
+/*
+  FONT FACE FALLBACK METRICS
+  Reduces CLS while Playfair Display and Inter load.
+  size-adjust brings the fallback font dimensions close to the web font.
+*/
+@font-face {
+  font-family: "Playfair Display Fallback";
+  src: local("Georgia");
+  ascent-override: 98%;
+  descent-override: 26%;
+  line-gap-override: 0%;
+  size-adjust: 103%;
+}
+
+@font-face {
+  font-family: "Inter Fallback";
+  src: local("Arial");
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
+}
 
 :root {
   --background: #FCFCFC;
@@ -21,28 +43,50 @@
   --color-link: var(--link);
   --color-link-hover: var(--link-hover);
 
-  /* Premium Institutional Pairing */
-  --font-serif: "Georgia", "Times New Roman", serif;
-  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /*
+    FONT TOKENS
+    --font-display: Playfair Display (injected by Next.js font in layout.tsx as --font-display)
+    --font-sans:    Inter (injected by Next.js font in layout.tsx as --font-sans)
+    Fallbacks are metric-matched to minimize CLS.
+  */
+  --font-display: var(--font-display), "Playfair Display Fallback", Georgia, serif;
+  --font-sans: var(--font-sans), "Inter Fallback", system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 @layer base {
-  * {
-    @apply border-border;
+  *,
+  *::before,
+  *::after {
+    @apply border-border box-border;
   }
 
-  html {
-    scroll-behavior: smooth;
+  /* Respect user motion preferences — accessibility requirement */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
   }
 
   body {
-    @apply bg-background text-foreground antialiased font-sans;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
   }
 
-  /* ================= TYPOGRAPHY SYSTEM ================= */
+  /* ===== TYPOGRAPHY ===== */
 
-  h1, h2, h3, h4 {
-    @apply font-serif font-normal tracking-tight text-foreground;
+  /*
+    Headings use display (Playfair) font.
+    NOTE: paragraph text is NOT muted by default.
+    Apply .text-muted-foreground explicitly where you want grey copy.
+    Making all <p> muted by default causes the whole site to feel faded.
+  */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    @apply font-normal tracking-tight text-foreground;
   }
 
   h1 {
@@ -57,25 +101,61 @@
     @apply text-xl sm:text-2xl;
   }
 
-  p {
-    @apply text-base sm:text-lg leading-relaxed text-muted-foreground;
+  h4 {
+    @apply text-lg sm:text-xl;
   }
 
-  /* ================= LINKS ================= */
+  p {
+    @apply text-base sm:text-lg leading-relaxed;
+    /* Removed global muted color — apply .text-muted-foreground per component */
+  }
 
+  /* ===== LINKS ===== */
   a {
     @apply text-link hover:text-link-hover transition-colors duration-200;
+    text-underline-offset: 3px;
   }
 
-  /* ================= SELECTION ================= */
-
+  /* ===== SELECTION ===== */
   ::selection {
     background: #E5E7EB;
     color: #1A1A1A;
   }
 
-  /* ================= UTILITY CLASSES (optional) ================= */
+  /* ===== FOCUS VISIBLE (accessibility) ===== */
+  :focus-visible {
+    outline: 2px solid #1A1A1A;
+    outline-offset: 3px;
+    border-radius: var(--radius);
+  }
+
+  /* ===== IMAGES ===== */
+  img,
+  video {
+    @apply max-w-full;
+  }
+}
+
+/* ===== LAYOUT UTILITIES ===== */
+@layer utilities {
   .container-narrow {
     @apply max-w-4xl mx-auto px-4 sm:px-6;
+  }
+
+  .container-wide {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Visually hidden but accessible to screen readers */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 }
