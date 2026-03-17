@@ -41,4 +41,3 @@ ${urls}
     },
   })
 }
-app/robots.ts
