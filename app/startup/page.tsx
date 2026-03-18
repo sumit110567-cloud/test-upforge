@@ -390,20 +390,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
             </span>
           </div>
 
-          {/* Stats bar */}
-          <div className="stats-bar ri-2">
-            {[
-              { v:`${total.toLocaleString()}+`, l:"Verified Profiles" },
-              { v:`${cats.length || "30"}+`,    l:"Sectors"           },
-              { v:`${years.length > 0 ? years[years.length-1] : "2010"}+`, l:"Since" },
-              { v:"Daily",                       l:"Updated"           },
-            ].map((s, i) => (
-              <div key={i} className="stat-cell">
-                <div className="stat-v pf">{s.v}</div>
-                <div className="stat-l">{s.l}</div>
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* Category tab strip — identical to homepage edition tabs */}
@@ -449,7 +435,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
             </select>
             <Link href={qs({ sort:"name",   page:undefined })} className={`filter-link${sort==="name"   ? " on":""}`}>A–Z</Link>
             <Link href={qs({ sort:"newest", page:undefined })} className={`filter-link${sort==="newest" ? " on":""}`}>Newest</Link>
-            <Link href={qs({ sort:"year",   page:undefined })} className={`filter-link${sort==="year"   ? " on":""}`}>Founded</Link>
             {isFiltered && <Link href="/startup" className="filter-clear">✕ Clear</Link>}
           </div>
         </div>
