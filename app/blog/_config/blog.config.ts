@@ -30,7 +30,6 @@ export function buildBlogMetadata(post: BlogPostMeta) {
     description: post.description,
     keywords: post.keywords,
     alternates: {
-      // www is canonical — matches metadataBase in layout.tsx
       canonical: url,
     },
     openGraph: {
@@ -82,7 +81,6 @@ export function buildBlogJsonLd(post: BlogPostMeta) {
     "@id": `${url}#article`,
     headline: post.title,
     description: post.description,
-    // Fixed ISO dates — never auto-generated
     datePublished: post.datePublished,
     dateModified: post.dateModified,
     url,
@@ -125,72 +123,78 @@ export function buildBlogJsonLd(post: BlogPostMeta) {
       "@type": "BreadcrumbList",
       "@id": `${url}#breadcrumb`,
       itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: SITE_BASE_URL,
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "Blog",
-          item: `${SITE_BASE_URL}/blog`,
-        },
-        {
-          "@type": "ListItem",
-          position: 3,
-          name: post.title,
-          item: url,
-        },
+        { "@type": "ListItem", position: 1, name: "Home",  item: SITE_BASE_URL },
+        { "@type": "ListItem", position: 2, name: "Blog",  item: `${SITE_BASE_URL}/blog` },
+        { "@type": "ListItem", position: 3, name: post.title, item: url },
       ],
     },
   }
 }
 
-// Safe internal links — only routes that actually exist
-// Add to this list when new routes go live
+// ─────────────────────────────────────────────────────────────────────────────
+// SAFE INTERNAL LINKS
+// Only routes that return HTTP 200. Add when new routes go live.
+// ─────────────────────────────────────────────────────────────────────────────
 export const SAFE_BLOG_FOOTER_LINKS = [
-  { l: "All Indian Startups",      h: "/startup" },
-  { l: "Submit Your Startup",      h: "/submit"  },
-  { l: "The Forge — Blog",         h: "/blog"    },
-  { l: "About UpForge",            h: "/about"   },
+  { l: "All Indian Startups",            h: "/startup"                                           },
+  { l: "Submit Your Startup",            h: "/submit"                                            },
+  { l: "The Forge — Blog",               h: "/blog"                                              },
+  { l: "Top AI Startups India 2026",     h: "/blog/top-ai-startups-india-2026"                   },
+  { l: "How to Start a Startup India",   h: "/blog/how-to-start-startup-india-2026"              },
+  { l: "About UpForge",                  h: "/about"                                             },
   // Uncomment when live:
-  // { l: "AI Startups India",     h: "/startups/ai"      },
-  // { l: "FinTech Startups India", h: "/startups/fintech" },
-  // { l: "Indian Unicorns 2026",  h: "/startups/unicorns"},
+  // { l: "AI Startups India",           h: "/startups/ai-ml"    },
+  // { l: "FinTech Startups India",      h: "/startups/fintech"  },
+  // { l: "Indian Unicorns 2026",        h: "/startups/unicorns" },
 ]
 
-// Safe related post links — only blog posts that exist
+// ─────────────────────────────────────────────────────────────────────────────
+// ALL BLOG SLUGS
+// Single source of truth for every live blog post.
+// Used by related-post grids across all post pages.
+// Add new entries here when publishing new posts — they auto-propagate
+// to every page that imports this array.
+// ─────────────────────────────────────────────────────────────────────────────
 export const ALL_BLOG_SLUGS = [
   {
-    slug: "india-startup-ecosystem-2026",
-    title: "India Startup Ecosystem 2026",
+    slug:     "india-startup-ecosystem-2026",
+    title:    "India Startup Ecosystem 2026",
     category: "Ecosystem",
   },
   {
-    slug: "top-indian-unicorns-2026",
-    title: "Top Indian Unicorns 2026",
+    slug:     "top-indian-unicorns-2026",
+    title:    "Top Indian Unicorns 2026",
     category: "Unicorn Report",
   },
   {
-    slug: "how-to-get-startup-funding-india-2026",
-    title: "How to Get Startup Funding in India 2026",
+    slug:     "how-to-get-startup-funding-india-2026",
+    title:    "How to Get Startup Funding in India 2026",
     category: "Funding Guide",
   },
   {
-    slug: "best-indian-startup-founders-to-follow-2026",
-    title: "Best Indian Startup Founders 2026",
+    slug:     "best-indian-startup-founders-to-follow-2026",
+    title:    "Best Indian Startup Founders 2026",
     category: "Founder Profiles",
   },
   {
-    slug: "leadership-lessons-ind-vs-nz-final-2026",
-    title: "Leadership Lessons — IND vs NZ Final 2026",
+    slug:     "leadership-lessons-ind-vs-nz-final-2026",
+    title:    "Leadership Lessons — IND vs NZ Final 2026",
     category: "Leadership",
   },
   {
-    slug: "startup-ideas-inspired-by-ind-vs-nz-final-2026",
-    title: "5 Startup Ideas from IND vs NZ Final 2026",
+    slug:     "startup-ideas-inspired-by-ind-vs-nz-final-2026",
+    title:    "5 Startup Ideas from IND vs NZ Final 2026",
     category: "Startup Ideas",
+  },
+  // ── NEW POSTS ──────────────────────────────────────────────────────────────
+  {
+    slug:     "top-ai-startups-india-2026",
+    title:    "Top AI Startups in India (2026 Updated List)",
+    category: "AI & Deep Tech",
+  },
+  {
+    slug:     "how-to-start-startup-india-2026",
+    title:    "How to Start a Startup in India (Step-by-Step Guide 2026)",
+    category: "Founder Playbook",
   },
 ]
