@@ -1,12 +1,12 @@
-// app/startup/page.tsx — FINAL FIXED VERSION
-// Indian Startup Registry — Fixed mobile header spacing, header/footer collapse resolved
+// app/startup/page.tsx — FIXED v2
+// Fixes: 1) Header/footer collapse  2) Cleaner, more editorial card design
 
 import { createReadClient } from "@/lib/supabase/server"
 import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
 import { Navbar } from "@/components/navbar"
-import { ArrowRight, ArrowUpRight, ChevronRight, MapPin, Calendar, Users, Award } from "lucide-react"
+import { ArrowRight, ArrowUpRight, MapPin, Calendar, Users } from "lucide-react"
 
 const PAGE_SIZE = 10
 
@@ -67,11 +67,6 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
       url: "https://www.upforge.in/startup", siteName: "UpForge",
       images: [{ url: "https://www.upforge.in/og/registry.png", width: 1200, height: 630 }],
       locale: "en_IN", type: "website",
-    },
-    other: {
-      "article:publisher": "https://www.upforge.in",
-      "article:modified_time": new Date().toISOString(),
-      "article:section": "Indian Startup Registry",
     },
     robots: {
       index: !isFiltered && page <= 1,
@@ -143,7 +138,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
-        .pf { font-family: 'Playfair Display', Georgia, serif !important; }
 
         :root {
           --saffron: #FF9933;
@@ -158,41 +152,19 @@ export default async function StartupPage({ searchParams }: PageProps) {
           --accent-light: #F59E0B;
         }
 
-        * { 
-          margin: 0; 
-          padding: 0; 
-          box-sizing: border-box; 
+        /* ─── LAYOUT FIX: match about page pattern ─── */
+        /* Use min-height on the outermost div, NOT flex tricks on body */
+        .page-root {
+          min-height: 100vh;
+          background: var(--parch);
+          font-family: 'Georgia', 'Times New Roman', serif;
+          display: flex;
+          flex-direction: column;
         }
 
-        html, body {
-          height: 100%;
-          margin: 0;
-        }
-        
-        body {
-          display: flex;
-          flex-direction: column;
-          min-height: 100vh;
-        }
-        
-        .page-wrapper {
-          display: flex;
-          flex-direction: column;
-          flex: 1 0 auto;
-        }
-        
-        .page-body {
-          flex: 1 0 auto;
-        }
-        
-        .hero-section {
-          padding-top: 0;
-        }
-        
-        @media (max-width: 768px) {
-          .mast-content {
-            padding: 100px 20px 60px !important;
-          }
+        /* The content area between navbar and footer grows to fill space */
+        .page-content {
+          flex: 1;
         }
 
         @keyframes riseIn { 
@@ -202,119 +174,65 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .ri-0 { animation: riseIn 0.5s 0s ease both; }
         .ri-1 { animation: riseIn 0.5s 0.08s ease both; }
         .ri-2 { animation: riseIn 0.5s 0.16s ease both; }
-        .ri-3 { animation: riseIn 0.5s 0.24s ease both; }
 
+        /* ─── HERO ─── */
         .hero-section {
           position: relative;
           background: linear-gradient(135deg, rgba(26,18,8,0.88) 0%, rgba(26,18,8,0.75) 100%);
           overflow: hidden;
           border-bottom: 1px solid var(--rule);
-          margin-top: 0;
         }
-        
         .hero-bg {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
+          position: absolute; top: 0; left: 0; right: 0; bottom: 0;
           background-image: url('https://img.myloview.com/posters/graffiti-image-of-a-youth-from-andhra-pradesh-an-indian-state-on-a-colorful-backwall-of-city-streets-concept-of-promoting-indian-states-and-indian-youth-with-modern-art-400-538653280.jpg');
-          background-size: cover;
-          background-position: center 25%;
-          background-repeat: no-repeat;
-          opacity: 0.22;
-          z-index: 0;
+          background-size: cover; background-position: center 25%;
+          opacity: 0.22; z-index: 0;
         }
-        
         .hero-bg::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
+          content: ''; position: absolute; inset: 0;
           background: linear-gradient(90deg, rgba(26,18,8,0.85) 0%, rgba(26,18,8,0.5) 50%, rgba(26,18,8,0.85) 100%);
         }
-        
         .hero-section::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 3px;
+          content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
           background: linear-gradient(90deg, #FF9933 0%, #FFFFFF 50%, #138808 100%);
           z-index: 2;
         }
-
-        .mast {
-          position: relative;
-          z-index: 2;
-          background: transparent;
-        }
-
+        .mast { position: relative; z-index: 2; }
         .mast-content {
-          position: relative;
-          z-index: 10;
-          text-align: center;
+          position: relative; z-index: 10; text-align: center;
           padding: 100px 24px 80px;
         }
-
         .mast-h1 {
           font-family: 'Playfair Display', Georgia, serif;
-          font-size: 64px;
-          font-weight: 900;
-          letter-spacing: -0.02em;
-          color: white;
-          line-height: 1.1;
-          text-shadow: 0 2px 12px rgba(0,0,0,0.3);
-          margin-bottom: 20px;
+          font-size: clamp(40px, 6vw, 64px);
+          font-weight: 900; letter-spacing: -0.02em;
+          color: white; line-height: 1.1;
+          text-shadow: 0 2px 12px rgba(0,0,0,0.3); margin-bottom: 20px;
         }
-
         .mast-rule {
-          display: block;
-          width: 200px;
-          height: 2px;
+          display: block; width: 200px; height: 2px;
           background: linear-gradient(90deg, transparent, var(--saffron), var(--accent), var(--saffron), transparent);
           margin: 20px auto 24px;
         }
-
         .mast-tagline {
-          font-family: Georgia, 'Times New Roman', serif;
-          font-size: 16px;
-          color: rgba(255,255,255,0.92);
-          font-style: italic;
-          line-height: 1.7;
-          max-width: 580px;
-          margin: 0 auto 28px;
+          font-family: Georgia, serif; font-size: 16px;
+          color: rgba(255,255,255,0.92); font-style: italic;
+          line-height: 1.7; max-width: 580px; margin: 0 auto 28px;
           text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
-
         .live-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
-          background: rgba(255,255,255,0.12);
-          backdrop-filter: blur(10px);
+          display: inline-flex; align-items: center; gap: 10px;
+          background: rgba(255,255,255,0.12); backdrop-filter: blur(10px);
           border: 1px solid rgba(255,255,255,0.25);
-          padding: 10px 28px;
-          border-radius: 100px;
+          padding: 10px 28px; border-radius: 100px;
         }
         .live-dot { 
-          width: 8px; 
-          height: 8px; 
-          border-radius: 50%; 
-          background: #22c55e; 
-          box-shadow: 0 0 0 2px rgba(34,197,94,0.3);
+          width: 8px; height: 8px; border-radius: 50%; background: #22c55e;
           animation: pulse 2s infinite;
         }
         .live-text {
-          font-family: system-ui, -apple-system, sans-serif;
-          font-size: 11px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.2em;
-          color: white;
+          font-family: system-ui, sans-serif; font-size: 11px;
+          font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: white;
         }
         @keyframes pulse { 
           0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); } 
@@ -322,704 +240,408 @@ export default async function StartupPage({ searchParams }: PageProps) {
           100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
         }
 
+        /* ─── CATEGORY TABS ─── */
         .cat-tabs { 
-          display: flex; 
-          overflow-x: auto; 
-          border-bottom: 1px solid var(--rule); 
-          scrollbar-width: none; 
-          background: white; 
-          padding: 0 24px;
-          position: relative;
-          z-index: 5;
+          display: flex; overflow-x: auto; border-bottom: 1px solid var(--rule);
+          scrollbar-width: none; background: white; padding: 0 24px;
         }
         .cat-tabs::-webkit-scrollbar { display: none; }
         .cat-tab { 
-          flex-shrink: 0; 
-          padding: 16px 24px; 
-          font-family: system-ui, -apple-system, sans-serif; 
-          font-size: 10px; 
-          font-weight: 700; 
-          letter-spacing: 0.12em; 
-          text-transform: uppercase; 
-          color: #888; 
-          text-decoration: none; 
-          border-bottom: 2.5px solid transparent; 
-          transition: all 0.2s; 
-          white-space: nowrap; 
+          flex-shrink: 0; padding: 14px 20px;
+          font-family: system-ui, sans-serif; font-size: 10px; font-weight: 700;
+          letter-spacing: 0.12em; text-transform: uppercase; color: #999;
+          text-decoration: none; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap;
         }
-        .cat-tab:hover { color: var(--ink); border-bottom-color: var(--rule); }
+        .cat-tab:hover { color: var(--ink); }
         .cat-tab.on { color: var(--accent); border-bottom-color: var(--accent); }
 
+        /* ─── TOOLBAR ─── */
         .toolbar { 
-          position: sticky; 
-          top: 0; 
-          z-index: 20; 
-          background: rgba(253,250,245,0.96); 
-          backdrop-filter: blur(8px);
+          position: sticky; top: 0; z-index: 20;
+          background: rgba(253,250,245,0.97); backdrop-filter: blur(8px);
           border-bottom: 1px solid var(--rule);
         }
-        .toolbar-inner { 
-          max-width: 1300px; 
-          margin: 0 auto; 
-          padding: 0 24px; 
-        }
-
+        .toolbar-inner { max-width: 1300px; margin: 0 auto; padding: 0 24px; }
         .t-search-row { 
-          display: flex; 
-          align-items: center; 
-          height: 56px; 
-          background: white; 
-          border-radius: 16px; 
-          margin: 16px 0; 
-          border: 1px solid var(--rule2);
+          display: flex; align-items: center; height: 52px; background: white;
+          border-radius: 12px; margin: 14px 0; border: 1px solid var(--rule2);
         }
-        .t-icon { padding: 0 16px; color: #AAA; font-size: 16px; flex-shrink: 0; }
+        .t-icon { padding: 0 14px; color: #CCC; font-size: 15px; flex-shrink: 0; }
         .t-inp { 
-          flex: 1; 
-          border: none; 
-          background: transparent; 
-          font-size: 15px; 
-          font-style: italic; 
-          color: var(--ink); 
-          outline: none; 
-          padding: 0; 
-          min-width: 0; 
+          flex: 1; border: none; background: transparent; font-size: 14px;
+          font-style: italic; color: var(--ink); outline: none; padding: 0; min-width: 0;
         }
-        .t-inp::placeholder { color: var(--rule); font-size: 14px; }
+        .t-inp::placeholder { color: #CCC; font-size: 13px; }
         .t-btn { 
-          height: 44px; 
-          padding: 0 28px; 
-          background: var(--ink); 
-          color: #fff; 
-          border: none; 
-          font-size: 10px; 
-          font-weight: 800; 
-          letter-spacing: 0.16em; 
-          text-transform: uppercase; 
-          cursor: pointer; 
-          flex-shrink: 0; 
-          border-radius: 12px;
-          margin-right: 10px;
+          height: 40px; padding: 0 24px; background: var(--ink); color: #fff;
+          border: none; font-size: 9px; font-weight: 800; letter-spacing: 0.16em;
+          text-transform: uppercase; cursor: pointer; flex-shrink: 0;
+          border-radius: 10px; margin-right: 8px; transition: background 0.2s;
         }
         .t-btn:hover { background: var(--accent); }
-
         .t-filter-row { 
-          display: flex; 
-          align-items: center; 
-          height: 48px; 
-          overflow-x: auto; 
-          gap: 12px;
-          background: white; 
-          border-radius: 16px; 
-          padding: 0 16px; 
-          margin-bottom: 16px;
-          border: 1px solid var(--rule2);
+          display: flex; align-items: center; height: 44px; overflow-x: auto;
+          gap: 10px; background: white; border-radius: 12px; padding: 0 14px;
+          margin-bottom: 14px; border: 1px solid var(--rule2); scrollbar-width: none;
         }
+        .t-filter-row::-webkit-scrollbar { display: none; }
         .t-filter-lbl { 
-          display: flex; 
-          align-items: center; 
-          gap: 6px; 
-          font-size: 9px; 
-          font-weight: 700; 
-          text-transform: uppercase; 
-          letter-spacing: 0.16em; 
-          color: var(--rule); 
-          flex-shrink: 0;
+          font-size: 9px; font-weight: 700; text-transform: uppercase;
+          letter-spacing: 0.16em; color: #CCC; flex-shrink: 0;
         }
         .t-sel { 
-          height: 34px; 
-          border: 1px solid var(--rule2); 
-          border-radius: 10px; 
-          background: white; 
-          font-size: 11px; 
-          color: var(--muted); 
-          padding: 0 14px; 
-          cursor: pointer; 
-          flex-shrink: 0;
+          height: 30px; border: 1px solid var(--rule2); border-radius: 8px;
+          background: white; font-size: 11px; color: var(--muted);
+          padding: 0 12px; cursor: pointer; flex-shrink: 0;
         }
-        .t-div { width: 1px; height: 24px; background: var(--rule2); flex-shrink: 0; margin: 0 8px; }
+        .t-div { width: 1px; height: 20px; background: var(--rule2); flex-shrink: 0; }
         .t-sort { 
-          padding: 0 14px; 
-          font-size: 10px; 
-          font-weight: 600; 
-          letter-spacing: 0.1em; 
-          text-transform: uppercase; 
-          color: #AAA; 
-          text-decoration: none; 
-          flex-shrink: 0;
-          white-space: nowrap;
+          padding: 0 12px; font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+          text-transform: uppercase; color: #BBB; text-decoration: none; flex-shrink: 0; white-space: nowrap;
         }
-        .t-sort.on { color: var(--accent); font-weight: 900; }
-        .t-clear { 
-          display: flex; 
-          align-items: center; 
-          gap: 5px;
-          font-size: 9px; 
-          font-weight: 700; 
-          color: #DC2626; 
-          text-decoration: none;
-          flex-shrink: 0;
-        }
+        .t-sort.on { color: var(--accent); font-weight: 800; }
+        .t-clear { font-size: 9px; font-weight: 700; color: #DC2626; text-decoration: none; flex-shrink: 0; }
 
+        /* ─── RESULTS BAR ─── */
         .results-bar { 
-          max-width: 1300px; 
-          margin: 0 auto; 
-          padding: 20px 24px; 
-          display: flex; 
-          align-items: center; 
-          gap: 16px; 
-          background: var(--parch); 
+          max-width: 1300px; margin: 0 auto; padding: 16px 24px;
+          display: flex; align-items: center; gap: 14px;
           border-bottom: 1px solid var(--rule2);
         }
-        .results-q { font-size: 15px; font-weight: 700; color: var(--ink); font-style: italic; }
-        .results-n { font-size: 13px; color: var(--muted); }
+        .results-q { font-size: 14px; font-weight: 700; color: var(--ink); font-style: italic; }
+        .results-n { font-size: 12px; color: var(--muted); }
         .results-rule { flex: 1; height: 1px; background: var(--rule2); }
-        .results-pg { font-size: 11px; color: #AAA; }
+        .results-pg { font-size: 11px; color: #AAA; font-family: system-ui, sans-serif; }
 
-        .main-wrap { 
-          max-width: 1300px; 
-          margin: 0 auto; 
-          padding: 32px 24px 48px; 
-        }
-        .main-grid { 
-          display: grid; 
-          grid-template-columns: 1fr 320px; 
-          gap: 40px; 
-          align-items: start; 
-        }
+        /* ─── MAIN LAYOUT ─── */
+        .main-wrap { max-width: 1300px; margin: 0 auto; padding: 32px 24px 56px; }
+        .main-grid { display: grid; grid-template-columns: 1fr 300px; gap: 40px; align-items: start; }
         @media (max-width: 1000px) { 
           .main-grid { grid-template-columns: 1fr; } 
           .rg-aside { display: none; } 
         }
 
-        .sh { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
-        .sh-l { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3em; color: #AAA; font-family: system-ui, sans-serif; white-space: nowrap; }
+        .sh { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        .sh-l { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3em; color: #BBB; font-family: system-ui, sans-serif; white-space: nowrap; }
         .sh-r { flex: 1; height: 1px; background: var(--rule2); }
 
-        .feat-grid { 
-          display: grid; 
-          grid-template-columns: repeat(3, 1fr); 
-          gap: 24px; 
-          margin-bottom: 48px;
-        }
+        /* ─── FEATURED CARDS (unchanged, already good) ─── */
+        .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 44px; }
         @media (max-width: 800px) { .feat-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 560px) { .feat-grid { grid-template-columns: 1fr; } }
-        
         .feat-card { 
-          background: white; 
-          border-radius: 20px; 
-          text-decoration: none; 
-          transition: all 0.3s ease;
-          overflow: hidden; 
-          border: 1px solid var(--rule2); 
-          box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+          background: white; border-radius: 16px; text-decoration: none;
+          transition: all 0.25s ease; overflow: hidden; border: 1px solid var(--rule2);
         }
-        .feat-card:hover { 
-          transform: translateY(-6px); 
-          box-shadow: 0 20px 30px -12px rgba(0,0,0,0.12);
-          border-color: var(--accent);
-        }
-        .feat-img-wrap { 
-          width: 100%; 
-          aspect-ratio: 16/9; 
-          position: relative; 
-          background: var(--parch-dark); 
-          overflow: hidden;
-        }
-        .feat-img-wrap img { 
-          width: 100%; 
-          height: 100%; 
-          object-fit: cover; 
-        }
-        .feat-overlay { 
-          position: absolute; 
-          inset: 0; 
-          background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
-        }
-        .feat-caption { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; }
-        .feat-sector { 
-          font-size: 9px; 
-          font-weight: 700; 
-          text-transform: uppercase; 
-          letter-spacing: 0.12em; 
-          color: rgba(255,255,255,0.7); 
-          margin-bottom: 6px;
-        }
-        .feat-company { 
-          font-family: 'Playfair Display', serif; 
-          font-size: 20px; 
-          font-weight: 700; 
-          color: #fff; 
-          line-height: 1.25; 
-        }
-        .feat-body { padding: 20px; }
-        .feat-desc { 
-          font-size: 13px; 
-          color: #5A4A30; 
-          font-style: italic; 
-          line-height: 1.55; 
-          display: -webkit-box; 
-          -webkit-line-clamp: 2; 
-          -webkit-box-orient: vertical; 
-          overflow: hidden;
-          margin-bottom: 16px;
-        }
+        .feat-card:hover { transform: translateY(-4px); box-shadow: 0 16px 32px -8px rgba(0,0,0,0.12); border-color: var(--accent); }
+        .feat-img-wrap { width: 100%; aspect-ratio: 16/9; position: relative; background: var(--parch-dark); overflow: hidden; }
+        .feat-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .feat-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%); }
+        .feat-caption { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px 18px; }
+        .feat-sector { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.65); margin-bottom: 4px; }
+        .feat-company { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: #fff; line-height: 1.2; }
+        .feat-body { padding: 16px 18px; }
+        .feat-desc { font-size: 12px; color: #5A4A30; font-style: italic; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 12px; }
         .feat-foot { display: flex; align-items: center; justify-content: space-between; }
-        .feat-chips { font-size: 11px; color: #AAA; display: flex; gap: 12px; flex-wrap: wrap; }
+        .feat-chips { font-size: 11px; color: #AAA; display: flex; gap: 10px; }
 
-        /* Enhanced Unified Card Design - No separate number section */
-        .startup-list { display: flex; flex-direction: column; gap: 12px; }
+        /* ─── STARTUP LIST CARDS — Redesigned: clean, editorial ─── */
+        .startup-list { display: flex; flex-direction: column; }
+
         .s-row { 
           display: flex;
           background: white; 
-          border-radius: 16px; 
           text-decoration: none; 
-          transition: all 0.25s ease;
-          border: 1px solid var(--rule2); 
+          transition: border-color 0.2s ease, box-shadow 0.2s ease;
+          border: 1px solid var(--rule2);
+          border-top: none;
           overflow: hidden;
           position: relative;
         }
+        /* First card gets top border + top radius */
+        .s-row:first-child { border-top: 1px solid var(--rule2); border-radius: 16px 16px 0 0; }
+        /* Last card gets bottom radius */
+        .s-row:last-child { border-radius: 0 0 16px 16px; }
+        /* Only child: full radius */
+        .s-row:only-child { border-radius: 16px; border-top: 1px solid var(--rule2); }
+
         .s-row:hover { 
-          transform: translateX(5px); 
-          border-color: var(--accent); 
-          box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+          border-color: var(--accent);
+          box-shadow: 0 4px 20px rgba(217,119,6,0.1);
+          z-index: 1;
         }
-        
+        /* Show top border on hover for clean separation */
+        .s-row:hover + .s-row { border-top: 1px solid var(--rule2); }
+
+        /* Left accent strip — colored by rank tier */
+        .s-accent-strip {
+          width: 3px;
+          flex-shrink: 0;
+          background: var(--rule2);
+          transition: background 0.2s;
+        }
+        .s-row:hover .s-accent-strip { background: var(--accent); }
+        .s-accent-strip.top3 { background: var(--accent); }
+
+        /* Main body */
         .s-body { 
           flex: 1;
-          padding: 20px 24px;
+          padding: 20px 22px;
           display: flex;
-          gap: 20px;
           align-items: flex-start;
+          gap: 18px;
+          min-width: 0;
         }
-        
-        @media (max-width: 600px) {
-          .s-body {
-            flex-direction: column;
-            padding: 16px;
-          }
-        }
-        
+
+        /* Logo */
         .s-logo-wrap { 
-          width: 70px;
-          height: 70px;
-          flex-shrink: 0;
-          border-radius: 16px; 
-          border: 1px solid var(--rule2); 
-          background: var(--parch-dark); 
-          display: flex; 
-          align-items: center; 
-          justify-content: center;
-          overflow: hidden;
+          width: 52px; height: 52px; flex-shrink: 0;
+          border-radius: 12px; border: 1px solid var(--rule2);
+          background: var(--parch-dark);
+          display: flex; align-items: center; justify-content: center; overflow: hidden;
         }
-        
-        .s-logo-wrap img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
+        .s-logo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .s-logo-initial { font-size: 20px; font-weight: 700; color: #CCC; font-family: 'Playfair Display', serif; }
+
+        /* Content */
+        .s-content { flex: 1; min-width: 0; }
+
+        .s-top-line {
+          display: flex; align-items: center; flex-wrap: wrap;
+          gap: 8px; margin-bottom: 6px;
         }
-        
-        .s-content {
-          flex: 1;
-        }
-        
-        .s-head {
-          display: flex;
-          align-items: baseline;
-          flex-wrap: wrap;
-          gap: 12px;
-          margin-bottom: 12px;
-        }
-        
         .s-name { 
-          font-family: 'Playfair Display', serif; 
-          font-size: 18px; 
-          font-weight: 700; 
-          color: var(--ink); 
-          line-height: 1.3;
+          font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700;
+          color: var(--ink); line-height: 1.25;
         }
-        
-        .s-rank {
-          font-size: 11px;
-          font-weight: 600;
-          color: var(--accent);
-          background: rgba(217,119,6,0.1);
-          padding: 2px 10px;
-          border-radius: 20px;
-          display: inline-flex;
-          align-items: center;
-          gap: 4px;
+        .s-row:hover .s-name { color: #92400E; }
+
+        .s-badges { display: flex; align-items: center; gap: 6px; }
+        .s-badge-cat {
+          font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+          color: var(--muted); background: var(--parch-dark); padding: 2px 8px; border-radius: 4px;
+          font-family: system-ui, sans-serif; white-space: nowrap;
         }
-        
-        .s-cat { 
-          font-size: 10px; 
-          color: #AAA; 
-          text-transform: uppercase; 
-          letter-spacing: 0.1em;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
+        .s-badge-verified {
+          display: inline-flex; align-items: center; gap: 3px;
+          font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+          color: var(--green); font-family: system-ui, sans-serif;
         }
-        
-        .s-verified { 
-          display: inline-flex; 
-          align-items: center; 
-          gap: 4px; 
-          font-size: 9px; 
-          font-weight: 800; 
-          text-transform: uppercase; 
-          color: var(--green);
-        }
-        
+
         .s-desc { 
-          font-size: 13px; 
-          color: #5A4A30; 
-          font-style: italic; 
-          line-height: 1.5; 
-          display: -webkit-box; 
-          -webkit-line-clamp: 2; 
-          -webkit-box-orient: vertical; 
-          overflow: hidden; 
-          margin-bottom: 12px;
+          font-size: 13px; color: #6B5C40; font-style: italic; line-height: 1.55;
+          display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+          overflow: hidden; margin-bottom: 10px;
         }
-        
-        .s-info-grid {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 16px;
-          margin-bottom: 12px;
+
+        .s-meta-row {
+          display: flex; flex-wrap: wrap; gap: 16px; align-items: center;
         }
-        
-        .s-info-item {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 12px;
-          color: var(--muted);
+        .s-meta-item {
+          display: flex; align-items: center; gap: 5px;
+          font-size: 11px; color: var(--muted); font-family: system-ui, sans-serif;
         }
-        
-        .s-info-item svg {
-          width: 14px;
-          height: 14px;
-          stroke-width: 1.5;
-        }
-        
-        .s-chips { 
-          display: flex; 
-          gap: 10px; 
-          flex-wrap: wrap; 
-          margin-top: 8px;
-        }
-        
-        .s-chip { 
-          font-size: 10px; 
-          color: var(--muted); 
-          border: 1px solid var(--rule); 
-          padding: 4px 12px; 
-          background: var(--parch); 
-          border-radius: 24px; 
-        }
-        
+        .s-meta-item svg { opacity: 0.6; }
+
         .s-ufrn { 
-          font-family: monospace; 
-          font-size: 9px; 
-          font-weight: 700; 
-          color: var(--accent); 
-          background: #FEF9E6; 
-          border: 1px solid #FDE68A; 
-          padding: 3px 10px; 
-          border-radius: 14px; 
+          font-family: monospace; font-size: 9px; font-weight: 700;
+          color: var(--accent); letter-spacing: 0.05em;
+          background: #FEF3C7; border: 1px solid #FDE68A;
+          padding: 2px 8px; border-radius: 4px;
         }
-        
-        .s-arrow-col { 
-          display: flex; 
-          align-items: center; 
-          justify-content: center; 
-          padding: 0 24px; 
-          border-left: 1px solid var(--rule2);
-          background: white;
+
+        /* Right: rank + arrow */
+        .s-right-col {
+          display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between;
+          padding: 20px 20px 20px 0; gap: 12px; flex-shrink: 0;
         }
+        .s-rank-num {
+          font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900;
+          color: var(--rule); line-height: 1; transition: color 0.2s;
+          font-variant-numeric: tabular-nums;
+        }
+        .s-row:hover .s-rank-num { color: var(--accent); }
+        .s-rank-num.top3 { color: var(--accent); }
         .s-arrow { 
-          width: 36px; 
-          height: 36px; 
-          display: flex; 
-          align-items: center; 
-          justify-content: center; 
-          border-radius: 12px; 
-          background: var(--parch); 
-          transition: all 0.2s;
+          width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+          border-radius: 8px; background: var(--parch-dark); transition: all 0.2s;
         }
-        .s-row:hover .s-arrow { background: var(--accent); transform: translateX(4px); }
-        .s-row:hover .s-arrow svg { color: white; }
+        .s-row:hover .s-arrow { background: var(--accent); }
+        .s-row:hover .s-arrow svg { color: white !important; }
 
-        .empty-state { text-align: center; padding: 80px 32px; border-radius: 24px; border: 2px dashed var(--rule); background: white; }
+        /* Mobile */
+        @media (max-width: 600px) {
+          .s-right-col { padding: 14px 14px 14px 0; }
+          .s-rank-num { font-size: 18px; }
+          .s-body { padding: 14px 0 14px 14px; gap: 12px; }
+          .s-name { font-size: 15px; }
+          .s-desc { font-size: 12px; }
+          .s-logo-wrap { width: 44px; height: 44px; }
+        }
 
-        .pag { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--rule2); }
+        /* ─── EMPTY STATE ─── */
+        .empty-state { 
+          text-align: center; padding: 80px 32px;
+          border: 1px solid var(--rule2); background: white; border-radius: 16px;
+        }
+
+        /* ─── PAGINATION ─── */
+        .pag { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 44px; padding-top: 28px; border-top: 1px solid var(--rule2); }
         .pag-btn { 
-          padding: 10px 24px; 
-          font-size: 10px; 
-          font-weight: 700; 
-          letter-spacing: 0.12em; 
-          text-transform: uppercase; 
-          border: 1px solid var(--rule); 
-          background: white; 
-          color: var(--muted); 
-          text-decoration: none; 
-          border-radius: 12px;
+          padding: 9px 20px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+          text-transform: uppercase; border: 1px solid var(--rule); background: white;
+          color: var(--muted); text-decoration: none; border-radius: 10px;
         }
         .pag-btn:hover { border-color: var(--accent); color: var(--accent); }
-        .pag-btn.dis { opacity: 0.4; pointer-events: none; }
+        .pag-btn.dis { opacity: 0.35; pointer-events: none; }
         .pag-num { 
-          width: 44px; 
-          height: 44px; 
-          display: flex; 
-          align-items: center; 
-          justify-content: center; 
-          font-size: 14px; 
-          font-weight: 700; 
-          border: 1px solid var(--rule); 
-          text-decoration: none; 
-          color: var(--muted); 
-          border-radius: 12px;
+          width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+          font-size: 13px; font-weight: 700; border: 1px solid var(--rule);
+          text-decoration: none; color: var(--muted); border-radius: 10px;
         }
         .pag-num:hover { border-color: var(--accent); color: var(--accent); }
         .pag-num.on { background: var(--accent); color: white; border-color: var(--accent); }
 
-        .rg-aside { display: flex; flex-direction: column; gap: 24px; }
-        .aside-box { border-radius: 20px; border: 1px solid var(--rule2); background: white; padding: 24px; }
-        .aside-box.dk { background: linear-gradient(135deg, var(--ink) 0%, #2A2012 100%); border-color: var(--accent); }
-        .aside-ey { font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.28em; color: #AAA; margin-bottom: 14px; }
-        .aside-box.dk .aside-ey { color: var(--accent-light); }
-        .aside-h { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 10px; }
+        /* ─── SIDEBAR ─── */
+        .rg-aside { display: flex; flex-direction: column; gap: 20px; }
+        .aside-box { border-radius: 16px; border: 1px solid var(--rule2); background: white; padding: 22px; }
+        .aside-box.dk { background: linear-gradient(135deg, var(--ink) 0%, #2A2012 100%); border-color: transparent; }
+        .aside-ey { font-size: 8.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.28em; color: #AAA; margin-bottom: 12px; font-family: system-ui, sans-serif; }
+        .aside-box.dk .aside-ey { color: rgba(249,202,95,0.7); }
+        .aside-h { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
         .aside-box.dk .aside-h { color: white; }
-        .aside-p { font-size: 13px; color: #5A4A30; font-style: italic; line-height: 1.6; margin-bottom: 20px; }
+        .aside-p { font-size: 12.5px; color: #5A4A30; font-style: italic; line-height: 1.6; margin-bottom: 16px; }
         .aside-btn { 
-          display: block; 
-          text-align: center; 
-          font-size: 10px; 
-          font-weight: 900; 
-          text-transform: uppercase; 
-          letter-spacing: 0.16em; 
-          background: var(--accent); 
-          color: white; 
-          padding: 14px; 
-          text-decoration: none; 
-          border-radius: 14px;
+          display: block; text-align: center; font-size: 9.5px; font-weight: 900;
+          text-transform: uppercase; letter-spacing: 0.14em; background: var(--accent);
+          color: white; padding: 13px; text-decoration: none; border-radius: 10px;
         }
         .aside-btn:hover { background: var(--accent-light); }
         .aside-list { list-style: none; padding: 0; margin: 0; }
         .aside-list li { border-bottom: 1px solid var(--rule2); }
         .aside-list li:last-child { border-bottom: none; }
         .aside-list a { 
-          display: flex; 
-          align-items: center; 
-          justify-content: space-between; 
-          padding: 12px 0; 
-          font-size: 13px; 
-          color: #5A4A30; 
-          text-decoration: none; 
-          font-style: italic; 
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 10px 0; font-size: 12.5px; color: #5A4A30; text-decoration: none; font-style: italic;
         }
         .aside-list a:hover { color: var(--accent); }
 
+        /* ─── CTA BLOCK ─── */
         .cta-block { 
-          background: linear-gradient(135deg, var(--ink) 0%, #2A2012 100%); 
-          border-radius: 24px; 
-          padding: 40px 48px; 
-          display: flex; 
-          flex-wrap: wrap; 
-          align-items: center; 
-          justify-content: space-between; 
-          gap: 28px; 
-          margin-top: 56px; 
+          background: linear-gradient(135deg, var(--ink) 0%, #2A2012 100%);
+          border-radius: 20px; padding: 36px 44px;
+          display: flex; flex-wrap: wrap; align-items: center;
+          justify-content: space-between; gap: 24px; margin-top: 48px;
         }
-        .cta-ey { font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.3em; color: rgba(232,197,71,0.7); margin-bottom: 10px; }
-        .cta-h { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: white; margin-bottom: 8px; }
-        .cta-p { font-size: 13px; color: rgba(255,255,255,0.5); font-style: italic; }
+        .cta-ey { font-size: 8.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.3em; color: rgba(232,197,71,0.7); margin-bottom: 8px; font-family: system-ui, sans-serif; }
+        .cta-h { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; color: white; margin-bottom: 6px; }
+        .cta-p { font-size: 12px; color: rgba(255,255,255,0.45); font-style: italic; }
         .cta-btn { 
-          flex-shrink: 0; 
-          display: inline-flex; 
-          align-items: center; 
-          gap: 12px; 
-          background: var(--accent); 
-          color: white; 
-          padding: 14px 32px; 
-          font-size: 11px; 
-          font-weight: 800; 
-          text-transform: uppercase; 
-          letter-spacing: 0.1em; 
-          text-decoration: none; 
-          border-radius: 48px; 
+          flex-shrink: 0; display: inline-flex; align-items: center; gap: 10px;
+          background: var(--accent); color: white; padding: 13px 28px;
+          font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+          text-decoration: none; border-radius: 40px; transition: all 0.2s;
         }
         .cta-btn:hover { background: var(--accent-light); transform: translateY(-2px); }
 
-        .links-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--rule2); }
+        /* ─── FOOTER LINKS GRID ─── */
+        .links-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 36px; padding-top: 36px; border-top: 1px solid var(--rule2); }
         @media (max-width: 700px) { .links-grid { grid-template-columns: repeat(2, 1fr); } }
         .link-card { 
-          padding: 14px 16px; 
-          border-radius: 14px; 
-          border: 1px solid var(--rule2); 
-          background: white; 
-          text-decoration: none; 
-          transition: all 0.2s;
+          padding: 12px 14px; border-radius: 12px; border: 1px solid var(--rule2);
+          background: white; text-decoration: none; transition: all 0.2s;
         }
-        .link-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-        .link-title { 
-          font-size: 11px; 
-          font-weight: 700; 
-          text-transform: uppercase; 
-          letter-spacing: 0.08em; 
-          color: var(--ink); 
-          display: flex; 
-          align-items: center; 
-          gap: 6px;
-          margin-bottom: 6px;
-        }
-        .link-desc { font-size: 10px; color: #AAA; }
+        .link-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+        .link-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink); display: flex; align-items: center; gap: 5px; margin-bottom: 4px; font-family: system-ui, sans-serif; }
+        .link-desc { font-size: 10px; color: #AAA; font-family: system-ui, sans-serif; }
 
+        /* ─── RESPONSIVE ─── */
         @media (max-width: 768px) {
-          .mast-content { 
-            padding: 140px 20px 80px !important; 
-          }
-          .mast-h1 { 
-            font-size: 48px; 
-            margin-bottom: 20px;
-          }
-          .mast-tagline { 
-            font-size: 15px; 
-            line-height: 1.6; 
-          }
-          .mast-tagline br {
-            display: none;
-          }
-          .live-text { 
-            font-size: 10px; 
-            letter-spacing: 0.16em; 
-          }
+          .mast-content { padding: 120px 20px 70px !important; }
+          .mast-tagline br { display: none; }
           .toolbar-inner { padding: 0 16px; }
-          .t-search-row { height: 50px; margin: 12px 0; }
-          .t-inp { font-size: 14px; }
-          .t-btn { padding: 0 20px; font-size: 9px; }
-          .t-filter-row { height: 44px; padding: 0 12px; }
-          .results-bar { padding: 16px 16px; }
-          .results-q { font-size: 14px; }
+          .results-bar { padding: 14px 16px; }
           .main-wrap { padding: 24px 16px 40px; }
-          .main-grid { gap: 32px; }
-          .feat-grid { gap: 20px; margin-bottom: 40px; }
-          .feat-company { font-size: 18px; }
-          .s-body { padding: 16px; gap: 16px; }
-          .s-name { font-size: 16px; }
-          .s-logo-wrap { width: 60px; height: 60px; }
-          .cta-block { padding: 28px 24px; }
-          .cta-h { font-size: 18px; }
+          .feat-grid { gap: 16px; margin-bottom: 36px; }
+          .cta-block { padding: 24px 20px; }
         }
-
         @media (max-width: 480px) {
-          .mast-content { 
-            padding: 120px 16px 64px !important; 
-          }
-          .mast-h1 { 
-            font-size: 40px; 
-          }
-          .mast-tagline { 
-            font-size: 14px; 
-          }
-          .t-search-row { height: 46px; }
-          .t-inp { font-size: 13px; }
-          .t-inp::placeholder { font-size: 12px; }
-          .t-btn { padding: 0 16px; font-size: 8px; }
-          .results-q { font-size: 13px; }
-          .s-body { padding: 14px; }
-          .s-name { font-size: 15px; }
-          .s-desc { font-size: 12px; }
-          .s-info-item { font-size: 11px; }
+          .mast-content { padding: 100px 16px 60px !important; }
+          .mast-h1 { font-size: 36px; }
         }
       `}</style>
 
-      <div className="page-wrapper">
+      {/* ── ROOT: matches about page pattern — min-height: 100vh on outer div ── */}
+      <div className="page-root">
         <Navbar />
 
-        {/* Hero Section with Background Image */}
-        <div className="hero-section">
-          <div className="hero-bg"></div>
-          
-          <div className="mast">
-            <div className="mast-content ri-0">
-              <h1 className="mast-h1">Indian Registry</h1>
-              <span className="mast-rule" />
-              <p className="mast-tagline">
-                India's independent registry of verified builders —<br />free, structured, permanent.
-              </p>
-              <div className="live-badge">
-                <span className="live-dot" />
-                <span className="live-text">Live · {total.toLocaleString()} Profiles · All Verified</span>
+        <div className="page-content">
+
+          {/* Hero */}
+          <div className="hero-section">
+            <div className="hero-bg"></div>
+            <div className="mast">
+              <div className="mast-content ri-0">
+                <h1 className="mast-h1">Indian Registry</h1>
+                <span className="mast-rule" />
+                <p className="mast-tagline">
+                  India's independent registry of verified builders —<br />free, structured, permanent.
+                </p>
+                <div className="live-badge">
+                  <span className="live-dot" />
+                  <span className="live-text">Live · {total.toLocaleString()} Profiles · All Verified</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Category Tabs */}
-        <nav className="cat-tabs" aria-label="Browse by sector">
-          <span style={{ fontSize: 9, color: "#BBB", textTransform: "uppercase", letterSpacing: ".2em", padding: "16px 8px 16px 0", flexShrink: 0 }}>
-            Browse:
-          </span>
-          <Link href="/startup" className={`cat-tab${!cat && !q ? " on" : ""}`}>All</Link>
-          {cats.slice(0, 12).map(c => (
-            <Link key={c} href={`/startup?category=${encodeURIComponent(c)}${q ? `&q=${encodeURIComponent(q)}` : ""}`} className={`cat-tab${cat === c ? " on" : ""}`}>{c}</Link>
-          ))}
-          {cats.length > 12 && <Link href="/startups" className="cat-tab">More →</Link>}
-        </nav>
+          {/* Category Tabs */}
+          <nav className="cat-tabs" aria-label="Browse by sector">
+            <span style={{ fontSize: 9, color: "#CCC", textTransform: "uppercase", letterSpacing: ".2em", padding: "14px 8px 14px 0", flexShrink: 0, fontFamily: "system-ui, sans-serif" }}>
+              Browse:
+            </span>
+            <Link href="/startup" className={`cat-tab${!cat && !q ? " on" : ""}`}>All</Link>
+            {cats.slice(0, 12).map(c => (
+              <Link key={c} href={`/startup?category=${encodeURIComponent(c)}${q ? `&q=${encodeURIComponent(q)}` : ""}`} className={`cat-tab${cat === c ? " on" : ""}`}>{c}</Link>
+            ))}
+            {cats.length > 12 && <Link href="/startup" className="cat-tab">More →</Link>}
+          </nav>
 
-        {/* Toolbar */}
-        <div className="toolbar" id="rg-toolbar">
-          <div className="toolbar-inner">
-            <form action="/startup" method="GET" className="t-search-row" id="search-form">
-              {year && <input type="hidden" name="year" value={year} />}
-              {cat  && <input type="hidden" name="category" value={cat} />}
-              {sort && sort !== "name" && <input type="hidden" name="sort" value={sort} />}
-              <span className="t-icon" aria-hidden="true">🔍</span>
-              <input 
-                type="search" 
-                name="q" 
-                defaultValue={q} 
-                className="t-inp"
-                placeholder="Search startups, founders, sectors, cities…"
-                aria-label="Search startup registry" 
-                autoComplete="off" 
-              />
-              <button type="submit" className="t-btn">Search</button>
-            </form>
-            
-            <div className="t-filter-row">
-              <span className="t-filter-lbl">
-                <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
-                  <path d="M1 1h9M2.5 4h6M4.5 7h2" stroke="#C8C2B4" strokeWidth="1.3" strokeLinecap="round"/>
-                </svg>
-                Filter
-              </span>
-              <select className="t-sel" id="rg-year-sel">
-                <option value="">Any Year</option>
-                {years.map(yr => <option key={yr} value={String(yr)} selected={year === String(yr)}>{yr}</option>)}
-              </select>
-              <select className="t-sel" id="rg-cat-sel">
-                <option value="">All Sectors</option>
-                {cats.map(c => <option key={c} value={c} selected={cat === c}>{c}</option>)}
-              </select>
-              <span className="t-div" />
-              <Link href={qs({ sort:"name", page:undefined })} className={`t-sort${sort==="name" ? " on":""}`}>A–Z</Link>
-              <Link href={qs({ sort:"newest", page:undefined })} className={`t-sort${sort==="newest" ? " on":""}`}>Newest</Link>
-              <Link href={qs({ sort:"year", page:undefined })} className={`t-sort${sort==="year" ? " on":""}`}>Founded</Link>
-              {isFiltered && (
-                <Link href="/startup" className="t-clear">
-                  ✕ Clear
-                </Link>
-              )}
+          {/* Toolbar */}
+          <div className="toolbar" id="rg-toolbar">
+            <div className="toolbar-inner">
+              <form action="/startup" method="GET" className="t-search-row" id="search-form">
+                {year && <input type="hidden" name="year" value={year} />}
+                {cat  && <input type="hidden" name="category" value={cat} />}
+                {sort && sort !== "name" && <input type="hidden" name="sort" value={sort} />}
+                <span className="t-icon" aria-hidden="true">🔍</span>
+                <input 
+                  type="search" name="q" defaultValue={q} className="t-inp"
+                  placeholder="Search startups, founders, sectors, cities…"
+                  aria-label="Search startup registry" autoComplete="off" 
+                />
+                <button type="submit" className="t-btn">Search</button>
+              </form>
+              <div className="t-filter-row">
+                <span className="t-filter-lbl">Filter</span>
+                <select className="t-sel" id="rg-year-sel">
+                  <option value="">Any Year</option>
+                  {years.map(yr => <option key={yr} value={String(yr)} selected={year === String(yr)}>{yr}</option>)}
+                </select>
+                <select className="t-sel" id="rg-cat-sel">
+                  <option value="">All Sectors</option>
+                  {cats.map(c => <option key={c} value={c} selected={cat === c}>{c}</option>)}
+                </select>
+                <span className="t-div" />
+                <Link href={qs({ sort:"name", page:undefined })} className={`t-sort${sort==="name" ? " on":""}`}>A–Z</Link>
+                <Link href={qs({ sort:"newest", page:undefined })} className={`t-sort${sort==="newest" ? " on":""}`}>Newest</Link>
+                <Link href={qs({ sort:"year", page:undefined })} className={`t-sort${sort==="year" ? " on":""}`}>Founded</Link>
+                {isFiltered && <Link href="/startup" className="t-clear">✕ Clear</Link>}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Page Body */}
-        <div className="page-body">
+          {/* Results bar */}
           <div className="results-bar">
             <span className="results-q">
               {q ? `"${q}"` : cat ? cat : year ? `Est. ${year}` : "All Startups"}
@@ -1029,15 +651,18 @@ export default async function StartupPage({ searchParams }: PageProps) {
             <span className="results-pg">Page {page} of {totalPages || 1}</span>
           </div>
 
+          {/* Main content area */}
           <div className="main-wrap">
             <div className="main-grid">
 
-              {/* Main Content */}
+              {/* Content column */}
               <div>
+
+                {/* Featured cards */}
                 {featured.length > 0 && (
                   <section>
                     <div className="sh">
-                      <span style={{ color:"var(--accent)", fontSize:13 }}>✦</span>
+                      <span style={{ color:"var(--accent)", fontSize:12 }}>✦</span>
                       <span className="sh-l">Featured Startups</span>
                       <div className="sh-r" />
                     </div>
@@ -1048,13 +673,13 @@ export default async function StartupPage({ searchParams }: PageProps) {
                             {s.logo_url
                               ? <img src={s.logo_url} alt={s.name} loading={fi === 0 ? "eager" : "lazy"} />
                               : <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:"100%", background:"var(--parch-dark)" }}>
-                                  <span style={{ fontSize:36, fontWeight:700, color:"#AAA" }}>{s.name.charAt(0)}</span>
+                                  <span style={{ fontSize:32, fontWeight:700, color:"#CCC", fontFamily:"'Playfair Display', serif" }}>{s.name.charAt(0)}</span>
                                 </div>
                             }
                             <div className="feat-overlay" />
                             <div className="feat-caption">
-                              <span className="feat-sector">{s.category ?? "Startup"}</span>
-                              <span className="feat-company">{s.name}</span>
+                              <div className="feat-sector">{s.category ?? "Startup"}</div>
+                              <div className="feat-company">{s.name}</div>
                             </div>
                           </div>
                           <div className="feat-body">
@@ -1064,7 +689,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
                                 {s.founded_year && <span>📅 {s.founded_year}</span>}
                                 {s.city && <span>📍 {s.city}</span>}
                               </div>
-                              <ArrowUpRight size={15} style={{ color:"var(--rule)" }} />
+                              <ArrowUpRight size={13} style={{ color:"var(--rule)" }} />
                             </div>
                           </div>
                         </Link>
@@ -1073,6 +698,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
                   </section>
                 )}
 
+                {/* Startup list */}
                 {grid.length > 0 ? (
                   <section>
                     {featured.length > 0 && (
@@ -1081,80 +707,87 @@ export default async function StartupPage({ searchParams }: PageProps) {
                         <div className="sh-r" />
                       </div>
                     )}
+
                     <div className="startup-list">
                       {grid.map((s, idx) => {
-                        const rank = baseNum + idx + 1;
+                        const rank = baseNum + idx + 1
+                        const isTop3 = rank <= 3
                         return (
                           <Link key={s.id} href={`/startup/${s.slug}`} className="s-row">
+                            {/* Left accent strip */}
+                            <div className={`s-accent-strip${isTop3 ? " top3" : ""}`} />
+
+                            {/* Body */}
                             <div className="s-body">
+                              {/* Logo */}
                               <div className="s-logo-wrap">
                                 {s.logo_url
-                                  ? <Image src={s.logo_url} alt={s.name} width={70} height={70} className="object-cover" loading="lazy" />
-                                  : <span style={{ fontSize: 24, fontWeight: 700, color: "#AAA" }}>{s.name.charAt(0)}</span>
+                                  ? <Image src={s.logo_url} alt={s.name} width={52} height={52} loading="lazy" style={{ objectFit:"cover", width:"100%", height:"100%" }} />
+                                  : <span className="s-logo-initial">{s.name.charAt(0)}</span>
                                 }
                               </div>
+
+                              {/* Content */}
                               <div className="s-content">
-                                <div className="s-head">
-                                  <h3 className="s-name">{s.name}</h3>
-                                  <span className="s-rank">
-                                    <Award size={12} /> Rank #{rank}
-                                  </span>
+                                <div className="s-top-line">
+                                  <span className="s-name">{s.name}</span>
+                                  <div className="s-badges">
+                                    {s.category && <span className="s-badge-cat">{s.category}</span>}
+                                    <span className="s-badge-verified">
+                                      <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 6L5 9L10 3"/></svg>
+                                      Verified
+                                    </span>
+                                  </div>
                                 </div>
-                                
-                                <div className="s-cat">
-                                  {s.category ?? "Startup"}
-                                  <span className="s-verified">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                      <path d="M20 6L9 17L4 12" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
-                                    </svg>
-                                    Verified
-                                  </span>
-                                </div>
-                                
-                                {s.description && <p className="s-desc">{s.description.slice(0, 120)}</p>}
-                                
-                                <div className="s-info-grid">
+
+                                {s.description && (
+                                  <p className="s-desc">{s.description.slice(0, 130)}</p>
+                                )}
+
+                                <div className="s-meta-row">
                                   {s.founders && (
-                                    <div className="s-info-item">
-                                      <Users size={14} />
+                                    <div className="s-meta-item">
+                                      <Users size={11} />
                                       <span>{s.founders}</span>
                                     </div>
                                   )}
                                   {s.founded_year && (
-                                    <div className="s-info-item">
-                                      <Calendar size={14} />
-                                      <span>Founded {s.founded_year}</span>
+                                    <div className="s-meta-item">
+                                      <Calendar size={11} />
+                                      <span>{s.founded_year}</span>
                                     </div>
                                   )}
                                   {s.city && (
-                                    <div className="s-info-item">
-                                      <MapPin size={14} />
+                                    <div className="s-meta-item">
+                                      <MapPin size={11} />
                                       <span>{s.city}</span>
                                     </div>
                                   )}
-                                </div>
-                                
-                                <div className="s-chips">
                                   {s.ufrn && <span className="s-ufrn">{s.ufrn}</span>}
                                 </div>
                               </div>
                             </div>
-                            <div className="s-arrow-col">
+
+                            {/* Right: rank number + arrow */}
+                            <div className="s-right-col">
+                              <span className={`s-rank-num${isTop3 ? " top3" : ""}`}>
+                                {rank < 10 ? `0${rank}` : rank}
+                              </span>
                               <div className="s-arrow">
-                                <ArrowUpRight size={14} style={{ color:"var(--rule)" }} />
+                                <ArrowUpRight size={13} style={{ color:"#CCC" }} />
                               </div>
                             </div>
                           </Link>
-                        );
+                        )
                       })}
                     </div>
                   </section>
                 ) : (
                   <div className="empty-state">
-                    <span style={{ fontSize:56, color:"var(--rule)", display:"block", marginBottom:20 }}>🔍</span>
-                    <p style={{ fontSize:22, fontWeight:700, marginBottom:10 }}>No startups found</p>
-                    <p style={{ fontSize:14, color:"#5A4A30" }}>{q ? `Nothing matched "${q}".` : "Try adjusting your filters."}</p>
-                    <Link href="/startup" style={{ display:"inline-block", background:"var(--accent)", color:"white", padding:"12px 28px", borderRadius:"48px", fontSize:12, marginTop:24, textDecoration:"none" }}>
+                    <span style={{ fontSize:48, color:"var(--rule)", display:"block", marginBottom:16 }}>🔍</span>
+                    <p style={{ fontSize:20, fontWeight:700, marginBottom:8, fontFamily:"'Playfair Display', serif" }}>No startups found</p>
+                    <p style={{ fontSize:13, color:"#5A4A30", fontStyle:"italic" }}>{q ? `Nothing matched "${q}".` : "Try adjusting your filters."}</p>
+                    <Link href="/startup" style={{ display:"inline-block", background:"var(--accent)", color:"white", padding:"11px 24px", borderRadius:"40px", fontSize:11, marginTop:20, textDecoration:"none", fontFamily:"system-ui, sans-serif", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase" }}>
                       Clear filters
                     </Link>
                   </div>
@@ -1172,14 +805,13 @@ export default async function StartupPage({ searchParams }: PageProps) {
               </div>
 
               {/* Sidebar */}
-              <aside className="rg-aside" style={{ position:"sticky", top:90 }}>
+              <aside className="rg-aside" style={{ position:"sticky", top:80 }}>
                 <div className="aside-box dk">
                   <p className="aside-ey">✨ List Free</p>
                   <p className="aside-h">Got a startup to list?</p>
                   <p className="aside-p">Get verified. Free forever. Trusted by investors.</p>
                   <Link href="/submit" className="aside-btn">Submit Your Startup →</Link>
                 </div>
-
                 {cats.length > 0 && (
                   <div className="aside-box">
                     <p className="aside-ey">📂 Browse by Sector</p>
@@ -1187,8 +819,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
                       {cats.slice(0, 8).map(c => (
                         <li key={c}>
                           <Link href={`/startup?category=${encodeURIComponent(c)}`}>
-                            <span>{c}</span>
-                            <span>→</span>
+                            <span>{c}</span><span style={{ color:"#CCC" }}>→</span>
                           </Link>
                         </li>
                       ))}
@@ -1206,11 +837,11 @@ export default async function StartupPage({ searchParams }: PageProps) {
                 <p className="cta-p">Free verified profile. Trusted by investors across India.</p>
               </div>
               <Link href="/submit" className="cta-btn">
-                List Free <ArrowRight size={14} />
+                List Free <ArrowRight size={13} />
               </Link>
             </div>
 
-            {/* Internal Links */}
+            {/* Footer links */}
             <div className="links-grid">
               <Link href="/startup" className="link-card">
                 <span className="link-title">Startup Registry →</span>
@@ -1230,8 +861,8 @@ export default async function StartupPage({ searchParams }: PageProps) {
               </Link>
             </div>
           </div>
-        </div>
-      </div>
+        </div>{/* end page-content */}
+      </div>{/* end page-root */}
 
       <script dangerouslySetInnerHTML={{ __html: `
         (function(){
@@ -1244,46 +875,16 @@ export default async function StartupPage({ searchParams }: PageProps) {
             var s = p.toString();
             return '/startup' + (s ? '?' + s : '');
           }
-          
           function getCurrentParams() {
             var urlParams = new URLSearchParams(window.location.search);
-            return {
-              q: urlParams.get('q') || '',
-              year: urlParams.get('year') || '',
-              category: urlParams.get('category') || '',
-              sort: urlParams.get('sort') || 'name'
-            };
+            return { q: urlParams.get('q') || '', year: urlParams.get('year') || '', category: urlParams.get('category') || '', sort: urlParams.get('sort') || 'name' };
           }
-          
           var yearSelect = document.getElementById('rg-year-sel');
           var catSelect = document.getElementById('rg-cat-sel');
-          
-          if(yearSelect) {
-            yearSelect.addEventListener('change', function() {
-              var current = getCurrentParams();
-              current.year = this.value;
-              window.location.href = buildUrl(current);
-            });
-          }
-          
-          if(catSelect) {
-            catSelect.addEventListener('change', function() {
-              var current = getCurrentParams();
-              current.category = this.value;
-              window.location.href = buildUrl(current);
-            });
-          }
-          
+          if(yearSelect) yearSelect.addEventListener('change', function() { var c = getCurrentParams(); c.year = this.value; window.location.href = buildUrl(c); });
+          if(catSelect) catSelect.addEventListener('change', function() { var c = getCurrentParams(); c.category = this.value; window.location.href = buildUrl(c); });
           var searchForm = document.getElementById('search-form');
-          if(searchForm) {
-            searchForm.addEventListener('submit', function(e) {
-              e.preventDefault();
-              var searchInput = this.querySelector('input[name="q"]');
-              var current = getCurrentParams();
-              current.q = searchInput.value;
-              window.location.href = buildUrl(current);
-            });
-          }
+          if(searchForm) searchForm.addEventListener('submit', function(e) { e.preventDefault(); var c = getCurrentParams(); c.q = this.querySelector('input[name="q"]').value; window.location.href = buildUrl(c); });
         })();
       `}} />
     </>
