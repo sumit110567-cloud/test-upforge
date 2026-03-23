@@ -12,7 +12,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
 import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
+
 import { ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react"
 
 const PAGE_SIZE = 10
@@ -708,7 +708,6 @@ export default async function RegistryPage({ searchParams }: PageProps) {
         })();
       `}} />
 
-      <Footer />
     </>
   )
 }
