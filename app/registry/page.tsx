@@ -678,25 +678,7 @@ export default async function RegistryPage({ searchParams }: PageProps) {
             </div>
           </section>
 
-          <footer className="pg-footer ri-4">
-            <p className="footer-note">
-              * Registry data sourced from DPIIT, Tracxn, Inc42, Forbes India, Hurun India 2025, and company announcements as of March 2026.
-              UpForge Global Registry is independent — no paid placements, no sponsored rankings. Canonical: upforge.org/registry
-            </p>
-            <nav aria-label="Footer navigation">
-              <ul className="footer-nav">
-                {[
-                  { l:"Global Registry",      h:"/registry"                      },
-                  { l:"Startup Registry India", h:"https://www.upforge.in/startup" },
-                  { l:"Indian Unicorns 2026", h:"https://www.upforge.in/indian-unicorns" },
-                  { l:"The Forge — Blog",     h:"https://www.upforge.in/blog"    },
-                  { l:"Submit Startup",       h:"https://www.upforge.in/submit"  },
-                ].map(lnk => (
-                  <li key={lnk.h + lnk.l}><a href={lnk.h}>{lnk.l}</a></li>
-                ))}
-              </ul>
-            </nav>
-          </footer>
+
         </div>
       </div>
 
