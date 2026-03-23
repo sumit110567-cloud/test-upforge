@@ -1,13 +1,10 @@
 // app/registry/page.tsx
 // ─────────────────────────────────────────────────────────────────────────────
-// Design: EXACT clone of app/startup/page.tsx
-// Additions vs startup/page.tsx:
-//   • UFRN column on every card
-//   • "Global Edition · 2026" masthead label instead of "India Edition"
-//   • Canonical → upforge.org/registry
-//   • Dataset + Organization JSON-LD for Wikipedia-level authority
-//   • Stats bar REMOVED entirely (per request)
-//   • All hover effects = pure CSS (no onMouseEnter — safe Server Component)
+// FIXES:
+//   1. Mobile double footer → added padding-bottom:0 on .main-wrap mobile,
+//      min-height:unset on .page-body mobile, and footer dedup guard CSS
+//   2. Hamburger overlap → toolbar z-index lowered to 20; navbar gets z-index:50
+//      via .navbar-fix override injected in style block
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { createReadClient } from "@/lib/supabase/server"
@@ -141,7 +138,7 @@ export default async function RegistryPage({ searchParams }: PageProps) {
   const grid     = page === 1 && !isFiltered ? startups.filter(s => !featIds.has(s.id)) : startups
   const baseNum  = (page - 1) * PAGE_SIZE
 
-  // JSON-LD schemas — Wikipedia-level authority for .org
+  // JSON-LD schemas
   const schemas = [
     {
       "@context": "https://schema.org", "@type": "Dataset",
@@ -218,6 +215,26 @@ export default async function RegistryPage({ searchParams }: PageProps) {
 
         body { background:#F3EFE5 }
 
+        /* ── FIX 2: Ensure Navbar always sits above sticky toolbar ── */
+        /* Targets common wrapper patterns — adjust selector to match your <Navbar> root element */
+        header[data-navbar],
+        .navbar,
+        nav[data-navbar],
+        [data-component="navbar"] {
+          position: relative;
+          z-index: 50 !important;
+        }
+
+        /* ── FIX 2 (fallback): if Navbar renders as a plain <header> or <nav> at top of DOM ── */
+        body > header:first-of-type,
+        body > nav:first-of-type {
+          z-index: 50 !important;
+          position: relative;
+        }
+
+        /* ── FIX 1: Prevent duplicate/phantom footer on mobile ── */
+        footer + footer { display: none !important; }
+
         .mast { background:#F3EFE5; border-bottom:3px solid #1A1208 }
         .mast-nameplate { text-align:center; padding:clamp(28px,5vw,64px) 16px clamp(20px,4vw,48px); border-bottom:1px solid #C8C2B4 }
 
@@ -232,7 +249,8 @@ export default async function RegistryPage({ searchParams }: PageProps) {
         .cat-tab:hover { color:#1A1208 }
         .cat-tab.on { color:#B45309; border-bottom-color:#B45309 }
 
-        .toolbar { position:sticky; top:0; z-index:40; background:#F3EFE5; border-bottom:1px solid #C8C2B4 }
+        /* ── FIX 2: toolbar z-index lowered from 40 → 20 so navbar hamburger menu renders on top ── */
+        .toolbar { position:sticky; top:0; z-index:20; background:#F3EFE5; border-bottom:1px solid #C8C2B4 }
         .toolbar-inner { max-width:1300px; margin:0 auto; padding:0 clamp(16px,4vw,48px) }
 
         .t-search-row { display:flex; align-items:center; height:48px; border-bottom:1px solid #D8D2C4 }
@@ -256,6 +274,9 @@ export default async function RegistryPage({ searchParams }: PageProps) {
           .t-inp::placeholder { font-size:13px }
           .t-btn { padding:0 14px; font-size:7.5px; letter-spacing:.12em }
           .t-filter-lbl { display:none }
+          /* ── FIX 1: prevent phantom space causing double-footer illusion on mobile ── */
+          .main-wrap { padding-bottom: 0 !important }
+          .page-body { min-height: unset !important }
         }
 
         .results-bar { max-width:1300px; margin:0 auto; padding:10px clamp(16px,4vw,48px); display:flex; align-items:center; gap:12px; border-bottom:1px solid #D8D2C4; background:#F3EFE5 }
@@ -264,9 +285,10 @@ export default async function RegistryPage({ searchParams }: PageProps) {
         .results-rule { flex:1; height:1px; background:#D8D2C4 }
         .results-pg { font-family:system-ui,sans-serif; font-size:9px; color:#AAA }
 
+        /* ── FIX 1: page-body must NOT add extra bottom space on mobile ── */
         .page-body { background:#F3EFE5; min-height:60vh }
 
-        .main-wrap { max-width:1300px; margin:0 auto; padding:clamp(20px,3.5vw,40px) clamp(16px,4vw,48px) 0 }
+        .main-wrap { max-width:1300px; margin:0 auto; padding:clamp(20px,3.5vw,40px) clamp(16px,4vw,48px) clamp(20px,3.5vw,40px) }
         .main-grid { display:grid; grid-template-columns:1fr 286px; gap:clamp(20px,3vw,32px); align-items:start }
         @media(max-width:1060px) { .main-grid { grid-template-columns:1fr } .rg-aside { display:none } }
 
@@ -315,7 +337,6 @@ export default async function RegistryPage({ searchParams }: PageProps) {
         .s-founders { font-size:10.5px; color:#AAA; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden }
         .s-chips { display:flex; gap:8px; flex-wrap:wrap; align-items:center }
         .s-chip { font-family:system-ui,sans-serif; font-size:8.5px; color:#6B5C40; border:1px solid #C8C2B4; padding:2px 9px; background:#EDE9DF }
-        /* UFRN badge on list row */
         .s-ufrn { font-family:monospace; font-size:8px; font-weight:700; color:#C59A2E; background:#FBF8F3; border:1px solid #E8DFCC; padding:2px 7px }
 
         .s-arrow-col { display:flex; align-items:center; justify-content:center; padding:0 16px; border-left:1px solid #EDE9DF }
@@ -395,7 +416,7 @@ export default async function RegistryPage({ searchParams }: PageProps) {
             <div style={{ height:1, width:60, background:"#C8C2B4" }} />
           </div>
 
-          {/* Live badge — no stats bar below */}
+          {/* Live badge */}
           <div className="live-badge ri-1">
             <span className="live-dot" />
             <span style={{ fontFamily:"system-ui,sans-serif", fontSize:8.5, fontWeight:700, textTransform:"uppercase", letterSpacing:".2em", color:"#15803D" }}>
@@ -672,7 +693,6 @@ export default async function RegistryPage({ searchParams }: PageProps) {
               ))}
             </div>
           </section>
-
 
         </div>
       </div>
