@@ -164,29 +164,38 @@ export default async function StartupPage({ searchParams }: PageProps) {
           box-sizing: border-box; 
         }
 
-        html, body {
-          min-height: 100vh;
-          scroll-behavior: smooth;
+     
+      html, body {
+        height: 100%;
+        margin: 0;
+      }
+      
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      
+      .page-wrapper {
+        display: flex;
+        flex-direction: column;
+        flex: 1 0 auto;
+      }
+      
+      .page-body {
+        flex: 1 0 auto; /* This pushes the footer down */
+      }
+      
+      /* Fix mobile header overlap with Navbar */
+      .hero-section {
+        padding-top: 64px; /* Adjust this to match your Navbar height */
+      }
+      
+      @media (max-width: 768px) {
+        .mast-content {
+          padding: 100px 20px 60px !important;
         }
-
-        body { 
-          background: var(--parch); 
-          display: flex;
-          flex-direction: column;
-        }
-
-        /* Main content wrapper to prevent footer overlap */
-        .page-wrapper {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          min-height: 100vh;
-        }
-
-        /* Ensure content pushes footer down */
-        .page-body {
-          flex: 1;
-        }
+      }
 
         @keyframes riseIn { 
           from { opacity: 0; transform: translateY(12px); } 
