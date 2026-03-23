@@ -1,35 +1,56 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+// middleware.ts
+//
+// DUAL-DOMAIN ROUTING
+// ─────────────────────────────────────────────────────────────────────────────
+//  upforge.org  →  /registry/[slug]  (Wikipedia-style data vault)
+//  upforge.in   →  current marketing & directory pages  (unchanged)
+//
+// The .org domain is the "Master Record" / global authority.
+// The .in domain is the commercial Indian ecosystem hub.
+// ─────────────────────────────────────────────────────────────────────────────
+
+import { createServerClient, type CookieOptions } from "@supabase/ssr"
+import { NextResponse, type NextRequest } from "next/server"
+
+// Hosts that should receive the stripped-down "registry" experience
+const REGISTRY_HOSTS = ["upforge.org", "www.upforge.org"]
+
+// Paths that are always served identically on both domains
+const SHARED_PATHS = ["/api/", "/_next/", "/favicon", "/og/", "/logo"]
+
+function isSharedPath(pathname: string): boolean {
+  return SHARED_PATHS.some((p) => pathname.startsWith(p))
+}
 
 export async function middleware(request: NextRequest) {
-  const url = request.nextUrl.clone();
-  const hostname = request.headers.get('host') || '';
+  const { pathname, host } = request.nextUrl
 
-  // 1. Detect the Domain
-  const isOrgRegistry = hostname.includes('upforge.org');
+  // ── 1. Dual-domain rewrite logic ──────────────────────────────────────────
+  const isOrgDomain = REGISTRY_HOSTS.includes(host)
 
-  // 2. Routing Logic for .org (Global Registry)
-  if (isOrgRegistry) {
-    // If they are on the homepage of .org, show the clean registry list
-    if (url.pathname === '/') {
-      url.pathname = '/home'; 
-      return NextResponse.rewrite(url);
+  if (isOrgDomain && !isSharedPath(pathname)) {
+    const url = request.nextUrl.clone()
+
+    if (pathname === "/" || pathname === "") {
+      // Root of .org  →  /registry  (Wikipedia-style index page)
+      url.pathname = "/registry"
+      return NextResponse.rewrite(url)
     }
-    
-    // If they are viewing a startup, rewrite to a "Registry-Style" view
-    // Note: You will need to ensure /registry/[slug] exists or rewrite to /startup/[slug]
-    if (url.pathname.startsWith('/startup/')) {
-      const slug = url.pathname.split('/')[2];
-      url.pathname = `/startup/${slug}`; // You can later point this to a specialized /registry/ view
-      return NextResponse.rewrite(url);
+
+    // /startup/[slug] on .org → serve as-is (UFRN stamp already in startup-detail)
+    if (pathname.startsWith("/startup/")) {
+      return NextResponse.next({ request: { headers: request.headers } })
     }
   }
 
-  // 3. Standard Supabase Session Handling (Existing Logic)
+  // ── 2. Canonical-domain redirect (SEO) ────────────────────────────────────
+  // If someone hits a startup profile on .in, let it serve normally.
+  // The canonical tag in generateMetadata points to .org for authority.
+  // No redirect needed here — we handle it at the meta layer.
+
+  // ── 3. Supabase session passthrough (unchanged) ───────────────────────────
   let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+    request: { headers: request.headers },
   })
 
   const supabase = createServerClient(
@@ -37,24 +58,25 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) { return request.cookies.get(name)?.value },
+        get(name: string) {
+          return request.cookies.get(name)?.value
+        },
         set(name: string, value: string, options: CookieOptions) {
           response.cookies.set({ name, value, ...options })
         },
         remove(name: string, options: CookieOptions) {
-          response.cookies.set({ name, value: '', ...options })
+          response.cookies.set({ name, value: "", ...options })
         },
       },
     }
   )
 
   await supabase.auth.getUser()
-
   return response
 }
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 }
