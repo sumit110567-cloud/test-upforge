@@ -1,9 +1,7 @@
-// app/startup/page.tsx — REDESIGN v9
-// Indian Startup Registry — warm parchment palette, saffron-gold accents
-// FIXES:
-//   1. Compact masthead (reduced padding, tighter vertical rhythm)
-//   2. toolbar z-index: 20 (below navbar z-50)
-//   3. No inline footer — layout.tsx renders <Footer />
+// app/startup/page.tsx — REDESIGN v10
+// Indian Startup Registry — parchment palette, saffron-gold accents
+// MASTHEAD: India map via simplemaps SVG, tricolour feel, compact spacing
+// toolbar z-index:20 (below navbar z-50), no inline footer
 
 import { createReadClient } from "@/lib/supabase/server"
 import type { Metadata } from "next"
@@ -71,6 +69,11 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
       url: "https://www.upforge.in/startup", siteName: "UpForge",
       images: [{ url: "https://www.upforge.in/og/registry.png", width: 1200, height: 630 }],
       locale: "en_IN", type: "website",
+    },
+    other: {
+      "article:publisher": "https://www.upforge.in",
+      "article:modified_time": new Date().toISOString(),
+      "article:section": "Indian Startup Registry",
     },
     robots: {
       index: !isFiltered && page <= 1,
@@ -144,7 +147,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
         .pf { font-family: 'Playfair Display', Georgia, serif !important; }
 
-        /* ── Indian registry accent: saffron-amber ── */
         :root {
           --acc:   #D97706;
           --acc-d: #92400E;
@@ -157,12 +159,15 @@ export default async function StartupPage({ searchParams }: PageProps) {
           --faint: #EDE9DF;
         }
 
-        @keyframes riseIn { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:none } }
-        .ri-0 { animation: riseIn .38s .00s ease both }
-        .ri-1 { animation: riseIn .38s .07s ease both }
-        .ri-2 { animation: riseIn .38s .14s ease both }
-        .ri-3 { animation: riseIn .38s .20s ease both }
-        .ri-4 { animation: riseIn .38s .27s ease both }
+        @keyframes riseIn { from { opacity:0; transform:translateY(10px) } to { opacity:1; transform:none } }
+        .ri-0 { animation: riseIn .42s .00s ease both }
+        .ri-1 { animation: riseIn .42s .08s ease both }
+        .ri-2 { animation: riseIn .42s .16s ease both }
+        .ri-3 { animation: riseIn .42s .22s ease both }
+        .ri-4 { animation: riseIn .42s .30s ease both }
+
+        @keyframes mapFadeIn { from { opacity:0; transform:translateX(20px) scale(.97) } to { opacity:1; transform:none } }
+        .map-anim { animation: mapFadeIn .8s .15s ease both }
 
         .sh { display:flex; align-items:center; gap:10px; margin-bottom:14px }
         .sh-l { font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.3em; color:#AAA; font-family:system-ui,sans-serif; white-space:nowrap }
@@ -173,30 +178,183 @@ export default async function StartupPage({ searchParams }: PageProps) {
 
         body { background:var(--parch) }
 
-        /* ── MASTHEAD — compact ── */
-        .mast { background:var(--parch); border-bottom:3px solid var(--ink) }
-        .mast-nameplate {
-          text-align:center;
-          /* COMPACT: was clamp(28px,5vw,64px) top — now 20px / 40px */
-          padding: clamp(16px,3vw,40px) 16px clamp(12px,2.5vw,32px);
-          border-bottom:1px solid var(--rule)
+        /* ── TRICOLOUR strip ── */
+        .tricolour { height:4px; display:flex }
+        .tricolour span:nth-child(1) { flex:1; background:#FF9933 }
+        .tricolour span:nth-child(2) { flex:1; background:#fff; border-top:1px solid rgba(0,0,0,.06); border-bottom:1px solid rgba(0,0,0,.06) }
+        .tricolour span:nth-child(3) { flex:1; background:#138808 }
+
+        .gold-strip { height:2px; background:linear-gradient(90deg,var(--acc-d),var(--acc),var(--acc-l),var(--acc),var(--acc-d)) }
+
+        /* ── MASTHEAD ── */
+        .mast { background:var(--parch); border-bottom:3px solid var(--ink); position:relative; overflow:hidden }
+
+        /* India map container — right side, fills full masthead height */
+        .mast-map-panel {
+          position:absolute;
+          right:0; top:0; bottom:0;
+          width:min(46%, 520px);
+          pointer-events:none;
+          overflow:hidden;
+        }
+        /* Tricolour wash over map */
+        .mast-map-panel::before {
+          content:'';
+          position:absolute;
+          inset:0;
+          background:linear-gradient(
+            to bottom,
+            rgba(255,153,51,.13) 0%,
+            rgba(255,255,255,.05) 33%,
+            rgba(19,136,8,.10) 100%
+          );
+          z-index:2;
+          pointer-events:none;
+        }
+        /* Left fade — blends map into parchment */
+        .mast-map-panel::after {
+          content:'';
+          position:absolute;
+          top:0; left:0; bottom:0;
+          width:55%;
+          background:linear-gradient(to right, var(--parch) 0%, rgba(243,239,229,0) 100%);
+          z-index:3;
+          pointer-events:none;
         }
 
-        /* India flag strip — saffron | white | green */
-        .india-strip { height:3px; display:flex }
-        .india-strip span { flex:1 }
-        .india-strip span:nth-child(1) { background:#FF9933 }
-        .india-strip span:nth-child(2) { background:#fff; border-top:1px solid #EDE9DF; border-bottom:1px solid #EDE9DF }
-        .india-strip span:nth-child(3) { background:#138808 }
+        .mast-map-img {
+          position:absolute;
+          right:-2%;
+          top:50%;
+          transform:translateY(-50%);
+          width:88%;
+          max-width:400px;
+          height:auto;
+          opacity:.18;
+          filter:sepia(40%) saturate(1.4) contrast(1.1);
+          z-index:1;
+        }
 
-        .gold-strip { height:3px; background:linear-gradient(90deg,var(--acc-d),var(--acc),var(--acc-l),var(--acc),var(--acc-d)) }
+        /* Subtle Ashoka Chakra watermark — decorative only */
+        .chakra-mark {
+          position:absolute;
+          right:clamp(40px,10%,120px);
+          top:50%;
+          transform:translateY(-50%);
+          width:clamp(60px,8vw,100px);
+          height:clamp(60px,8vw,100px);
+          opacity:.04;
+          z-index:4;
+        }
 
-        .live-badge { display:inline-flex; align-items:center; gap:7px; border:1px solid rgba(21,128,61,.35); background:#F0FDF4; padding:4px 14px; border-radius:999px; margin-bottom:14px }
+        .mast-content {
+          position:relative;
+          z-index:10;
+          text-align:center;
+          padding: clamp(18px,3.5vw,44px) 16px clamp(14px,3vw,36px);
+          border-bottom:1px solid var(--rule);
+        }
+
+        .edition-pill {
+          display:inline-flex; align-items:center; gap:7px;
+          border:1px solid #FF9933;
+          background:linear-gradient(135deg, #FFF8F0 0%, #FFF4E8 100%);
+          padding:4px 14px 4px 10px;
+          margin-bottom:12px;
+          border-radius:2px;
+        }
+        .edition-pill-flag { font-size:15px; line-height:1 }
+
+        .mast-heading-wrap {
+          position:relative;
+          display:inline-block;
+          margin-bottom:8px;
+        }
+        /* Decorative serif quote mark behind heading */
+        .mast-heading-wrap::before {
+          content:'"';
+          font-family:'Playfair Display',serif;
+          font-size:clamp(80px,14vw,180px);
+          font-weight:900;
+          color:var(--rule2);
+          opacity:.35;
+          position:absolute;
+          left:-24px;
+          top:-28px;
+          line-height:1;
+          pointer-events:none;
+          z-index:0;
+          user-select:none;
+        }
+
+        .mast-h1 {
+          font-family:'Playfair Display',Georgia,serif !important;
+          font-size:clamp(2.1rem,5.8vw,4.8rem);
+          font-weight:900;
+          letter-spacing:-.028em;
+          color:#1A1208;
+          line-height:1.01;
+          position:relative;
+          z-index:1;
+        }
+
+        /* Gold rule under heading — tapers off */
+        .mast-rule {
+          display:block;
+          width:clamp(120px,22vw,260px);
+          height:2px;
+          background:linear-gradient(90deg,transparent,var(--acc-d),var(--acc),var(--acc-l),var(--acc),var(--acc-d),transparent);
+          margin:10px auto 14px;
+        }
+
+        .live-badge {
+          display:inline-flex; align-items:center; gap:7px;
+          border:1px solid rgba(21,128,61,.35);
+          background:#F0FDF4;
+          padding:4px 16px;
+          border-radius:999px;
+          margin-bottom:0;
+        }
         .live-dot { width:6px; height:6px; border-radius:50%; background:#15803D }
 
-        /* Edition tag — shown in masthead for India */
-        .edition-tag { display:inline-flex; align-items:center; gap:6px; border:1px solid #FF9933; background:#FFF8F0; padding:3px 12px; margin-bottom:10px }
-        .edition-flag { font-size:14px; line-height:1 }
+        /* Stat strip — inside masthead below tagline */
+        .mast-stats {
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          gap:0;
+          margin-top:16px;
+          border-top:1px solid var(--rule2);
+          padding-top:14px;
+        }
+        .mast-stat {
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          gap:2px;
+          padding:0 clamp(12px,2.5vw,28px);
+          border-right:1px solid var(--rule2);
+        }
+        .mast-stat:last-child { border-right:none }
+        .mast-stat-v {
+          font-family:'Playfair Display',serif;
+          font-size:clamp(1rem,1.8vw,1.4rem);
+          font-weight:900;
+          color:#1A1208;
+          line-height:1;
+        }
+        .mast-stat-l {
+          font-family:system-ui,sans-serif;
+          font-size:7.5px;
+          font-weight:700;
+          text-transform:uppercase;
+          letter-spacing:.18em;
+          color:#AAA;
+        }
+        @media(max-width:480px) {
+          .mast-stats { flex-wrap:wrap; gap:10px }
+          .mast-stat { border-right:none; padding:4px 14px; border:1px solid var(--rule2) }
+        }
 
         .cat-tabs { display:flex; overflow-x:auto; border-bottom:1px solid var(--rule); scrollbar-width:none; background:var(--parch) }
         .cat-tabs::-webkit-scrollbar { display:none }
@@ -228,6 +386,8 @@ export default async function StartupPage({ searchParams }: PageProps) {
           .t-inp::placeholder { font-size:13px }
           .t-btn { padding:0 14px; font-size:7.5px; letter-spacing:.12em }
           .t-filter-lbl { display:none }
+          .mast-map-panel { display:none }
+          .mast-heading-wrap::before { display:none }
         }
 
         .results-bar { max-width:1300px; margin:0 auto; padding:10px clamp(16px,4vw,48px); display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--rule2); background:var(--parch) }
@@ -341,21 +501,62 @@ export default async function StartupPage({ searchParams }: PageProps) {
 
       <Navbar />
 
-      {/* India flag strip at very top of content */}
-      <div className="india-strip">
-        <span /><span /><span />
-      </div>
+      {/* ── TRICOLOUR strip — top of page ── */}
+      <div className="tricolour"><span /><span /><span /></div>
 
+      {/* ── MASTHEAD ── */}
       <header className="mast" role="banner">
-        <div className="mast-nameplate ri-0">
 
+        {/* India map panel — right side decorative */}
+        <div className="mast-map-panel map-anim" aria-hidden="true">
+          {/* The simplemaps India SVG loaded as image — state boundaries visible */}
+          <img
+            className="mast-map-img"
+            src="https://simplemaps.com/static/svg/country/in/admin1/in.svg"
+            alt=""
+            loading="eager"
+            fetchpriority="high"
+          />
+          {/* Ashoka Chakra — pure CSS circle with spokes */}
+          <svg
+            className="chakra-mark"
+            viewBox="0 0 100 100"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <circle cx="50" cy="50" r="46" stroke="#1A3799" strokeWidth="3"/>
+            <circle cx="50" cy="50" r="6" fill="#1A3799"/>
+            {Array.from({length:24},(_,i)=>{
+              const a = (i * 360/24) * Math.PI / 180
+              const x1 = 50 + 9*Math.cos(a), y1 = 50 + 9*Math.sin(a)
+              const x2 = 50 + 42*Math.cos(a), y2 = 50 + 42*Math.sin(a)
+              return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#1A3799" strokeWidth="1.2"/>
+            })}
+          </svg>
+        </div>
 
-          <h1 className="pf ri-0" style={{ fontSize:"clamp(2rem,5.5vw,4.6rem)", fontWeight:900, letterSpacing:"-.025em", color:"#1A1208", lineHeight:1.02, marginBottom:10 }}>
-            Indian Registry
-          </h1>
+        {/* Main masthead content — centred */}
+        <div className="mast-content ri-0">
 
-          <p className="ri-1" style={{ fontSize:"clamp(12px,1.6vw,15px)", color:"#6B5C40", fontStyle:"italic", lineHeight:1.7, maxWidth:520, margin:"0 auto 16px" }}>
-            India's independent registry of verified builders — free, structured, permanent.
+          {/* Edition pill */}
+          <div className="edition-pill ri-0">
+            <span className="edition-pill-flag">🇮🇳</span>
+            <span style={{ fontFamily:"system-ui,sans-serif", fontSize:7.5, fontWeight:700, letterSpacing:".28em", textTransform:"uppercase", color:"#B45309" }}>
+              India Edition · 2026
+            </span>
+          </div>
+
+          {/* H1 with decorative quote behind */}
+          <div className="mast-heading-wrap">
+            <h1 className="mast-h1 pf ri-0">Indian Registry</h1>
+          </div>
+
+          {/* Gold centre rule */}
+          <span className="mast-rule" />
+
+          <p className="ri-1" style={{ fontFamily:"Georgia,'Times New Roman',serif", fontSize:"clamp(12px,1.55vw,14.5px)", color:"#6B5C40", fontStyle:"italic", lineHeight:1.72, maxWidth:460, margin:"0 auto 16px" }}>
+            India's independent registry of verified builders —<br />free, structured, permanent.
           </p>
 
           <div className="live-badge ri-1">
@@ -364,8 +565,25 @@ export default async function StartupPage({ searchParams }: PageProps) {
               Live · {total.toLocaleString()} Profiles · All Verified
             </span>
           </div>
+
+          {/* Stat strip */}
+          <div className="mast-stats ri-2">
+            {[
+              { v:`${total.toLocaleString()}+`, l:"Verified Startups" },
+              { v:"126+",   l:"Indian Unicorns"  },
+              { v:"$9.2B",  l:"Q1 2026 Funding"  },
+              { v:"3rd",    l:"Global Ecosystem"  },
+              { v:"30+",    l:"Sectors Covered"   },
+            ].map((s,i) => (
+              <div key={i} className="mast-stat">
+                <span className="mast-stat-v pf">{s.v}</span>
+                <span className="mast-stat-l">{s.l}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
+        {/* Sector tabs */}
         <nav className="cat-tabs ri-2" aria-label="Browse by sector" style={{ padding:"0 clamp(16px,4vw,48px)" }}>
           <span style={{ fontFamily:"system-ui,sans-serif", fontSize:7.5, color:"#BBB", textTransform:"uppercase", letterSpacing:".2em", padding:"10px 6px 10px 0", flexShrink:0, display:"inline-flex", alignItems:"center" }}>Browse:</span>
           <Link href="/startup" className={`cat-tab${!cat && !q ? " on" : ""}`}>All</Link>
@@ -376,6 +594,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
         </nav>
       </header>
 
+      {/* ── TOOLBAR ── */}
       <div className="toolbar" id="rg-toolbar">
         <div className="toolbar-inner">
           <form action="/startup" method="GET" className="t-search-row">
@@ -412,6 +631,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
         </div>
       </div>
 
+      {/* ── PAGE BODY ── */}
       <div className="page-body">
         <div className="results-bar ri-2" aria-live="polite">
           <span className="results-q">{q ? `"${q}"` : cat ? cat : year ? `Est. ${year}` : "All Startups"}</span>
@@ -539,6 +759,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
               )}
             </div>
 
+            {/* ── ASIDE ── */}
             <aside className="rg-aside ri-3" style={{ position:"sticky", top:88 }}>
               <div className="aside-box dk" style={{ position:"relative", overflow:"hidden" }}>
                 <div style={{ position:"absolute", top:0, left:0, right:0, height:3, background:"linear-gradient(90deg,#92400E,#D97706,#E8C547)" }} />
@@ -611,6 +832,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
             </aside>
           </div>
 
+          {/* CTA */}
           <div className="cta-block ri-4">
             <div>
               <p className="cta-ey">UpForge Intelligence</p>
@@ -622,6 +844,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
             </Link>
           </div>
 
+          {/* Internal links */}
           <section className="ri-4" style={{ paddingTop:"clamp(20px,3.5vw,32px)", borderTop:"1px solid #C8C2B4", marginTop:"clamp(20px,3.5vw,30px)" }}>
             <p style={{ fontFamily:"system-ui,sans-serif", fontSize:8.5, letterSpacing:".3em", textTransform:"uppercase", color:"#AAA", marginBottom:14 }}>Explore on UpForge</p>
             <div className="links-grid">
@@ -649,6 +872,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
         </div>
       </div>
 
+      {/* Filter JS */}
       <script dangerouslySetInnerHTML={{ __html: `
         (function(){
           function getP(){ var p=new URLSearchParams(window.location.search); return {q:p.get('q')||'',sort:p.get('sort')||'name',year:p.get('year')||'',cat:p.get('category')||''}; }
