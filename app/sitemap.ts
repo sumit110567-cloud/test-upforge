@@ -1,24 +1,19 @@
 // app/sitemap.ts
 // ─────────────────────────────────────────────────────────────────────────────
-// Fully dynamic sitemap — derives all URLs from Supabase.
-// Zero hardcoded startup slugs or category slugs.
+// UPGRADE: /ufrn/[id] routes now included as a separate tier.
 //
-// URL tiers included (in priority order):
+// URL tiers (in priority order):
 //   1. Static routes     — home, registry, categories hub, about, etc.
-//   2. Category pages    — /startups/[category]  (derived from DB)
-//   3. Startup profiles  — /startup/[slug]       (all approved startups)
-//   4. Blog posts        — /blog/[slug]           (all published posts)
+//   2. Category pages    — /startups/[category]
+//   3. Startup profiles  — /startup/[slug]         (priority: 0.8–0.9)
+//   4. UFRN lookup pages — /ufrn/[ufrn-id]         (priority: 0.85)
+//      ↑ NEW — these are "double-parked" ranking pages for UFRN searches.
+//      Each UFRN page is a second chance to rank #1 when someone searches
+//      the exact ID. Google indexes them as Dataset entries.
+//   5. Blog posts        — /blog/[slug]
 //
 // ARCHITECTURE NOTE:
-// At 5000+ startups and 2500+ blogs, split into sub-sitemaps:
-//   app/sitemap/static/route.ts
-//   app/sitemap/startups/route.ts
-//   app/sitemap/blogs/route.ts
-// For current scale, a single file is correct and fast.
-//
-// CANONICAL CONFLICT WARNING:
-// Do NOT add /industries, /verification, /founder-stories to static routes
-// until those canonical errors are resolved in Google Search Console.
+// At 5000+ startups, split into sub-sitemaps. See comments below.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { MetadataRoute } from "next"
@@ -26,17 +21,18 @@ import { createClient } from "@/lib/supabase/server"
 import { categoryToSlug } from "@/lib/categories"
 
 const BASE = "https://www.upforge.in"
+// UFRN pages are canonical on .org — they point to the authority domain
+const BASE_ORG = "https://www.upforge.org"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // STATIC ROUTES
-// lastModified: use a real ISO date string — update manually when page changes.
-// dynamic new Date() on every request trains Google to distrust freshness signals.
 // ─────────────────────────────────────────────────────────────────────────────
 const STATIC_ROUTES: Array<{
   path: string
   priority: number
   changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]
   lastModified: string
+  base?: string
 }> = [
   { path: "",           priority: 1.0, changeFrequency: "daily",   lastModified: "2026-01-01" },
   { path: "/startup",   priority: 0.9, changeFrequency: "daily",   lastModified: "2026-01-01" },
@@ -45,21 +41,14 @@ const STATIC_ROUTES: Array<{
   { path: "/about",     priority: 0.7, changeFrequency: "monthly", lastModified: "2026-01-01" },
   { path: "/submit",    priority: 0.6, changeFrequency: "monthly", lastModified: "2026-01-01" },
   { path: "/contact",   priority: 0.5, changeFrequency: "monthly", lastModified: "2026-01-01" },
-  // ── ADD WHEN LIVE ── Uncomment only when the route returns 200.
-  // { path: "/report",           priority: 0.7, changeFrequency: "monthly", lastModified: "2026-01-01" },
-  // { path: "/indian-unicorns",  priority: 0.8, changeFrequency: "weekly",  lastModified: "2026-01-01" },
-  //
-  // ── DO NOT ADD until canonical errors are resolved in GSC ──
-  // { path: "/industries",       ... }  ← canonical conflict
-  // { path: "/verification",     ... }  ← canonical conflict
-  // { path: "/founder-stories",  ... }  ← canonical conflict
+  // UFRN index page on .org — the "UFRN system" landing page
+  // Uncomment when /ufrn route exists and returns 200:
+  // { path: "/ufrn",    priority: 0.8, changeFrequency: "daily",   lastModified: "2026-01-01", base: BASE_ORG },
 ]
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
 // ─────────────────────────────────────────────────────────────────────────────
-
-/** Safely parse a date string, fall back to a fixed date rather than new Date(). */
 function parseDate(raw: string | null | undefined): Date {
   if (!raw) return new Date("2026-01-01")
   const d = new Date(raw)
@@ -73,10 +62,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = await createClient()
 
   // ── 1. Fetch approved startups ────────────────────────────────────────────
-  // Single query — used to derive both category routes and startup profile routes.
   const { data: startups, error: startupError } = await supabase
     .from("startups")
-    .select("slug, category, updated_at, created_at, is_featured")
+    .select("slug, category, updated_at, created_at, is_featured, ufrn")
     .eq("status", "approved")
     .not("slug", "is", null)
     .order("created_at", { ascending: false })
@@ -85,8 +73,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("[sitemap] Startup fetch error:", startupError.message)
   }
 
-  // ── 2. Derive category routes from startup data ───────────────────────────
-  // No extra Supabase query needed — reuse the startups result.
+  // ── 2. Category routes ────────────────────────────────────────────────────
   const seenCategorySlugs = new Set<string>()
   const categoryEntries: MetadataRoute.Sitemap = []
 
@@ -97,7 +84,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     seenCategorySlugs.add(slug)
     categoryEntries.push({
       url: `${BASE}/startups/${slug}`,
-      lastModified: new Date("2026-01-01"), // stable date — avoids freshness noise
+      lastModified: new Date("2026-01-01"),
       changeFrequency: "daily",
       priority: 0.85,
     })
@@ -108,17 +95,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${BASE}/startup/${s.slug}`,
     lastModified: parseDate(s.updated_at ?? s.created_at),
     changeFrequency: "weekly",
-    // Featured startup profiles get a small priority boost
     priority: s.is_featured ? 0.9 : 0.8,
   }))
 
-  // ── 4. Blog posts ─────────────────────────────────────────────────────────
+  // ── 4. UFRN lookup routes (NEW) ───────────────────────────────────────────
+  // These are canonical on .org — separate from the /startup/[slug] entries.
+  // Google will index these as Dataset pages, "double-parking" UpForge on
+  // the first SERP for any UFRN search.
+  //
+  // Priority 0.85 — higher than a blog post (0.7), lower than a profile (0.8–0.9).
+  // These pages exist purely for UFRN lookup authority, not for general traffic.
+  const ufrnEntries: MetadataRoute.Sitemap = (startups ?? [])
+    .filter((s): s is typeof s & { ufrn: string } => typeof s.ufrn === "string" && s.ufrn.length > 0)
+    .map((s) => ({
+      url: `${BASE_ORG}/ufrn/${s.ufrn}`,
+      lastModified: parseDate(s.updated_at ?? s.created_at),
+      changeFrequency: "monthly" as const,
+      priority: 0.85,
+    }))
+
+  // ── 5. Blog posts ─────────────────────────────────────────────────────────
   const { data: blogs, error: blogError } = await supabase
     .from("blogs")
     .select("slug, updated_at, created_at, is_featured")
     .order("created_at", { ascending: false })
-  // Uncomment when blogs table has a status column:
-  // .eq("status", "published")
 
   if (blogError) {
     console.error("[sitemap] Blog fetch error:", blogError.message)
@@ -131,20 +131,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: b.is_featured ? 0.8 : 0.7,
   }))
 
-  // ── 5. Static routes ──────────────────────────────────────────────────────
+  // ── 6. Static routes ──────────────────────────────────────────────────────
   const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((r) => ({
-    url: `${BASE}${r.path}`,
+    url: `${r.base ?? BASE}${r.path}`,
     lastModified: new Date(r.lastModified),
     changeFrequency: r.changeFrequency,
     priority: r.priority,
   }))
 
-  // ── 6. Combine — most important URLs first ────────────────────────────────
-  // Google processes sitemaps in order, so static > categories > startups > blogs.
+  // ── 7. Combine — most important first ────────────────────────────────────
   return [
     ...staticEntries,
     ...categoryEntries,
     ...startupEntries,
+    ...ufrnEntries,     // ← NEW: UFRN lookup pages on .org
     ...blogEntries,
   ]
 }
