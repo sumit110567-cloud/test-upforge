@@ -1,5 +1,6 @@
-// app/startup/page.tsx — REDESIGN v13 (Hero Background + Compact Cards)
-// Indian Startup Registry — Hero background image, compact cards, mobile optimized
+// app/startup/page.tsx — FINAL VERSION
+// Indian Startup Registry — Hero background, compact cards, mobile optimized
+// Reference: app/page.tsx for spacing and typography standards
 
 import { createReadClient } from "@/lib/supabase/server"
 import type { Metadata } from "next"
@@ -158,25 +159,23 @@ export default async function StartupPage({ searchParams }: PageProps) {
           --accent-light: #F59E0B;
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body { background: var(--parch); }
+
         @keyframes riseIn { 
-          from { opacity:0; transform:translateY(12px) } 
-          to { opacity:1; transform:none } 
+          from { opacity: 0; transform: translateY(12px); } 
+          to { opacity: 1; transform: none; } 
         }
-        .ri-0 { animation: riseIn .5s .00s ease both }
-        .ri-1 { animation: riseIn .5s .08s ease both }
-        .ri-2 { animation: riseIn .5s .16s ease both }
-        .ri-3 { animation: riseIn .5s .24s ease both }
+        .ri-0 { animation: riseIn 0.5s 0s ease both; }
+        .ri-1 { animation: riseIn 0.5s 0.08s ease both; }
+        .ri-2 { animation: riseIn 0.5s 0.16s ease both; }
+        .ri-3 { animation: riseIn 0.5s 0.24s ease both; }
 
-        .sh { display:flex; align-items:center; gap:10px; margin-bottom:14px }
-        .sh-l { font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.3em; color:#AAA; font-family:system-ui,sans-serif; white-space:nowrap }
-        .sh-r { flex:1; height:1px; background:var(--rule2) }
-
-        body { background:var(--parch) }
-
-        /* Hero Section with Background Image */
+        /* Hero Section */
         .hero-section {
           position: relative;
-          background: linear-gradient(135deg, rgba(26,18,8,0.85) 0%, rgba(26,18,8,0.7) 100%);
+          background: linear-gradient(135deg, rgba(26,18,8,0.88) 0%, rgba(26,18,8,0.75) 100%);
           overflow: hidden;
           border-bottom: 1px solid var(--rule);
         }
@@ -189,9 +188,9 @@ export default async function StartupPage({ searchParams }: PageProps) {
           bottom: 0;
           background-image: url('https://img.myloview.com/posters/graffiti-image-of-a-youth-from-andhra-pradesh-an-indian-state-on-a-colorful-backwall-of-city-streets-concept-of-promoting-indian-states-and-indian-youth-with-modern-art-400-538653280.jpg');
           background-size: cover;
-          background-position: center 30%;
+          background-position: center 25%;
           background-repeat: no-repeat;
-          opacity: 0.25;
+          opacity: 0.22;
           z-index: 0;
         }
         
@@ -202,10 +201,9 @@ export default async function StartupPage({ searchParams }: PageProps) {
           left: 0;
           right: 0;
           bottom: 0;
-          background: linear-gradient(90deg, rgba(26,18,8,0.9) 0%, rgba(26,18,8,0.6) 50%, rgba(26,18,8,0.85) 100%);
+          background: linear-gradient(90deg, rgba(26,18,8,0.85) 0%, rgba(26,18,8,0.5) 50%, rgba(26,18,8,0.85) 100%);
         }
         
-        /* Tricolour overlay effect */
         .hero-section::before {
           content: '';
           position: absolute;
@@ -227,43 +225,36 @@ export default async function StartupPage({ searchParams }: PageProps) {
           position: relative;
           z-index: 10;
           text-align: center;
-          padding: clamp(40px, 8vw, 80px) 20px clamp(36px, 6vw, 60px);
+          padding: 64px 24px 56px;
         }
 
-        .mast-heading-wrap {
-          position: relative;
-          display: inline-block;
-          margin-bottom: 12px;
-        }
-        
         .mast-h1 {
-          font-family: 'Playfair Display', Georgia, serif !important;
-          font-size: clamp(2rem, 8vw, 4.5rem);
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: 56px;
           font-weight: 900;
           letter-spacing: -0.02em;
           color: white;
           line-height: 1.1;
-          text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-          position: relative;
-          z-index: 1;
+          text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+          margin-bottom: 16px;
         }
 
         .mast-rule {
           display: block;
-          width: clamp(100px, 20vw, 220px);
+          width: 180px;
           height: 2px;
           background: linear-gradient(90deg, transparent, var(--saffron), var(--accent), var(--saffron), transparent);
-          margin: 14px auto 18px;
+          margin: 16px auto 20px;
         }
 
         .mast-tagline {
           font-family: Georgia, 'Times New Roman', serif;
-          font-size: clamp(12px, 2vw, 14px);
-          color: rgba(255,255,255,0.9);
+          font-size: 15px;
+          color: rgba(255,255,255,0.92);
           font-style: italic;
-          line-height: 1.6;
-          max-width: 520px;
-          margin: 0 auto 20px;
+          line-height: 1.65;
+          max-width: 560px;
+          margin: 0 auto 24px;
           text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
 
@@ -271,73 +262,62 @@ export default async function StartupPage({ searchParams }: PageProps) {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          background: rgba(255,255,255,0.15);
+          background: rgba(255,255,255,0.12);
           backdrop-filter: blur(10px);
-          border: 1px solid rgba(255,255,255,0.3);
-          padding: 6px 18px;
-          border-radius: 40px;
+          border: 1px solid rgba(255,255,255,0.25);
+          padding: 8px 22px;
+          border-radius: 100px;
         }
         .live-dot { 
-          width: 6px; 
-          height: 6px; 
+          width: 7px; 
+          height: 7px; 
           border-radius: 50%; 
           background: #22c55e; 
           box-shadow: 0 0 0 2px rgba(34,197,94,0.3);
           animation: pulse 2s infinite;
         }
         .live-text {
-          font-family: system-ui, sans-serif;
-          font-size: 9px;
+          font-family: system-ui, -apple-system, sans-serif;
+          font-size: 10px;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.18em;
+          letter-spacing: 0.2em;
           color: white;
         }
         @keyframes pulse { 
           0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); } 
-          70% { box-shadow: 0 0 0 6px rgba(34,197,94,0); } 
+          70% { box-shadow: 0 0 0 8px rgba(34,197,94,0); } 
           100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
         }
 
-        @media (max-width: 640px) {
-          .mast-content {
-            padding: 32px 16px 28px;
-          }
-          .mast-h1 {
-            font-size: 1.8rem;
-          }
-          .mast-tagline br {
-            display: none;
-          }
-        }
-
+        /* Category Tabs */
         .cat-tabs { 
           display: flex; 
           overflow-x: auto; 
           border-bottom: 1px solid var(--rule); 
           scrollbar-width: none; 
           background: white; 
-          padding: 0 16px;
+          padding: 0 20px;
           position: relative;
           z-index: 5;
         }
-        .cat-tabs::-webkit-scrollbar { display: none }
+        .cat-tabs::-webkit-scrollbar { display: none; }
         .cat-tab { 
           flex-shrink: 0; 
-          padding: 10px 16px; 
-          font-family: system-ui, sans-serif; 
-          font-size: 8px; 
+          padding: 14px 20px; 
+          font-family: system-ui, -apple-system, sans-serif; 
+          font-size: 9px; 
           font-weight: 700; 
           letter-spacing: 0.12em; 
           text-transform: uppercase; 
           color: #888; 
           text-decoration: none; 
           border-bottom: 2.5px solid transparent; 
-          transition: all .2s; 
-          white-space: nowrap 
+          transition: all 0.2s; 
+          white-space: nowrap; 
         }
-        .cat-tab:hover { color: var(--ink); border-bottom-color: var(--rule) }
-        .cat-tab.on { color: var(--accent); border-bottom-color: var(--accent) }
+        .cat-tab:hover { color: var(--ink); border-bottom-color: var(--rule); }
+        .cat-tab.on { color: var(--accent); border-bottom-color: var(--accent); }
 
         /* Toolbar */
         .toolbar { 
@@ -348,57 +328,61 @@ export default async function StartupPage({ searchParams }: PageProps) {
           backdrop-filter: blur(8px);
           border-bottom: 1px solid var(--rule);
         }
-        .toolbar-inner { max-width: 1300px; margin: 0 auto; padding: 0 clamp(12px, 4vw, 48px) }
+        .toolbar-inner { 
+          max-width: 1300px; 
+          margin: 0 auto; 
+          padding: 0 24px; 
+        }
 
         .t-search-row { 
           display: flex; 
           align-items: center; 
-          height: 48px; 
+          height: 52px; 
           background: white; 
-          border-radius: 12px; 
-          margin: 10px 0; 
+          border-radius: 14px; 
+          margin: 12px 0; 
           border: 1px solid var(--rule2);
         }
-        .t-icon { padding: 0 12px; color: #AAA; font-size: 14px; flex-shrink: 0 }
+        .t-icon { padding: 0 14px; color: #AAA; font-size: 15px; flex-shrink: 0; }
         .t-inp { 
           flex: 1; 
           border: none; 
           background: transparent; 
-          font-size: 13px; 
+          font-size: 14px; 
           font-style: italic; 
           color: var(--ink); 
           outline: none; 
           padding: 0; 
-          min-width: 0 
+          min-width: 0; 
         }
-        .t-inp::placeholder { color: var(--rule); font-size: 12px }
+        .t-inp::placeholder { color: var(--rule); font-size: 13px; }
         .t-btn { 
-          height: 38px; 
-          padding: 0 18px; 
+          height: 40px; 
+          padding: 0 24px; 
           background: var(--ink); 
           color: #fff; 
           border: none; 
-          font-size: 8px; 
+          font-size: 9px; 
           font-weight: 800; 
           letter-spacing: 0.16em; 
           text-transform: uppercase; 
           cursor: pointer; 
           flex-shrink: 0; 
-          border-radius: 8px;
-          margin-right: 6px;
+          border-radius: 10px;
+          margin-right: 8px;
         }
-        .t-btn:hover { background: var(--accent) }
+        .t-btn:hover { background: var(--accent); }
 
         .t-filter-row { 
           display: flex; 
           align-items: center; 
-          height: 40px; 
+          height: 44px; 
           overflow-x: auto; 
-          gap: 8px;
+          gap: 10px;
           background: white; 
-          border-radius: 12px; 
-          padding: 0 12px; 
-          margin-bottom: 10px;
+          border-radius: 14px; 
+          padding: 0 14px; 
+          margin-bottom: 12px;
           border: 1px solid var(--rule2);
         }
         .t-filter-lbl { 
@@ -413,20 +397,20 @@ export default async function StartupPage({ searchParams }: PageProps) {
           flex-shrink: 0;
         }
         .t-sel { 
-          height: 30px; 
+          height: 32px; 
           border: 1px solid var(--rule2); 
           border-radius: 8px; 
           background: white; 
           font-size: 10px; 
           color: var(--muted); 
-          padding: 0 10px; 
+          padding: 0 12px; 
           cursor: pointer; 
           flex-shrink: 0;
         }
-        .t-div { width: 1px; height: 20px; background: var(--rule2); flex-shrink: 0; margin: 0 4px }
+        .t-div { width: 1px; height: 22px; background: var(--rule2); flex-shrink: 0; margin: 0 6px; }
         .t-sort { 
-          padding: 0 10px; 
-          font-size: 8px; 
+          padding: 0 12px; 
+          font-size: 9px; 
           font-weight: 600; 
           letter-spacing: 0.1em; 
           text-transform: uppercase; 
@@ -435,7 +419,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
           flex-shrink: 0;
           white-space: nowrap;
         }
-        .t-sort.on { color: var(--accent); font-weight: 900 }
+        .t-sort.on { color: var(--accent); font-weight: 900; }
         .t-clear { 
           display: flex; 
           align-items: center; 
@@ -447,45 +431,65 @@ export default async function StartupPage({ searchParams }: PageProps) {
           flex-shrink: 0;
         }
 
+        /* Results Bar */
         .results-bar { 
           max-width: 1300px; 
           margin: 0 auto; 
-          padding: 12px clamp(12px, 4vw, 48px); 
+          padding: 16px 24px; 
           display: flex; 
           align-items: center; 
-          gap: 12px; 
-          background: var(--parch) 
+          gap: 14px; 
+          background: var(--parch); 
+          border-bottom: 1px solid var(--rule2);
         }
-        .results-q { font-size: 13px; font-weight: 700; color: var(--ink); font-style: italic }
-        .results-n { font-size: 11px; color: var(--muted) }
-        .results-rule { flex: 1; height: 1px; background: var(--rule2) }
-        .results-pg { font-size: 9px; color: #AAA }
+        .results-q { font-size: 14px; font-weight: 700; color: var(--ink); font-style: italic; }
+        .results-n { font-size: 12px; color: var(--muted); }
+        .results-rule { flex: 1; height: 1px; background: var(--rule2); }
+        .results-pg { font-size: 10px; color: #AAA; }
 
-        .main-wrap { max-width: 1300px; margin: 0 auto; padding: 20px clamp(12px, 4vw, 48px) 0 }
-        .main-grid { display: grid; grid-template-columns: 1fr 280px; gap: 24px; align-items: start }
-        @media(max-width: 1000px) { .main-grid { grid-template-columns: 1fr } .rg-aside { display: none } }
+        /* Main Layout */
+        .main-wrap { 
+          max-width: 1300px; 
+          margin: 0 auto; 
+          padding: 28px 24px 0; 
+        }
+        .main-grid { 
+          display: grid; 
+          grid-template-columns: 1fr 300px; 
+          gap: 32px; 
+          align-items: start; 
+        }
+        @media (max-width: 1000px) { 
+          .main-grid { grid-template-columns: 1fr; } 
+          .rg-aside { display: none; } 
+        }
 
-        /* Compact Featured Cards */
+        .sh { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+        .sh-l { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3em; color: #AAA; font-family: system-ui, sans-serif; white-space: nowrap; }
+        .sh-r { flex: 1; height: 1px; background: var(--rule2); }
+
+        /* Featured Cards */
         .feat-grid { 
           display: grid; 
           grid-template-columns: repeat(3, 1fr); 
-          gap: 16px; 
-          margin-bottom: 28px;
+          gap: 20px; 
+          margin-bottom: 40px;
         }
-        @media(max-width: 800px) { .feat-grid { grid-template-columns: repeat(2, 1fr) } }
-        @media(max-width: 500px) { .feat-grid { grid-template-columns: 1fr } }
+        @media (max-width: 800px) { .feat-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 560px) { .feat-grid { grid-template-columns: 1fr; } }
         
         .feat-card { 
           background: white; 
-          border-radius: 12px; 
+          border-radius: 16px; 
           text-decoration: none; 
-          transition: all .2s ease;
+          transition: all 0.25s ease;
           overflow: hidden; 
           border: 1px solid var(--rule2); 
+          box-shadow: 0 1px 3px rgba(0,0,0,0.03);
         }
         .feat-card:hover { 
-          transform: translateY(-2px); 
-          box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+          transform: translateY(-4px); 
+          box-shadow: 0 12px 24px -12px rgba(0,0,0,0.12);
           border-color: var(--accent);
         }
         .feat-img-wrap { 
@@ -503,187 +507,193 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .feat-overlay { 
           position: absolute; 
           inset: 0; 
-          background: linear-gradient(to top, rgba(0,0,0,.65) 0%, transparent 55%);
+          background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
         }
-        .feat-caption { position: absolute; bottom: 0; left: 0; right: 0; padding: 12px }
+        .feat-caption { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px; }
         .feat-sector { 
-          font-size: 7px; 
+          font-size: 8px; 
           font-weight: 700; 
           text-transform: uppercase; 
           letter-spacing: 0.12em; 
-          color: rgba(255,255,255,.7); 
+          color: rgba(255,255,255,0.7); 
+          margin-bottom: 4px;
         }
         .feat-company { 
           font-family: 'Playfair Display', serif; 
-          font-size: 14px; 
+          font-size: 18px; 
           font-weight: 700; 
           color: #fff; 
-          line-height: 1.25 
+          line-height: 1.25; 
         }
-        .feat-body { padding: 12px; }
+        .feat-body { padding: 16px; }
         .feat-desc { 
-          font-size: 11px; 
+          font-size: 12px; 
           color: #5A4A30; 
           font-style: italic; 
-          line-height: 1.45; 
+          line-height: 1.5; 
           display: -webkit-box; 
           -webkit-line-clamp: 2; 
           -webkit-box-orient: vertical; 
           overflow: hidden;
-          margin-bottom: 8px;
+          margin-bottom: 12px;
         }
         .feat-foot { display: flex; align-items: center; justify-content: space-between; }
-        .feat-chips { font-size: 9px; color: #AAA; display: flex; gap: 8px; flex-wrap: wrap }
+        .feat-chips { font-size: 10px; color: #AAA; display: flex; gap: 10px; flex-wrap: wrap; }
 
-        /* Compact List Items */
-        .startup-list { display: flex; flex-direction: column; gap: 8px }
+        /* List Items */
+        .startup-list { display: flex; flex-direction: column; gap: 10px; }
         .s-row { 
           display: grid; 
-          grid-template-columns: 44px 1fr auto; 
+          grid-template-columns: 48px 1fr auto; 
           background: white; 
-          border-radius: 12px; 
+          border-radius: 14px; 
           text-decoration: none; 
-          transition: all .2s ease;
+          transition: all 0.2s ease;
           border: 1px solid var(--rule2); 
           overflow: hidden;
         }
         .s-row:hover { 
-          transform: translateX(3px); 
+          transform: translateX(4px); 
           border-color: var(--accent); 
+          box-shadow: 0 4px 12px rgba(0,0,0,0.06);
         }
-        @media(max-width: 560px) { 
-          .s-row { grid-template-columns: 1fr auto } 
-          .s-num-col { display: none } 
+        @media (max-width: 560px) { 
+          .s-row { grid-template-columns: 1fr auto; } 
+          .s-num-col { display: none; } 
         }
-        .s-num-col { display: flex; align-items: flex-start; justify-content: center; padding: 14px 0; border-right: 1px solid var(--rule2) }
-        .s-num { font-family: 'Playfair Display', serif; font-size: 12px; font-weight: 700; color: var(--rule) }
-        .s-body { padding: 12px 14px; }
-        .s-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px }
+        .s-num-col { display: flex; align-items: flex-start; justify-content: center; padding: 18px 0; border-right: 1px solid var(--rule2); }
+        .s-num { font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 700; color: var(--rule); }
+        .s-body { padding: 14px 18px; }
+        .s-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
         .s-logo-wrap { 
-          width: 36px; 
-          height: 36px; 
-          border-radius: 10px; 
+          width: 40px; 
+          height: 40px; 
+          border-radius: 12px; 
           border: 1px solid var(--rule2); 
           background: var(--parch-dark); 
           display: flex; 
           align-items: center; 
           justify-content: center; 
-          flex-shrink: 0 
+          flex-shrink: 0; 
         }
-        .s-meta { flex: 1; min-width: 0 }
-        .s-name { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 700; color: var(--ink); line-height: 1.3 }
-        .s-cat { font-size: 8px; color: #AAA; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2px }
-        .s-verified { display: inline-flex; align-items: center; gap: 4px; font-size: 7px; font-weight: 800; text-transform: uppercase; color: var(--green); margin-left: 6px }
-        .s-desc { font-size: 11px; color: #5A4A30; font-style: italic; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 4px }
-        .s-founders { font-size: 10px; color: #AAA; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden }
-        .s-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px }
-        .s-chip { font-size: 8px; color: var(--muted); border: 1px solid var(--rule); padding: 2px 8px; background: var(--parch); border-radius: 16px }
-        .s-ufrn { font-family: monospace; font-size: 7px; font-weight: 700; color: var(--accent); background: #FEF9E6; border: 1px solid #FDE68A; padding: 2px 6px; border-radius: 10px }
-        .s-arrow-col { display: flex; align-items: center; justify-content: center; padding: 0 14px; border-left: 1px solid var(--rule2) }
+        .s-meta { flex: 1; min-width: 0; }
+        .s-name { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+        .s-cat { font-size: 9px; color: #AAA; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 3px; }
+        .s-verified { display: inline-flex; align-items: center; gap: 4px; font-size: 8px; font-weight: 800; text-transform: uppercase; color: var(--green); margin-left: 8px; }
+        .s-desc { font-size: 12px; color: #5A4A30; font-style: italic; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 6px; }
+        .s-founders { font-size: 11px; color: #AAA; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 4px; }
+        .s-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+        .s-chip { font-size: 9px; color: var(--muted); border: 1px solid var(--rule); padding: 3px 10px; background: var(--parch); border-radius: 20px; }
+        .s-ufrn { font-family: monospace; font-size: 8px; font-weight: 700; color: var(--accent); background: #FEF9E6; border: 1px solid #FDE68A; padding: 2px 8px; border-radius: 12px; }
+        .s-arrow-col { display: flex; align-items: center; justify-content: center; padding: 0 20px; border-left: 1px solid var(--rule2); }
         .s-arrow { 
-          width: 28px; 
-          height: 28px; 
+          width: 30px; 
+          height: 30px; 
           display: flex; 
           align-items: center; 
           justify-content: center; 
-          border-radius: 8px; 
+          border-radius: 10px; 
           background: var(--parch); 
         }
-        .s-row:hover .s-arrow { background: var(--accent) }
-        .s-row:hover .s-arrow svg { color: white }
+        .s-row:hover .s-arrow { background: var(--accent); }
+        .s-row:hover .s-arrow svg { color: white; }
 
-        .empty-state { text-align: center; padding: 50px 20px; border-radius: 16px; border: 2px dashed var(--rule); background: white }
+        .empty-state { text-align: center; padding: 60px 24px; border-radius: 20px; border: 2px dashed var(--rule); background: white; }
 
-        .pag { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--rule2) }
+        /* Pagination */
+        .pag { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 36px; padding-top: 28px; border-top: 1px solid var(--rule2); }
         .pag-btn { 
-          padding: 6px 16px; 
-          font-size: 8px; 
+          padding: 8px 20px; 
+          font-size: 9px; 
           font-weight: 700; 
-          letter-spacing: 0.1em; 
+          letter-spacing: 0.12em; 
           text-transform: uppercase; 
           border: 1px solid var(--rule); 
           background: white; 
           color: var(--muted); 
           text-decoration: none; 
-          border-radius: 8px;
+          border-radius: 10px;
         }
-        .pag-btn:hover { border-color: var(--accent); color: var(--accent) }
-        .pag-btn.dis { opacity: 0.4; pointer-events: none }
+        .pag-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .pag-btn.dis { opacity: 0.4; pointer-events: none; }
         .pag-num { 
-          width: 34px; 
-          height: 34px; 
+          width: 38px; 
+          height: 38px; 
           display: flex; 
           align-items: center; 
           justify-content: center; 
-          font-size: 11px; 
+          font-size: 12px; 
           font-weight: 700; 
           border: 1px solid var(--rule); 
           text-decoration: none; 
           color: var(--muted); 
-          border-radius: 8px;
+          border-radius: 10px;
         }
-        .pag-num:hover { border-color: var(--accent); color: var(--accent) }
-        .pag-num.on { background: var(--accent); color: white; border-color: var(--accent) }
+        .pag-num:hover { border-color: var(--accent); color: var(--accent); }
+        .pag-num.on { background: var(--accent); color: white; border-color: var(--accent); }
 
-        .rg-aside { display: flex; flex-direction: column; gap: 16px }
-        .aside-box { border-radius: 12px; border: 1px solid var(--rule2); background: white; padding: 16px; }
-        .aside-box.dk { background: linear-gradient(135deg, var(--ink) 0%, #2A2012 100%); border-color: var(--accent) }
-        .aside-ey { font-size: 7px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.28em; color: #AAA; margin-bottom: 10px }
-        .aside-box.dk .aside-ey { color: var(--accent-light) }
-        .aside-h { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 6px }
-        .aside-box.dk .aside-h { color: white }
-        .aside-p { font-size: 11px; color: #5A4A30; font-style: italic; line-height: 1.5; margin-bottom: 12px }
+        /* Aside */
+        .rg-aside { display: flex; flex-direction: column; gap: 20px; }
+        .aside-box { border-radius: 16px; border: 1px solid var(--rule2); background: white; padding: 20px; }
+        .aside-box.dk { background: linear-gradient(135deg, var(--ink) 0%, #2A2012 100%); border-color: var(--accent); }
+        .aside-ey { font-size: 8px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.28em; color: #AAA; margin-bottom: 12px; }
+        .aside-box.dk .aside-ey { color: var(--accent-light); }
+        .aside-h { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+        .aside-box.dk .aside-h { color: white; }
+        .aside-p { font-size: 12px; color: #5A4A30; font-style: italic; line-height: 1.55; margin-bottom: 16px; }
         .aside-btn { 
           display: block; 
           text-align: center; 
-          font-size: 8px; 
+          font-size: 9px; 
           font-weight: 900; 
           text-transform: uppercase; 
           letter-spacing: 0.16em; 
           background: var(--accent); 
           color: white; 
-          padding: 10px; 
+          padding: 12px; 
           text-decoration: none; 
-          border-radius: 10px;
+          border-radius: 12px;
         }
-        .aside-list { list-style: none; padding: 0; margin: 0 }
-        .aside-list li { border-bottom: 1px solid var(--rule2) }
-        .aside-list li:last-child { border-bottom: none }
+        .aside-btn:hover { background: var(--accent-light); }
+        .aside-list { list-style: none; padding: 0; margin: 0; }
+        .aside-list li { border-bottom: 1px solid var(--rule2); }
+        .aside-list li:last-child { border-bottom: none; }
         .aside-list a { 
           display: flex; 
           align-items: center; 
           justify-content: space-between; 
-          padding: 8px 0; 
-          font-size: 11px; 
+          padding: 10px 0; 
+          font-size: 12px; 
           color: #5A4A30; 
           text-decoration: none; 
           font-style: italic; 
         }
-        .aside-list a:hover { color: var(--accent) }
+        .aside-list a:hover { color: var(--accent); }
 
+        /* CTA Block */
         .cta-block { 
           background: linear-gradient(135deg, var(--ink) 0%, #2A2012 100%); 
-          border-radius: 16px; 
-          padding: 24px 28px; 
+          border-radius: 20px; 
+          padding: 32px 36px; 
           display: flex; 
           flex-wrap: wrap; 
           align-items: center; 
           justify-content: space-between; 
-          gap: 20px; 
-          margin-top: 32px; 
+          gap: 24px; 
+          margin-top: 48px; 
         }
-        .cta-ey { font-size: 7px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.3em; color: rgba(232,197,71,.7); margin-bottom: 6px }
-        .cta-h { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: white; margin-bottom: 4px }
-        .cta-p { font-size: 11px; color: rgba(255,255,255,.5); font-style: italic }
+        .cta-ey { font-size: 8px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.3em; color: rgba(232,197,71,0.7); margin-bottom: 8px; }
+        .cta-h { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: white; margin-bottom: 6px; }
+        .cta-p { font-size: 12px; color: rgba(255,255,255,0.5); font-style: italic; }
         .cta-btn { 
           flex-shrink: 0; 
           display: inline-flex; 
           align-items: center; 
-          gap: 8px; 
+          gap: 10px; 
           background: var(--accent); 
           color: white; 
-          padding: 10px 24px; 
-          font-size: 9px; 
+          padding: 12px 28px; 
+          font-size: 10px; 
           font-weight: 800; 
           text-transform: uppercase; 
           letter-spacing: 0.1em; 
@@ -691,26 +701,55 @@ export default async function StartupPage({ searchParams }: PageProps) {
           border-radius: 40px; 
         }
 
-        .links-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px }
-        @media(max-width: 700px) { .links-grid { grid-template-columns: repeat(2,1fr) } }
+        /* Links Grid */
+        .links-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 32px; padding-top: 32px; border-top: 1px solid var(--rule2); }
+        @media (max-width: 700px) { .links-grid { grid-template-columns: repeat(2, 1fr); } }
         .link-card { 
-          padding: 10px 12px; 
-          border-radius: 10px; 
+          padding: 12px 14px; 
+          border-radius: 12px; 
           border: 1px solid var(--rule2); 
           background: white; 
           text-decoration: none; 
         }
         .link-title { 
-          font-size: 9px; 
+          font-size: 10px; 
           font-weight: 700; 
           text-transform: uppercase; 
           letter-spacing: 0.08em; 
           color: var(--ink); 
           display: flex; 
           align-items: center; 
-          gap: 4px;
+          gap: 5px;
+          margin-bottom: 4px;
         }
-        .link-desc { font-size: 8px; color: #AAA }
+        .link-desc { font-size: 9px; color: #AAA; }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+          .mast-content { padding: 48px 20px 40px; }
+          .mast-h1 { font-size: 40px; }
+          .mast-tagline { font-size: 13px; }
+          .live-text { font-size: 9px; letter-spacing: 0.16em; }
+          .toolbar-inner { padding: 0 16px; }
+          .results-bar { padding: 12px 16px; }
+          .main-wrap { padding: 20px 16px 0; }
+          .main-grid { gap: 24px; }
+          .feat-grid { gap: 16px; margin-bottom: 32px; }
+          .feat-company { font-size: 16px; }
+          .cta-block { padding: 24px 20px; }
+          .cta-h { font-size: 16px; }
+        }
+
+        @media (max-width: 480px) {
+          .mast-h1 { font-size: 32px; }
+          .mast-tagline { font-size: 12px; }
+          .t-search-row { height: 48px; }
+          .t-inp { font-size: 13px; }
+          .t-btn { padding: 0 16px; font-size: 8px; }
+          .results-q { font-size: 12px; }
+          .s-name { font-size: 14px; }
+          .s-body { padding: 12px 14px; }
+        }
       `}</style>
 
       <Navbar />
@@ -719,28 +758,24 @@ export default async function StartupPage({ searchParams }: PageProps) {
       <div className="hero-section">
         <div className="hero-bg"></div>
         
-        <header className="mast" role="banner">
+        <div className="mast">
           <div className="mast-content ri-0">
-            <div className="mast-heading-wrap">
-              <h1 className="mast-h1 pf">Indian Registry</h1>
-            </div>
-
+            <h1 className="mast-h1">Indian Registry</h1>
             <span className="mast-rule" />
-
-            <p className="mast-tagline ri-1">
+            <p className="mast-tagline">
               India's independent registry of verified builders —<br />free, structured, permanent.
             </p>
-
-            <div className="live-badge ri-1">
+            <div className="live-badge">
               <span className="live-dot" />
               <span className="live-text">Live · {total.toLocaleString()} Profiles · All Verified</span>
             </div>
           </div>
-        </header>
+        </div>
       </div>
 
-      <nav className="cat-tabs ri-2" aria-label="Browse by sector">
-        <span style={{ fontSize: 8, color: "#BBB", textTransform: "uppercase", letterSpacing: ".2em", padding: "10px 6px 10px 0", flexShrink: 0 }}>
+      {/* Category Tabs */}
+      <nav className="cat-tabs" aria-label="Browse by sector">
+        <span style={{ fontSize: 8, color: "#BBB", textTransform: "uppercase", letterSpacing: ".2em", padding: "14px 6px 14px 0", flexShrink: 0 }}>
           Browse:
         </span>
         <Link href="/startup" className={`cat-tab${!cat && !q ? " on" : ""}`}>All</Link>
@@ -763,7 +798,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
               name="q" 
               defaultValue={q} 
               className="t-inp"
-              placeholder="Search startups, founders, sectors…"
+              placeholder="Search startups, founders, sectors, cities…"
               aria-label="Search startup registry" 
               autoComplete="off" 
             />
@@ -800,7 +835,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
 
       {/* Page Body */}
       <div className="page-body">
-        <div className="results-bar ri-2">
+        <div className="results-bar">
           <span className="results-q">
             {q ? `"${q}"` : cat ? cat : year ? `Est. ${year}` : "All Startups"}
           </span>
@@ -812,12 +847,13 @@ export default async function StartupPage({ searchParams }: PageProps) {
         <div className="main-wrap">
           <div className="main-grid">
 
+            {/* Main Content */}
             <div>
               {featured.length > 0 && (
                 <section>
-                  <div className="sh ri-2">
-                    <span style={{ color:"var(--accent)", fontSize:11 }}>✦</span>
-                    <span className="sh-l">Featured</span>
+                  <div className="sh">
+                    <span style={{ color:"var(--accent)", fontSize:12 }}>✦</span>
+                    <span className="sh-l">Featured Startups</span>
                     <div className="sh-r" />
                   </div>
                   <div className="feat-grid">
@@ -827,7 +863,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
                           {s.logo_url
                             ? <img src={s.logo_url} alt={s.name} loading={fi === 0 ? "eager" : "lazy"} />
                             : <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:"100%", background:"var(--parch-dark)" }}>
-                                <span style={{ fontSize:28, fontWeight:700, color:"#AAA" }}>{s.name.charAt(0)}</span>
+                                <span style={{ fontSize:32, fontWeight:700, color:"#AAA" }}>{s.name.charAt(0)}</span>
                               </div>
                           }
                           <div className="feat-overlay" />
@@ -837,13 +873,13 @@ export default async function StartupPage({ searchParams }: PageProps) {
                           </div>
                         </div>
                         <div className="feat-body">
-                          <p className="feat-desc">{s.description?.slice(0, 80) ?? "Building for India's next decade."}</p>
+                          <p className="feat-desc">{s.description?.slice(0, 90) ?? "Building for India's next decade."}</p>
                           <div className="feat-foot">
                             <div className="feat-chips">
                               {s.founded_year && <span>📅 {s.founded_year}</span>}
                               {s.city && <span>📍 {s.city}</span>}
                             </div>
-                            <ArrowUpRight size={12} style={{ color:"var(--rule)" }} />
+                            <ArrowUpRight size={14} style={{ color:"var(--rule)" }} />
                           </div>
                         </div>
                       </Link>
@@ -855,7 +891,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
               {grid.length > 0 ? (
                 <section>
                   {featured.length > 0 && (
-                    <div className="sh ri-2">
+                    <div className="sh">
                       <span className="sh-l">All Startups</span>
                       <div className="sh-r" />
                     </div>
@@ -870,8 +906,8 @@ export default async function StartupPage({ searchParams }: PageProps) {
                           <div className="s-head">
                             <div className="s-logo-wrap">
                               {s.logo_url
-                                ? <Image src={s.logo_url} alt={s.name} width={36} height={36} className="object-contain" loading="lazy" />
-                                : <span style={{ fontSize:14, fontWeight:700, color:"#AAA" }}>{s.name.charAt(0)}</span>
+                                ? <Image src={s.logo_url} alt={s.name} width={40} height={40} className="object-contain" loading="lazy" />
+                                : <span style={{ fontSize:16, fontWeight:700, color:"#AAA" }}>{s.name.charAt(0)}</span>
                               }
                             </div>
                             <div className="s-meta">
@@ -880,6 +916,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
                             </div>
                           </div>
                           {s.description && <p className="s-desc">{s.description.slice(0, 100)}</p>}
+                          {s.founders && <p className="s-founders">👥 {s.founders}</p>}
                           <div className="s-chips">
                             {s.founded_year && <span className="s-chip">📅 {s.founded_year}</span>}
                             {s.city && <span className="s-chip">📍 {s.city}</span>}
@@ -888,7 +925,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
                         </div>
                         <div className="s-arrow-col">
                           <div className="s-arrow">
-                            <ArrowUpRight size={12} style={{ color:"var(--rule)" }} />
+                            <ArrowUpRight size={13} style={{ color:"var(--rule)" }} />
                           </div>
                         </div>
                       </Link>
@@ -897,10 +934,10 @@ export default async function StartupPage({ searchParams }: PageProps) {
                 </section>
               ) : (
                 <div className="empty-state">
-                  <span style={{ fontSize:48, color:"var(--rule)", display:"block", marginBottom:12 }}>🔍</span>
-                  <p style={{ fontSize:18, fontWeight:700, marginBottom:6 }}>No startups found</p>
-                  <p style={{ fontSize:12, color:"#5A4A30" }}>{q ? `Nothing matched "${q}".` : "Try adjusting your filters."}</p>
-                  <Link href="/startup" style={{ display:"inline-block", background:"var(--accent)", color:"white", padding:"8px 20px", borderRadius:"40px", fontSize:10, marginTop:16, textDecoration:"none" }}>
+                  <span style={{ fontSize:48, color:"var(--rule)", display:"block", marginBottom:16 }}>🔍</span>
+                  <p style={{ fontSize:20, fontWeight:700, marginBottom:8 }}>No startups found</p>
+                  <p style={{ fontSize:13, color:"#5A4A30" }}>{q ? `Nothing matched "${q}".` : "Try adjusting your filters."}</p>
+                  <Link href="/startup" style={{ display:"inline-block", background:"var(--accent)", color:"white", padding:"10px 24px", borderRadius:"40px", fontSize:11, marginTop:20, textDecoration:"none" }}>
                     Clear filters
                   </Link>
                 </div>
@@ -917,6 +954,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
               )}
             </div>
 
+            {/* Sidebar */}
             <aside className="rg-aside" style={{ position:"sticky", top:80 }}>
               <div className="aside-box dk">
                 <p className="aside-ey">✨ List Free</p>
@@ -943,6 +981,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
             </aside>
           </div>
 
+          {/* CTA */}
           <div className="cta-block">
             <div>
               <p className="cta-ey">🚀 UpForge</p>
@@ -951,6 +990,26 @@ export default async function StartupPage({ searchParams }: PageProps) {
             </div>
             <Link href="/submit" className="cta-btn">
               List Free <ArrowRight size={12} />
+            </Link>
+          </div>
+
+          {/* Internal Links */}
+          <div className="links-grid">
+            <Link href="/startup" className="link-card">
+              <span className="link-title">Startup Registry →</span>
+              <span className="link-desc">5000+ verified startups</span>
+            </Link>
+            <Link href="/submit" className="link-card">
+              <span className="link-title">Submit Your Startup →</span>
+              <span className="link-desc">Get listed free</span>
+            </Link>
+            <Link href="/blog" className="link-card">
+              <span className="link-title">The Forge Blog →</span>
+              <span className="link-desc">Startup intelligence</span>
+            </Link>
+            <Link href="/about" className="link-card">
+              <span className="link-title">About UpForge →</span>
+              <span className="link-desc">Our mission</span>
             </Link>
           </div>
         </div>
