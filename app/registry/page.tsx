@@ -1,5 +1,5 @@
-// app/registry/page.tsx — FIXED v2
-// Fixes: 1) Header/footer collapse  2) Cleaner, more editorial card design
+// app/registry/page.tsx — FIXED v3
+// Fixes: 1) Header/footer collapse  2) Cleaner card design  3) Global = ALL countries, no country filter
 
 import { createReadClient } from "@/lib/supabase/server"
 import type { Metadata } from "next"
@@ -15,8 +15,8 @@ interface StartupRow {
   description?: string | null; logo_url?: string | null
   founders?: string | null; founded_year?: number | null
   category?: string | null; city?: string | null
-  country_name?: string | null; is_featured?: boolean
-  ufrn?: string | null
+  country_name?: string | null; country_code?: string | null
+  is_featured?: boolean; ufrn?: string | null
 }
 
 interface PageProps {
@@ -27,24 +27,32 @@ async function getData(q: string, year: string, sort: string, cat: string, page:
   const sb = createReadClient()
   const from = (page - 1) * PAGE_SIZE
   let query = sb.from("startups")
-    .select("id,name,slug,description,logo_url,founders,founded_year,category,city,country_name,is_featured,ufrn", { count: "exact" })
+    .select("id,name,slug,description,logo_url,founders,founded_year,category,city,country_name,country_code,is_featured,ufrn", { count: "exact" })
     .eq("status", "approved")
+    // NO country_code filter here — global registry shows all countries
   if (q)    query = query.or(`name.ilike.%${q}%,description.ilike.%${q}%,founders.ilike.%${q}%,category.ilike.%${q}%,city.ilike.%${q}%`)
   if (year) query = query.eq("founded_year", Number(year))
   if (cat)  query = query.eq("category", cat)
   const col = sort === "year" ? "founded_year" : sort === "newest" ? "created_at" : "name"
-  const { data, count } = await query
+  const { data, count, error } = await query
     .order("is_featured", { ascending: false })
     .order(col, { ascending: sort !== "newest" })
     .range(from, from + PAGE_SIZE - 1)
+  if (error) console.error("[registry/global]", error.message)
   return { startups: (data ?? []) as StartupRow[], total: count ?? 0 }
 }
 
 async function getFilters() {
   const sb = createReadClient()
+  // No country filter — show all years and sectors from global data
   const [{ data: yd }, { data: cd }] = await Promise.all([
-    sb.from("startups").select("founded_year").eq("status","approved").not("founded_year","is",null).gte("founded_year",2010).order("founded_year",{ascending:false}),
-    sb.from("startups").select("category").eq("status","approved").not("category","is",null),
+    sb.from("startups").select("founded_year")
+      .eq("status", "approved")
+      .not("founded_year", "is", null).gte("founded_year", 2010)
+      .order("founded_year", { ascending: false }),
+    sb.from("startups").select("category")
+      .eq("status", "approved")
+      .not("category", "is", null),
   ])
   return {
     years: [...new Set((yd ?? []).map(r => r.founded_year as number))].filter(Boolean),
@@ -467,6 +475,10 @@ export default async function RegistryPage({ searchParams }: PageProps) {
                 <div className="live-badge">
                   <span className="live-dot" />
                   <span className="live-text">Live · {total.toLocaleString()} Profiles · UFRN on Approval</span>
+                </div>
+                <div className="ufrn-sample">
+                  <span className="ufrn-label">Sample UFRN:</span>
+                  <span className="ufrn-code">UF-2026-IND-00001</span>
                 </div>
               </div>
             </div>
