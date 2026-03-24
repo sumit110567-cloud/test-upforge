@@ -1,5 +1,9 @@
-// app/startup/page.tsx — FIXED v2
-// Fixes: 1) Header/footer collapse  2) Cleaner, more editorial card design
+// app/startup/page.tsx — OPTIMISED v3 (synced with registry)
+// Changes from v2:
+// 1. Only show startups where country_code = 'IND'
+// 2. Filter logic matches registry (collapsible panel with toggle button + active badge)
+// 3. No caching — force-dynamic + unstable_noStore for instant updates
+// 4. Removed country tags/badges from cards (all are Indian)
 
 import { createReadClient } from "@/lib/supabase/server"
 import type { Metadata } from "next"
@@ -7,6 +11,11 @@ import Link from "next/link"
 import Image from "next/image"
 import { Navbar } from "@/components/navbar"
 import { ArrowRight, ArrowUpRight, MapPin, Calendar, Users } from "lucide-react"
+
+// ─── NO CACHING — always fresh from DB ───
+export const dynamic = "force-dynamic"
+export const revalidate = 0
+export const fetchCache = "force-no-store"
 
 const PAGE_SIZE = 10
 
@@ -17,32 +26,53 @@ interface StartupRow {
   category?: string | null; city?: string | null
   is_featured?: boolean; ufrn?: string | null
 }
+
 interface PageProps {
-  searchParams?: Promise<{ page?: string; q?: string; year?: string; sort?: string; category?: string }>
+  searchParams?: Promise<{
+    page?: string; q?: string; year?: string; sort?: string; category?: string
+  }>
 }
+
+// ─── DATA FETCHERS (direct — no unstable_cache) ───
 
 async function getData(q: string, year: string, sort: string, cat: string, page: number) {
   const sb = createReadClient()
   const from = (page - 1) * PAGE_SIZE
   let query = sb.from("startups")
-    .select("id,name,slug,description,logo_url,founders,founded_year,category,city,is_featured,ufrn", { count: "exact" })
+    .select(
+      "id,name,slug,description,logo_url,founders,founded_year,category,city,is_featured,ufrn",
+      { count: "exact" }
+    )
     .eq("status", "approved")
+    .eq("country_code", "IND") // ← Only Indian startups
+
   if (q)    query = query.or(`name.ilike.%${q}%,description.ilike.%${q}%,founders.ilike.%${q}%,category.ilike.%${q}%,city.ilike.%${q}%`)
   if (year) query = query.eq("founded_year", Number(year))
   if (cat)  query = query.eq("category", cat)
+
   const col = sort === "year" ? "founded_year" : sort === "newest" ? "created_at" : "name"
   const { data, count, error } = await query
+    .order("is_featured", { ascending: false })
     .order(col, { ascending: sort !== "newest" })
     .range(from, from + PAGE_SIZE - 1)
-  if (error) console.error("[registry]", error.message)
+
+  if (error) console.error("[startup/india]", error.message)
   return { startups: (data ?? []) as StartupRow[], total: count ?? 0 }
 }
 
 async function getFilters() {
   const sb = createReadClient()
   const [{ data: yd }, { data: cd }] = await Promise.all([
-    sb.from("startups").select("founded_year").eq("status","approved").not("founded_year","is",null).gte("founded_year",2010).order("founded_year",{ascending:false}),
-    sb.from("startups").select("category").eq("status","approved").not("category","is",null),
+    sb.from("startups").select("founded_year")
+      .eq("status", "approved")
+      .eq("country_code", "IND")
+      .not("founded_year", "is", null)
+      .gte("founded_year", 2010)
+      .order("founded_year", { ascending: false }),
+    sb.from("startups").select("category")
+      .eq("status", "approved")
+      .eq("country_code", "IND")
+      .not("category", "is", null),
   ])
   return {
     years: [...new Set((yd ?? []).map(r => r.founded_year as number))].filter(Boolean),
@@ -50,9 +80,11 @@ async function getFilters() {
   }
 }
 
+// ─── METADATA ───
+
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
   const sp = await searchParams
-  const { total } = await getData("","","name","",1)
+  const { total } = await getData("", "", "name", "", 1)
   const n = total > 0 ? total.toLocaleString() : "1,000+"
   const isFiltered = !!(sp?.q || sp?.year || sp?.sort || sp?.category)
   const page = Number(sp?.page ?? 1)
@@ -75,9 +107,15 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     },
   }
 }
-export const revalidate = 300
+
+// ─── PAGE ───
+
+import { unstable_noStore } from "next/cache"
 
 export default async function StartupPage({ searchParams }: PageProps) {
+
+  unstable_noStore() // ⬅️ disables Next.js caching completely
+
   const sp   = await searchParams
   const q    = sp?.q?.trim()        ?? ""
   const year = sp?.year?.trim()     ?? ""
@@ -89,6 +127,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
     getData(q, year, sort, cat, page),
     getFilters(),
   ])
+
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
   const isFiltered = !!(q || year || cat || (sort && sort !== "name"))
 
@@ -106,28 +145,43 @@ export default async function StartupPage({ searchParams }: PageProps) {
     const s = p.toString()
     return `/startup${s ? `?${s}` : ""}`
   }
+
   const pgHref = (p: number) => qs({ page: p === 1 ? undefined : String(p) })
 
   const winSize  = Math.min(5, totalPages)
-  const winStart = page <= 3 || totalPages <= 5 ? 1 : page >= totalPages - 2 ? totalPages - 4 : page - 2
-  const pgNums   = Array.from({ length: winSize }, (_, i) => winStart + i)
+  const winStart =
+    page <= 3 || totalPages <= 5
+      ? 1
+      : page >= totalPages - 2
+      ? totalPages - 4
+      : page - 2
+  const pgNums = Array.from({ length: winSize }, (_, i) => winStart + i)
 
   const featured = page === 1 && !isFiltered ? startups.filter(s => s.is_featured).slice(0, 3) : []
   const featIds  = new Set(featured.map(s => s.id))
   const grid     = page === 1 && !isFiltered ? startups.filter(s => !featIds.has(s.id)) : startups
   const baseNum  = (page - 1) * PAGE_SIZE
 
+  // Active filter count for badge
+  const activeFilterCount = [year, cat, sort !== "name" ? sort : ""].filter(Boolean).length
+
   const schemas = [
-    { "@context":"https://schema.org","@type":"WebSite","name":"UpForge","url":"https://www.upforge.in",
-      "potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://www.upforge.in/startup?q={search_term_string}"},"query-input":"required name=search_term_string"} },
-    { "@context":"https://schema.org","@type":"CollectionPage","@id":"https://www.upforge.in/startup#cp",
-      "name":"Indian Startup Registry 2026","url":"https://www.upforge.in/startup",
-      "description":`India's independent registry of ${total.toLocaleString()}+ verified startups across 30+ sectors.`,
-      "numberOfItems":total,"inLanguage":"en-IN" },
-    { "@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
-      {"@type":"ListItem","position":1,"name":"UpForge","item":"https://www.upforge.in"},
-      {"@type":"ListItem","position":2,"name":"Startup Registry","item":"https://www.upforge.in/startup"},
-    ]},
+    {
+      "@context": "https://schema.org", "@type": "WebSite", "name": "UpForge", "url": "https://www.upforge.in",
+      "potentialAction": { "@type": "SearchAction", "target": { "@type": "EntryPoint", "urlTemplate": "https://www.upforge.in/startup?q={search_term_string}" }, "query-input": "required name=search_term_string" }
+    },
+    {
+      "@context": "https://schema.org", "@type": "CollectionPage", "@id": "https://www.upforge.in/startup#cp",
+      "name": "Indian Startup Registry 2026", "url": "https://www.upforge.in/startup",
+      "description": `India's independent registry of ${total.toLocaleString()}+ verified startups across 30+ sectors.`,
+      "numberOfItems": total, "inLanguage": "en-IN"
+    },
+    {
+      "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "UpForge", "item": "https://www.upforge.in" },
+        { "@type": "ListItem", "position": 2, "name": "Startup Registry", "item": "https://www.upforge.in/startup" },
+      ]
+    },
   ]
 
   return (
@@ -150,10 +204,9 @@ export default async function StartupPage({ searchParams }: PageProps) {
           --muted: #8B7355;
           --accent: #D97706;
           --accent-light: #F59E0B;
+          --gold: #C59A2E;
         }
 
-        /* ─── LAYOUT FIX: match about page pattern ─── */
-        /* Use min-height on the outermost div, NOT flex tricks on body */
         .page-root {
           min-height: 100vh;
           background: var(--parch);
@@ -161,30 +214,23 @@ export default async function StartupPage({ searchParams }: PageProps) {
           display: flex;
           flex-direction: column;
         }
+        .page-content { flex: 1; }
 
-        /* The content area between navbar and footer grows to fill space */
-        .page-content {
-          flex: 1;
-        }
-
-        @keyframes riseIn { 
-          from { opacity: 0; transform: translateY(12px); } 
-          to { opacity: 1; transform: none; } 
+        @keyframes riseIn {
+          from { opacity: 0; transform: translateY(12px); }
+          to   { opacity: 1; transform: none; }
         }
         .ri-0 { animation: riseIn 0.5s 0s ease both; }
-        .ri-1 { animation: riseIn 0.5s 0.08s ease both; }
-        .ri-2 { animation: riseIn 0.5s 0.16s ease both; }
 
         /* ─── HERO ─── */
         .hero-section {
           position: relative;
           background: linear-gradient(135deg, rgba(26,18,8,0.88) 0%, rgba(26,18,8,0.75) 100%);
-          overflow: hidden;
-          border-bottom: 1px solid var(--rule);
+          overflow: hidden; border-bottom: 1px solid var(--rule);
         }
         .hero-bg {
           position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-          background-image: url('https://img.myloview.com/posters/graffiti-image-of-a-youth-from-andhra-pradesh-an-indian-state-on-a-colorful-backwall-of-city-streets-concept-of-promoting-indian-states-and-indian-youth-with-modern-art-400-538653280.jpg');
+          background-image: url('https://static.vecteezy.com/system/resources/thumbnails/021/972/990/small/flat-india-map-set-illustration-vector.jpg');
           background-size: cover; background-position: center 25%;
           opacity: 0.22; z-index: 0;
         }
@@ -194,19 +240,14 @@ export default async function StartupPage({ searchParams }: PageProps) {
         }
         .hero-section::before {
           content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-          background: linear-gradient(90deg, #FF9933 0%, #FFFFFF 50%, #138808 100%);
-          z-index: 2;
+          background: linear-gradient(90deg, #FF9933 0%, #FFFFFF 50%, #138808 100%); z-index: 2;
         }
         .mast { position: relative; z-index: 2; }
-        .mast-content {
-          position: relative; z-index: 10; text-align: center;
-          padding: 100px 24px 80px;
-        }
+        .mast-content { position: relative; z-index: 10; text-align: center; padding: 100px 24px 80px; }
         .mast-h1 {
           font-family: 'Playfair Display', Georgia, serif;
-          font-size: clamp(40px, 6vw, 64px);
-          font-weight: 900; letter-spacing: -0.02em;
-          color: white; line-height: 1.1;
+          font-size: clamp(40px, 6vw, 64px); font-weight: 900;
+          letter-spacing: -0.02em; color: white; line-height: 1.1;
           text-shadow: 0 2px 12px rgba(0,0,0,0.3); margin-bottom: 20px;
         }
         .mast-rule {
@@ -215,99 +256,130 @@ export default async function StartupPage({ searchParams }: PageProps) {
           margin: 20px auto 24px;
         }
         .mast-tagline {
-          font-family: Georgia, serif; font-size: 16px;
-          color: rgba(255,255,255,0.92); font-style: italic;
-          line-height: 1.7; max-width: 580px; margin: 0 auto 28px;
+          font-family: Georgia, serif; font-size: 16px; color: rgba(255,255,255,0.92);
+          font-style: italic; line-height: 1.7; max-width: 580px; margin: 0 auto 28px;
           text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
         .live-badge {
           display: inline-flex; align-items: center; gap: 10px;
           background: rgba(255,255,255,0.12); backdrop-filter: blur(10px);
-          border: 1px solid rgba(255,255,255,0.25);
-          padding: 10px 28px; border-radius: 100px;
+          border: 1px solid rgba(255,255,255,0.25); padding: 10px 28px; border-radius: 100px;
         }
-        .live-dot { 
+        .live-dot {
           width: 8px; height: 8px; border-radius: 50%; background: #22c55e;
           animation: pulse 2s infinite;
         }
-        .live-text {
-          font-family: system-ui, sans-serif; font-size: 11px;
-          font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: white;
-        }
-        @keyframes pulse { 
-          0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); } 
-          70% { box-shadow: 0 0 0 8px rgba(34,197,94,0); } 
+        .live-text { font-family: system-ui, sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: white; }
+        @keyframes pulse {
+          0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+          70%  { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
           100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
         }
 
         /* ─── CATEGORY TABS ─── */
-        .cat-tabs { 
+        .cat-tabs {
           display: flex; overflow-x: auto; border-bottom: 1px solid var(--rule);
           scrollbar-width: none; background: white; padding: 0 24px;
         }
         .cat-tabs::-webkit-scrollbar { display: none; }
-        .cat-tab { 
-          flex-shrink: 0; padding: 14px 20px;
-          font-family: system-ui, sans-serif; font-size: 10px; font-weight: 700;
-          letter-spacing: 0.12em; text-transform: uppercase; color: #999;
-          text-decoration: none; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap;
+        .cat-tab {
+          flex-shrink: 0; padding: 14px 20px; font-family: system-ui, sans-serif;
+          font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+          color: #999; text-decoration: none; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap;
         }
         .cat-tab:hover { color: var(--ink); }
         .cat-tab.on { color: var(--accent); border-bottom-color: var(--accent); }
 
         /* ─── TOOLBAR ─── */
-        .toolbar { 
+        .toolbar {
           position: sticky; top: 0; z-index: 20;
           background: rgba(253,250,245,0.97); backdrop-filter: blur(8px);
           border-bottom: 1px solid var(--rule);
         }
         .toolbar-inner { max-width: 1300px; margin: 0 auto; padding: 0 24px; }
-        .t-search-row { 
+
+        /* Search row */
+        .t-search-row {
           display: flex; align-items: center; height: 52px; background: white;
-          border-radius: 12px; margin: 14px 0; border: 1px solid var(--rule2);
+          border-radius: 12px; margin: 14px 0 10px; border: 1px solid var(--rule2);
         }
         .t-icon { padding: 0 14px; color: #CCC; font-size: 15px; flex-shrink: 0; }
-        .t-inp { 
-          flex: 1; border: none; background: transparent; font-size: 14px;
-          font-style: italic; color: var(--ink); outline: none; padding: 0; min-width: 0;
-        }
+        .t-inp { flex: 1; border: none; background: transparent; font-size: 14px; font-style: italic; color: var(--ink); outline: none; padding: 0; min-width: 0; }
         .t-inp::placeholder { color: #CCC; font-size: 13px; }
-        .t-btn { 
-          height: 40px; padding: 0 24px; background: var(--ink); color: #fff;
-          border: none; font-size: 9px; font-weight: 800; letter-spacing: 0.16em;
-          text-transform: uppercase; cursor: pointer; flex-shrink: 0;
-          border-radius: 10px; margin-right: 8px; transition: background 0.2s;
-        }
+        .t-btn { height: 40px; padding: 0 24px; background: var(--ink); color: #fff; border: none; font-size: 9px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; cursor: pointer; flex-shrink: 0; border-radius: 10px; margin-right: 8px; transition: background 0.2s; }
         .t-btn:hover { background: var(--accent); }
-        .t-filter-row { 
-          display: flex; align-items: center; height: 44px; overflow-x: auto;
-          gap: 10px; background: white; border-radius: 12px; padding: 0 14px;
-          margin-bottom: 14px; border: 1px solid var(--rule2); scrollbar-width: none;
+
+        /* ─── FILTER TOGGLE BUTTON ─── */
+        .filter-toggle-row {
+          display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
         }
-        .t-filter-row::-webkit-scrollbar { display: none; }
-        .t-filter-lbl { 
-          font-size: 9px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.16em; color: #CCC; flex-shrink: 0;
+        .filter-toggle-btn {
+          display: inline-flex; align-items: center; gap: 8px;
+          height: 36px; padding: 0 16px;
+          background: white; border: 1px solid var(--rule2);
+          border-radius: 10px; cursor: pointer;
+          font-family: system-ui, sans-serif; font-size: 10px; font-weight: 700;
+          letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+          transition: all 0.2s; flex-shrink: 0;
         }
-        .t-sel { 
-          height: 30px; border: 1px solid var(--rule2); border-radius: 8px;
-          background: white; font-size: 11px; color: var(--muted);
-          padding: 0 12px; cursor: pointer; flex-shrink: 0;
+        .filter-toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .filter-toggle-btn.active { border-color: var(--accent); color: var(--accent); background: #FFFBF0; }
+        .filter-toggle-chevron {
+          width: 14px; height: 14px; flex-shrink: 0;
+          transition: transform 0.25s ease;
+          display: flex; align-items: center; justify-content: center;
         }
-        .t-div { width: 1px; height: 20px; background: var(--rule2); flex-shrink: 0; }
-        .t-sort { 
-          padding: 0 12px; font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
-          text-transform: uppercase; color: #BBB; text-decoration: none; flex-shrink: 0; white-space: nowrap;
+        .filter-toggle-btn.active .filter-toggle-chevron { transform: rotate(180deg); }
+        .filter-count-badge {
+          background: var(--accent); color: white; border-radius: 100px;
+          font-size: 9px; font-weight: 800; padding: 1px 7px; letter-spacing: 0; min-width: 18px; text-align: center;
         }
+
+        /* Sort quick links (always visible) */
+        .sort-quick {
+          display: flex; align-items: center; gap: 6px; margin-left: auto;
+        }
+        .t-sort { padding: 0 10px; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #BBB; text-decoration: none; flex-shrink: 0; white-space: nowrap; }
         .t-sort.on { color: var(--accent); font-weight: 800; }
-        .t-clear { font-size: 9px; font-weight: 700; color: #DC2626; text-decoration: none; flex-shrink: 0; }
+        .t-div { width: 1px; height: 20px; background: var(--rule2); flex-shrink: 0; }
+
+        /* ─── COLLAPSIBLE FILTER PANEL ─── */
+        .filter-panel-wrap {
+          overflow: hidden;
+          max-height: 0;
+          transition: max-height 0.3s ease, opacity 0.25s ease, margin-bottom 0.25s ease;
+          opacity: 0;
+          margin-bottom: 0;
+        }
+        .filter-panel-wrap.open {
+          max-height: 160px;
+          opacity: 1;
+          margin-bottom: 12px;
+        }
+        .filter-panel {
+          background: white; border: 1px solid var(--rule2); border-radius: 12px;
+          padding: 16px 18px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+        }
+        .fp-group { display: flex; flex-direction: column; gap: 4px; }
+        .fp-label { font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: #BBB; font-family: system-ui, sans-serif; }
+        .fp-sel {
+          height: 34px; border: 1px solid var(--rule2); border-radius: 8px;
+          background: white; font-size: 11px; color: var(--muted);
+          padding: 0 10px; cursor: pointer; min-width: 140px;
+          font-family: system-ui, sans-serif; transition: border-color 0.2s;
+        }
+        .fp-sel:focus { outline: none; border-color: var(--accent); }
+        .fp-sel.active { border-color: var(--accent); color: var(--accent); background: #FFFBF0; }
+        .fp-divider { width: 1px; height: 40px; background: var(--rule2); flex-shrink: 0; align-self: center; }
+        .t-clear {
+          font-size: 9px; font-weight: 700; color: #DC2626; text-decoration: none; flex-shrink: 0;
+          padding: 6px 12px; border: 1px solid rgba(220,38,38,0.25); border-radius: 8px;
+          transition: all 0.2s; background: rgba(220,38,38,0.04); font-family: system-ui, sans-serif;
+        }
+        .t-clear:hover { background: rgba(220,38,38,0.1); }
 
         /* ─── RESULTS BAR ─── */
-        .results-bar { 
-          max-width: 1300px; margin: 0 auto; padding: 16px 24px;
-          display: flex; align-items: center; gap: 14px;
-          border-bottom: 1px solid var(--rule2);
-        }
+        .results-bar { max-width: 1300px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--rule2); }
         .results-q { font-size: 14px; font-weight: 700; color: var(--ink); font-style: italic; }
         .results-n { font-size: 12px; color: var(--muted); }
         .results-rule { flex: 1; height: 1px; background: var(--rule2); }
@@ -316,23 +388,17 @@ export default async function StartupPage({ searchParams }: PageProps) {
         /* ─── MAIN LAYOUT ─── */
         .main-wrap { max-width: 1300px; margin: 0 auto; padding: 32px 24px 56px; }
         .main-grid { display: grid; grid-template-columns: 1fr 300px; gap: 40px; align-items: start; }
-        @media (max-width: 1000px) { 
-          .main-grid { grid-template-columns: 1fr; } 
-          .rg-aside { display: none; } 
-        }
+        @media (max-width: 1000px) { .main-grid { grid-template-columns: 1fr; } .rg-aside { display: none; } }
 
         .sh { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
         .sh-l { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3em; color: #BBB; font-family: system-ui, sans-serif; white-space: nowrap; }
         .sh-r { flex: 1; height: 1px; background: var(--rule2); }
 
-        /* ─── FEATURED CARDS (unchanged, already good) ─── */
+        /* ─── FEATURED CARDS ─── */
         .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 44px; }
         @media (max-width: 800px) { .feat-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 560px) { .feat-grid { grid-template-columns: 1fr; } }
-        .feat-card { 
-          background: white; border-radius: 16px; text-decoration: none;
-          transition: all 0.25s ease; overflow: hidden; border: 1px solid var(--rule2);
-        }
+        .feat-card { background: white; border-radius: 16px; text-decoration: none; transition: all 0.25s; overflow: hidden; border: 1px solid var(--rule2); }
         .feat-card:hover { transform: translateY(-4px); box-shadow: 0 16px 32px -8px rgba(0,0,0,0.12); border-color: var(--accent); }
         .feat-img-wrap { width: 100%; aspect-ratio: 16/9; position: relative; background: var(--parch-dark); overflow: hidden; }
         .feat-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
@@ -345,131 +411,50 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .feat-foot { display: flex; align-items: center; justify-content: space-between; }
         .feat-chips { font-size: 11px; color: #AAA; display: flex; gap: 10px; }
 
-        /* ─── STARTUP LIST CARDS — Redesigned: clean, editorial ─── */
+        /* ─── STARTUP LIST CARDS ─── */
         .startup-list { display: flex; flex-direction: column; }
-
-        .s-row { 
-          display: flex;
-          background: white; 
-          text-decoration: none; 
+        .s-row {
+          display: flex; background: white; text-decoration: none;
           transition: border-color 0.2s ease, box-shadow 0.2s ease;
-          border: 1px solid var(--rule2);
-          border-top: none;
-          overflow: hidden;
-          position: relative;
+          border: 1px solid var(--rule2); border-top: none; overflow: hidden; position: relative;
         }
-        /* First card gets top border + top radius */
         .s-row:first-child { border-top: 1px solid var(--rule2); border-radius: 16px 16px 0 0; }
-        /* Last card gets bottom radius */
-        .s-row:last-child { border-radius: 0 0 16px 16px; }
-        /* Only child: full radius */
-        .s-row:only-child { border-radius: 16px; border-top: 1px solid var(--rule2); }
-
-        .s-row:hover { 
-          border-color: var(--accent);
-          box-shadow: 0 4px 20px rgba(217,119,6,0.1);
-          z-index: 1;
-        }
-        /* Show top border on hover for clean separation */
+        .s-row:last-child  { border-radius: 0 0 16px 16px; }
+        .s-row:only-child  { border-radius: 16px; border-top: 1px solid var(--rule2); }
+        .s-row:hover { border-color: var(--accent); box-shadow: 0 4px 20px rgba(217,119,6,0.1); z-index: 1; }
         .s-row:hover + .s-row { border-top: 1px solid var(--rule2); }
 
-        /* Left accent strip — colored by rank tier */
-        .s-accent-strip {
-          width: 3px;
-          flex-shrink: 0;
-          background: var(--rule2);
-          transition: background 0.2s;
-        }
+        .s-accent-strip { width: 3px; flex-shrink: 0; background: var(--rule2); transition: background 0.2s; }
         .s-row:hover .s-accent-strip { background: var(--accent); }
         .s-accent-strip.top3 { background: var(--accent); }
 
-        /* Main body */
-        .s-body { 
-          flex: 1;
-          padding: 20px 22px;
-          display: flex;
-          align-items: flex-start;
-          gap: 18px;
-          min-width: 0;
-        }
-
-        /* Logo */
-        .s-logo-wrap { 
-          width: 52px; height: 52px; flex-shrink: 0;
-          border-radius: 12px; border: 1px solid var(--rule2);
-          background: var(--parch-dark);
-          display: flex; align-items: center; justify-content: center; overflow: hidden;
-        }
+        .s-body { flex: 1; padding: 20px 22px; display: flex; align-items: flex-start; gap: 18px; min-width: 0; }
+        .s-logo-wrap { width: 52px; height: 52px; flex-shrink: 0; border-radius: 12px; border: 1px solid var(--rule2); background: var(--parch-dark); display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .s-logo-wrap img { width: 100%; height: 100%; object-fit: cover; }
         .s-logo-initial { font-size: 20px; font-weight: 700; color: #CCC; font-family: 'Playfair Display', serif; }
-
-        /* Content */
         .s-content { flex: 1; min-width: 0; }
 
-        .s-top-line {
-          display: flex; align-items: center; flex-wrap: wrap;
-          gap: 8px; margin-bottom: 6px;
-        }
-        .s-name { 
-          font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700;
-          color: var(--ink); line-height: 1.25;
-        }
+        .s-top-line { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+        .s-name { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.25; }
         .s-row:hover .s-name { color: #92400E; }
+        .s-badges { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .s-badge-cat { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); background: var(--parch-dark); padding: 2px 8px; border-radius: 4px; font-family: system-ui, sans-serif; white-space: nowrap; }
+        .s-badge-verified { display: inline-flex; align-items: center; gap: 3px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--green); font-family: system-ui, sans-serif; }
 
-        .s-badges { display: flex; align-items: center; gap: 6px; }
-        .s-badge-cat {
-          font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
-          color: var(--muted); background: var(--parch-dark); padding: 2px 8px; border-radius: 4px;
-          font-family: system-ui, sans-serif; white-space: nowrap;
-        }
-        .s-badge-verified {
-          display: inline-flex; align-items: center; gap: 3px;
-          font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
-          color: var(--green); font-family: system-ui, sans-serif;
-        }
-
-        .s-desc { 
-          font-size: 13px; color: #6B5C40; font-style: italic; line-height: 1.55;
-          display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-          overflow: hidden; margin-bottom: 10px;
-        }
-
-        .s-meta-row {
-          display: flex; flex-wrap: wrap; gap: 16px; align-items: center;
-        }
-        .s-meta-item {
-          display: flex; align-items: center; gap: 5px;
-          font-size: 11px; color: var(--muted); font-family: system-ui, sans-serif;
-        }
+        .s-desc { font-size: 13px; color: #6B5C40; font-style: italic; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 10px; }
+        .s-meta-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+        .s-meta-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); font-family: system-ui, sans-serif; }
         .s-meta-item svg { opacity: 0.6; }
+        .s-ufrn { font-family: monospace; font-size: 9px; font-weight: 700; color: var(--accent); letter-spacing: 0.05em; background: #FEF3C7; border: 1px solid #FDE68A; padding: 2px 8px; border-radius: 4px; }
 
-        .s-ufrn { 
-          font-family: monospace; font-size: 9px; font-weight: 700;
-          color: var(--accent); letter-spacing: 0.05em;
-          background: #FEF3C7; border: 1px solid #FDE68A;
-          padding: 2px 8px; border-radius: 4px;
-        }
-
-        /* Right: rank + arrow */
-        .s-right-col {
-          display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between;
-          padding: 20px 20px 20px 0; gap: 12px; flex-shrink: 0;
-        }
-        .s-rank-num {
-          font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900;
-          color: var(--rule); line-height: 1; transition: color 0.2s;
-          font-variant-numeric: tabular-nums;
-        }
+        .s-right-col { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; padding: 20px 20px 20px 0; gap: 12px; flex-shrink: 0; }
+        .s-rank-num { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: var(--rule); line-height: 1; transition: color 0.2s; }
         .s-row:hover .s-rank-num { color: var(--accent); }
         .s-rank-num.top3 { color: var(--accent); }
-        .s-arrow { 
-          width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
-          border-radius: 8px; background: var(--parch-dark); transition: all 0.2s;
-        }
+        .s-arrow { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: var(--parch-dark); transition: all 0.2s; }
         .s-row:hover .s-arrow { background: var(--accent); }
         .s-row:hover .s-arrow svg { color: white !important; }
 
-        /* Mobile */
         @media (max-width: 600px) {
           .s-right-col { padding: 14px 14px 14px 0; }
           .s-rank-num { font-size: 18px; }
@@ -479,26 +464,14 @@ export default async function StartupPage({ searchParams }: PageProps) {
           .s-logo-wrap { width: 44px; height: 44px; }
         }
 
-        /* ─── EMPTY STATE ─── */
-        .empty-state { 
-          text-align: center; padding: 80px 32px;
-          border: 1px solid var(--rule2); background: white; border-radius: 16px;
-        }
+        .empty-state { text-align: center; padding: 80px 32px; border: 1px solid var(--rule2); background: white; border-radius: 16px; }
 
         /* ─── PAGINATION ─── */
         .pag { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 44px; padding-top: 28px; border-top: 1px solid var(--rule2); }
-        .pag-btn { 
-          padding: 9px 20px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
-          text-transform: uppercase; border: 1px solid var(--rule); background: white;
-          color: var(--muted); text-decoration: none; border-radius: 10px;
-        }
+        .pag-btn { padding: 9px 20px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border: 1px solid var(--rule); background: white; color: var(--muted); text-decoration: none; border-radius: 10px; }
         .pag-btn:hover { border-color: var(--accent); color: var(--accent); }
         .pag-btn.dis { opacity: 0.35; pointer-events: none; }
-        .pag-num { 
-          width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
-          font-size: 13px; font-weight: 700; border: 1px solid var(--rule);
-          text-decoration: none; color: var(--muted); border-radius: 10px;
-        }
+        .pag-num { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; border: 1px solid var(--rule); text-decoration: none; color: var(--muted); border-radius: 10px; }
         .pag-num:hover { border-color: var(--accent); color: var(--accent); }
         .pag-num.on { background: var(--accent); color: white; border-color: var(--accent); }
 
@@ -511,75 +484,54 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .aside-h { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
         .aside-box.dk .aside-h { color: white; }
         .aside-p { font-size: 12.5px; color: #5A4A30; font-style: italic; line-height: 1.6; margin-bottom: 16px; }
-        .aside-btn { 
-          display: block; text-align: center; font-size: 9.5px; font-weight: 900;
-          text-transform: uppercase; letter-spacing: 0.14em; background: var(--accent);
-          color: white; padding: 13px; text-decoration: none; border-radius: 10px;
-        }
+        .aside-btn { display: block; text-align: center; font-size: 9.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.14em; background: var(--accent); color: white; padding: 13px; text-decoration: none; border-radius: 10px; }
         .aside-btn:hover { background: var(--accent-light); }
         .aside-list { list-style: none; padding: 0; margin: 0; }
         .aside-list li { border-bottom: 1px solid var(--rule2); }
         .aside-list li:last-child { border-bottom: none; }
-        .aside-list a { 
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 10px 0; font-size: 12.5px; color: #5A4A30; text-decoration: none; font-style: italic;
-        }
+        .aside-list a { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; font-size: 12.5px; color: #5A4A30; text-decoration: none; font-style: italic; }
         .aside-list a:hover { color: var(--accent); }
 
-        /* ─── CTA BLOCK ─── */
-        .cta-block { 
-          background: linear-gradient(135deg, var(--ink) 0%, #2A2012 100%);
-          border-radius: 20px; padding: 36px 44px;
-          display: flex; flex-wrap: wrap; align-items: center;
-          justify-content: space-between; gap: 24px; margin-top: 48px;
-        }
+        /* ─── CTA ─── */
+        .cta-block { background: linear-gradient(135deg, var(--ink) 0%, #2A2012 100%); border-radius: 20px; padding: 36px 44px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; margin-top: 48px; }
         .cta-ey { font-size: 8.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.3em; color: rgba(232,197,71,0.7); margin-bottom: 8px; font-family: system-ui, sans-serif; }
         .cta-h { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; color: white; margin-bottom: 6px; }
         .cta-p { font-size: 12px; color: rgba(255,255,255,0.45); font-style: italic; }
-        .cta-btn { 
-          flex-shrink: 0; display: inline-flex; align-items: center; gap: 10px;
-          background: var(--accent); color: white; padding: 13px 28px;
-          font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
-          text-decoration: none; border-radius: 40px; transition: all 0.2s;
-        }
+        .cta-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: 10px; background: var(--accent); color: white; padding: 13px 28px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; text-decoration: none; border-radius: 40px; transition: all 0.2s; }
         .cta-btn:hover { background: var(--accent-light); transform: translateY(-2px); }
 
-        /* ─── FOOTER LINKS GRID ─── */
         .links-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 36px; padding-top: 36px; border-top: 1px solid var(--rule2); }
         @media (max-width: 700px) { .links-grid { grid-template-columns: repeat(2, 1fr); } }
-        .link-card { 
-          padding: 12px 14px; border-radius: 12px; border: 1px solid var(--rule2);
-          background: white; text-decoration: none; transition: all 0.2s;
-        }
+        .link-card { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--rule2); background: white; text-decoration: none; transition: all 0.2s; }
         .link-card:hover { border-color: var(--accent); transform: translateY(-1px); }
         .link-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink); display: flex; align-items: center; gap: 5px; margin-bottom: 4px; font-family: system-ui, sans-serif; }
         .link-desc { font-size: 10px; color: #AAA; font-family: system-ui, sans-serif; }
 
-        /* ─── RESPONSIVE ─── */
         @media (max-width: 768px) {
           .mast-content { padding: 120px 20px 70px !important; }
           .mast-tagline br { display: none; }
           .toolbar-inner { padding: 0 16px; }
           .results-bar { padding: 14px 16px; }
           .main-wrap { padding: 24px 16px 40px; }
-          .feat-grid { gap: 16px; margin-bottom: 36px; }
           .cta-block { padding: 24px 20px; }
+          .filter-panel { gap: 10px; }
+          .fp-sel { min-width: 120px; }
         }
         @media (max-width: 480px) {
           .mast-content { padding: 100px 16px 60px !important; }
           .mast-h1 { font-size: 36px; }
+          .sort-quick { display: none; }
         }
       `}</style>
 
-      {/* ── ROOT: matches about page pattern — min-height: 100vh on outer div ── */}
       <div className="page-root">
         <Navbar />
 
         <div className="page-content">
 
-          {/* Hero */}
+          {/* ── Hero ── */}
           <div className="hero-section">
-            <div className="hero-bg"></div>
+            <div className="hero-bg" />
             <div className="mast">
               <div className="mast-content ri-0">
                 <h1 className="mast-h1">Indian Registry</h1>
@@ -595,74 +547,128 @@ export default async function StartupPage({ searchParams }: PageProps) {
             </div>
           </div>
 
-          {/* Category Tabs */}
+          {/* ── Category Tabs ── */}
           <nav className="cat-tabs" aria-label="Browse by sector">
             <span style={{ fontSize: 9, color: "#CCC", textTransform: "uppercase", letterSpacing: ".2em", padding: "14px 8px 14px 0", flexShrink: 0, fontFamily: "system-ui, sans-serif" }}>
               Browse:
             </span>
             <Link href="/startup" className={`cat-tab${!cat && !q ? " on" : ""}`}>All</Link>
             {cats.slice(0, 12).map(c => (
-              <Link key={c} href={`/startup?category=${encodeURIComponent(c)}${q ? `&q=${encodeURIComponent(q)}` : ""}`} className={`cat-tab${cat === c ? " on" : ""}`}>{c}</Link>
+              <Link
+                key={c}
+                href={`/startup?category=${encodeURIComponent(c)}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
+                className={`cat-tab${cat === c ? " on" : ""}`}
+              >
+                {c}
+              </Link>
             ))}
             {cats.length > 12 && <Link href="/startup" className="cat-tab">More →</Link>}
           </nav>
 
-          {/* Toolbar */}
+          {/* ── Toolbar ── */}
           <div className="toolbar" id="rg-toolbar">
             <div className="toolbar-inner">
+
+              {/* Search row */}
               <form action="/startup" method="GET" className="t-search-row" id="search-form">
-                {year && <input type="hidden" name="year" value={year} />}
+                {year && <input type="hidden" name="year"     value={year} />}
                 {cat  && <input type="hidden" name="category" value={cat} />}
                 {sort && sort !== "name" && <input type="hidden" name="sort" value={sort} />}
                 <span className="t-icon" aria-hidden="true">🔍</span>
-                <input 
+                <input
                   type="search" name="q" defaultValue={q} className="t-inp"
                   placeholder="Search startups, founders, sectors, cities…"
-                  aria-label="Search startup registry" autoComplete="off" 
+                  aria-label="Search startup registry" autoComplete="off"
                 />
                 <button type="submit" className="t-btn">Search</button>
               </form>
-              <div className="t-filter-row">
-                <span className="t-filter-lbl">Filter</span>
-                <select className="t-sel" id="rg-year-sel">
-                  <option value="">Any Year</option>
-                  {years.map(yr => <option key={yr} value={String(yr)} selected={year === String(yr)}>{yr}</option>)}
-                </select>
-                <select className="t-sel" id="rg-cat-sel">
-                  <option value="">All Sectors</option>
-                  {cats.map(c => <option key={c} value={c} selected={cat === c}>{c}</option>)}
-                </select>
-                <span className="t-div" />
-                <Link href={qs({ sort:"name", page:undefined })} className={`t-sort${sort==="name" ? " on":""}`}>A–Z</Link>
-                <Link href={qs({ sort:"newest", page:undefined })} className={`t-sort${sort==="newest" ? " on":""}`}>Newest</Link>
-                <Link href={qs({ sort:"year", page:undefined })} className={`t-sort${sort==="year" ? " on":""}`}>Founded</Link>
-                {isFiltered && <Link href="/startup" className="t-clear">✕ Clear</Link>}
+
+              {/* Filter toggle row */}
+              <div className="filter-toggle-row">
+                <button
+                  type="button"
+                  className={`filter-toggle-btn${activeFilterCount > 0 ? " active" : ""}`}
+                  id="filter-toggle-btn"
+                  aria-expanded="false"
+                  aria-controls="filter-panel"
+                >
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                    <line x1="2" y1="4" x2="14" y2="4"/><line x1="4" y1="8" x2="12" y2="8"/><line x1="6" y1="12" x2="10" y2="12"/>
+                  </svg>
+                  Filters
+                  {activeFilterCount > 0 && <span className="filter-count-badge">{activeFilterCount}</span>}
+                  <span className="filter-toggle-chevron">
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="2,3 5,7 8,3"/>
+                    </svg>
+                  </span>
+                </button>
+
+                {/* Sort — always visible */}
+                <div className="sort-quick">
+                  <span className="t-div" />
+                  <Link href={qs({ sort: "name",   page: undefined })} className={`t-sort${sort === "name"   ? " on" : ""}`}>A–Z</Link>
+                  <Link href={qs({ sort: "newest", page: undefined })} className={`t-sort${sort === "newest" ? " on" : ""}`}>Newest</Link>
+                  <Link href={qs({ sort: "year",   page: undefined })} className={`t-sort${sort === "year"   ? " on" : ""}`}>Founded</Link>
+                  {isFiltered && <Link href="/startup" className="t-clear">✕ Clear</Link>}
+                </div>
               </div>
+
+              {/* Collapsible filter panel */}
+              <div className="filter-panel-wrap" id="filter-panel" role="region" aria-label="Filters">
+                <div className="filter-panel">
+
+                  <div className="fp-group">
+                    <label className="fp-label" htmlFor="rg-year-sel">Year</label>
+                    <select className={`fp-sel${year ? " active" : ""}`} id="rg-year-sel" aria-label="Filter by founded year">
+                      <option value="">Any Year</option>
+                      {years.map(yr => (
+                        <option key={yr} value={String(yr)} selected={year === String(yr)}>{yr}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="fp-group">
+                    <label className="fp-label" htmlFor="rg-cat-sel">Sector</label>
+                    <select className={`fp-sel${cat ? " active" : ""}`} id="rg-cat-sel" aria-label="Filter by sector">
+                      <option value="">All Sectors</option>
+                      {cats.map(c => (
+                        <option key={c} value={c} selected={cat === c}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {isFiltered && (
+                    <>
+                      <div className="fp-divider" />
+                      <Link href="/startup" className="t-clear">✕ Clear all</Link>
+                    </>
+                  )}
+                </div>
+              </div>
+
             </div>
           </div>
 
-          {/* Results bar */}
+          {/* ── Results bar ── */}
           <div className="results-bar">
             <span className="results-q">
-              {q ? `"${q}"` : cat ? cat : year ? `Est. ${year}` : "All Startups"}
+              {q ? `"${q}"` : cat ? cat : year ? `Est. ${year}` : "All Indian Startups"}
             </span>
             <span className="results-n">{total.toLocaleString()} profiles</span>
             <span className="results-rule" />
             <span className="results-pg">Page {page} of {totalPages || 1}</span>
           </div>
 
-          {/* Main content area */}
           <div className="main-wrap">
             <div className="main-grid">
-
-              {/* Content column */}
               <div>
 
-                {/* Featured cards */}
+                {/* Featured */}
                 {featured.length > 0 && (
                   <section>
                     <div className="sh">
-                      <span style={{ color:"var(--accent)", fontSize:12 }}>✦</span>
+                      <span style={{ color: "var(--accent)", fontSize: 12 }}>✦</span>
                       <span className="sh-l">Featured Startups</span>
                       <div className="sh-r" />
                     </div>
@@ -672,9 +678,11 @@ export default async function StartupPage({ searchParams }: PageProps) {
                           <div className="feat-img-wrap">
                             {s.logo_url
                               ? <img src={s.logo_url} alt={s.name} loading={fi === 0 ? "eager" : "lazy"} />
-                              : <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:"100%", background:"var(--parch-dark)" }}>
-                                  <span style={{ fontSize:32, fontWeight:700, color:"#CCC", fontFamily:"'Playfair Display', serif" }}>{s.name.charAt(0)}</span>
+                              : (
+                                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", background: "var(--parch-dark)" }}>
+                                  <span style={{ fontSize: 32, fontWeight: 700, color: "#CCC", fontFamily: "'Playfair Display', serif" }}>{s.name.charAt(0)}</span>
                                 </div>
+                              )
                             }
                             <div className="feat-overlay" />
                             <div className="feat-caption">
@@ -689,7 +697,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
                                 {s.founded_year && <span>📅 {s.founded_year}</span>}
                                 {s.city && <span>📍 {s.city}</span>}
                               </div>
-                              <ArrowUpRight size={13} style={{ color:"var(--rule)" }} />
+                              <ArrowUpRight size={13} style={{ color: "var(--rule)" }} />
                             </div>
                           </div>
                         </Link>
@@ -698,7 +706,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
                   </section>
                 )}
 
-                {/* Startup list */}
+                {/* Grid list */}
                 {grid.length > 0 ? (
                   <section>
                     {featured.length > 0 && (
@@ -707,74 +715,54 @@ export default async function StartupPage({ searchParams }: PageProps) {
                         <div className="sh-r" />
                       </div>
                     )}
-
                     <div className="startup-list">
                       {grid.map((s, idx) => {
-                        const rank = baseNum + idx + 1
+                        const rank  = baseNum + idx + 1
                         const isTop3 = rank <= 3
                         return (
                           <Link key={s.id} href={`/startup/${s.slug}`} className="s-row">
-                            {/* Left accent strip */}
                             <div className={`s-accent-strip${isTop3 ? " top3" : ""}`} />
-
-                            {/* Body */}
                             <div className="s-body">
-                              {/* Logo */}
                               <div className="s-logo-wrap">
                                 {s.logo_url
-                                  ? <Image src={s.logo_url} alt={s.name} width={52} height={52} loading="lazy" style={{ objectFit:"cover", width:"100%", height:"100%" }} />
+                                  ? <Image src={s.logo_url} alt={s.name} width={52} height={52} loading="lazy" style={{ objectFit: "cover", width: "100%", height: "100%" }} />
                                   : <span className="s-logo-initial">{s.name.charAt(0)}</span>
                                 }
                               </div>
-
-                              {/* Content */}
                               <div className="s-content">
                                 <div className="s-top-line">
                                   <span className="s-name">{s.name}</span>
                                   <div className="s-badges">
                                     {s.category && <span className="s-badge-cat">{s.category}</span>}
                                     <span className="s-badge-verified">
-                                      <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 6L5 9L10 3"/></svg>
+                                      <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M2 6L5 9L10 3" />
+                                      </svg>
                                       Verified
                                     </span>
                                   </div>
                                 </div>
-
-                                {s.description && (
-                                  <p className="s-desc">{s.description.slice(0, 130)}</p>
-                                )}
-
+                                {s.description && <p className="s-desc">{s.description.slice(0, 130)}</p>}
                                 <div className="s-meta-row">
                                   {s.founders && (
-                                    <div className="s-meta-item">
-                                      <Users size={11} />
-                                      <span>{s.founders}</span>
-                                    </div>
+                                    <div className="s-meta-item"><Users size={11} /><span>{s.founders}</span></div>
                                   )}
                                   {s.founded_year && (
-                                    <div className="s-meta-item">
-                                      <Calendar size={11} />
-                                      <span>{s.founded_year}</span>
-                                    </div>
+                                    <div className="s-meta-item"><Calendar size={11} /><span>{s.founded_year}</span></div>
                                   )}
                                   {s.city && (
-                                    <div className="s-meta-item">
-                                      <MapPin size={11} />
-                                      <span>{s.city}</span>
-                                    </div>
+                                    <div className="s-meta-item"><MapPin size={11} /><span>{s.city}</span></div>
                                   )}
                                   {s.ufrn && <span className="s-ufrn">{s.ufrn}</span>}
                                 </div>
                               </div>
                             </div>
-
-                            {/* Right: rank number + arrow */}
                             <div className="s-right-col">
                               <span className={`s-rank-num${isTop3 ? " top3" : ""}`}>
                                 {rank < 10 ? `0${rank}` : rank}
                               </span>
                               <div className="s-arrow">
-                                <ArrowUpRight size={13} style={{ color:"#CCC" }} />
+                                <ArrowUpRight size={13} style={{ color: "#CCC" }} />
                               </div>
                             </div>
                           </Link>
@@ -784,15 +772,18 @@ export default async function StartupPage({ searchParams }: PageProps) {
                   </section>
                 ) : (
                   <div className="empty-state">
-                    <span style={{ fontSize:48, color:"var(--rule)", display:"block", marginBottom:16 }}>🔍</span>
-                    <p style={{ fontSize:20, fontWeight:700, marginBottom:8, fontFamily:"'Playfair Display', serif" }}>No startups found</p>
-                    <p style={{ fontSize:13, color:"#5A4A30", fontStyle:"italic" }}>{q ? `Nothing matched "${q}".` : "Try adjusting your filters."}</p>
-                    <Link href="/startup" style={{ display:"inline-block", background:"var(--accent)", color:"white", padding:"11px 24px", borderRadius:"40px", fontSize:11, marginTop:20, textDecoration:"none", fontFamily:"system-ui, sans-serif", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase" }}>
+                    <span style={{ fontSize: 48, color: "var(--rule)", display: "block", marginBottom: 16 }}>🔍</span>
+                    <p style={{ fontSize: 20, fontWeight: 700, marginBottom: 8, fontFamily: "'Playfair Display', serif" }}>No startups found</p>
+                    <p style={{ fontSize: 13, color: "#5A4A30", fontStyle: "italic" }}>
+                      {q ? `Nothing matched "${q}".` : "Try adjusting your filters."}
+                    </p>
+                    <Link href="/startup" style={{ display: "inline-block", background: "var(--accent)", color: "white", padding: "11px 24px", borderRadius: "40px", fontSize: 11, marginTop: 20, textDecoration: "none", fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>
                       Clear filters
                     </Link>
                   </div>
                 )}
 
+                {/* Pagination */}
                 {totalPages > 1 && (
                   <nav className="pag">
                     <Link href={pgHref(page - 1)} className={`pag-btn${page === 1 ? " dis" : ""}`}>← Prev</Link>
@@ -804,8 +795,8 @@ export default async function StartupPage({ searchParams }: PageProps) {
                 )}
               </div>
 
-              {/* Sidebar */}
-              <aside className="rg-aside" style={{ position:"sticky", top:80 }}>
+              {/* ── Sidebar ── */}
+              <aside className="rg-aside" style={{ position: "sticky", top: 80 }}>
                 <div className="aside-box dk">
                   <p className="aside-ey">✨ List Free</p>
                   <p className="aside-h">Got a startup to list?</p>
@@ -819,7 +810,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
                       {cats.slice(0, 8).map(c => (
                         <li key={c}>
                           <Link href={`/startup?category=${encodeURIComponent(c)}`}>
-                            <span>{c}</span><span style={{ color:"#CCC" }}>→</span>
+                            <span>{c}</span><span style={{ color: "#CCC" }}>→</span>
                           </Link>
                         </li>
                       ))}
@@ -843,48 +834,79 @@ export default async function StartupPage({ searchParams }: PageProps) {
 
             {/* Footer links */}
             <div className="links-grid">
-              <Link href="/startup" className="link-card">
-                <span className="link-title">Startup Registry →</span>
-                <span className="link-desc">5000+ verified startups</span>
-              </Link>
-              <Link href="/submit" className="link-card">
-                <span className="link-title">Submit Your Startup →</span>
-                <span className="link-desc">Get listed free</span>
-              </Link>
-              <Link href="/blog" className="link-card">
-                <span className="link-title">The Forge Blog →</span>
-                <span className="link-desc">Startup intelligence</span>
-              </Link>
-              <Link href="/about" className="link-card">
-                <span className="link-title">About UpForge →</span>
-                <span className="link-desc">Our mission</span>
-              </Link>
+              <Link href="/startup" className="link-card"><span className="link-title">Startup Registry →</span><span className="link-desc">Verified Indian startups</span></Link>
+              <Link href="/submit" className="link-card"><span className="link-title">Submit Your Startup →</span><span className="link-desc">Get listed free</span></Link>
+              <Link href="/blog" className="link-card"><span className="link-title">The Forge Blog →</span><span className="link-desc">Startup intelligence</span></Link>
+              <Link href="/about" className="link-card"><span className="link-title">About UpForge →</span><span className="link-desc">Our mission</span></Link>
             </div>
           </div>
-        </div>{/* end page-content */}
-      </div>{/* end page-root */}
+        </div>
+      </div>
 
+      {/* ── Client-side JS ── */}
       <script dangerouslySetInnerHTML={{ __html: `
-        (function(){
+        (function () {
+
+          // ── Filter panel toggle ──────────────────────────────────────
+          var btn   = document.getElementById('filter-toggle-btn');
+          var panel = document.getElementById('filter-panel');
+          if (btn && panel) {
+            var hasActive = ${activeFilterCount > 0 ? "true" : "false"};
+            if (hasActive) {
+              panel.classList.add('open');
+              btn.classList.add('active');
+              btn.setAttribute('aria-expanded', 'true');
+            }
+            btn.addEventListener('click', function () {
+              var isOpen = panel.classList.toggle('open');
+              btn.classList.toggle('active', isOpen);
+              btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+          }
+
+          // ── URL builder ─────────────────────────────────────────────
           function buildUrl(params) {
             var p = new URLSearchParams();
-            if(params.q) p.set('q', params.q);
-            if(params.year) p.set('year', params.year);
-            if(params.category) p.set('category', params.category);
-            if(params.sort && params.sort !== 'name') p.set('sort', params.sort);
+            if (params.q)        p.set('q',        params.q);
+            if (params.year)     p.set('year',     params.year);
+            if (params.category) p.set('category', params.category);
+            if (params.sort && params.sort !== 'name') p.set('sort', params.sort);
             var s = p.toString();
             return '/startup' + (s ? '?' + s : '');
           }
+
           function getCurrentParams() {
-            var urlParams = new URLSearchParams(window.location.search);
-            return { q: urlParams.get('q') || '', year: urlParams.get('year') || '', category: urlParams.get('category') || '', sort: urlParams.get('sort') || 'name' };
+            var u = new URLSearchParams(window.location.search);
+            return {
+              q:        u.get('q')        || '',
+              year:     u.get('year')     || '',
+              category: u.get('category') || '',
+              sort:     u.get('sort')     || 'name',
+            };
           }
-          var yearSelect = document.getElementById('rg-year-sel');
-          var catSelect = document.getElementById('rg-cat-sel');
-          if(yearSelect) yearSelect.addEventListener('change', function() { var c = getCurrentParams(); c.year = this.value; window.location.href = buildUrl(c); });
-          if(catSelect) catSelect.addEventListener('change', function() { var c = getCurrentParams(); c.category = this.value; window.location.href = buildUrl(c); });
+
+          // ── Select change handlers ───────────────────────────────────
+          var yearSel = document.getElementById('rg-year-sel');
+          var catSel  = document.getElementById('rg-cat-sel');
+
+          if (yearSel) yearSel.addEventListener('change', function () {
+            var c = getCurrentParams(); c.year = this.value;
+            window.location.href = buildUrl(c);
+          });
+          if (catSel) catSel.addEventListener('change', function () {
+            var c = getCurrentParams(); c.category = this.value;
+            window.location.href = buildUrl(c);
+          });
+
+          // ── Search form ──────────────────────────────────────────────
           var searchForm = document.getElementById('search-form');
-          if(searchForm) searchForm.addEventListener('submit', function(e) { e.preventDefault(); var c = getCurrentParams(); c.q = this.querySelector('input[name="q"]').value; window.location.href = buildUrl(c); });
+          if (searchForm) searchForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var c = getCurrentParams();
+            c.q = this.querySelector('input[name="q"]').value;
+            window.location.href = buildUrl(c);
+          });
+
         })();
       `}} />
     </>
