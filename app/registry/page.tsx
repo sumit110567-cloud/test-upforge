@@ -1,9 +1,5 @@
 // app/registry/page.tsx — OPTIMISED v4
-// Changes: 1) force-dynamic (no cache, always fresh DB data)
-//          2) Country filter added  3) Country code badge on each card
-//          4) Collapsible filter panel (click to toggle, smooth animation)
-//          5) No design changes — same visual identity
-
+  
 import { createReadClient } from "@/lib/supabase/server"
 import type { Metadata } from "next"
 import Link from "next/link"
@@ -14,6 +10,7 @@ import { ArrowRight, ArrowUpRight, MapPin, Calendar, Users } from "lucide-react"
 // ─── NO CACHING — always fresh from DB ───
 export const dynamic = "force-dynamic"
 export const revalidate = 0
+export const fetchCache = "force-no-store"
 
 const PAGE_SIZE = 10
 
@@ -132,7 +129,12 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 
 // ─── PAGE ───
 
+import { unstable_noStore } from "next/cache"
+
 export default async function RegistryPage({ searchParams }: PageProps) {
+
+  unstable_noStore() // ⬅️ important: disables Next.js caching completely
+
   const sp      = await searchParams
   const q       = sp?.q?.trim()       ?? ""
   const year    = sp?.year?.trim()    ?? ""
@@ -158,23 +160,49 @@ export default async function RegistryPage({ searchParams }: PageProps) {
       country: country || undefined,
       page:    page > 1 ? String(page) : undefined,
     }
+
     const m = { ...base, ...ov }
     const p = new URLSearchParams()
-    Object.entries(m).forEach(([k, v]) => { if (v) p.set(k, v) })
+
+    Object.entries(m).forEach(([k, v]) => {
+      if (v) p.set(k, v)
+    })
+
     const s = p.toString()
     return `/registry${s ? `?${s}` : ""}`
   }
-  const pgHref = (p: number) => qs({ page: p === 1 ? undefined : String(p) })
+
+  const pgHref = (p: number) =>
+    qs({ page: p === 1 ? undefined : String(p) })
 
   const winSize  = Math.min(5, totalPages)
-  const winStart = page <= 3 || totalPages <= 5 ? 1 : page >= totalPages - 2 ? totalPages - 4 : page - 2
-  const pgNums   = Array.from({ length: winSize }, (_, i) => winStart + i)
 
-  const featured = page === 1 && !isFiltered ? startups.filter(s => s.is_featured).slice(0, 3) : []
-  const featIds  = new Set(featured.map(s => s.id))
-  const grid     = page === 1 && !isFiltered ? startups.filter(s => !featIds.has(s.id)) : startups
-  const baseNum  = (page - 1) * PAGE_SIZE
+  const winStart =
+    page <= 3 || totalPages <= 5
+      ? 1
+      : page >= totalPages - 2
+      ? totalPages - 4
+      : page - 2
 
+  const pgNums = Array.from(
+    { length: winSize },
+    (_, i) => winStart + i
+  )
+
+  const featured =
+    page === 1 && !isFiltered
+      ? startups.filter(s => s.is_featured).slice(0, 3)
+      : []
+
+  const featIds = new Set(featured.map(s => s.id))
+
+  const grid =
+    page === 1 && !isFiltered
+      ? startups.filter(s => !featIds.has(s.id))
+      : startups
+
+  const baseNum = (page - 1) * PAGE_SIZE
+  
   // Active filter count for badge
   const activeFilterCount = [year, cat, country, sort !== "name" ? sort : ""].filter(Boolean).length
 
