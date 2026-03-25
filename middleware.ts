@@ -6,37 +6,46 @@ import { NextResponse, type NextRequest } from 'next/server'
  * UPFORGE DUAL-DOMAIN MIDDLEWARE
  *
  * STRATEGY:
- * 1. .org = Global Authority / Dataset / UFRN Registry
- * 2. .in  = India Marketing Hub / Founder Stories / Local SEO
+ * 1. .org = Global Authority — UFRN Registry, emerging-market intelligence
+ * 2. .in  = India Hub       — Founder stories, local SEO, Indian startup pages
  *
- * We do NOT redirect between domains to avoid collapsing authority.
- * Instead we set 'x-upforge-domain' so Server Components can generate
- * correct canonical tags, hreflang, and domain-aware startup URLs
- * without re-parsing the hostname in every page/component.
+ * We do NOT redirect between domains. Instead we:
+ *   a) Set 'x-upforge-domain' header → read by getDomainContext() in lib/domain.ts
+ *   b) Set 'x-upforge-pathname' header → available for per-page canonical logic
  *
- * CROSS-DOMAIN LEAK FIX:
- * Previously, startup card/detail links used relative hrefs (/startup/slug)
- * which worked fine on .in but broke on .org — Next.js resolved them against
- * the current domain. The x-upforge-domain header is read by lib/domain.ts →
- * getStartupUrl() which returns absolute URLs on .org and relative on .in.
+ * lib/domain.ts uses these headers to generate:
+ *   • Correct canonical URLs and hreflang alternates in layout metadata
+ *   • Domain-aware startup / registry URLs (getStartupUrl, getRegistryUrl)
+ *   • Domain-aware Navbar / Footer links (getNavUrl)
+ *
+ * RESULT: No cross-domain link leaks, no user "flipping", no SEO duplicate penalty.
  */
 export async function middleware(request: NextRequest) {
-  const hostname = request.headers.get('host') || ''
+  const hostname = request.headers.get('host') ?? ''
+  const pathname = request.nextUrl.pathname
 
-  const isOrg = hostname.includes('upforge.org')
+  // Detect domain — covers www.upforge.org, upforge.org, and Vercel preview URLs
+  // where NEXT_PUBLIC_DOMAIN=org is set in the project env.
+  const isOrg =
+    hostname.includes('upforge.org') ||
+    process.env.NEXT_PUBLIC_DOMAIN === 'org'
+
   const domainContext = isOrg ? 'org' : 'in'
 
-  // 1. Create initial response
+  // ── 1. Build initial response ─────────────────────────────────────────────
   let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+    request: { headers: request.headers },
   })
 
-  // 2. Set domain context header for Server Components (via lib/domain.ts)
-  response.headers.set('x-upforge-domain', domainContext)
+  // ── 2. Inject domain context headers ─────────────────────────────────────
+  // These are available in Server Components via next/headers → headers()
+  response.headers.set('x-upforge-domain',   domainContext)
+  response.headers.set('x-upforge-pathname', pathname)
 
-  // 3. Supabase SSR session handling
+  // ── 3. Supabase SSR session handling ──────────────────────────────────────
+  // createServerClient must be called after we have a response object.
+  // We re-apply domain headers after every cookie mutation to ensure they
+  // are never lost when NextResponse.next() is called again.
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -50,7 +59,9 @@ export async function middleware(request: NextRequest) {
           response = NextResponse.next({
             request: { headers: request.headers },
           })
-          response.headers.set('x-upforge-domain', domainContext)
+          // Re-apply after response rebuild
+          response.headers.set('x-upforge-domain',   domainContext)
+          response.headers.set('x-upforge-pathname', pathname)
           response.cookies.set({ name, value, ...options })
         },
         remove(name: string, options: CookieOptions) {
@@ -58,14 +69,16 @@ export async function middleware(request: NextRequest) {
           response = NextResponse.next({
             request: { headers: request.headers },
           })
-          response.headers.set('x-upforge-domain', domainContext)
+          // Re-apply after response rebuild
+          response.headers.set('x-upforge-domain',   domainContext)
+          response.headers.set('x-upforge-pathname', pathname)
           response.cookies.set({ name, value: '', ...options })
         },
       },
     }
   )
 
-  // Refresh session if expired — required for Server Components
+  // Refresh session if expired — required for SSR auth in Server Components
   await supabase.auth.getUser()
 
   return response
@@ -73,6 +86,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    // Skip Next.js internals and static assets — only run on actual pages/APIs
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
