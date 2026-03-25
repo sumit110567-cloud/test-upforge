@@ -1,10 +1,18 @@
+// components/featured-startups.tsx
+// Server Component — reads domain context from middleware header
+// and passes it to StartupCard so links stay on the current domain.
+
 import { createClient } from "@/lib/supabase/server"
+import { getDomainContext } from "@/lib/domain"
 import type { Startup } from "@/types/startup"
 import { StartupCard } from "@/components/startup-card"
 import { Award } from "lucide-react"
 
 export async function FeaturedStartups() {
-  const supabase = await createClient()
+  const [supabase, domain] = await Promise.all([
+    createClient(),
+    getDomainContext(),
+  ])
 
   const { data: startups } = await supabase
     .from("startups")
@@ -28,10 +36,10 @@ export async function FeaturedStartups() {
         <p className="mt-2 text-muted-foreground">
           {"Recognized leaders in India's startup ecosystem"}
         </p>
-
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {(startups as Startup[]).map((startup) => (
-            <StartupCard key={startup.id} startup={startup} featured />
+            // domain prop ensures card links never cross domains accidentally
+            <StartupCard key={startup.id} startup={startup} featured domain={domain} />
           ))}
         </div>
       </div>
