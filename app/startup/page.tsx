@@ -1,16 +1,19 @@
-// app/startup/page.tsx — OPTIMISED v3 (synced with registry)
-// Changes from v2:
-// 1. Only show startups where country_code = 'IND'
-// 2. Filter logic matches registry (collapsible panel with toggle button + active badge)
-// 3. No caching — force-dynamic + unstable_noStore for instant updates
-// 4. Removed country tags/badges from cards (all are Indian)
+// app/startup/page.tsx — OPTIMISED v4 (domain-aware metadata)
+// Changes from v3:
+// 1. generateMetadata now reads x-upforge-domain header via next/headers
+// 2. canonical, openGraph.url, and alternates are built from getDomainMeta(context).baseUrl
+// 3. No hardcoded upforge.in in metadata — correct on both .in and .org
+// 4. All other logic (filters, cards, pagination, JS) unchanged from v3
 
 import { createReadClient } from "@/lib/supabase/server"
 import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
+import { headers } from "next/headers"
 import { Navbar } from "@/components/navbar"
 import { ArrowRight, ArrowUpRight, MapPin, Calendar, Users } from "lucide-react"
+import { getDomainMeta } from "@/lib/domain"
+import type { DomainContext } from "@/lib/domain"
 
 // ─── NO CACHING — always fresh from DB ───
 export const dynamic = "force-dynamic"
@@ -44,7 +47,7 @@ async function getData(q: string, year: string, sort: string, cat: string, page:
       { count: "exact" }
     )
     .eq("status", "approved")
-    .eq("country_code", "IND") // ← Only Indian startups
+    .eq("country_code", "IND")
 
   if (q)    query = query.or(`name.ilike.%${q}%,description.ilike.%${q}%,founders.ilike.%${q}%,category.ilike.%${q}%,city.ilike.%${q}%`)
   if (year) query = query.eq("founded_year", Number(year))
@@ -80,7 +83,7 @@ async function getFilters() {
   }
 }
 
-// ─── METADATA ───
+// ─── METADATA (domain-aware) ───
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
   const sp = await searchParams
@@ -88,22 +91,49 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   const n = total > 0 ? total.toLocaleString() : "1,000+"
   const isFiltered = !!(sp?.q || sp?.year || sp?.sort || sp?.category)
   const page = Number(sp?.page ?? 1)
+
+  // ✅ Read domain context from middleware header
+  const headersList = await headers()
+  const domainContext = (headersList.get("x-upforge-domain") ?? "in") as DomainContext
+  const { baseUrl, locale } = getDomainMeta(domainContext)
+
+  const canonicalUrl = `${baseUrl}/startup`
+  const inUrl  = "https://www.upforge.in/startup"
+  const orgUrl = "https://www.upforge.org/startup"
+
+  const title = `Indian Startup Registry 2026 — ${n}+ Verified Indian Startups | UpForge`
+  const description = `Discover ${n}+ verified Indian startups across AI, FinTech, SaaS, EdTech, HealthTech, Climate Tech, AgriTech, Web3 and 30+ sectors. Search by founder, city, year. India's most trusted free startup database — updated daily.`
+
   return {
-    title: `Indian Startup Registry 2026 — ${n}+ Verified Indian Startups | UpForge`,
-    description: `Discover ${n}+ verified Indian startups across AI, FinTech, SaaS, EdTech, HealthTech, Climate Tech, AgriTech, Web3 and 30+ sectors. Search by founder, city, year. India's most trusted free startup database — updated daily.`,
+    title,
+    description,
     keywords: "Indian startups 2026, startup registry India, verified startups India, AI startups India, fintech startups India, SaaS startups India, edtech startups India, healthtech India, startup founders India, Bengaluru startups, Mumbai startups, Delhi NCR startups, Indian unicorns 2026",
-    alternates: { canonical: "https://www.upforge.in/startup" },
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        "en-IN":     inUrl,
+        "en":        orgUrl,
+        "x-default": orgUrl,
+      },
+    },
     openGraph: {
       title: `Indian Startup Registry 2026 — ${n}+ Verified | UpForge`,
       description: `Browse ${n}+ verified Indian startups. Free, structured, updated daily.`,
-      url: "https://www.upforge.in/startup", siteName: "UpForge",
-      images: [{ url: "https://www.upforge.in/og/registry.png", width: 1200, height: 630 }],
-      locale: "en_IN", type: "website",
+      url: canonicalUrl,
+      siteName: "UpForge",
+      images: [{ url: `${baseUrl}/og/registry.png`, width: 1200, height: 630 }],
+      locale: locale.replace("-", "_"),
+      type: "website",
     },
     robots: {
       index: !isFiltered && page <= 1,
       follow: true,
-      googleBot: { index: !isFiltered && page <= 1, follow: true, "max-snippet": -1, "max-image-preview": "large" },
+      googleBot: {
+        index: !isFiltered && page <= 1,
+        follow: true,
+        "max-snippet": -1,
+        "max-image-preview": "large",
+      },
     },
   }
 }
@@ -114,7 +144,12 @@ import { unstable_noStore } from "next/cache"
 
 export default async function StartupPage({ searchParams }: PageProps) {
 
-  unstable_noStore() // ⬅️ disables Next.js caching completely
+  unstable_noStore()
+
+  // ✅ Read domain context for page-level use (JSON-LD baseUrl)
+  const headersList = await headers()
+  const domainContext = (headersList.get("x-upforge-domain") ?? "in") as DomainContext
+  const { baseUrl } = getDomainMeta(domainContext)
 
   const sp   = await searchParams
   const q    = sp?.q?.trim()        ?? ""
@@ -162,24 +197,28 @@ export default async function StartupPage({ searchParams }: PageProps) {
   const grid     = page === 1 && !isFiltered ? startups.filter(s => !featIds.has(s.id)) : startups
   const baseNum  = (page - 1) * PAGE_SIZE
 
-  // Active filter count for badge
   const activeFilterCount = [year, cat, sort !== "name" ? sort : ""].filter(Boolean).length
 
+  // ✅ JSON-LD uses dynamic baseUrl, not hardcoded upforge.in
   const schemas = [
     {
-      "@context": "https://schema.org", "@type": "WebSite", "name": "UpForge", "url": "https://www.upforge.in",
-      "potentialAction": { "@type": "SearchAction", "target": { "@type": "EntryPoint", "urlTemplate": "https://www.upforge.in/startup?q={search_term_string}" }, "query-input": "required name=search_term_string" }
+      "@context": "https://schema.org", "@type": "WebSite", "name": "UpForge", "url": baseUrl,
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": { "@type": "EntryPoint", "urlTemplate": `${baseUrl}/startup?q={search_term_string}` },
+        "query-input": "required name=search_term_string"
+      }
     },
     {
-      "@context": "https://schema.org", "@type": "CollectionPage", "@id": "https://www.upforge.in/startup#cp",
-      "name": "Indian Startup Registry 2026", "url": "https://www.upforge.in/startup",
+      "@context": "https://schema.org", "@type": "CollectionPage", "@id": `${baseUrl}/startup#cp`,
+      "name": "Indian Startup Registry 2026", "url": `${baseUrl}/startup`,
       "description": `India's independent registry of ${total.toLocaleString()}+ verified startups across 30+ sectors.`,
       "numberOfItems": total, "inLanguage": "en-IN"
     },
     {
       "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "UpForge", "item": "https://www.upforge.in" },
-        { "@type": "ListItem", "position": 2, "name": "Startup Registry", "item": "https://www.upforge.in/startup" },
+        { "@type": "ListItem", "position": 1, "name": "UpForge", "item": baseUrl },
+        { "@type": "ListItem", "position": 2, "name": "Startup Registry", "item": `${baseUrl}/startup` },
       ]
     },
   ]
@@ -629,7 +668,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
                   </div>
 
                   <div className="fp-group">
-                    <label className="fp-label" htmlFor="rg-cat-sel">Sector</label>
+                    <label className="fp-label" htmlFor="rg-cat-sel">Sector</option>
                     <select className={`fp-sel${cat ? " active" : ""}`} id="rg-cat-sel" aria-label="Filter by sector">
                       <option value="">All Sectors</option>
                       {cats.map(c => (
