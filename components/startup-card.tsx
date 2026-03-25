@@ -1,10 +1,12 @@
 // components/startup-card.tsx
 // ─────────────────────────────────────────────────────────────────────────────
-// UPGRADE: UFRN is now the primary trust signal on listing cards.
-// - Shows real UFRN (e.g. UFRN-2026-IND-00001) instead of fake UPF- code
-// - UFRN links to /ufrn/[id] for the dedicated lookup page
-// - Badge alt-text matches the SEO anchor loop: "UFRN: [ID] - Verified Startup Profile"
-// - Falls back gracefully if ufrn is null (pending approval / legacy records)
+// FIX: startup card href is now domain-aware.
+// On .in  → /startup/[slug]             (relative, stays on .in)
+// On .org → https://www.upforge.org/... (absolute, stays on .org)
+//
+// getDomainContext() reads the x-upforge-domain header set by middleware.ts.
+// The card itself is a Client Component so we receive `domain` as a prop
+// from the nearest Server Component parent (StartupRegistry, FeaturedStartups, etc).
 // ─────────────────────────────────────────────────────────────────────────────
 
 "use client"
@@ -12,13 +14,16 @@
 import Link from "next/link"
 import { ArrowUpRight, Sparkles, ShieldCheck } from "lucide-react"
 import type { Startup } from "@/types/startup"
+import type { DomainContext } from "@/lib/domain"
+import { getStartupUrl } from "@/lib/domain"
 
 interface StartupCardProps {
   startup: Startup
   featured?: boolean
+  domain?: DomainContext // passed from Server Component parent; defaults to "in"
 }
 
-export function StartupCard({ startup, featured = false }: StartupCardProps) {
+export function StartupCard({ startup, featured = false, domain = "in" }: StartupCardProps) {
   const getDisplayFounder = () => {
     if (!startup.founders || startup.founders.trim() === "") {
       return { name: "Institutional Lead", hasMore: false }
@@ -32,18 +37,17 @@ export function StartupCard({ startup, featured = false }: StartupCardProps) {
 
   const founderInfo = getDisplayFounder()
 
-  // ── UFRN display helpers ──────────────────────────────────────────────────
-  // If a real UFRN exists, show it and link to the dedicated UFRN page.
-  // If not, fall back to the slug-based code (legacy behaviour).
   const hasRealUFRN = !!startup.ufrn
   const ufrnDisplay = startup.ufrn ?? `UPF-${startup.slug?.substring(0, 6).toUpperCase()}`
-  // Truncate long UFRNs for the card: show last two segments e.g. "IND-00001"
   const ufrnShort = startup.ufrn
     ? startup.ufrn.split("-").slice(-2).join("-")
     : ufrnDisplay
 
+  // Domain-aware startup URL — prevents cross-domain redirect
+  const startupHref = getStartupUrl(startup.slug || "", domain)
+
   return (
-    <Link href={`/startup/${startup.slug || ""}`} className="group block h-full">
+    <Link href={startupHref} className="group block h-full">
       <article
         className={`relative flex h-full flex-col rounded-2xl border transition-all duration-500 bg-white ${
           featured
@@ -126,22 +130,19 @@ export function StartupCard({ startup, featured = false }: StartupCardProps) {
             </div>
           </div>
 
-          {/* ── UFRN Trust Signal ── */}
+          {/* UFRN Trust Signal */}
           <div className="flex flex-col items-end gap-0.5">
             <div className="flex items-center gap-1 text-green-600">
               <ShieldCheck className="h-3 w-3" />
               <span className="text-[9px] font-black uppercase tracking-tighter">Verified</span>
             </div>
 
-            {/* Link to UFRN page if real UFRN exists, otherwise plain text */}
             {hasRealUFRN ? (
-              // Stop propagation so click on UFRN doesn't also navigate to startup profile
               <a
                 href={`/ufrn/${startup.ufrn}`}
                 onClick={(e) => e.stopPropagation()}
                 className="text-[9px] font-mono text-[#A89060] hover:underline hover:text-[#7A6840] transition-colors"
                 title={`Registry lookup: ${startup.ufrn}`}
-                // Critical: alt/title text matches SEO anchor loop
                 aria-label={`UFRN: ${startup.ufrn} - Verified Startup Profile`}
               >
                 {ufrnShort}
