@@ -3,7 +3,8 @@
 // and passes it to StartupCard so links stay on the current domain.
 
 import { createClient } from "@/lib/supabase/server"
-import { getDomainContext } from "@/lib/domain"
+// Fixed this import path:
+import { getDomainContext } from "@/lib/domain.server" 
 import type { Startup } from "@/types/startup"
 import { StartupCard } from "@/components/startup-card"
 import { Award } from "lucide-react"
