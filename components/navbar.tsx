@@ -1,75 +1,149 @@
-import React, { useState, useEffect } from 'react';
-import { Menu, X, ChevronRight, Globe } from 'lucide-react';
+"use client";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { Menu, X, ChevronRight } from "lucide-react";
 
-/**
- * Navbar Component
- * Updated for cross-domain navigation (.in vs .org) 
- * and refactored for the preview environment.
- */
-export default function App() {
+type NavLink = {
+  name: string;
+  href: string;
+  external?: boolean;
+};
+
+export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [currentPath, setCurrentPath] = useState('/');
+  const pathname = usePathname();
 
   useEffect(() => {
-    // Tracking scroll for header styling
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
-    
-    // Simulating path tracking in the single-file environment
-    setCurrentPath(window.location.pathname);
-    
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on state change
-  useEffect(() => {
-    if (isOpen) {
-        document.body.style.overflow = 'hidden';
-    } else {
-        document.body.style.overflow = 'unset';
-    }
-  }, [isOpen]);
+  // Close mobile menu on route change
+  useEffect(() => setIsOpen(false), [pathname]);
 
-  const links = [
+  const links: NavLink[] = [
     { name: "Home", href: "/" },
-    { 
-      name: "Indian Registry", 
-      href: "https://www.upforge.in/startup",
-      external: true,
-      description: ".in domain"
-    },
+    { name: "Indian Registry", href: "/startup" },
     {
       name: "Global Registry",
       href: "https://www.upforge.org/registry",
       external: true,
-      description: ".org domain"
     },
     { name: "Journal", href: "/blog" },
     { name: "Reports", href: "/reports" },
     { name: "About", href: "/about" },
   ];
 
+  // Only match active state for internal links, never for external ones
+  const isLinkActive = (link: NavLink) => {
+    if (link.external) return false;
+    if (link.href === "/") return pathname === "/";
+    return pathname === link.href || pathname.startsWith(link.href + "/");
+  };
+
+  const desktopLinkClass = (link: NavLink) => {
+    const active = isLinkActive(link);
+    return `relative px-4 py-1 text-[12px] font-medium tracking-wide uppercase transition-colors border-b-2 ${
+      active
+        ? "text-[#1C1C1C] border-[#1C1C1C]"
+        : "text-[#888] border-transparent hover:text-[#1C1C1C] hover:border-[#D5D0C8]"
+    }`;
+  };
+
+  const mobileLinkClass = (link: NavLink) => {
+    const active = isLinkActive(link);
+    return `flex items-center justify-between px-5 py-4 text-sm font-medium tracking-wide uppercase transition-colors ${
+      active
+        ? "text-[#1C1C1C] bg-white"
+        : "text-[#666] hover:text-[#1C1C1C] hover:bg-white/60"
+    }`;
+  };
+
+  const renderDesktopLink = (link: NavLink) => {
+    if (link.external) {
+      return (
+        <a
+          key={link.name}
+          href={link.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={desktopLinkClass(link)}
+        >
+          {link.name}
+        </a>
+      );
+    }
+    return (
+      <Link key={link.name} href={link.href} className={desktopLinkClass(link)}>
+        {link.name}
+      </Link>
+    );
+  };
+
+  const renderMobileLink = (link: NavLink) => {
+    const active = isLinkActive(link);
+    const content = (
+      <>
+        {link.name}
+        {active && <span className="w-1.5 h-1.5 rounded-full bg-[#1C1C1C]" />}
+      </>
+    );
+
+    if (link.external) {
+      return (
+        <a
+          key={link.name}
+          href={link.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => setIsOpen(false)}
+          className={mobileLinkClass(link)}
+        >
+          {content}
+        </a>
+      );
+    }
+    return (
+      <Link
+        key={link.name}
+        href={link.href}
+        onClick={() => setIsOpen(false)}
+        className={mobileLinkClass(link)}
+      >
+        {content}
+      </Link>
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-[#F7F5F0]">
+    <>
       <header
         className={`fixed top-0 w-full z-50 transition-all duration-200 ${
           scrolled
             ? "bg-white/95 backdrop-blur-md border-b border-[#D5D0C8] shadow-[0_1px_12px_rgba(0,0,0,0.06)]"
             : "bg-[#F7F5F0] border-b border-[#D5D0C8]"
         }`}
-        style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}
+        style={{ fontFamily: "system-ui, sans-serif" }}
       >
         <div className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-6">
 
           {/* ── Brand ── */}
-          <a href="/" className="flex items-center gap-2.5 group flex-shrink-0 cursor-pointer">
-            <div className="relative w-7 h-7 overflow-hidden flex-shrink-0 bg-[#1C1C1C] rounded-sm flex items-center justify-center">
-               <span className="text-white text-[10px] font-bold">UF</span>
+          <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
+            <div className="relative w-7 h-7 overflow-hidden flex-shrink-0">
+              <Image
+                src="/logo.jpg"
+                alt="UpForge"
+                fill
+                className="object-cover"
+              />
             </div>
             <div className="flex items-baseline gap-2">
               <span
-                className="text-lg tracking-tight text-[#1C1C1C] group-hover:text-[#444] transition-colors font-serif"
+                className="text-lg tracking-tight text-[#1C1C1C] group-hover:text-[#444] transition-colors"
                 style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
               >
                 UpForge
@@ -78,38 +152,11 @@ export default function App() {
                 Startup Registry
               </span>
             </div>
-          </a>
+          </Link>
 
           {/* ── Desktop Nav ── */}
           <nav className="hidden md:flex items-center gap-0 flex-1 justify-center">
-            {links.map((link) => {
-              const isActive = !link.external && (currentPath === link.href);
-              
-              const NavItemContent = (
-                <span className="flex flex-col items-center">
-                  <span>{link.name}</span>
-                  {link.description && (
-                    <span className="text-[7px] opacity-60 lowercase mt-[-2px] tracking-normal font-normal">
-                      {link.description}
-                    </span>
-                  )}
-                </span>
-              );
-
-              return (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className={`relative px-4 py-1 text-[11px] font-medium tracking-wide uppercase transition-colors border-b-2 flex items-center gap-1 ${
-                    isActive
-                      ? "text-[#1C1C1C] border-[#1C1C1C]"
-                      : "text-[#888] border-transparent hover:text-[#1C1C1C] hover:border-[#D5D0C8]"
-                  }`}
-                >
-                  {NavItemContent}
-                </a>
-              );
-            })}
+            {links.map(renderDesktopLink)}
           </nav>
 
           {/* ── Right Side ── */}
@@ -123,12 +170,12 @@ export default function App() {
               <span className="text-[9px] text-[#666] font-medium tracking-wider uppercase">Live</span>
             </div>
 
-            <a
+            <Link
               href="/submit"
               className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#1C1C1C] text-white text-[11px] font-bold tracking-wider uppercase hover:bg-[#333] transition-colors"
             >
               List Startup <ChevronRight className="w-3 h-3" />
-            </a>
+            </Link>
           </div>
 
           {/* ── Mobile Toggle ── */}
@@ -159,39 +206,11 @@ export default function App() {
           className={`absolute top-14 left-0 right-0 bg-[#F7F5F0] border-b-2 border-[#1C1C1C] transition-transform duration-200 ${
             isOpen ? "translate-y-0" : "-translate-y-2"
           }`}
+          style={{ fontFamily: "system-ui, sans-serif" }}
         >
           {/* Nav links */}
           <div className="divide-y divide-[#E8E4DC]">
-            {links.map((link) => {
-              const isActive = !link.external && (currentPath === link.href);
-              
-              return (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className={`flex items-center justify-between px-5 py-4 transition-colors ${
-                    isActive
-                      ? "text-[#1C1C1C] bg-white"
-                      : "text-[#666] hover:text-[#1C1C1C] hover:bg-white/60"
-                  }`}
-                >
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium tracking-wide uppercase">{link.name}</span>
-                    {link.description && (
-                      <span className="text-[9px] text-[#888] lowercase tracking-normal -mt-0.5">
-                        {link.description}
-                      </span>
-                    )}
-                  </div>
-                  {link.external ? (
-                    <Globe size={14} className="text-[#AAA]" />
-                  ) : isActive ? (
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#1C1C1C]" />
-                  ) : null}
-                </a>
-              );
-            })}
+            {links.map(renderMobileLink)}
           </div>
 
           {/* Bottom CTA + Live */}
@@ -203,26 +222,16 @@ export default function App() {
               </span>
               <span className="text-[10px] text-[#888] font-medium uppercase tracking-wider">Live · Updated every 10 min</span>
             </div>
-            <a
+            <Link
               href="/submit"
               onClick={() => setIsOpen(false)}
               className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#1C1C1C] text-white text-[11px] font-bold tracking-wider uppercase"
             >
               List Startup <ChevronRight className="w-3 h-3" />
-            </a>
+            </Link>
           </div>
         </div>
       </div>
-      
-      {/* Page Content Placeholder */}
-      <main className="pt-24 px-6 max-w-4xl mx-auto">
-        <h1 className="text-3xl font-serif text-[#1C1C1C] mb-4">Registry Navigation Updated</h1>
-        <p className="text-[#666] leading-relaxed">
-          The navigation system has been refactored to support cross-domain links between the 
-          <strong> Indian Registry (.in)</strong> and the <strong>Global Registry (.org)</strong>. 
-          This ensures seamless movement for users while maintaining domain integrity.
-        </p>
-      </main>
-    </div>
+    </>
   );
 }
