@@ -43,6 +43,8 @@ const IMGS = {
   paytm:    "https://etimg.etb2bimg.com/photo/109397034.cms",
   nykaa:    "https://mir-s3-cdn-cf.behance.net/projects/404/a3658a212975871.Y3JvcCw4NjEsNjczLDI2OCw4Mw.png",
   banner:   "https://i.ytimg.com/vi/ObFFb839mC0/maxresdefault.jpg",
+  zerodha: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9g2ZPdnqMJhqx70ki7MKLctvniGRnlfztRg&s",
+  
 };
 
 // Full unicorn registry — 30 companies
@@ -121,7 +123,7 @@ const SPOTLIGHTS = [
     year: 2010,
     city: "Bengaluru",
     sector: "Stock Broking · WealthTech",
-    img: IMGS.paytm,
+    img: IMGS.zerodha,
     slug: "zerodha",
     story: "Built without a single rupee of external funding, Zerodha became India's largest stockbroker by active clients — processing ₹10,000Cr+ in revenues while competitors burned VC money. The Kamath brothers proved that in financial services, trust compounds faster than growth.",
     why: "Nithin Kamath's decision to charge zero brokerage on delivery trades was counterintuitive and, from the outside, looked like a recipe for bankruptcy. It was actually a customer acquisition strategy so powerful that no competitor could afford to copy it.",
