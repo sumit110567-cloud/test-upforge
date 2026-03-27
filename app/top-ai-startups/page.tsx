@@ -37,11 +37,11 @@ export const metadata: Metadata = {
 
 const IMGS = {
   hero: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1600&q=85&auto=format",
-  krutrim: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=900&q=80&auto=format",
-  sarvam: "https://images.unsplash.com/photo-1655720828018-edd2daec9349?w=900&q=80&auto=format",
-  ideaForge: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=900&q=80&auto=format",
-  frugal: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=900&q=80&auto=format",
-  haptik: "https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=900&q=80&auto=format",
+  krutrim: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSD9SuT2ylgUwaMfUCq5Hk_UkYPZgiiqgyShQ&s",
+  sarvam: "https://techgenyz.com/wp-content/uploads/2026/02/sarvam-ai-global.webp",
+  ideaForge: "https://uavgarage.com/wp-content/uploads/2025/06/Ideaforge-Mobile-Banner-Website-For-brand-page.jpg.webp",
+  frugal: "https://i.cdn.newsbytesapp.com/images/l99620250727181248.jpeg",
+  haptik: "https://www.haptik.ai/hs-fs/hubfs/Business%20Blog/Haptik%20Reborn/haptik-app-logo.png?width=512&name=haptik-app-logo.png",
   banner: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1600&q=80&auto=format",
 };
 
@@ -327,7 +327,6 @@ export default function TopAIStartupsPage() {
               padding: "5px 12px", fontSize: 8, fontWeight: 700,
               letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,.55)",
             }}>
-              UpForge · AI Intelligence
             </div>
           </div>
 
@@ -336,8 +335,7 @@ export default function TopAIStartupsPage() {
             <div style={{ maxWidth: 1080, margin: "0 auto", padding: "0 clamp(16px,3vw,36px)" }}>
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center" }}>
                 {[
-                  { l: "Updated", v: new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }) },
-                  { l: "Startups Listed", v: "5 Featured · 3,200+ Tracked" },
+                  { l: "Updated", v: "12 MARCH 2026" },
                   { l: "Category", v: "AI · Machine Learning" },
                   { l: "Coverage", v: "Pan-India" },
                 ].map((m, i) => (
