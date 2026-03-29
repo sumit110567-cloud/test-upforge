@@ -127,17 +127,17 @@ export default async function VerifyPage() {
         <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }} />
       ))}
 
-      {/* Persistent Navbar placed outside main to handle spacing correctly */}
+      {/* Navbar & Footer are placed here to ensure they correctly wrap the content
+          and stay consistent with the rest of the application layout.
+      */}
       <Navbar />
 
-      {/* Main Content Area - Center Aligned with proper padding for fixed Navbar */}
-      <main className="flex-grow pt-20 flex flex-col items-center">
+      <main className="flex-grow pt-24 pb-16 flex flex-col items-center">
         <div className="w-full max-w-[1280px]">
           <VerifyClient totalCount={total} isOrg={isOrg} />
         </div>
       </main>
 
-      {/* SEO layer — accessibility and crawlers only */}
       <div className="sr-only" aria-label="UFRN verification information">
         <h1>Verify UFRN — UpForge Registry Number Lookup (UF-2026-CC-XXXXX)</h1>
         <p>Official tool to verify any startup's UFRN. Format: UF-YEAR-COUNTRYCODE-NUMBER. Examples: UF-2026-IND-00013 for India, UF-2026-AUS-00011 for Australia. {total.toLocaleString()}+ entries in the global registry.</p>
