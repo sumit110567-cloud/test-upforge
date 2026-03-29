@@ -361,7 +361,7 @@ export default function GenieSkipBinsPage() {
                 className="w-full object-cover object-top"
                 style={{ height: "min(300px,60vw)", display: "block" }}
                 loading="eager"
-                onError={(e) => { (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=800'; }}
+                onError={(e) => { (e.currentTarget as HTMLImageElement).src = 'https://genieskipbins.com.au/assets/admin/images/blog/Can%20I%20Place%20a%20Skip%20Bin%20on%20the%20Street%20(2).png'; }}
               />
               <div className="px-4 py-3" style={{ background: "#1A1208" }}>
                 <p className="pf text-white font-bold" style={{ fontSize: 13 }}>Genie Skip Bins</p>
