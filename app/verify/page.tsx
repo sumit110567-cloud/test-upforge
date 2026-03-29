@@ -1,11 +1,10 @@
-// app/verify/page.tsx — UpForge UFRN Verification (FIXED)
-// UFRN format: UF-2026-AUS-00011 / UF-2026-IND-00013
-// Navbar + Footer rendered inside VerifyClient — no collapse, no duplicate
-
+// app/verify/page.tsx — UpForge UFRN Verification (FIXED & PREMIUM)
 import type { Metadata } from "next"
 import { headers } from "next/headers"
 import { VerifyClient } from "@/components/verify-client"
 import { createReadClient } from "@/lib/supabase/server"
+import { Navbar } from "@/components/navbar"
+import { Footer } from "@/components/footer"
 
 async function getDomain(): Promise<"org" | "in"> {
   const h = await headers()
@@ -122,14 +121,23 @@ export default async function VerifyPage() {
   ]
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen bg-[#FDFCF8]">
+      {/* Schema injection */}
       {schemas.map((s, i) => (
         <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }} />
       ))}
 
-      <VerifyClient totalCount={total} isOrg={isOrg} />
+      {/* Persistent Navbar placed outside main to handle spacing correctly */}
+      <Navbar />
 
-      {/* SEO layer — sr-only */}
+      {/* Main Content Area - Center Aligned with proper padding for fixed Navbar */}
+      <main className="flex-grow pt-20 flex flex-col items-center">
+        <div className="w-full max-w-[1280px]">
+          <VerifyClient totalCount={total} isOrg={isOrg} />
+        </div>
+      </main>
+
+      {/* SEO layer — accessibility and crawlers only */}
       <div className="sr-only" aria-label="UFRN verification information">
         <h1>Verify UFRN — UpForge Registry Number Lookup (UF-2026-CC-XXXXX)</h1>
         <p>Official tool to verify any startup's UFRN. Format: UF-YEAR-COUNTRYCODE-NUMBER. Examples: UF-2026-IND-00013 for India, UF-2026-AUS-00011 for Australia. {total.toLocaleString()}+ entries in the global registry.</p>
@@ -148,6 +156,8 @@ export default async function VerifyPage() {
           <li><a href="/startups">Browse startups by sector</a></li>
         </ul></nav>
       </div>
-    </>
+
+      <Footer />
+    </div>
   )
 }
