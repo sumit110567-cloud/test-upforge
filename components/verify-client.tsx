@@ -2,10 +2,10 @@
 /**
  * components/verify-client.tsx
  * UFRN Verification — Premium Editorial Design
- * Center-aligned visuals, dot-map scanning animation, and official registry certificate.
  */
 
 import { useState, useRef, useCallback, useEffect } from "react"
+import Link from "next/link" // <--- Add this missing import
 import { createClient } from "@/lib/supabase/client"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
