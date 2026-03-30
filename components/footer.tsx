@@ -14,10 +14,9 @@ const FOOTER_COLUMNS = [
     heading: "Platform",
     links: [
       { label: "Startup Registry", href: "/startup" },
-      { label: "Reports", href: "/reports" },
-      { label: "Insights", href: "/insights" },
-      { label: "Tools", href: "/tools" },
       { label: "Indian Unicorns", href: "/indian-unicorns" },
+      { label: "Verify UFRN", href: "/verify" },
+      { label: "Reports", href: "/reports" },
     ],
   },
   {
@@ -25,9 +24,8 @@ const FOOTER_COLUMNS = [
     links: [
       { label: "Founder Stories", href: "/founder-stories" },
       { label: "Startup Research", href: "/research" },
-      { label: "Newsletter", href: "/newsletter" },
-      { label: "Funding Tracker", href: "/top-funded-startups" },
       { label: "Submit Startup", href: "/submit" },
+      { label: "Newsletter", href: "/newsletter" },
     ],
   },
   {
@@ -36,8 +34,7 @@ const FOOTER_COLUMNS = [
       { label: "About", href: "/about" },
       { label: "Contact", href: "/contact" },
       { label: "Careers", href: "/careers" },
-      { label: "Press", href: "/press" },
-      { label: "Advertise", href: "/advertise" },
+      { label: "FAQs", href: "/faq" },
     ],
   },
   {
