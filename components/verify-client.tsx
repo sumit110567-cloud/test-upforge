@@ -1,8 +1,10 @@
 "use client"
 /**
- * components/verify-client.tsx — UpForge UFRN Verification v3
- * Map: simplemaps world.svg loaded as <img>, beam + dots + terminal overlaid via abs-pos SVG
- * Scan animation: multi-layer beam, pulse rings, glitch-style log reveal, gold progress bar
+ * components/verify-client.tsx — UpForge UFRN Verification v4
+ * - Reduced masthead padding
+ * - Smart search: if input is numeric (≤5 digits), matches last N digits across ALL country codes
+ * - Full UFRN search works globally (any country code)
+ * - Golden polish, tighter spacing
  */
 
 import { useState, useRef, useCallback, useEffect } from "react"
@@ -26,10 +28,6 @@ interface StartupRecord {
 type Phase = "idle" | "searching" | "found" | "notfound" | "error"
 interface Props { totalCount: number; isOrg: boolean }
 
-/**
- * City dots — px/py as % of the map image dimensions.
- * Calibrated against the simplemaps Natural Earth projection.
- */
 const CITIES = [
   { px: 17.8, py: 34.5, label: "New York" },
   { px: 14.2, py: 33.0, label: "Chicago" },
@@ -76,7 +74,7 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
   const logTimers = useRef<ReturnType<typeof setTimeout>[]>([])
   const startTs   = useRef<number>(0)
 
-  /* ── Radar beam rAF loop (% of container so responsive) ── */
+  /* ── Radar beam rAF loop ── */
   useEffect(() => {
     if (phase !== "searching") {
       cancelAnimationFrame(rafRef.current)
@@ -120,30 +118,73 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
     setScanLog([])
   }
 
-  function normalizeUFRN(raw: string): string {
+  /**
+   * Returns a query descriptor:
+   * - { mode: "exact", ufrn }        → match ufrn column exactly
+   * - { mode: "suffix", digits }     → match last N digits of ufrn (ilike pattern)
+   */
+  function parseInput(raw: string): { mode: "exact"; ufrn: string } | { mode: "suffix"; digits: string } {
     const s = raw.trim().toUpperCase().replace(/\s/g, "")
-    if (/^UF-\d{4}-[A-Z]{2,4}-\d+$/.test(s)) return s
-    const stripped = s.startsWith("UF-") ? s.slice(3) : s
-    if (/^\d{4}-[A-Z]{2,4}-\d+$/.test(stripped)) return `UF-${stripped}`
-    if (/^[A-Z]{2,4}-\d+$/.test(stripped))        return `UF-2026-${stripped}`
-    if (/^\d+$/.test(stripped)) {
-      const cc = isOrg ? "AUS" : "IND"
-      return `UF-2026-${cc}-${stripped.padStart(5, "0")}`
+
+    // Pure numeric ≤5 digits → suffix match across all countries
+    if (/^\d{1,5}$/.test(s)) {
+      return { mode: "suffix", digits: s.padStart(5, "0") }
     }
-    return s.startsWith("UF-") ? s : `UF-${s}`
+
+    // Full UFRN supplied — normalise and exact match
+    if (/^UF-\d{4}-[A-Z]{2,4}-\d+$/.test(s)) return { mode: "exact", ufrn: s }
+
+    // Missing UF- prefix
+    const stripped = s.startsWith("UF-") ? s.slice(3) : s
+    if (/^\d{4}-[A-Z]{2,4}-\d+$/.test(stripped)) return { mode: "exact", ufrn: `UF-${stripped}` }
+
+    // Has country code but no year → guess 2026
+    if (/^[A-Z]{2,4}-\d+$/.test(stripped)) return { mode: "exact", ufrn: `UF-2026-${stripped}` }
+
+    // 6–9 digit number → likely a long serial, suffix match
+    if (/^\d{6,9}$/.test(s)) {
+      return { mode: "suffix", digits: s.padStart(5, "0").slice(-5) }
+    }
+
+    // fallback — exact
+    return { mode: "exact", ufrn: s.startsWith("UF-") ? s : `UF-${s}` }
+  }
+
+  /** Label shown in the scan terminal & not-found message */
+  function displayLabel(raw: string): string {
+    const q = parseInput(raw)
+    if (q.mode === "suffix") return `#${q.digits} (global)`
+    return q.ufrn
   }
 
   const handleVerify = useCallback(async () => {
     const raw = input.trim()
     if (!raw) return
-    const ufrn = normalizeUFRN(raw)
+    const query = parseInput(raw)
     setPhase("searching"); setResult(null)
-    startScanLog(ufrn)
+    startScanLog(displayLabel(raw))
     try {
       const sb = createClient()
-      const { data, error } = await sb
-        .from("startups").select("*")
-        .eq("ufrn", ufrn).eq("status", "approved").single()
+      let data: StartupRecord | null = null
+      let error: unknown = null
+
+      if (query.mode === "exact") {
+        const res = await sb
+          .from("startups").select("*")
+          .eq("ufrn", query.ufrn).eq("status", "approved").single()
+        data = res.data as StartupRecord | null
+        error = res.error
+      } else {
+        // suffix match: ufrn ends with -XXXXX (the last 5-digit serial)
+        const pattern = `%-${query.digits}`
+        const res = await sb
+          .from("startups").select("*")
+          .ilike("ufrn", pattern).eq("status", "approved")
+          .limit(1).single()
+        data = res.data as StartupRecord | null
+        error = res.error
+      }
+
       await new Promise(r => setTimeout(r, 2600))
       clearScanLog()
       if (error || !data) setPhase("notfound")
@@ -189,7 +230,6 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
         .vf-map-img { display:block; width:100%; height:auto; opacity:.75; filter:saturate(.25) brightness(.96) contrast(1.05); transition:opacity .5s,filter .5s; }
         .vf-map-img.scanning { opacity:.5; filter:saturate(.12) brightness(.82) contrast(1.1); }
 
-        /* Overlay SVG on map */
         .vf-overlay { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; overflow:hidden; }
 
         /* Terminal */
@@ -229,7 +269,7 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
         .vf-legend .hi { color:rgba(255,255,255,.5); }
 
         /* Certificate */
-        .vf-cert { max-width:780px; margin:52px auto 72px; background:#FFF; border:1px solid #DDD8CE; animation:certIn .55s cubic-bezier(.16,1,.3,1); }
+        .vf-cert { max-width:780px; margin:44px auto 64px; background:#FFF; border:1px solid #DDD8CE; animation:certIn .55s cubic-bezier(.16,1,.3,1); }
         @keyframes certIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
         .vf-cert-head { background:#1C1C1C; color:#fff; padding:28px 40px; display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap; }
         .vf-cert-body { padding:40px 44px; }
@@ -247,6 +287,9 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
         /* Badges */
         .vf-badge { display:inline-flex; align-items:center; gap:6px; padding:6px 13px; background:#F5F2EC; border:1px solid #E2DDD5; font-size:9px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:#888; font-family:'Space Mono',monospace; }
 
+        /* Gold hint pill under input */
+        .vf-hint { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; background:rgba(197,154,46,.08); border:1px solid rgba(197,154,46,.22); border-radius:2px; font-family:'Space Mono',monospace; font-size:8px; color:#A07820; letter-spacing:.06em; }
+
         /* Steps */
         .vf-step { border-left:2px solid #E2DDD5; padding:4px 0 4px 20px; transition:border-color .2s; text-align:left; }
         .vf-step:hover { border-color:#C59A2E; }
@@ -257,27 +300,30 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
 
       <div className="vf">
 
-        {/* ═══ MASTHEAD ══════════════════════════════════════════════════════════ */}
-        <header style={{ textAlign:"center", padding:"68px 24px 52px" }}>
-          <div style={{ display:"inline-flex", alignItems:"center", gap:6, padding:"5px 13px", background:"#1C1C1C", color:"#fff", fontSize:9, fontWeight:700, letterSpacing:"0.26em", textTransform:"uppercase", marginBottom:28, fontFamily:"'Space Mono',monospace" }}>
+        {/* ═══ MASTHEAD — tighter padding ══════════════════════════════════════ */}
+        <header style={{ textAlign:"center", padding:"36px 24px 40px" }}>
+          <div style={{ display:"inline-flex", alignItems:"center", gap:6, padding:"5px 13px", background:"#1C1C1C", color:"#fff", fontSize:9, fontWeight:700, letterSpacing:"0.26em", textTransform:"uppercase", marginBottom:22, fontFamily:"'Space Mono',monospace" }}>
             <ShieldCheck size={10}/> UpForge Global Registry · Official Verification
           </div>
 
-          <h1 style={{ fontFamily:"'EB Garamond',Georgia,serif", fontSize:"clamp(2.6rem,6.5vw,4.6rem)", color:"#1C1C1C", lineHeight:1.06, letterSpacing:"-.025em", marginBottom:14 }}>
+          <h1 style={{ fontFamily:"'EB Garamond',Georgia,serif", fontSize:"clamp(2.4rem,6vw,4.2rem)", color:"#1C1C1C", lineHeight:1.06, letterSpacing:"-.025em", marginBottom:12 }}>
             UFRN Registry Lookup
           </h1>
-          <p style={{ color:"#8A8478", fontSize:".95rem", maxWidth:460, margin:"0 auto 8px", lineHeight:1.85 }}>
+          <p style={{ color:"#8A8478", fontSize:".93rem", maxWidth:460, margin:"0 auto 6px", lineHeight:1.85 }}>
             Enter any <strong style={{ fontWeight:600, color:"#1C1C1C" }}>UpForge Registry Number</strong> to instantly verify a startup's operational status, founders, and official record.
           </p>
-          <p style={{ color:"#B0AAA2", fontSize:".78rem", fontFamily:"'Space Mono',monospace", marginBottom:40, letterSpacing:".04em" }}>
-            Format: UF-2026-IND-00013 &nbsp;·&nbsp; or just type 13
-          </p>
+
+          {/* Golden hint row */}
+          <div style={{ display:"flex", justifyContent:"center", gap:8, flexWrap:"wrap", margin:"10px 0 28px" }}>
+            <span className="vf-hint">✦ Type just <strong>13</strong> → matches any country</span>
+            <span className="vf-hint">Full: UF-2026-IND-00013</span>
+          </div>
 
           <div className="vf-search">
             <input
               ref={inputRef}
               className="vf-input"
-              placeholder="UF-2026-IND-00013"
+              placeholder="13  ·  00013  ·  UF-2026-IND-00013"
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === "Enter" && !isScanning && handleVerify()}
@@ -289,17 +335,15 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
             </button>
           </div>
 
-          <div style={{ marginTop:24, display:"flex", justifyContent:"center", gap:8, flexWrap:"wrap" }}>
+          <div style={{ marginTop:18, display:"flex", justifyContent:"center", gap:8, flexWrap:"wrap" }}>
             <span className="vf-badge"><CheckCircle2 size={9}/> {totalCount.toLocaleString()}+ verified</span>
             <span className="vf-badge">Free · No login</span>
-            <span className="vf-badge">Instant · Real-time</span>
+            <span className="vf-badge">Global · Real-time</span>
           </div>
         </header>
 
         {/* ═══ MAP ══════════════════════════════════════════════════════════════ */}
         <div className="vf-map-wrap">
-
-          {/* Base map from simplemaps — loaded as img, desaturated by CSS */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             className={`vf-map-img${isScanning ? " scanning" : ""}`}
@@ -308,12 +352,6 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
             draggable={false}
           />
 
-          {/*
-            Overlay SVG — viewBox 0 0 1000 500 with preserveAspectRatio="none"
-            so % coordinates map 1:1 to the img dimensions regardless of screen size.
-            City dots use cx/cy = (px/100)*1000, (py/100)*500.
-            Beam x uses (beamPct/100)*1000.
-          */}
           <svg
             className="vf-overlay"
             viewBox="0 0 1000 500"
@@ -335,23 +373,18 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
               </clipPath>
             </defs>
 
-            {/* ── BEAM ── */}
             {isScanning && (() => {
               const bx = (beamPct / 100) * 1000
               return (
                 <g clipPath="url(#vfClip)">
-                  {/* Soft glow cone */}
                   <rect x={bx-130} y={0} width={260} height={500} fill="url(#vfBeam)"/>
-                  {/* Sharp centre */}
                   <line x1={bx} y1={0} x2={bx} y2={500} stroke="#F0D47A" strokeWidth={1.8} opacity={.95}/>
-                  {/* Flanking hairlines for depth */}
                   <line x1={bx-8} y1={0} x2={bx-8} y2={500} stroke="#C59A2E" strokeWidth={.5} opacity={.22}/>
                   <line x1={bx+8} y1={0} x2={bx+8} y2={500} stroke="#C59A2E" strokeWidth={.5} opacity={.22}/>
                 </g>
               )
             })()}
 
-            {/* ── CITY DOTS ── */}
             {CITIES.map((c, i) => {
               const cx = (c.px / 100) * 1000
               const cy = (c.py / 100) * 500
@@ -362,7 +395,6 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
 
               return (
                 <g key={i}>
-                  {/* Outer pulse ring */}
                   {isLit && (
                     <circle cx={cx} cy={cy}
                       r={7 + intensity * 18}
@@ -371,7 +403,6 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
                       style={{ transition:"all .07s linear" }}
                     />
                   )}
-                  {/* Middle ring */}
                   {isLit && intensity > 0.45 && (
                     <circle cx={cx} cy={cy}
                       r={4 + intensity * 8}
@@ -380,7 +411,6 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
                       style={{ transition:"all .06s linear" }}
                     />
                   )}
-                  {/* Core dot */}
                   <circle cx={cx} cy={cy}
                     r={isLit ? 3.8 : 2.2}
                     fill={isLit ? "#F0D47A" : "#A09890"}
@@ -392,7 +422,6 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
             })}
           </svg>
 
-          {/* ── SCAN TERMINAL OVERLAY ── */}
           {isScanning && (
             <div className="vf-terminal">
               <div className="vf-term-dots">
@@ -400,7 +429,7 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
                 <span className="vf-term-dot" style={{ background:"#FEBC2E" }}/>
                 <span className="vf-term-dot" style={{ background:"#28C840" }}/>
               </div>
-              <div className="vf-term-title">UpForge Registry — UFRN Lookup Engine</div>
+              <div className="vf-term-title">UpForge Registry — Global UFRN Lookup Engine</div>
 
               {scanLog.map((raw, i) => {
                 const [tag, msg] = raw.split("||")
@@ -422,7 +451,6 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
             </div>
           )}
 
-          {/* Legend */}
           <div className="vf-legend">
             <span>Global Node Audit</span>
             <span className="hi">{totalCount.toLocaleString()}+ Verified</span>
@@ -503,13 +531,13 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
 
           {/* ── NOT FOUND ── */}
           {phase === "notfound" && (
-            <div className="vf-shake" style={{ maxWidth:500, margin:"52px auto 72px", textAlign:"center", padding:"52px 28px", border:"1.5px dashed #D8D2C8", background:"#F7F5F0" }}>
+            <div className="vf-shake" style={{ maxWidth:500, margin:"44px auto 64px", textAlign:"center", padding:"52px 28px", border:"1.5px dashed #D8D2C8", background:"#F7F5F0" }}>
               <div style={{ color:"#D0CAC0", display:"flex", justifyContent:"center", marginBottom:16 }}>
                 <XCircle size={38} strokeWidth={1.2}/>
               </div>
               <h3 style={{ fontFamily:"'EB Garamond',Georgia,serif", fontSize:"1.6rem", color:"#1C1C1C", marginBottom:10 }}>Record Not Located</h3>
               <p style={{ color:"#888", fontSize:".87rem", lineHeight:1.8, marginBottom:28 }}>
-                <code style={{ fontFamily:"'Space Mono',monospace", fontWeight:700, color:"#1C1C1C", fontSize:".76rem" }}>{normalizeUFRN(input)}</code>
+                <code style={{ fontFamily:"'Space Mono',monospace", fontWeight:700, color:"#1C1C1C", fontSize:".76rem" }}>{displayLabel(input)}</code>
                 {" "}does not match any approved entity in our global index.
               </p>
               <div style={{ display:"flex", gap:10, justifyContent:"center" }}>
@@ -521,7 +549,7 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
 
           {/* ── ERROR ── */}
           {phase === "error" && (
-            <div style={{ textAlign:"center", padding:"48px 24px 72px" }}>
+            <div style={{ textAlign:"center", padding:"48px 24px 64px" }}>
               <p style={{ color:"#888", marginBottom:18, fontSize:".87rem" }}>Something went wrong. Please try again.</p>
               <button onClick={handleReset} className="vf-action vf-action-outline">Retry</button>
             </div>
@@ -529,11 +557,11 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
         </div>
 
         {/* ═══ HOW IT WORKS ════════════════════════════════════════════════════ */}
-        <section style={{ padding:"88px 32px", borderTop:"1px solid #E2DDD5", textAlign:"center" }}>
+        <section style={{ padding:"72px 32px", borderTop:"1px solid #E2DDD5", textAlign:"center" }}>
           <div style={{ fontSize:9, fontWeight:700, letterSpacing:"0.26em", textTransform:"uppercase", color:"#C59A2E", marginBottom:12, fontFamily:"'Space Mono',monospace" }}>
             System Architecture
           </div>
-          <h2 style={{ fontFamily:"'EB Garamond',Georgia,serif", fontSize:"clamp(1.7rem,3.8vw,2.6rem)", color:"#1C1C1C", marginBottom:56, letterSpacing:"-.02em" }}>
+          <h2 style={{ fontFamily:"'EB Garamond',Georgia,serif", fontSize:"clamp(1.7rem,3.8vw,2.6rem)", color:"#1C1C1C", marginBottom:48, letterSpacing:"-.02em" }}>
             How UFRN Verification Works
           </h2>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))", maxWidth:960, margin:"0 auto", gap:36 }}>
@@ -545,8 +573,8 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
         </section>
 
         {/* ═══ TRUST ═══════════════════════════════════════════════════════════ */}
-        <section style={{ padding:"64px 32px", borderTop:"1px solid #E2DDD5", background:"#F7F5F0", textAlign:"center" }}>
-          <p style={{ fontFamily:"'EB Garamond',Georgia,serif", fontSize:"1.1rem", color:"#888", maxWidth:540, margin:"0 auto 30px", lineHeight:1.9, fontStyle:"italic" }}>
+        <section style={{ padding:"56px 32px", borderTop:"1px solid #E2DDD5", background:"#F7F5F0", textAlign:"center" }}>
+          <p style={{ fontFamily:"'EB Garamond',Georgia,serif", fontSize:"1.1rem", color:"#888", maxWidth:540, margin:"0 auto 26px", lineHeight:1.9, fontStyle:"italic" }}>
             "UpForge UFRN is the only independent startup verification standard with real editorial oversight — not just self-reported data."
           </p>
           <div style={{ display:"flex", justifyContent:"center", gap:10, flexWrap:"wrap" }}>
