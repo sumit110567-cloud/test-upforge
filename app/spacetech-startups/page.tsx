@@ -46,12 +46,12 @@ export const metadata: Metadata = {
 };
 
 const IMGS = {
-  hero:      "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=1600&q=85&auto=format",
-  skyroot:   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsrYAR_xCfQWLJ-Cjkdb7u4Y3PPQK2TG1hWQ&s",
-  pixxel:    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkFv5X7bFoD9I-GYXR_tEqLHdIBCdmpv-g0Q&s",
-  agnikul:   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmJb-N0F_oD7xgDPMiNHj7YF6L3dUPHjRaFw&s",
-  dhruva:    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHoiYJUiERBWTvAqFbMn5TrFX4S5C1ikymcQ&s",
-  digantara: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzXjPGlwT7lqjPUPB0QrX5aqkDpKq5h8q3FA&s",
+  hero:      "https://cdn.ourcrowd.com/wp-content/uploads/2022/01/bigstock-Astronaut-Spaceman-Do-Spacewal-408180596.jpg",
+  skyroot:   "https://upload.wikimedia.org/wikipedia/commons/e/eb/Skyroot_Aerospace_logo.jpg",
+  pixxel:    "https://cdn.dribbble.com/userupload/20163615/file/original-b29b3f7103cc7804ff37b68b3a82ea73.jpg",
+  agnikul:   "https://pbs.twimg.com/profile_images/969651847072854016/O1wofIxB_400x400.jpg",
+  dhruva:    "https://pbs.twimg.com/profile_images/1932042984830447616/Y02wMTBf_400x400.jpg",
+  digantara: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnWmzqNYglUkpoRfwbkuLqYYaNpFIAMjdXuw&s",
   banner:    "https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=1600&q=80&auto=format",
 };
 
