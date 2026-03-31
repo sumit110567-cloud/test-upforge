@@ -388,7 +388,7 @@ export function FounderChronicleClient({ founders, internalLinks, footerLinks }:
             <div className="sticky-col pl-7 pt-7 pb-7 flex flex-col gap-4">
 
               {/* Founder photo */}
-              <div className="relative w-full" style={{ height: 340 }}>
+              <div className="relative w-full" style={{ height: 420 }}>
                 <FounderPhoto
                   src={f.imgSrc}
                   alt={`${f.name}, ${f.role} at ${f.company} — UpForge`}
