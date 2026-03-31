@@ -1,7 +1,6 @@
 // app/robots.ts
 // ─────────────────────────────────────────────────────────────────────────────
-// UPFORGE GLOBAL ROBOTS.TXT
-// MAXIMUM REACH EDITION
+// UPFORGE GLOBAL ROBOTS.TXT — MAXIMUM REACH EDITION
 // Allows all search engines and AI crawlers for maximum visibility
 // Next.js App Router Compatible
 // ─────────────────────────────────────────────────────────────────────────────
@@ -9,9 +8,10 @@
 import type { MetadataRoute } from "next"
 import { headers } from "next/headers"
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
 
-  const headersList = headers()
+  // headers() is async in Next.js App Router — must be awaited
+  const headersList = await headers()
 
   const ctx  = headersList.get("x-upforge-domain")
   const host = headersList.get("host") ?? ""
@@ -36,9 +36,8 @@ export default function robots(): MetadataRoute.Robots {
           "Googlebot-News",
           "Googlebot-Image",
           "Googlebot-Video",
-          "Google-Extended"
+          "Google-Extended",
         ],
-
         allow: [
           "/",
           "/startup/",
@@ -54,13 +53,11 @@ export default function robots(): MetadataRoute.Robots {
           "/sitemap.xml",
           ...(isOrg ? ["/ufrn/"] : []),
         ],
-
         disallow: [
           "/admin/",
           "/api/",
           "/submit/success",
           "/submit/confirm",
-
           "/*?page=",
           "/*?sort=",
           "/*?filter=",
@@ -70,7 +67,6 @@ export default function robots(): MetadataRoute.Robots {
           "/*?fbclid=",
           "/*?gclid=",
         ],
-
         crawlDelay: 0,
       },
 
@@ -86,9 +82,8 @@ export default function robots(): MetadataRoute.Robots {
           "Baiduspider",
           "NaverBot",
           "SeznamBot",
-          "Sogou"
+          "Sogou",
         ],
-
         allow: [
           "/",
           "/startup/",
@@ -97,7 +92,6 @@ export default function robots(): MetadataRoute.Robots {
           "/founders/",
           "/blog/",
         ],
-
         disallow: [
           "/admin/",
           "/api/",
@@ -119,13 +113,12 @@ export default function robots(): MetadataRoute.Robots {
           "Omgilibot",
           "Bytespider",
           "ImagesiftBot",
-          "Diffbot"
+          "Diffbot",
         ],
-
         allow: ["/"],
         disallow: [
           "/admin/",
-          "/api/"
+          "/api/",
         ],
       },
 
@@ -135,9 +128,8 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: [
           "Googlebot-Image",
-          "Bingbot-Image"
+          "Bingbot-Image",
         ],
-
         allow: ["/"],
         disallow: ["/api/", "/admin/"],
       },
@@ -147,14 +139,12 @@ export default function robots(): MetadataRoute.Robots {
       // ─────────────────────────────────────────────
       {
         userAgent: "*",
-
         allow: ["/"],
-
         disallow: [
           "/admin/",
           "/api/",
           "/submit/success",
-          "/submit/confirm"
+          "/submit/confirm",
         ],
       },
     ],
