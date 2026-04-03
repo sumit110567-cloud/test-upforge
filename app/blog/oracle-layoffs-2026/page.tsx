@@ -173,7 +173,7 @@ const RELATED_SLUGS = [
 const RELATED = ALL_BLOG_SLUGS.filter((b) => RELATED_SLUGS.includes(b.slug))
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PREMIUM NEWSPAPER / MAGAZINE CSS — Clean, editorial, iconic
+// PREMIUM NEWSPAPER / MAGAZINE CSS — Clean, editorial, iconic, fully responsive
 // ─────────────────────────────────────────────────────────────────────────────
 const PAGE_CSS = `
   :root {
@@ -270,14 +270,27 @@ const PAGE_CSS = `
   }
   .fact-row:last-child { border-bottom: none; }
 
+  /* Responsive typography and spacing */
   @media (max-width: 768px) {
     .stat-pill { padding: 0.8rem 1rem; }
-    .insight-box { padding: 0.8rem 1rem; }
+    .insight-box { padding: 0.8rem 1rem; font-size: 0.85rem; }
+    .dropcap::first-letter { font-size: 2.8rem; margin-right: 8px; }
+    .newspaper-container { padding: 0 0.5rem; }
+    .fact-row { flex-direction: column; align-items: flex-start; gap: 0.25rem; padding: 0.7rem 0; }
+    .fact-row span:first-child { font-size: 0.7rem; letter-spacing: 0.02em; }
+    .fact-row span:last-child { font-size: 0.8rem; font-weight: 500; }
+  }
+
+  @media (max-width: 480px) {
+    .stat-pill { flex-direction: column; align-items: flex-start; gap: 0.5rem; text-align: left; }
+    .insight-box { font-size: 0.8rem; padding: 0.7rem 1rem; }
+    p, .dropcap { font-size: 0.9rem !important; line-height: 1.6 !important; }
+    h2 { font-size: 1.6rem !important; }
   }
 `
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PAGE COMPONENT — Pure magazine content
+// PAGE COMPONENT — Pure magazine content, fully responsive
 // ─────────────────────────────────────────────────────────────────────────────
 export default function BlogOracleLayoffs2026() {
   const jsonLd = buildBlogJsonLd(POST)
@@ -293,7 +306,7 @@ export default function BlogOracleLayoffs2026() {
       <article className="newspaper-container" itemScope itemType="https://schema.org/NewsArticle">
 
         {/* ── TOP DATE LINE / NEWSPAPER STYLE ── */}
-        <div className="fade-up" style={{ padding: "2rem 2rem 0.5rem 2rem", borderBottom: "2px solid var(--news-ink)" }}>
+        <div className="fade-up" style={{ padding: "2rem 1.5rem 0.5rem 1.5rem", borderBottom: "2px solid var(--news-ink)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "0.5rem", fontFamily: "var(--news-sans)", fontSize: "0.7rem", letterSpacing: "0.05em", color: "var(--news-muted)", textTransform: "uppercase" }}>
             <span>VOL. III · SPECIAL REPORT</span>
             <span>FRIDAY, APRIL 3, 2026</span>
@@ -302,7 +315,7 @@ export default function BlogOracleLayoffs2026() {
         </div>
 
         {/* ── BREAKING NEWS FLAG ── */}
-        <div className="fade-up delay-1" style={{ margin: "1rem 2rem 0 2rem" }}>
+        <div className="fade-up delay-1" style={{ margin: "1rem 1.5rem 0 1.5rem" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--news-accent)", color: "white", padding: "0.3rem 1rem", fontFamily: "var(--news-sans)", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.15em" }}>
             <span style={{ width: 8, height: 8, background: "white", borderRadius: "50%", display: "inline-block", animation: "pulse 1.2s infinite" }}></span>
             BREAKING NEWS
@@ -313,7 +326,7 @@ export default function BlogOracleLayoffs2026() {
         </div>
 
         {/* ── HERO HEADLINE ── */}
-        <div className="fade-up delay-1" style={{ margin: "1.5rem 2rem 0 2rem" }}>
+        <div className="fade-up delay-1" style={{ margin: "1.5rem 1.5rem 0 1.5rem" }}>
           <div className="img-responsive" style={{ marginBottom: "1.5rem", borderRadius: "2px", overflow: "hidden" }}>
             <img src={POST.heroImage} alt={POST.heroImageAlt} style={{ width: "100%", maxHeight: "480px", objectFit: "cover" }} />
           </div>
@@ -321,7 +334,7 @@ export default function BlogOracleLayoffs2026() {
             <div style={{ display: "flex", gap: "0.8rem", marginBottom: "0.8rem", flexWrap: "wrap" }}>
               <span style={{ fontFamily: "var(--news-sans)", fontSize: "0.65rem", fontWeight: 600, letterSpacing: "0.1em", color: "var(--news-accent)", textTransform: "uppercase" }}>TECH · LAYOFFS · AI ECONOMY</span>
             </div>
-            <h1 style={{ fontFamily: "var(--news-serif)", fontSize: "clamp(2.2rem, 6vw, 4rem)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.02em", color: "var(--news-ink)", marginBottom: "0.8rem" }}>
+            <h1 style={{ fontFamily: "var(--news-serif)", fontSize: "clamp(2rem, 6vw, 4rem)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.02em", color: "var(--news-ink)", marginBottom: "0.8rem" }}>
               Oracle Layoffs 2026: <span style={{ color: "var(--news-accent)" }}>30,000 Jobs, One Email, No Warning</span>
             </h1>
             <p style={{ fontFamily: "var(--news-serif)", fontSize: "1.1rem", lineHeight: 1.5, color: "var(--news-ink-light)", fontStyle: "italic", borderLeft: "3px solid var(--news-accent)", paddingLeft: "1rem" }}>
@@ -337,8 +350,9 @@ export default function BlogOracleLayoffs2026() {
           </div>
         </div>
 
-        {/* ── INTRO + TOC (newspaper columns) ── */}
-        <div className="fade-up delay-2" style={{ margin: "2.5rem 2rem 0 2rem", display: "grid", gridTemplateColumns: "1fr 280px", gap: "2.5rem" }}>
+        {/* ── INTRO + TOC — stacked on mobile, side-by-side on desktop ── */}
+        <div className="fade-up delay-2" style={{ margin: "2.5rem 1.5rem 0 1.5rem", display: "grid", gridTemplateColumns: "1fr", gap: "2rem" }}>
+          {/* Intro text - full width on mobile, then TOC below */}
           <div>
             <div className="dropcap" style={{ fontFamily: "var(--news-sans)", fontSize: "0.95rem", lineHeight: 1.7, color: "var(--news-ink-light)" }}>
               On March 31, 2026, Oracle sent termination emails to up to 30,000 employees before breakfast. The company had never cut this many people in its 48-year history. It also had never had a $553 billion order backlog before.
@@ -347,9 +361,11 @@ export default function BlogOracleLayoffs2026() {
               This is the full story: what happened on the day of the layoffs, why Oracle made the decision, what it means for its share price, and what 30,000 displaced employees — including 12,000 in India — should do right now. UpForge covers the Indian startup ecosystem, the global forces that shape it, and the founders who navigate both.
             </p>
           </div>
-          <div style={{ background: "var(--news-white)", border: "1px solid var(--news-border)", padding: "1rem 1.2rem" }}>
+          
+          {/* TOC - full width on mobile, styled as a clean card */}
+          <div style={{ background: "var(--news-white)", border: "1px solid var(--news-border)", padding: "1rem 1.2rem", width: "100%" }}>
             <div style={{ fontFamily: "var(--news-sans)", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.1em", color: "var(--news-accent)", marginBottom: "0.8rem", textTransform: "uppercase" }}>IN THIS REPORT</div>
-            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "0.5rem" }}>
               {SECTIONS.slice(0, 6).map((s) => (
                 <li key={s.num} style={{ marginBottom: "0.5rem" }}>
                   <a href={`#section-${s.num}`} style={{ textDecoration: "none", display: "flex", alignItems: "baseline", gap: "8px", fontFamily: "var(--news-sans)", fontSize: "0.7rem", color: "var(--news-ink)" }}>
@@ -369,7 +385,7 @@ export default function BlogOracleLayoffs2026() {
         </div>
 
         {/* ── MAIN ARTICLES (vertical newspaper flow) ── */}
-        <div style={{ margin: "2rem 2rem 0 2rem" }}>
+        <div style={{ margin: "2rem 1.5rem 0 1.5rem" }}>
           {SECTIONS.map((sec, idx) => (
             <div key={idx} id={`section-${sec.num}`} className="section-anchor" style={{ marginBottom: "3rem" }}>
               {/* full width image */}
@@ -409,10 +425,10 @@ export default function BlogOracleLayoffs2026() {
         </div>
 
         {/* ── FAST FACTS TABLE ── */}
-        <div id="fast-facts" style={{ margin: "0 2rem 2rem 2rem" }}>
+        <div id="fast-facts" style={{ margin: "0 1.5rem 2rem 1.5rem" }}>
           <div style={{ maxWidth: "860px", margin: "0 auto" }}>
             <div style={{ fontFamily: "var(--news-sans)", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.1em", color: "var(--news-accent)", marginBottom: "0.5rem", textTransform: "uppercase" }}>⚡ DATA SNAPSHOT</div>
-            <h2 style={{ fontFamily: "var(--news-serif)", fontSize: "1.6rem", fontWeight: 700, marginBottom: "1rem" }}>Oracle Layoffs 2026: Key Numbers</h2>
+            <h2 style={{ fontFamily: "var(--news-serif)", fontSize: "clamp(1.4rem, 4vw, 1.8rem)", fontWeight: 700, marginBottom: "1rem" }}>Oracle Layoffs 2026: Key Numbers</h2>
             <div style={{ background: "var(--news-white)", border: "1px solid var(--news-border)", padding: "0 1.5rem" }}>
               {FAST_FACTS.map((item, i) => (
                 <div key={i} className="fact-row">
@@ -425,11 +441,11 @@ export default function BlogOracleLayoffs2026() {
         </div>
 
         {/* ── RELATED ARTICLES (clean card grid) ── */}
-        <div style={{ margin: "2rem 2rem 2.5rem 2rem" }}>
+        <div style={{ margin: "2rem 1.5rem 2.5rem 1.5rem" }}>
           <hr className="newspaper-rule" />
           <div style={{ maxWidth: "860px", margin: "0 auto" }}>
             <div style={{ fontFamily: "var(--news-sans)", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.1em", color: "var(--news-accent)", marginBottom: "0.5rem", textTransform: "uppercase" }}>FURTHER READING</div>
-            <h2 style={{ fontFamily: "var(--news-serif)", fontSize: "1.4rem", fontWeight: 700, marginBottom: "1.2rem" }}>From the UpForge Archive</h2>
+            <h2 style={{ fontFamily: "var(--news-serif)", fontSize: "clamp(1.2rem, 4vw, 1.5rem)", fontWeight: 700, marginBottom: "1.2rem" }}>From the UpForge Archive</h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "1rem" }}>
               {RELATED.map((r, i) => (
                 <Link key={i} href={`/blog/${r.slug}`} style={{ textDecoration: "none", background: "var(--news-white)", border: "1px solid var(--news-border)", padding: "1rem", borderRadius: "2px", transition: "all 0.2s", display: "block" }}>
