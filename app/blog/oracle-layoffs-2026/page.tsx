@@ -48,7 +48,7 @@ const POST = {
 export const metadata: Metadata = buildBlogMetadata(POST)
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SECTIONS
+// SECTIONS DATA
 // ─────────────────────────────────────────────────────────────────────────────
 const SECTIONS = [
   {
@@ -184,123 +184,181 @@ const RELATED_SLUGS = [
 const RELATED = ALL_BLOG_SLUGS.filter((b) => RELATED_SLUGS.includes(b.slug))
 
 // ─────────────────────────────────────────────────────────────────────────────
-// CSS — UpForge parchment palette, red/crimson accent for breaking news
+// PREMIUM MAGAZINE CSS — Clean, Editorial, Iconic
 // ─────────────────────────────────────────────────────────────────────────────
 const PAGE_CSS = `
-  .pf  { font-family: var(--font-display), Georgia, serif !important; }
-  .rp  { font-family: Georgia, 'Times New Roman', serif; }
-  .sf  { font-family: system-ui, -apple-system, sans-serif; }
-
   :root {
-    --parch: #F5F1E8; --parch2: #EDE9DF; --ink: #1A1208;
-    --ink3: #5A4A30; --ink4: #8C7D65; --ink5: #BBB0A0;
-    --rule: #C8C2B4; --rule2: #D8D2C4;
-    --white: #FDFCF9;
-    --red: #B91C1C; --red2: #DC2626; --red3: #991B1B;
-    --red-pale: #FEF2F2;
+    --mag-bg: #FCF9F4;
+    --mag-paper: #FFFFFF;
+    --mag-ink: #1A1A1A;
+    --mag-ink-light: #3A3A3A;
+    --mag-muted: #6B6B6B;
+    --mag-border: #EAE5DC;
+    --mag-accent: #C72A2A;
+    --mag-accent-light: #E85D5D;
+    --mag-accent-glow: rgba(199, 42, 42, 0.06);
+    --mag-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --mag-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .a0 { animation: fadeUp .44s .00s cubic-bezier(.16,1,.3,1) both; }
-  .a1 { animation: fadeUp .44s .08s cubic-bezier(.16,1,.3,1) both; }
-  .a2 { animation: fadeUp .44s .16s cubic-bezier(.16,1,.3,1) both; }
-
-  @keyframes pulse-dot {
-    0%, 100% { opacity: 1; } 50% { opacity: .35; }
-  }
-  .live-dot { animation: pulse-dot 1.4s infinite; }
-
-  .imgf { position: relative; overflow: hidden; }
-  .imgf img {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    object-fit: cover; object-position: center;
-    filter: sepia(14%) contrast(108%);
-    transition: transform .6s ease;
-  }
-  .imgf:hover img { transform: scale(1.03); }
-
-  .blog-card {
-    border: 1.5px solid var(--ink);
-    background: var(--white);
-    overflow: hidden; position: relative;
-  }
-  .blog-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    background: linear-gradient(90deg, var(--red3), var(--red2), #F87171);
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
 
-  .stat-pill {
-    display: flex; align-items: center; gap: 14px;
-    background: var(--ink); padding: 14px 18px; margin: 16px 0;
+  body {
+    background: var(--mag-bg);
   }
-  .insight {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--red-pale); border: 1px solid rgba(185,28,28,.2);
-    padding: 9px 14px; width: 100%;
+
+  .mag-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    background: var(--mag-paper);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.02), 0 20px 40px -20px rgba(0,0,0,0.1);
   }
-  .sh { display: flex; align-items: center; gap: 10px; }
-  .sh-l {
-    font-size: 8px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .28em; color: var(--ink5);
-    font-family: system-ui; white-space: nowrap;
+
+  @keyframes magFadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-  .sh-r { flex: 1; height: 1px; background: var(--rule2); }
+  .mag-fade { animation: magFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  .mag-delay-1 { animation-delay: 0.05s; }
+  .mag-delay-2 { animation-delay: 0.1s; }
+  .mag-delay-3 { animation-delay: 0.15s; }
+
+  @keyframes pulseRed {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.95); }
+  }
+  .live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--mag-accent);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    padding: 4px 14px;
+    border-radius: 40px;
+    text-transform: uppercase;
+  }
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    animation: pulseRed 1.2s infinite;
+  }
+
+  .mag-dropcap::first-letter {
+    font-family: var(--mag-serif);
+    font-size: 3.2rem;
+    font-weight: 700;
+    float: left;
+    line-height: 0.78;
+    margin-right: 12px;
+    margin-top: 4px;
+    color: var(--mag-accent);
+  }
+
+  .mag-card {
+    background: var(--mag-paper);
+    border: 1px solid var(--mag-border);
+    transition: all 0.2s ease;
+  }
+  .mag-card:hover {
+    border-color: var(--mag-accent-light);
+    box-shadow: 0 12px 28px -12px rgba(0,0,0,0.08);
+  }
+
+  .mag-stat {
+    background: var(--mag-ink);
+    padding: 1.2rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .mag-insight {
+    background: var(--mag-accent-glow);
+    border-left: 3px solid var(--mag-accent);
+    padding: 1rem 1.2rem;
+    font-family: var(--mag-serif);
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--mag-ink-light);
+  }
+
+  .img-hover {
+    overflow: hidden;
+  }
+  .img-hover img {
+    transition: transform 0.5s ease;
+  }
+  .img-hover:hover img {
+    transform: scale(1.02);
+  }
 
   .toc-link {
-    display: flex; align-items: baseline; gap: 8px;
-    margin-bottom: 9px; text-decoration: none;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    text-decoration: none;
+    padding: 6px 0;
+    transition: color 0.15s;
   }
-  .toc-link:hover span { color: var(--red); }
+  .toc-link:hover .toc-text {
+    color: var(--mag-accent);
+  }
 
   .fact-row {
-    display: flex; justify-content: space-between; align-items: baseline;
-    padding: 10px 0; border-bottom: 1px solid var(--rule2); gap: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--mag-border);
+    gap: 1rem;
   }
   .fact-row:last-child { border-bottom: none; }
 
-  .rel-card {
-    display: flex; flex-direction: column;
-    background: var(--white); text-decoration: none;
-    transition: transform .15s, box-shadow .15s; position: relative;
+  .related-card {
+    background: white;
+    border: 1px solid var(--mag-border);
+    transition: all 0.2s;
+    text-decoration: none;
   }
-  .rel-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0;
-    height: 2.5px; background: transparent; transition: background .15s;
-  }
-  .rel-card:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 4px 4px 0 var(--ink); z-index: 1;
-  }
-  .rel-card:hover::before { background: var(--red); }
-
-  .dropcap::first-letter {
-    font-family: var(--font-display), Georgia, serif;
-    font-size: 3.8em; font-weight: 900;
-    float: left; line-height: .82;
-    margin-right: 8px; margin-top: 6px; color: var(--ink);
+  .related-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--mag-accent);
+    box-shadow: 0 10px 20px -8px rgba(0,0,0,0.1);
   }
 
-  .breaking-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--red); padding: 4px 14px;
-    font-family: system-ui; font-size: 8px; font-weight: 900;
-    text-transform: uppercase; letter-spacing: .2em; color: white;
-    margin-bottom: 10px;
+  .eyebrow {
+    font-family: var(--mag-sans);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mag-accent);
+    font-weight: 600;
+  }
+
+  hr.mag-hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, var(--mag-border), transparent);
+    margin: 2rem 0;
   }
 
   @media (max-width: 900px) {
-    .section-grid { grid-template-columns: 1fr !important; }
-    .toc-grid     { grid-template-columns: 1fr !important; }
+    .mag-section-grid { grid-template-columns: 1fr !important; }
+    .mag-hero-title { font-size: 2.2rem !important; }
   }
 `
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PAGE
+// PAGE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 export default function BlogOracleLayoffs2026() {
   const jsonLd = buildBlogJsonLd(POST)
@@ -316,324 +374,187 @@ export default function BlogOracleLayoffs2026() {
       <article
         itemScope
         itemType="https://schema.org/NewsArticle"
-        style={{ minHeight: "100vh", background: "var(--parch)" }}
+        className="mag-container"
+        style={{ minHeight: "100vh" }}
       >
 
-        {/* ── BREADCRUMB ── */}
-        <nav
-          className="sf a0"
-          aria-label="Breadcrumb"
-          style={{ background: "var(--parch2)", borderBottom: "1px solid var(--rule2)", padding: "8px 0" }}
-        >
-          <div style={{ maxWidth: 1080, margin: "0 auto", padding: "0 clamp(16px,3vw,36px)" }}>
-            <ol
-              style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 9, color: "var(--ink5)", textTransform: "uppercase", letterSpacing: "0.18em", listStyle: "none", margin: 0, padding: 0 }}
-              itemScope itemType="https://schema.org/BreadcrumbList"
-            >
-              {[
-                { href: "/",     label: "UpForge",  pos: "1" },
-                { href: "/blog", label: "Blog",     pos: "2" },
-              ].map((b) => (
-                <li key={b.pos} itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
-                  <Link href={b.href} style={{ color: "var(--ink5)", textDecoration: "none" }} itemProp="item">
-                    <span itemProp="name">{b.label}</span>
-                  </Link>
-                  <meta itemProp="position" content={b.pos} />
-                  <span style={{ color: "var(--rule)", marginLeft: 6 }}>/</span>
-                </li>
-              ))}
-              <li style={{ color: "var(--ink4)", fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 280 }}
-                itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem"
-              >
-                <span itemProp="name">Oracle Layoffs 2026</span>
-                <meta itemProp="position" content="3" />
-              </li>
-            </ol>
+        {/* ── HEADER / BRANDING ── */}
+        <div className="mag-fade" style={{ padding: "1.8rem 2rem 1rem 2rem", borderBottom: "1px solid var(--mag-border)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem" }}>
+            <div>
+              <span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.7rem", letterSpacing: "0.2em", color: "var(--mag-muted)", textTransform: "uppercase" }}>Presented by</span>
+              <h1 style={{ fontFamily: "var(--mag-serif)", fontSize: "1.8rem", fontWeight: 700, letterSpacing: "-0.01em", marginTop: "2px" }}>
+                UpForge<span style={{ color: "var(--mag-accent)" }}>.</span>org
+              </h1>
+            </div>
+            <div style={{ display: "flex", gap: "1.5rem" }}>
+              <span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.7rem", fontWeight: 500, color: "var(--mag-muted)" }}>MAGAZINE</span>
+              <span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.7rem", fontWeight: 500, color: "var(--mag-muted)" }}>DEEP DIVE</span>
+            </div>
           </div>
-        </nav>
+          <nav style={{ marginTop: "1.2rem" }}>
+            <span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.7rem", color: "var(--mag-muted)" }}>
+              <Link href="/" style={{ color: "var(--mag-muted)", textDecoration: "none" }}>Home</Link> /{" "}
+              <Link href="/blog" style={{ color: "var(--mag-muted)", textDecoration: "none" }}>Blog</Link> /{" "}
+              <span style={{ color: "var(--mag-ink)", fontWeight: 600 }}>Oracle Layoffs 2026</span>
+            </span>
+          </nav>
+        </div>
 
-        {/* ── BREAKING BANNER ── */}
-        <div style={{ background: "var(--red)", padding: "8px 0" }}>
-          <div style={{ maxWidth: 1080, margin: "0 auto", padding: "0 clamp(16px,3vw,36px)", display: "flex", alignItems: "center", gap: 12 }}>
-            <span className="live-dot" style={{ width: 8, height: 8, borderRadius: "50%", background: "white", display: "inline-block", flexShrink: 0 }} />
-            <p className="sf" style={{ fontSize: 10, color: "white", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.15em", margin: 0 }}>
-              Breaking News — Updated April 3, 2026 · Oracle layoffs ongoing; second India round expected within 30 days
+        {/* ── BREAKING ALERT ── */}
+        <div className="mag-fade mag-delay-1" style={{ margin: "1.5rem 2rem 0 2rem" }}>
+          <div className="live-badge">
+            <span className="live-dot" />
+            Breaking News · Updated April 3, 2026
+          </div>
+          <p style={{ fontFamily: "var(--mag-sans)", fontSize: "0.8rem", marginTop: "0.75rem", color: "var(--mag-ink-light)", borderLeft: "2px solid var(--mag-accent)", paddingLeft: "1rem" }}>
+            Oracle layoffs ongoing; second India round expected within 30 days. 12,000 jobs in India confirmed.
+          </p>
+        </div>
+
+        {/* ── HERO SECTION ── */}
+        <div className="mag-fade mag-delay-1" style={{ margin: "2rem 2rem 0 2rem" }}>
+          <div className="img-hover" style={{ borderRadius: "20px", overflow: "hidden" }}>
+            <img src={POST.heroImage} alt={POST.heroImageAlt} style={{ width: "100%", height: "auto", maxHeight: "520px", objectFit: "cover" }} />
+          </div>
+          <div style={{ marginTop: "1.8rem", maxWidth: "880px" }}>
+            <div style={{ display: "flex", gap: "0.8rem", marginBottom: "1rem", flexWrap: "wrap" }}>
+              <span className="eyebrow">Tech Industry</span>
+              <span className="eyebrow" style={{ color: "var(--mag-muted)" }}>Breaking News</span>
+              <span className="eyebrow" style={{ color: "var(--mag-muted)" }}>April 2026</span>
+            </div>
+            <h1 className="mag-hero-title" style={{ fontFamily: "var(--mag-serif)", fontSize: "clamp(2rem, 5vw, 3.6rem)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.02em", color: "var(--mag-ink)" }}>
+              Oracle Layoffs 2026: <span style={{ color: "var(--mag-accent)" }}>30,000 Jobs, One Email, No Warning</span>
+            </h1>
+            <p style={{ fontFamily: "var(--mag-serif)", fontSize: "1.1rem", color: "var(--mag-ink-light)", marginTop: "1rem", fontStyle: "italic", borderLeft: "3px solid var(--mag-accent)", paddingLeft: "1.2rem" }}>
+              The biggest workforce reduction in Oracle's history — and what it reveals about the real cost of the AI era.
             </p>
           </div>
-        </div>
-
-        {/* ── HERO ── */}
-        <div className="a0" style={{ borderBottom: "3px solid var(--ink)" }}>
-          <div className="imgf" style={{ height: "clamp(280px,38vw,480px)" }}>
-            <img src={POST.heroImage} alt={POST.heroImageAlt} loading="eager" />
-            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom,rgba(26,18,8,.25) 0%,rgba(26,18,8,.92) 100%)" }} />
-            <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 clamp(16px,5vw,64px)", textAlign: "center" }}>
-              <div style={{ display: "flex", gap: 8, marginBottom: 18, flexWrap: "wrap", justifyContent: "center" }}>
-                {["Tech Industry", "Breaking News", "April 2026"].map((t) => (
-                  <span key={t} className="sf" style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.65)", border: "1px solid rgba(255,255,255,0.2)", padding: "3px 10px" }}>
-                    {t}
-                  </span>
-                ))}
-              </div>
-              <h1
-                className="pf"
-                itemProp="headline"
-                style={{ fontSize: "clamp(1.8rem,5.5vw,4rem)", fontWeight: 900, lineHeight: 1.02, color: "white", letterSpacing: "-0.02em", marginBottom: 18, maxWidth: 860 }}
-              >
-                Oracle Layoffs 2026:{" "}
-                <em style={{ color: "#FCA5A5" }}>30,000 Jobs, One Email, No Warning</em>
-              </h1>
-              <p className="rp" style={{ fontSize: "clamp(13px,1.8vw,16px)", color: "rgba(255,255,255,0.62)", fontStyle: "italic", maxWidth: 560, lineHeight: 1.6 }}>
-                The biggest workforce reduction in Oracle's history — and what it reveals about the real cost of the AI era.
-              </p>
-            </div>
-          </div>
-
-          {/* Meta bar */}
-          <div style={{ background: "var(--ink)" }}>
-            <div style={{ maxWidth: 1080, margin: "0 auto", padding: "0 clamp(16px,3vw,36px)" }}>
-              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center" }}>
-                {[
-                  { l: "Published",     v: "3 April 2026"         },
-                  { l: "Reading Time",  v: POST.readTime          },
-                  { l: "Category",      v: POST.category          },
-                  { l: "Jobs Affected", v: "Up to 30,000"         },
-                  { l: "ORCL Today",    v: "~$145 (−57% YTD)"     },
-                ].map((m, i) => (
-                  <div key={i} style={{ padding: "12px 20px", borderRight: "1px solid rgba(255,255,255,.07)" }}>
-                    <p className="sf" style={{ fontSize: 7.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.18em", color: "rgba(255,255,255,.3)", marginBottom: 3 }}>{m.l}</p>
-                    <p className="sf" style={{ fontSize: 11, color: "rgba(255,255,255,.6)", fontWeight: 600 }}>{m.v}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+          {/* meta strip */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem", marginTop: "1.8rem", paddingTop: "1.2rem", borderTop: "1px solid var(--mag-border)" }}>
+            <div><span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.65rem", textTransform: "uppercase", color: "var(--mag-muted)" }}>Published</span><br /><span style={{ fontWeight: 600 }}>3 April 2026</span></div>
+            <div><span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.65rem", textTransform: "uppercase", color: "var(--mag-muted)" }}>Reading Time</span><br /><span style={{ fontWeight: 600 }}>{POST.readTime}</span></div>
+            <div><span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.65rem", textTransform: "uppercase", color: "var(--mag-muted)" }}>Jobs Affected</span><br /><span style={{ fontWeight: 600 }}>Up to 30,000</span></div>
+            <div><span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.65rem", textTransform: "uppercase", color: "var(--mag-muted)" }}>ORCL Today</span><br /><span style={{ fontWeight: 600 }}>~$145 (−57% YTD)</span></div>
           </div>
         </div>
 
-        {/* ── MAIN ── */}
-        <div style={{ maxWidth: 1080, margin: "0 auto", padding: "0 clamp(16px,3vw,36px) clamp(48px,8vw,96px)" }}>
-
-          {/* Intro + TOC */}
-          <div
-            className="a1 toc-grid"
-            style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 0, borderBottom: "1px solid var(--rule2)", alignItems: "start" }}
-          >
-            <div style={{ padding: "clamp(28px,4vw,48px) clamp(16px,3vw,40px) clamp(28px,4vw,48px) 0", borderRight: "1px solid var(--rule2)" }}>
-              <div className="sh" style={{ marginBottom: 18 }}>
-                <span className="sh-l">The Story</span>
-                <div className="sh-r" />
-              </div>
-              <p
-                className="pf"
-                itemProp="description"
-                style={{ fontSize: "clamp(1.05rem,2.2vw,1.35rem)", fontWeight: 400, lineHeight: 1.72, color: "var(--ink)", marginBottom: 18 }}
-              >
-                On March 31, 2026, Oracle sent termination emails to up to 30,000 employees before breakfast. The company had never cut this many people in its 48-year history. It also had never had a $553 billion order backlog before.
-              </p>
-              <p className="rp" style={{ fontSize: 13.5, color: "var(--ink3)", lineHeight: 1.88, marginBottom: 14 }}>
-                This is the full story: what happened on the day of the layoffs, why Oracle made the decision, what it means for its share price, and what 30,000 displaced employees — including 12,000 in India — should do right now. It is also the story of a much larger transformation: the moment the AI economy made its true cost visible.
-              </p>
-              <p className="rp" style={{ fontSize: 13.5, color: "var(--ink3)", lineHeight: 1.88 }}>
-                UpForge covers the Indian startup ecosystem, the global forces that shape it, and the founders who navigate both. The Oracle layoffs are one of the most significant labour events in India's technology sector in years. We are covering it with the same rigour we apply to everything else: facts first, analysis second, no hype.
-              </p>
-            </div>
-
-            {/* TOC */}
-            <nav
-              aria-label="Article sections"
-              style={{ padding: "clamp(24px,3vw,40px) 0 clamp(24px,3vw,40px) clamp(16px,3vw,32px)", minWidth: "clamp(200px,26vw,280px)" }}
-            >
-              <div className="sh" style={{ marginBottom: 14 }}>
-                <span className="sh-l">In This Article</span>
-                <div className="sh-r" />
-              </div>
-              <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-                {SECTIONS.map((s, i) => (
-                  <li key={i}>
-                    <a href={`#section-${s.num}`} className="toc-link">
-                      <span className="sf" style={{ fontSize: 8, fontWeight: 700, color: "var(--red)", flexShrink: 0, minWidth: 18 }}>{s.num}</span>
-                      <span className="rp" style={{ fontSize: 11.5, color: "var(--ink4)", lineHeight: 1.4 }}>{s.title}</span>
-                    </a>
-                  </li>
-                ))}
-                <li style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid var(--rule2)" }}>
-                  <a href="#fast-facts" className="toc-link">
-                    <span className="sf" style={{ fontSize: 8, fontWeight: 700, color: "var(--red)", flexShrink: 0, minWidth: 18 }}>→</span>
-                    <span className="rp" style={{ fontSize: 11.5, color: "var(--ink4)", lineHeight: 1.4, fontWeight: 700 }}>Fast Facts Table</span>
-                  </a>
-                </li>
-              </ul>
-            </nav>
+        {/* ── INTRO + TABLE OF CONTENTS ── */}
+        <div className="mag-fade mag-delay-2" style={{ display: "grid", gridTemplateColumns: "1fr 280px", gap: "3rem", margin: "3rem 2rem 2rem 2rem", paddingBottom: "2rem", borderBottom: "1px solid var(--mag-border)" }}>
+          <div>
+            <div className="eyebrow">The Story</div>
+            <p className="mag-dropcap" style={{ fontFamily: "var(--mag-sans)", fontSize: "0.95rem", lineHeight: 1.7, color: "var(--mag-ink-light)", marginTop: "0.8rem" }}>
+              On March 31, 2026, Oracle sent termination emails to up to 30,000 employees before breakfast. The company had never cut this many people in its 48-year history. It also had never had a $553 billion order backlog before.
+            </p>
+            <p style={{ fontFamily: "var(--mag-sans)", fontSize: "0.95rem", lineHeight: 1.7, color: "var(--mag-ink-light)", marginTop: "1rem" }}>
+              This is the full story: what happened on the day of the layoffs, why Oracle made the decision, what it means for its share price, and what 30,000 displaced employees — including 12,000 in India — should do right now. UpForge covers the Indian startup ecosystem, the global forces that shape it, and the founders who navigate both.
+            </p>
           </div>
+          <div style={{ background: "var(--mag-accent-glow)", padding: "1.2rem 1.5rem", borderRadius: "12px" }}>
+            <div className="eyebrow" style={{ marginBottom: "1rem" }}>In This Article</div>
+            <ul style={{ listStyle: "none" }}>
+              {SECTIONS.slice(0, 5).map((s) => (
+                <li key={s.num}><a href={`#section-${s.num}`} className="toc-link"><span style={{ fontWeight: 700, color: "var(--mag-accent)", minWidth: 28 }}>{s.num}</span><span className="toc-text" style={{ fontSize: "0.8rem", color: "var(--mag-ink)" }}>{s.title.substring(0, 38)}</span></a></li>
+              ))}
+              <li style={{ marginTop: "0.8rem" }}><a href="#fast-facts" className="toc-link"><span style={{ fontWeight: 700, color: "var(--mag-accent)" }}>→</span><span className="toc-text" style={{ fontWeight: 600 }}>Fast Facts Table</span></a></li>
+            </ul>
+          </div>
+        </div>
 
-          {/* ── SECTIONS ── */}
-          <div style={{ marginTop: "clamp(32px,5vw,56px)" }}>
-            {SECTIONS.map((sec, idx) => (
-              <div
-                key={idx}
-                id={`section-${sec.num}`}
-                className="blog-card"
-                style={{ marginBottom: 20 }}
-              >
-                <div
-                  className="section-grid"
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: idx % 2 === 0 ? "1fr 340px" : "340px 1fr",
-                    gap: 0,
-                    minHeight: 340,
-                  }}
-                >
-                  {idx % 2 !== 0 && (
-                    <div className="imgf" style={{ borderRight: "1.5px solid var(--ink)", minHeight: 300 }}>
-                      <img src={sec.img} alt={sec.imgAlt} loading="lazy" />
-                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right,rgba(26,18,8,.6) 0%,transparent 60%)" }} />
-                      <div style={{ position: "absolute", bottom: 20, left: 20 }}>
-                        <span className="pf" style={{ fontSize: "4rem", fontWeight: 900, color: "rgba(255,255,255,0.12)", lineHeight: 1 }}>{sec.num}</span>
-                      </div>
-                    </div>
-                  )}
-
-                  <div style={{ padding: "clamp(20px,3vw,36px)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                        <span className="sf" style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--red)" }}>
-                          Section {sec.num}
-                        </span>
-                        <div style={{ flex: 1, height: 1, background: "var(--rule2)" }} />
-                        <span className="sf" style={{ fontSize: 8, color: "var(--ink5)", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>
-                          {sec.keyword}
-                        </span>
-                      </div>
-                      <div className="breaking-badge">Breaking</div>
-                      <h2
-                        className="pf"
-                        style={{ fontSize: "clamp(1.2rem,2.5vw,1.75rem)", fontWeight: 700, color: "var(--ink)", lineHeight: 1.15, marginBottom: 18 }}
-                      >
-                        {sec.title}
-                      </h2>
-                      {sec.body.split("\n\n").map((para, pi) => (
-                        <p
-                          key={pi}
-                          className={`rp${pi === 0 ? " dropcap" : ""}`}
-                          style={{ fontSize: 13.5, color: "var(--ink3)", lineHeight: 1.88, marginBottom: 14 }}
-                        >
-                          {para}
-                        </p>
-                      ))}
-                      {sec.internal && (
-                        <Link
-                          href={sec.internal}
-                          style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 8, fontFamily: "system-ui", fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".18em", color: "var(--red)", textDecoration: "none" }}
-                        >
-                          Related: Read on UpForge →
-                        </Link>
-                      )}
-                    </div>
-                    <div style={{ marginTop: 16 }}>
-                      <div className="stat-pill">
-                        <p className="pf" style={{ fontSize: "1.8rem", fontWeight: 900, color: "#FCA5A5", lineHeight: 1, flexShrink: 0 }}>
-                          {sec.stat.val}
-                        </p>
-                        <p className="sf" style={{ fontSize: 10, color: "rgba(255,255,255,.6)", textTransform: "uppercase", letterSpacing: "0.1em", lineHeight: 1.5 }}>
-                          {sec.stat.label}
-                        </p>
-                      </div>
-                      <div className="insight">
-                        <div style={{ width: 3, height: 3, borderRadius: "50%", background: "var(--red2)", flexShrink: 0 }} aria-hidden="true" />
-                        <p className="rp" style={{ fontSize: 12, color: "var(--red3)", fontStyle: "italic", lineHeight: 1.6 }}>
-                          {sec.insight}
-                        </p>
-                      </div>
-                    </div>
+        {/* ── MAIN SECTIONS (alternating magazine layout) ── */}
+        <div style={{ margin: "0 2rem" }}>
+          {SECTIONS.map((sec, idx) => (
+            <div key={idx} id={`section-${sec.num}`} className="mag-card" style={{ marginBottom: "2.5rem", borderRadius: "20px", overflow: "hidden" }}>
+              <div style={{ display: "grid", gridTemplateColumns: idx % 2 === 0 ? "1fr 0.9fr" : "0.9fr 1fr", gap: 0 }}>
+                {idx % 2 !== 0 && (
+                  <div className="img-hover" style={{ minHeight: "320px" }}>
+                    <img src={sec.img} alt={sec.imgAlt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </div>
-
-                  {idx % 2 === 0 && (
-                    <div className="imgf" style={{ borderLeft: "1.5px solid var(--ink)", minHeight: 300 }}>
-                      <img src={sec.img} alt={sec.imgAlt} loading="lazy" />
-                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to left,rgba(26,18,8,.6) 0%,transparent 60%)" }} />
-                      <div style={{ position: "absolute", bottom: 20, right: 20, textAlign: "right" }}>
-                        <span className="pf" style={{ fontSize: "4rem", fontWeight: 900, color: "rgba(255,255,255,0.12)", lineHeight: 1 }}>{sec.num}</span>
-                      </div>
-                    </div>
+                )}
+                <div style={{ padding: "2rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.8rem" }}>
+                    <span className="eyebrow">Section {sec.num}</span>
+                    <span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.65rem", color: "var(--mag-muted)", textTransform: "uppercase" }}>{sec.keyword}</span>
+                  </div>
+                  <h2 style={{ fontFamily: "var(--mag-serif)", fontSize: "1.6rem", fontWeight: 700, marginBottom: "1rem", lineHeight: 1.2 }}>{sec.title}</h2>
+                  {sec.body.split("\n\n").map((para, pi) => (
+                    <p key={pi} className={pi === 0 ? "mag-dropcap" : ""} style={{ fontFamily: "var(--mag-sans)", fontSize: "0.9rem", lineHeight: 1.7, color: "var(--mag-ink-light)", marginBottom: "1rem" }}>
+                      {para}
+                    </p>
+                  ))}
+                  {sec.internal && (
+                    <Link href={sec.internal} style={{ fontFamily: "var(--mag-sans)", fontSize: "0.7rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--mag-accent)", textDecoration: "none", display: "inline-block", marginBottom: "1rem" }}>
+                      Related: Read on UpForge →
+                    </Link>
                   )}
+                  <div className="mag-stat" style={{ margin: "1rem 0" }}>
+                    <span style={{ fontSize: "2rem", fontWeight: 800, color: "#FCA5A5", fontFamily: "var(--mag-serif)" }}>{sec.stat.val}</span>
+                    <span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.7rem", color: "rgba(255,255,255,0.7)", textTransform: "uppercase" }}>{sec.stat.label}</span>
+                  </div>
+                  <div className="mag-insight">
+                    <span style={{ fontFamily: "var(--mag-serif)" }}>🔍 {sec.insight}</span>
+                  </div>
                 </div>
+                {idx % 2 === 0 && (
+                  <div className="img-hover" style={{ minHeight: "320px" }}>
+                    <img src={sec.img} alt={sec.imgAlt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── FAST FACTS TABLE ── */}
+        <div id="fast-facts" style={{ margin: "3rem 2rem" }}>
+          <hr className="mag-hr" />
+          <div className="eyebrow" style={{ marginBottom: "0.5rem" }}>⚡ Data Snapshot</div>
+          <h2 style={{ fontFamily: "var(--mag-serif)", fontSize: "1.8rem", fontWeight: 700, marginBottom: "1.5rem" }}>Oracle Layoffs 2026: Key Numbers at a Glance</h2>
+          <div style={{ border: "1px solid var(--mag-border)", background: "white", padding: "0 1.5rem" }}>
+            {FAST_FACTS.map((item, i) => (
+              <div key={i} className="fact-row">
+                <span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.8rem", fontWeight: 600, color: "var(--mag-ink)" }}>{item.label}</span>
+                <span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.8rem", color: "var(--mag-ink-light)" }}>{item.value}</span>
               </div>
             ))}
           </div>
+        </div>
 
-          {/* ── FAST FACTS TABLE ── */}
-          <div id="fast-facts" style={{ marginTop: "clamp(44px,6vw,72px)" }}>
-            <div className="sh" style={{ marginBottom: 16 }}>
-              <span className="sh-l" style={{ color: "var(--red)" }}>⚡ Fast Facts</span>
-              <div className="sh-r" />
-            </div>
-            <h2
-              className="pf"
-              style={{ fontSize: "clamp(1.3rem,2.5vw,1.8rem)", fontWeight: 700, color: "var(--ink)", marginBottom: 6, lineHeight: 1.15 }}
-            >
-              Oracle Layoffs 2026: Key Numbers at a Glance
-            </h2>
-            <p className="rp" style={{ fontSize: 13, color: "var(--ink4)", fontStyle: "italic", marginBottom: 20, lineHeight: 1.65 }}>
-              Everything you need to know about Oracle's historic workforce reduction, sourced from SEC filings, TD Cowen analysis, and reporting by CNBC, TNW, and Business Standard.
-            </p>
-            <div style={{ border: "1.5px solid var(--ink)", background: "var(--white)", padding: "4px 20px 4px" }}>
-              {FAST_FACTS.map((item, i) => (
-                <div key={i} className="fact-row">
-                  <p className="sf" style={{ fontSize: 11, fontWeight: 700, color: "var(--ink)", flexShrink: 0 }}>{item.label}</p>
-                  <p className="rp" style={{ fontSize: 12, color: "var(--ink3)", textAlign: "right", lineHeight: 1.5 }}>{item.value}</p>
-                </div>
-              ))}
-            </div>
+        {/* ── RELATED ARTICLES ── */}
+        <div style={{ margin: "2rem 2rem 3rem 2rem" }}>
+          <hr className="mag-hr" />
+          <div className="eyebrow">Further Reading</div>
+          <h2 style={{ fontFamily: "var(--mag-serif)", fontSize: "1.5rem", marginBottom: "1.2rem" }}>From the UpForge Archive</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "1.2rem" }}>
+            {RELATED.map((r, i) => (
+              <Link key={i} href={`/blog/${r.slug}`} className="related-card" style={{ padding: "1rem", borderRadius: "12px", display: "block" }}>
+                <div style={{ fontFamily: "var(--mag-serif)", fontSize: "2rem", fontWeight: 700, color: "var(--mag-accent-glow)" }}>0{i+1}</div>
+                <h3 style={{ fontFamily: "var(--mag-serif)", fontSize: "1rem", fontWeight: 700, marginTop: "0.5rem", color: "var(--mag-ink)" }}>{r.title}</h3>
+                <span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.65rem", color: "var(--mag-accent)", marginTop: "0.5rem", display: "inline-block" }}>Read more →</span>
+              </Link>
+            ))}
           </div>
+        </div>
 
-          {/* ── RELATED POSTS ── */}
-          <div style={{ marginTop: "clamp(44px,6vw,72px)" }}>
-            <div className="sh" style={{ marginBottom: 16 }}>
-              <span className="sh-l">Related Reading on UpForge</span>
-              <div className="sh-r" />
+        {/* ── FOOTER ── */}
+        <footer style={{ borderTop: "2px solid var(--mag-ink)", padding: "2rem 2rem 2.5rem", background: "var(--mag-paper)" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: "1.5rem" }}>
+            <div>
+              <span style={{ fontFamily: "var(--mag-serif)", fontSize: "1.4rem", fontWeight: 700 }}>UpForge<span style={{ color: "var(--mag-accent)" }}>.</span>org</span>
+              <p style={{ fontFamily: "var(--mag-sans)", fontSize: "0.7rem", marginTop: "0.5rem", color: "var(--mag-muted)" }}>Deep analysis for founders & investors</p>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", border: "1.5px solid var(--ink)", background: "var(--ink)", gap: 1.5 }}>
-              {RELATED.map((r, i) => (
-                <Link key={i} href={`/blog/${r.slug}`} className="rel-card">
-                  <div style={{ height: 80, background: ["#E8E0D0","#E0D8CC","#D8D0C4","#D0C8BC"][i % 4], display: "flex", alignItems: "center", justifyContent: "center", borderBottom: "1px solid var(--rule2)" }}>
-                    <span className="pf" style={{ fontSize: "2.8rem", fontWeight: 900, color: "rgba(26,18,8,0.1)" }} aria-hidden="true">
-                      {r.title.charAt(0)}
-                    </span>
-                  </div>
-                  <div style={{ padding: "13px 14px 12px" }}>
-                    <h3 className="pf" style={{ fontSize: ".9rem", fontWeight: 700, color: "var(--ink)", marginBottom: 4, lineHeight: 1.2 }}>{r.title}</h3>
-                    <span className="sf" style={{ fontSize: 8, color: "var(--ink5)", textTransform: "uppercase", letterSpacing: ".12em", fontWeight: 700 }}>{r.category}</span>
-                    <div style={{ marginTop: 8 }}>
-                      <span className="sf" style={{ fontSize: 8.5, color: "var(--red)", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".1em" }}>Read</span>
-                    </div>
-                  </div>
+            <nav style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
+              {SAFE_BLOG_FOOTER_LINKS.map((lnk) => (
+                <Link key={lnk.h} href={lnk.h} style={{ fontFamily: "var(--mag-sans)", fontSize: "0.7rem", color: "var(--mag-ink-light)", textDecoration: "none" }}>
+                  {lnk.l}
                 </Link>
               ))}
-            </div>
+            </nav>
           </div>
-
-          {/* ── FOOTER NAV ── */}
-          <nav
-            aria-label="Explore UpForge"
-            style={{ padding: "16px 0", borderTop: "2px solid var(--ink)", marginTop: "clamp(32px,5vw,52px)" }}
-          >
-            <ul style={{ display: "flex", flexWrap: "wrap", gap: "8px 20px", listStyle: "none", margin: 0, padding: 0 }}>
-              {SAFE_BLOG_FOOTER_LINKS.map((lnk) => (
-                <li key={lnk.h}>
-                  <Link
-                    href={lnk.h}
-                    className="sf"
-                    style={{ fontSize: 8.5, color: "var(--ink5)", textTransform: "uppercase", letterSpacing: "0.14em", textDecoration: "none" }}
-                  >
-                    {lnk.l}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-        </div>
+          <p style={{ fontFamily: "var(--mag-sans)", fontSize: "0.65rem", marginTop: "2rem", color: "var(--mag-muted)" }}>
+            © 2026 UpForge. All data sourced from SEC filings, TD Cowen, CNBC, TNW, Business Standard.
+          </p>
+        </footer>
       </article>
     </>
   )
