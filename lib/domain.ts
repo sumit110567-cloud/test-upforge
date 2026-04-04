@@ -18,9 +18,7 @@ export interface DomainMeta {
   region: 'IN' | 'GLOBAL'
 }
 
-// ─────────────────────────────────────────────
 // CLIENT DOMAIN DETECTION
-// ─────────────────────────────────────────────
 
 export function getDomainContextClient(): DomainContext {
   if (typeof window === 'undefined') return 'org'
@@ -28,9 +26,7 @@ export function getDomainContextClient(): DomainContext {
   return htmlDomain === 'in' ? 'in' : 'org'
 }
 
-// ─────────────────────────────────────────────
 // DOMAIN META CONFIG
-// ─────────────────────────────────────────────
 
 export function getDomainMeta(context: DomainContext): DomainMeta {
 
@@ -50,9 +46,7 @@ export function getDomainMeta(context: DomainContext): DomainMeta {
   }
 }
 
-// ─────────────────────────────────────────────
 // URL HELPERS
-// ─────────────────────────────────────────────
 
 export function getStartupUrl(slug: string): string {
   return `/startup/${slug}`
@@ -70,9 +64,7 @@ export function getCanonicalUrl(pathname: string): string {
   return `${baseUrl}${cleanPath}`
 }
 
-// ─────────────────────────────────────────────
 // HREFLANG + CANONICAL
-// ─────────────────────────────────────────────
 
 export function getAlternatesForLayout(pathname: string) {
 
@@ -88,9 +80,7 @@ export function getAlternatesForLayout(pathname: string) {
   }
 }
 
-// ─────────────────────────────────────────────
 // JSON-LD ORGANIZATION
-// ─────────────────────────────────────────────
 
 export function getOrganizationJsonLd() {
 
@@ -135,9 +125,7 @@ export function getOrganizationJsonLd() {
   }
 }
 
-// ─────────────────────────────────────────────
 // JSON-LD WEBSITE
-// ─────────────────────────────────────────────
 
 export function getWebsiteJsonLd() {
 
@@ -146,7 +134,7 @@ export function getWebsiteJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    '@id': `${baseUrl}/#website',
+    '@id': `${baseUrl}/#website`,   // ✅ FIXED LINE
 
     url: baseUrl,
 
@@ -175,9 +163,7 @@ export function getWebsiteJsonLd() {
   }
 }
 
-// ─────────────────────────────────────────────
 // JSON-LD BREADCRUMB
-// ─────────────────────────────────────────────
 
 export function getBreadcrumbJsonLd(
   items: { name: string; item: string }[]
