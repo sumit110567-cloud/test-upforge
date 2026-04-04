@@ -1,6 +1,6 @@
 /**
  * lib/domain.ts — UpForge Domain Utilities (universal)
- *
+ * * ✅ UPDATED FOR AUTHORITY CONSOLIDATION (upforge.org)
  * ✅ Safe to import in BOTH Server Components AND Client Components.
  * ✅ No 'next/headers', no browser APIs at module level.
  */
@@ -12,7 +12,7 @@ export type DomainContext = 'in' | 'org'
 export interface DomainMeta {
   context: DomainContext
   baseUrl: string
-  alternateUrl: string
+  alternateUrl: string // Kept for legacy support/redirect mapping
   isIndia: boolean
   isGlobal: boolean
   locale: string
@@ -26,42 +26,36 @@ export interface DomainMeta {
 
 export function getDomainContextClient(): DomainContext {
   if (typeof window === 'undefined') {
-    return process.env.NEXT_PUBLIC_DOMAIN === 'org' ? 'org' : 'in'
+    // During migration, we default to 'org' for all environment triggers
+    return 'org'
   }
   const htmlDomain = document.documentElement.getAttribute('data-domain')
+  // We prioritize 'org' even if the attribute hasn't updated yet
   if (htmlDomain === 'org') return 'org'
-  if (htmlDomain === 'in')  return 'in'
-  return window.location.hostname.includes('upforge.org') ? 'org' : 'in'
+  
+  // If still on .in, we treat context as 'org' to ensure UI/Links point to the new home
+  return 'org'
 }
 
 // ─── getDomainMeta ────────────────────────────────────────────────────────────
 
+/**
+ * getDomainMeta(context)
+ * Updated to ensure both contexts point back to .org as the primary base.
+ */
 export function getDomainMeta(context: DomainContext): DomainMeta {
-  if (context === 'org') {
-    return {
-      context:           'org',
-      baseUrl:           'https://www.upforge.org',
-      alternateUrl:      'https://www.upforge.in',
-      isIndia:           false,
-      isGlobal:          true,
-      locale:            'en-US',
-      hreflangSelf:      'en',
-      hreflangAlternate: 'en-IN',
-      siteName:          'UpForge',
-      region:            'GLOBAL',
-    }
-  }
+  // Global Authority (Primary)
   return {
-    context:           'in',
-    baseUrl:           'https://www.upforge.in',
-    alternateUrl:      'https://www.upforge.org',
-    isIndia:           true,
-    isGlobal:          false,
-    locale:            'en-IN',
-    hreflangSelf:      'en-IN',
-    hreflangAlternate: 'en',
+    context:           'org',
+    baseUrl:           'https://www.upforge.org',
+    alternateUrl:      'https://www.upforge.in', // Legacy
+    isIndia:           context === 'in', 
+    isGlobal:          true,
+    locale:            context === 'in' ? 'en-IN' : 'en-US',
+    hreflangSelf:      'en',
+    hreflangAlternate: 'en-IN',
     siteName:          'UpForge',
-    region:            'IN',
+    region:            context === 'in' ? 'IN' : 'GLOBAL',
   }
 }
 
@@ -69,7 +63,7 @@ export function getDomainMeta(context: DomainContext): DomainMeta {
 
 /**
  * getStartupUrl(slug, context)
- * Ab ye hamesha relative path return karega taaki domain change na ho.
+ * Always returns relative paths to keep the user on the current (consolidated) domain.
  */
 export function getStartupUrl(slug: string, context: DomainContext): string {
   return `/startup/${slug}`
@@ -77,52 +71,47 @@ export function getStartupUrl(slug: string, context: DomainContext): string {
 
 /**
  * getRegistryUrl(path, context)
- * Registry ke liye domain switch logic rakha hai (optional).
+ * Consolidated to the main registry path.
  */
 export function getRegistryUrl(path = '', context: DomainContext): string {
   const suffix = path ? `/${path}` : ''
-  return context === 'in'
-    ? `https://www.upforge.org/registry${suffix}`
-    : `/registry${suffix}`
+  return `/registry${suffix}`
 }
 
 /**
  * getNavUrl(route, context)
- * Isme se 'inRoutes' ka redirection logic hata diya gaya hai.
+ * No longer performs cross-domain switching. All navigation stays on .org.
  */
 export function getNavUrl(route: string, context: DomainContext): string {
-  const orgRoutes = ['/registry', '/ufrn', '/global']
-  
-  // Sirf tabhi switch karein jab .in wala user specifically Global Registry dekhna chahe
-  if (orgRoutes.some(r => route.startsWith(r)) && context === 'in') {
-    return `https://www.upforge.org${route}`
-  }
-
-  // Pehle yahan .org se .in par bhejne ka logic tha, use hata diya gaya hai.
   return route
 }
 
 /**
  * getCanonicalUrl(pathname, context)
+ * CRITICAL: Always returns the .org URL to consolidate SEO juice.
  */
 export function getCanonicalUrl(pathname: string, context: DomainContext): string {
-  const { baseUrl } = getDomainMeta(context)
+  const baseUrl = 'https://www.upforge.org'
   const cleanPath = pathname === '/' ? '' : pathname.replace(/\/$/, '')
   return `${baseUrl}${cleanPath}`
 }
 
 /**
  * getAlternatesForLayout(pathname, context)
+ * Tells Google: "The .org is the main version (x-default)."
  */
 export function getAlternatesForLayout(pathname: string, context: DomainContext) {
-  const inUrl  = `https://www.upforge.in${pathname === '/' ? '' : pathname}`
-  const orgUrl = `https://www.upforge.org${pathname === '/' ? '' : pathname}`
+  const path = pathname === '/' ? '' : pathname
+  const orgUrl = `https://www.upforge.org${path}`
+  
   return {
-    canonical: context === 'in' ? inUrl : orgUrl,
+    canonical: orgUrl,
     languages: {
-      'en-IN':     inUrl,
       'en':        orgUrl,
       'x-default': orgUrl,
+      // We keep a self-referencing en-IN tag if the user is in an India context,
+      // but it still points to the .org domain structure.
+      'en-IN':     orgUrl, 
     },
   }
 }
@@ -130,8 +119,7 @@ export function getAlternatesForLayout(pathname: string, context: DomainContext)
 // ─── JSON-LD helpers ──────────────────────────────────────────────────────────
 
 export function getOrganizationJsonLd(context: DomainContext) {
-  const { baseUrl } = getDomainMeta(context)
-  const isGlobal = context === 'org'
+  const baseUrl = 'https://www.upforge.org'
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
@@ -139,13 +127,12 @@ export function getOrganizationJsonLd(context: DomainContext) {
     name: 'UpForge',
     url: baseUrl,
     logo: `${baseUrl}/logo.png`,
-    description: isGlobal
-      ? 'UpForge is the global startup registry and emerging market intelligence platform.'
-      : "UpForge is India's independent, verified startup registry and founder intelligence platform.",
+    description: 'UpForge is the global startup registry and emerging market intelligence platform.',
     foundingDate: '2024',
-    areaServed: isGlobal
-      ? { '@type': 'Place', name: 'Worldwide' }
-      : { '@type': 'Country', name: 'India' },
+    areaServed: [
+      { '@type': 'Place', name: 'Worldwide' },
+      { '@type': 'Country', name: 'India' }
+    ],
     sameAs: [
       'https://twitter.com/upforge_in',
       'https://www.linkedin.com/company/upforge',
@@ -154,10 +141,9 @@ export function getOrganizationJsonLd(context: DomainContext) {
 }
 
 export function getWebsiteJsonLd(context: DomainContext) {
-  const { baseUrl, locale } = getDomainMeta(context)
-  const searchBase = context === 'org'
-    ? 'https://www.upforge.org/registry'
-    : 'https://www.upforge.in/startup'
+  const baseUrl = 'https://www.upforge.org'
+  const { locale } = getDomainMeta(context)
+  
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -170,7 +156,7 @@ export function getWebsiteJsonLd(context: DomainContext) {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: `${searchBase}?q={search_term_string}`,
+        urlTemplate: `${baseUrl}/registry?q={search_term_string}`,
       },
       'query-input': 'required name=search_term_string',
     },
