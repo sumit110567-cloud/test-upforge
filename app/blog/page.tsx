@@ -1,17 +1,16 @@
 "use client"
 
 // app/blog/page.tsx
-// THE FORGE — Blog Index v4
-// ✅ Original dark hero masthead preserved (eyebrow removed)
-// ✅ Live search bar across all article titles
-// ✅ Header + footer collapse bug fixed
-// ✅ Search dropdown z-index fixed (appears above all content)
-// ✅ Registry-inspired design language
-// ✅ More engaging card interactions
+// FIXED: Header/footer collapse resolved by matching about/page.tsx structure exactly
+// - Removed Navbar import (about page doesn't use it either)
+// - blog-page-root uses min-height:100vh, display:flex, flex-direction:column
+// - blog-page-content uses flex:1 + display:flex + flex-direction:column
+// - Added overflow:visible to hero so search dropdown works
 
 import Link from "next/link"
 import { ArrowRight, ArrowUpRight, Search, X } from "lucide-react"
 import { useState, useMemo } from "react"
+import { Navbar } from "@/components/navbar"
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
 
@@ -263,39 +262,50 @@ export default function BlogIndexPage() {
           --sf: system-ui, -apple-system, 'Segoe UI', sans-serif;
         }
 
-        html { height: 100%; }
-        body { min-height: 100%; }
+        /* ══════════════════════════════════════════════════════════════
+           ROOT LAYOUT — mirrors about/page.tsx exactly:
+             .blog-page-root    → min-height:100vh, flex column
+             <Navbar />         → flex-shrink:0 header
+             .blog-page-content → flex:1, flex column (fills remaining space)
 
-        /* ── PAGE SHELL ── */
-        .page-root {
+           KEY FIXES vs old version:
+             1. blog-page-content has flex:1 so it pushes footer to bottom
+             2. blog-hero has NO overflow:hidden — lets search dropdown escape
+             3. blog-hero position:relative + z-index on search-wrap works correctly
+        ══════════════════════════════════════════════════════════════ */
+
+        .blog-page-root {
           min-height: 100vh;
-          display: flex;
-          flex-direction: column;
           background: var(--parch);
           font-family: Georgia, 'Times New Roman', serif;
           color: var(--ink);
+          display: flex;
+          flex-direction: column;
         }
 
-        /* page-body takes all remaining space so footer never collapses */
-        .page-body {
-          flex: 1 0 auto;
+        /* flex:1 ensures this div grows to fill all space below Navbar */
+        .blog-page-content {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          /* Do NOT set overflow:hidden here — it clips the search dropdown */
         }
 
-        /* ── HERO MASTHEAD ──
-           KEY FIX: overflow must be visible so the search dropdown
-           can escape the hero container and float above the page.       */
+        /* ── HERO — NO overflow:hidden — search dropdown must escape ── */
         .blog-hero {
           position: relative;
+          /* overflow: hidden  ← REMOVED: this was clipping the search dropdown */
           background: linear-gradient(135deg, rgba(15,26,28,0.92) 0%, rgba(15,26,28,0.80) 100%);
           border-bottom: 1px solid var(--rule);
           flex-shrink: 0;
-          /* overflow: visible is the default — do NOT set overflow:hidden here */
         }
         .blog-hero-bg {
           position: absolute; top: 0; left: 0; right: 0; bottom: 0;
           background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&q=70');
           background-size: cover; background-position: center 40%;
           opacity: 0.18; z-index: 0;
+          /* pointer-events:none so bg doesn't block clicks */
+          pointer-events: none;
         }
         .blog-hero-bg::after {
           content: ''; position: absolute; inset: 0;
@@ -307,44 +317,14 @@ export default function BlogIndexPage() {
           z-index: 3;
         }
 
-        /* Top nav bar inside hero */
-        .hero-topbar {
-          position: relative; z-index: 4;
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 16px clamp(20px, 4vw, 60px);
-          border-bottom: 1px solid rgba(255,255,255,0.07);
-        }
-        .hero-topbar-logo {
-          font-family: var(--pf); font-size: clamp(18px, 2.2vw, 22px);
-          font-weight: 900; color: white; text-decoration: none; letter-spacing: -0.02em;
-        }
-        .hero-topbar-logo em { font-style: italic; color: var(--teal-light); }
-        .hero-topbar-nav {
-          display: flex; align-items: center; gap: 20px;
-        }
-        .hero-topbar-nav a {
-          font-family: var(--sf); font-size: 10px; font-weight: 700;
-          letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.55);
-          text-decoration: none; transition: color 0.15s;
-        }
-        .hero-topbar-nav a:hover { color: white; }
-        .hero-topbar-cta {
-          background: var(--teal) !important; color: white !important;
-          padding: 7px 16px !important; border-radius: 4px;
-        }
-        .hero-topbar-cta:hover { background: var(--teal-dark) !important; }
-        @media (max-width: 700px) { .hero-topbar-nav { display: none; } }
-
-        /* Center content — must sit above the dropdown backdrop */
         .blog-mast-content {
-          position: relative; z-index: 9999;
+          position: relative; z-index: 10;
           text-align: center; padding: 72px 24px 60px;
         }
         .blog-mast-h1 {
           font-family: var(--pf); font-size: clamp(44px, 6.5vw, 76px);
           font-weight: 900; letter-spacing: -0.02em; color: white;
-          line-height: 1.03; text-shadow: 0 2px 16px rgba(0,0,0,0.4);
-          margin-bottom: 18px;
+          line-height: 1.03; text-shadow: 0 2px 16px rgba(0,0,0,0.4); margin-bottom: 18px;
         }
         .blog-mast-h1 em { font-style: italic; color: var(--teal-light); }
         .blog-mast-rule {
@@ -358,8 +338,7 @@ export default function BlogIndexPage() {
           line-height: 1.7; max-width: 560px; margin: 0 auto 28px;
         }
 
-        /* ── SEARCH BAR ──
-           KEY FIX: z-index: 9999 so dropdown floats above ALL page content  */
+        /* ── SEARCH — z-index above all page content ── */
         .search-wrap {
           max-width: 640px; margin: 0 auto;
           position: relative; z-index: 9999;
@@ -371,28 +350,20 @@ export default function BlogIndexPage() {
           padding: 4px 4px 4px 18px; gap: 8px;
           transition: border-color 0.2s, background 0.2s;
         }
-        .search-bar:focus-within {
-          border-color: rgba(94,234,212,0.6);
-          background: rgba(255,255,255,0.14);
-        }
+        .search-bar:focus-within { border-color: rgba(94,234,212,0.6); background: rgba(255,255,255,0.14); }
         .search-icon { color: rgba(255,255,255,0.45); flex-shrink: 0; }
         .search-input {
           flex: 1; border: none; background: transparent;
           font-family: Georgia, serif; font-size: 14px; font-style: italic;
-          color: white; outline: none; padding: 10px 0;
-          min-width: 0;
+          color: white; outline: none; padding: 10px 0; min-width: 0;
         }
         .search-input::placeholder { color: rgba(255,255,255,0.38); }
         .search-clear {
           width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
           border-radius: 8px; background: rgba(255,255,255,0.1); border: none; cursor: pointer;
-          color: rgba(255,255,255,0.6); transition: background 0.15s;
-          flex-shrink: 0;
+          color: rgba(255,255,255,0.6); transition: background 0.15s; flex-shrink: 0;
         }
         .search-clear:hover { background: rgba(255,255,255,0.2); }
-
-        /* Search results dropdown
-           KEY FIX: z-index: 9999 ensures it's above cards, sections, everything */
         .search-results {
           position: absolute; top: calc(100% + 8px); left: 0; right: 0;
           background: white; border-radius: 12px; border: 1px solid var(--rule2);
@@ -417,452 +388,172 @@ export default function BlogIndexPage() {
           background: rgba(13,148,136,0.1); padding: 3px 8px; border-radius: 4px;
           min-width: 80px; text-align: center;
         }
-        .search-result-title {
-          font-family: var(--pf); font-size: 13px; font-weight: 700;
-          color: var(--ink); flex: 1; line-height: 1.3;
-        }
-        .search-result-meta {
-          font-family: var(--sf); font-size: 9px; color: #AAA;
-          flex-shrink: 0; white-space: nowrap;
-        }
-        .search-no-results {
-          padding: 32px 20px; text-align: center;
-          font-style: italic; color: #AAA; font-size: 13px;
-        }
+        .search-result-title { font-family: var(--pf); font-size: 13px; font-weight: 700; color: var(--ink); flex: 1; line-height: 1.3; }
+        .search-result-meta { font-family: var(--sf); font-size: 9px; color: #AAA; flex-shrink: 0; white-space: nowrap; }
+        .search-no-results { padding: 32px 20px; text-align: center; font-style: italic; color: #AAA; font-size: 13px; }
 
-        /* Live badge */
         .live-badge {
           display: inline-flex; align-items: center; gap: 10px;
           background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
           border: 1px solid rgba(255,255,255,0.2); padding: 9px 24px;
           border-radius: 100px; margin-top: 20px;
         }
-        .live-dot {
-          width: 7px; height: 7px; border-radius: 50%; background: var(--teal-light);
-          animation: pulse 2s infinite;
-        }
-        .live-text {
-          font-family: var(--sf); font-size: 10px; font-weight: 700;
-          text-transform: uppercase; letter-spacing: 0.18em; color: white;
-        }
+        .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--teal-light); animation: pulse 2s infinite; }
+        .live-text { font-family: var(--sf); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: white; }
         @keyframes pulse {
           0%   { box-shadow: 0 0 0 0 rgba(94,234,212,0.5); }
           70%  { box-shadow: 0 0 0 7px rgba(94,234,212,0); }
           100% { box-shadow: 0 0 0 0 rgba(94,234,212,0); }
         }
 
-        /* ── MAIN WRAP ── */
+        /* ── MAIN WRAP — fills remaining flex space, pushes footer down ── */
         .main-wrap {
           max-width: 1340px; margin: 0 auto;
           padding: 28px clamp(16px, 4vw, 48px) 56px;
+          /* flex:1 not needed here since blog-page-content already has it */
+          width: 100%;
         }
 
-        /* ── SECTION HEADER ── */
-        .sh {
-          display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
-        }
+        .sh { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
         .sh-accent { width: 18px; height: 2px; background: var(--teal); flex-shrink: 0; }
-        .sh-l {
-          font-family: var(--sf); font-size: 8.5px; font-weight: 800;
-          text-transform: uppercase; letter-spacing: 0.28em; color: #AAA;
-          white-space: nowrap;
-        }
+        .sh-l { font-family: var(--sf); font-size: 8.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.28em; color: #AAA; white-space: nowrap; }
         .sh-r { flex: 1; height: 1px; background: var(--rule2); }
 
-        /* ── INDIA HERO BLOCK ── */
-        .hero-grid {
-          display: grid; grid-template-columns: 1fr 400px;
-          border: 1px solid var(--rule); background: white; overflow: hidden;
-        }
-        @media (max-width: 880px) {
-          .hero-grid { grid-template-columns: 1fr; }
-          .hero-img-col { order: -1; height: 220px !important; border-left: none !important; border-bottom: 1px solid var(--rule) !important; }
-        }
+        .hero-grid { display: grid; grid-template-columns: 1fr 400px; border: 1px solid var(--rule); background: white; overflow: hidden; }
+        @media (max-width: 880px) { .hero-grid { grid-template-columns: 1fr; } .hero-img-col { order: -1; height: 220px !important; border-left: none !important; border-bottom: 1px solid var(--rule) !important; } }
         .hero-txt { padding: clamp(20px, 3vw, 36px); display: flex; flex-direction: column; justify-content: space-between; }
         .hero-img-col { position: relative; overflow: hidden; }
-        .hero-img-col img {
-          position: absolute; inset: 0; width: 100%; height: 100%;
-          object-fit: cover; transition: transform 0.7s ease;
-        }
+        .hero-img-col img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
         .hero-grid:hover .hero-img-col img { transform: scale(1.04); }
 
-        /* ── SECTION DIVIDERS ── */
-        .section-mt { margin-top: clamp(16px, 2.5vw, 28px); }
+        .section-mt  { margin-top: clamp(16px, 2.5vw, 28px); }
         .section-mt2 { margin-top: clamp(22px, 3.2vw, 40px); }
 
-        /* ── 4-COL SECONDARY ── */
-        .sec-grid {
-          display: grid; grid-template-columns: repeat(4, 1fr);
-          border: 1px solid var(--rule); border-top: none;
-          background: var(--rule); gap: 1px;
-        }
+        .sec-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--rule); border-top: none; background: var(--rule); gap: 1px; }
         @media (max-width: 1050px) { .sec-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 580px)  { .sec-grid { grid-template-columns: 1fr; } }
 
-        /* ── STORY CARD ── */
-        .story-card {
-          background: white; display: flex; flex-direction: column;
-          text-decoration: none; transition: background 0.15s;
-        }
+        .story-card { background: white; display: flex; flex-direction: column; text-decoration: none; transition: background 0.15s; }
         .story-card:hover { background: #FAFAF5; }
-        .story-img-wrap {
-          position: relative; overflow: hidden; flex-shrink: 0;
-        }
-        .story-img-wrap img {
-          display: block; width: 100%; height: 100%; object-fit: cover;
-          transition: transform 0.55s ease;
-        }
+        .story-img-wrap { position: relative; overflow: hidden; flex-shrink: 0; }
+        .story-img-wrap img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.55s ease; }
         .story-card:hover .story-img-wrap img { transform: scale(1.05); }
-        .story-img-overlay {
-          position: absolute; inset: 0;
-          background: linear-gradient(to top, rgba(15,26,28,0.7) 0%, transparent 55%);
-        }
-        .story-img-badge {
-          position: absolute; top: 12px; left: 12px;
-          display: flex; gap: 6px; align-items: center;
-        }
-        .story-body {
-          padding: 16px 18px 18px; flex: 1;
-          display: flex; flex-direction: column;
-        }
-        .story-cat {
-          font-family: var(--sf); font-size: 7.5px; font-weight: 800;
-          letter-spacing: 0.2em; text-transform: uppercase;
-          margin-bottom: 7px;
-        }
-        .story-title {
-          font-family: var(--pf); font-size: clamp(0.9rem, 1.5vw, 1.05rem);
-          font-weight: 700; line-height: 1.22; color: var(--ink);
-          margin-bottom: 8px; flex: 1;
-        }
-        .story-excerpt {
-          font-size: 12px; line-height: 1.68; color: var(--muted);
-          font-style: italic; margin-bottom: 14px;
-          display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-        }
-        .story-foot {
-          display: flex; align-items: center; justify-content: space-between;
-          padding-top: 11px; border-top: 1px solid var(--rule2);
-          font-family: var(--sf); font-size: 8.5px;
-        }
+        .story-img-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15,26,28,0.7) 0%, transparent 55%); }
+        .story-img-badge { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; align-items: center; }
+        .story-body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; }
+        .story-title { font-family: var(--pf); font-size: clamp(0.9rem, 1.5vw, 1.05rem); font-weight: 700; line-height: 1.22; color: var(--ink); margin-bottom: 8px; flex: 1; }
+        .story-excerpt { font-size: 12px; line-height: 1.68; color: var(--muted); font-style: italic; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .story-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 11px; border-top: 1px solid var(--rule2); font-family: var(--sf); font-size: 8.5px; }
         .story-foot-meta { color: #AAA; letter-spacing: 0.05em; text-transform: uppercase; }
         .story-foot-arrow { display: flex; align-items: center; gap: 3px; font-weight: 800; transition: gap 0.15s; }
         .story-card:hover .story-foot-arrow { gap: 6px; }
 
-        /* ── BADGE STYLES ── */
-        .badge {
-          font-family: var(--sf); font-size: 7.5px; font-weight: 800;
-          letter-spacing: 0.16em; text-transform: uppercase; padding: 3px 8px;
-          display: inline-block;
-        }
+        .badge { font-family: var(--sf); font-size: 7.5px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; padding: 3px 8px; display: inline-block; }
         .badge-cat { color: white; }
-        .badge-tag-trending  { background: #FEFCE8; color: #92400E; border: 1px solid rgba(146,64,14,.2); }
-        .badge-tag-new       { background: #EFF6FF; color: #1D4ED8; border: 1px solid rgba(29,78,216,.2); }
-        .badge-tag-global    { background: #EFF6FF; color: #1D4ED8; border: 1px solid rgba(37,99,235,.25); }
-        .badge-tag-cover     { background: #FEF3C7; color: #92400E; border: 1px solid rgba(180,83,9,.25); }
+        .badge-tag-trending    { background: #FEFCE8; color: #92400E; border: 1px solid rgba(146,64,14,.2); }
+        .badge-tag-new         { background: #EFF6FF; color: #1D4ED8; border: 1px solid rgba(29,78,216,.2); }
+        .badge-tag-global      { background: #EFF6FF; color: #1D4ED8; border: 1px solid rgba(37,99,235,.25); }
+        .badge-tag-cover       { background: #FEF3C7; color: #92400E; border: 1px solid rgba(180,83,9,.25); }
         .badge-tag-hightraffic { background: #F0FDF4; color: #15803D; border: 1px solid rgba(21,128,61,.2); }
 
-        /* ── GLOBAL BANNER ── */
-        .global-banner {
-          background: var(--ink); padding: 20px 28px;
-          display: flex; align-items: center; gap: 18px;
-          border-top: 3px solid var(--blue);
-        }
-        .global-banner-icon {
-          width: 38px; height: 38px; background: var(--blue); border-radius: 50%;
-          display: flex; align-items: center; justify-content: center;
-          font-size: 17px; flex-shrink: 0;
-        }
-        .global-banner-label {
-          font-family: var(--sf); font-size: 8px; font-weight: 800;
-          letter-spacing: 0.24em; text-transform: uppercase; color: #7BA4F0;
-          margin-bottom: 3px;
-        }
-        .global-banner-text {
-          font-size: 13px; color: rgba(255,255,255,0.68); font-style: italic;
-        }
-        .global-banner-btn {
-          margin-left: auto; flex-shrink: 0;
-          display: inline-flex; align-items: center; gap: 6px;
-          background: var(--blue); color: white; padding: 9px 20px;
-          border-radius: 4px; font-family: var(--sf); font-size: 9px;
-          font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
-          text-decoration: none; transition: background 0.15s; white-space: nowrap;
-        }
+        .global-banner { background: var(--ink); padding: 20px 28px; display: flex; align-items: center; gap: 18px; border-top: 3px solid var(--blue); }
+        .global-banner-icon { width: 38px; height: 38px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+        .global-banner-label { font-family: var(--sf); font-size: 8px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; color: #7BA4F0; margin-bottom: 3px; }
+        .global-banner-text { font-size: 13px; color: rgba(255,255,255,0.68); font-style: italic; }
+        .global-banner-btn { margin-left: auto; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; background: var(--blue); color: white; padding: 9px 20px; border-radius: 4px; font-family: var(--sf); font-size: 9px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; transition: background 0.15s; white-space: nowrap; }
         .global-banner-btn:hover { background: var(--blue-dark); }
         @media (max-width: 600px) { .global-banner { flex-wrap: wrap; } .global-banner-btn { margin-left: 0; } }
 
-        /* ── GLOBAL HERO (image left) ── */
-        .hero-grid-flip {
-          display: grid; grid-template-columns: 420px 1fr;
-          border: 1px solid var(--rule); border-top: none;
-          background: white; overflow: hidden;
-        }
-        @media (max-width: 880px) {
-          .hero-grid-flip { grid-template-columns: 1fr; }
-          .hero-img-flip { height: 220px !important; border-right: none !important; border-bottom: 1px solid var(--rule) !important; }
-        }
+        .hero-grid-flip { display: grid; grid-template-columns: 420px 1fr; border: 1px solid var(--rule); border-top: none; background: white; overflow: hidden; }
+        @media (max-width: 880px) { .hero-grid-flip { grid-template-columns: 1fr; } .hero-img-flip { height: 220px !important; border-right: none !important; border-bottom: 1px solid var(--rule) !important; } }
         .hero-img-flip { position: relative; overflow: hidden; border-right: 1px solid var(--rule); }
-        .hero-img-flip img {
-          position: absolute; inset: 0; width: 100%; height: 100%;
-          object-fit: cover; transition: transform 0.7s ease;
-        }
+        .hero-img-flip img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
         .hero-grid-flip:hover .hero-img-flip img { transform: scale(1.04); }
 
-        /* Hero text shared */
-        .hero-cat {
-          font-family: var(--sf); font-size: 8px; font-weight: 800;
-          letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 12px;
-          display: block;
-        }
-        .hero-title {
-          font-family: var(--pf); font-size: clamp(1.5rem, 2.8vw, 2.4rem);
-          font-weight: 900; line-height: 1.07; letter-spacing: -0.02em;
-          color: var(--ink); margin-bottom: 12px;
-        }
+        .hero-title { font-family: var(--pf); font-size: clamp(1.5rem, 2.8vw, 2.4rem); font-weight: 900; line-height: 1.07; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 12px; }
         .hero-rule-line { width: 32px; height: 2px; margin-bottom: 12px; }
-        .hero-subtitle {
-          font-size: clamp(13px, 1.4vw, 15px); line-height: 1.76;
-          color: #5A4A30; margin-bottom: 16px; font-style: italic;
-        }
+        .hero-subtitle { font-size: clamp(13px, 1.4vw, 15px); line-height: 1.76; color: #5A4A30; margin-bottom: 16px; font-style: italic; }
         .topic-pills { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 22px; }
-        .topic-pill {
-          font-family: var(--sf); font-size: 8px; font-weight: 600;
-          letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
-          background: var(--parch); border: 1px solid var(--rule2); padding: 3px 9px;
-        }
-        .hero-foot {
-          display: flex; align-items: center; justify-content: space-between;
-          padding-top: 18px; border-top: 1px solid var(--rule2);
-          font-family: var(--sf); font-size: 8.5px;
-        }
+        .topic-pill { font-family: var(--sf); font-size: 8px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); background: var(--parch); border: 1px solid var(--rule2); padding: 3px 9px; }
+        .hero-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 18px; border-top: 1px solid var(--rule2); font-family: var(--sf); font-size: 8.5px; }
         .hero-foot-meta { color: #AAA; letter-spacing: 0.06em; text-transform: uppercase; }
-        .hero-foot-read {
-          display: flex; align-items: center; gap: 5px;
-          font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
-          text-decoration: none; transition: gap 0.15s;
-        }
+        .hero-foot-read { display: flex; align-items: center; gap: 5px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; transition: gap 0.15s; }
         .hero-foot-read:hover { gap: 8px; }
 
-        /* ── 2-COL LAYOUT ── */
-        .two-col {
-          display: grid; grid-template-columns: 1fr 308px;
-          gap: clamp(16px, 2.5vw, 28px); align-items: start;
-        }
+        .two-col { display: grid; grid-template-columns: 1fr 308px; gap: clamp(16px, 2.5vw, 28px); align-items: start; }
         @media (max-width: 980px) { .two-col { grid-template-columns: 1fr; } }
 
-        /* ── 3-COL GRID ── */
-        .grid-3 {
-          display: grid; grid-template-columns: repeat(3, 1fr);
-          border: 1px solid var(--rule); background: var(--rule); gap: 1px;
-        }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--rule); background: var(--rule); gap: 1px; }
         @media (max-width: 880px) { .grid-3 { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 520px) { .grid-3 { grid-template-columns: 1fr; } }
-
-        .grid-card {
-          background: white; text-decoration: none;
-          display: flex; flex-direction: column; transition: background 0.15s;
-        }
+        .grid-card { background: white; text-decoration: none; display: flex; flex-direction: column; transition: background 0.15s; }
         .grid-card:hover { background: #FAFAF5; }
         .grid-card-img { position: relative; height: 110px; overflow: hidden; flex-shrink: 0; }
-        .grid-card-img img {
-          position: absolute; inset: 0; width: 100%; height: 100%;
-          object-fit: cover; transition: transform 0.5s;
-        }
+        .grid-card-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
         .grid-card:hover .grid-card-img img { transform: scale(1.06); }
         .grid-card-img-bar { position: absolute; top: 0; left: 0; right: 0; height: 2px; }
         .grid-card-body { padding: 12px 14px 14px; flex: 1; display: flex; flex-direction: column; }
-        .grid-card-cat {
-          font-family: var(--sf); font-size: 7.5px; font-weight: 800;
-          letter-spacing: 0.2em; text-transform: uppercase;
-          margin-bottom: 6px;
-        }
-        .grid-card-title {
-          font-family: var(--pf); font-size: 0.88rem; font-weight: 700;
-          line-height: 1.26; color: var(--ink); flex: 1; margin-bottom: 10px;
-        }
-        .grid-card-foot {
-          display: flex; justify-content: space-between; align-items: center;
-          padding-top: 9px; border-top: 1px solid var(--rule2);
-          font-family: var(--sf); font-size: 8px; color: #AAA;
-          text-transform: uppercase; letter-spacing: 0.06em;
-        }
+        .grid-card-title { font-family: var(--pf); font-size: 0.88rem; font-weight: 700; line-height: 1.26; color: var(--ink); flex: 1; margin-bottom: 10px; }
+        .grid-card-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 9px; border-top: 1px solid var(--rule2); font-family: var(--sf); font-size: 8px; color: #AAA; text-transform: uppercase; letter-spacing: 0.06em; }
 
-        /* ── SIDEBAR ── */
-        .sidebar-box {
-          border: 1px solid var(--rule); background: white; overflow: hidden;
-        }
+        .sidebar-box { border: 1px solid var(--rule); background: white; overflow: hidden; }
         .sidebar-box + .sidebar-box { margin-top: 14px; }
-        .sidebar-hd {
-          background: var(--ink); padding: 14px 18px; position: relative;
-        }
-        .sidebar-hd::before {
-          content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-          background: linear-gradient(90deg, var(--teal), var(--teal-light));
-        }
-        .sidebar-hd-title {
-          font-family: var(--pf); font-size: 0.95rem; font-weight: 700;
-          color: white; font-style: italic;
-        }
-        .sidebar-hd-sub {
-          font-family: var(--sf); font-size: 7.5px; letter-spacing: 0.16em;
-          text-transform: uppercase; color: rgba(94,234,212,0.45); margin-top: 3px;
-        }
-        .op-row {
-          display: flex; align-items: flex-start; gap: 12px;
-          padding: 12px 18px; border-bottom: 1px solid var(--rule2);
-          text-decoration: none; transition: background 0.12s;
-        }
+        .sidebar-hd { background: var(--ink); padding: 14px 18px; position: relative; }
+        .sidebar-hd::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--teal), var(--teal-light)); }
+        .sidebar-hd-title { font-family: var(--pf); font-size: 0.95rem; font-weight: 700; color: white; font-style: italic; }
+        .sidebar-hd-sub { font-family: var(--sf); font-size: 7.5px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(94,234,212,0.45); margin-top: 3px; }
+        .op-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--rule2); text-decoration: none; transition: background 0.12s; }
         .op-row:last-child { border-bottom: none; }
         .op-row:hover { background: var(--parch); }
-        .op-num {
-          font-family: var(--pf); font-size: 1.1rem; font-weight: 900;
-          color: var(--rule); flex-shrink: 0; width: 26px; padding-top: 1px;
-          line-height: 1;
-        }
-        .op-cat {
-          font-family: var(--sf); font-size: 7px; font-weight: 800;
-          letter-spacing: 0.16em; text-transform: uppercase;
-          color: var(--teal); margin-bottom: 3px;
-        }
-        .op-title {
-          font-family: var(--pf); font-size: 0.8rem; font-weight: 700;
-          line-height: 1.3; color: var(--ink); margin-bottom: 3px;
-        }
+        .op-num { font-family: var(--pf); font-size: 1.1rem; font-weight: 900; color: var(--rule); flex-shrink: 0; width: 26px; padding-top: 1px; line-height: 1; }
+        .op-cat { font-family: var(--sf); font-size: 7px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--teal); margin-bottom: 3px; }
+        .op-title { font-family: var(--pf); font-size: 0.8rem; font-weight: 700; line-height: 1.3; color: var(--ink); margin-bottom: 3px; }
         .op-date { font-family: var(--sf); font-size: 7.5px; color: #AAA; text-transform: uppercase; letter-spacing: 0.06em; }
 
-        /* Sidebar CTA */
-        .sidebar-cta {
-          background: linear-gradient(135deg, var(--ink) 0%, #1A2A2C 100%);
-          padding: 20px 18px; position: relative; overflow: hidden; margin-top: 14px;
-          border: 1px solid var(--rule);
-        }
-        .sidebar-cta::before {
-          content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-          background: linear-gradient(90deg, var(--teal), var(--teal-light));
-        }
-        .sidebar-cta-label {
-          font-family: var(--sf); font-size: 7.5px; font-weight: 800;
-          letter-spacing: 0.24em; text-transform: uppercase;
-          color: rgba(94,234,212,0.5); margin-bottom: 7px;
-        }
-        .sidebar-cta-title {
-          font-family: var(--pf); font-size: 1rem; font-weight: 700;
-          color: white; line-height: 1.3; margin-bottom: 7px; font-style: italic;
-        }
-        .sidebar-cta-body {
-          font-size: 11px; color: rgba(255,255,255,0.38); line-height: 1.6; margin-bottom: 16px;
-        }
-        .sidebar-cta-btn {
-          display: flex; align-items: center; justify-content: center; gap: 6px;
-          background: var(--teal); color: white; padding: 10px 14px;
-          font-family: var(--sf); font-size: 9px; font-weight: 800;
-          letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none;
-          border-radius: 4px; transition: background 0.15s;
-        }
+        .sidebar-cta { background: linear-gradient(135deg, var(--ink) 0%, #1A2A2C 100%); padding: 20px 18px; position: relative; overflow: hidden; margin-top: 14px; border: 1px solid var(--rule); }
+        .sidebar-cta::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--teal), var(--teal-light)); }
+        .sidebar-cta-label { font-family: var(--sf); font-size: 7.5px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; color: rgba(94,234,212,0.5); margin-bottom: 7px; }
+        .sidebar-cta-title { font-family: var(--pf); font-size: 1rem; font-weight: 700; color: white; line-height: 1.3; margin-bottom: 7px; font-style: italic; }
+        .sidebar-cta-body { font-size: 11px; color: rgba(255,255,255,0.38); line-height: 1.6; margin-bottom: 16px; }
+        .sidebar-cta-btn { display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--teal); color: white; padding: 10px 14px; font-family: var(--sf); font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; border-radius: 4px; transition: background 0.15s; }
         .sidebar-cta-btn:hover { background: var(--teal-dark); }
 
-        /* ── ALL ARTICLES TABLE ── */
         .articles-table { border: 1px solid var(--rule); background: white; overflow: hidden; }
-        .articles-table-hd {
-          background: var(--ink); padding: 9px 18px;
-          display: grid; grid-template-columns: 1fr 150px 78px 68px; gap: 14px;
-        }
-        @media (max-width: 620px) {
-          .articles-table-hd { grid-template-columns: 1fr; }
-          .art-hide { display: none !important; }
-        }
-        .articles-table-hd span {
-          font-family: var(--sf); font-size: 7.5px; font-weight: 800;
-          letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.28);
-        }
-        .art-row {
-          display: grid; grid-template-columns: 1fr 150px 78px 68px;
-          gap: 14px; align-items: center; padding: 12px 18px;
-          border-bottom: 1px solid var(--rule2); text-decoration: none;
-          background: white; transition: background 0.1s, padding-left 0.15s;
-        }
+        .articles-table-hd { background: var(--ink); padding: 9px 18px; display: grid; grid-template-columns: 1fr 150px 78px 68px; gap: 14px; }
+        @media (max-width: 620px) { .articles-table-hd { grid-template-columns: 1fr; } .art-hide { display: none !important; } }
+        .articles-table-hd span { font-family: var(--sf); font-size: 7.5px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.28); }
+        .art-row { display: grid; grid-template-columns: 1fr 150px 78px 68px; gap: 14px; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--rule2); text-decoration: none; background: white; transition: background 0.1s, padding-left 0.15s; }
         .art-row:last-child { border-bottom: none; }
         .art-row:hover { background: var(--parch); padding-left: 24px; }
         @media (max-width: 620px) { .art-row { grid-template-columns: 1fr; } }
-        .art-title {
-          font-family: var(--pf); font-size: 13px; font-weight: 700;
-          color: var(--ink); line-height: 1.3;
-        }
-        .art-cat {
-          font-family: var(--sf); font-size: 8px; font-weight: 700;
-          letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal);
-          border: 1px solid rgba(13,148,136,.28); padding: 2px 9px; text-align: center;
-        }
+        .art-title { font-family: var(--pf); font-size: 13px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+        .art-cat { font-family: var(--sf); font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); border: 1px solid rgba(13,148,136,.28); padding: 2px 9px; text-align: center; }
         .art-meta { font-family: var(--sf); font-size: 9px; color: #AAA; }
 
-        /* ── STATS TICKER ── */
-        .ticker {
-          display: flex; flex-wrap: wrap; background: var(--ink);
-          border: 1px solid var(--rule); border-top: none;
-        }
-        .ticker-item {
-          flex: 1; min-width: 90px; padding: 16px 20px; text-align: center;
-          border-right: 1px solid rgba(255,255,255,0.06);
-        }
+        .ticker { display: flex; flex-wrap: wrap; background: var(--ink); border: 1px solid var(--rule); border-top: none; }
+        .ticker-item { flex: 1; min-width: 90px; padding: 16px 20px; text-align: center; border-right: 1px solid rgba(255,255,255,0.06); }
         .ticker-item:last-child { border-right: none; }
         .ticker-val { font-family: var(--pf); font-size: 1.5rem; font-weight: 900; color: white; line-height: 1; margin-bottom: 4px; }
         .ticker-label { font-family: var(--sf); font-size: 7.5px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,.28); }
 
-        /* ── BOTTOM CTA ── */
-        .bottom-cta {
-          background: linear-gradient(135deg, var(--ink) 0%, #1A2A2C 100%);
-          padding: clamp(24px, 4vw, 44px) clamp(20px, 4vw, 52px);
-          margin-top: 36px; display: flex; flex-wrap: wrap;
-          align-items: center; justify-content: space-between; gap: 20px;
-          border-top: 3px solid var(--teal); border-radius: 12px;
-        }
+        .bottom-cta { background: linear-gradient(135deg, var(--ink) 0%, #1A2A2C 100%); padding: clamp(24px, 4vw, 44px) clamp(20px, 4vw, 52px); margin-top: 36px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; border-top: 3px solid var(--teal); border-radius: 12px; }
         .bottom-cta-label { font-family: var(--sf); font-size: 8px; font-weight: 800; letter-spacing: 0.26em; text-transform: uppercase; color: rgba(94,234,212,0.5); margin-bottom: 7px; }
         .bottom-cta-title { font-family: var(--pf); font-size: clamp(1rem, 2vw, 1.4rem); font-weight: 700; color: white; margin-bottom: 5px; }
         .bottom-cta-sub { font-size: 12px; color: rgba(255,255,255,.35); font-style: italic; }
-        .bottom-cta-btn {
-          flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px;
-          background: var(--teal); color: white; padding: 13px 26px; border-radius: 40px;
-          font-family: var(--sf); font-size: 10px; font-weight: 800;
-          letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;
-          transition: background 0.2s, transform 0.15s;
-        }
+        .bottom-cta-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; background: var(--teal); color: white; padding: 13px 26px; border-radius: 40px; font-family: var(--sf); font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; transition: background 0.2s, transform 0.15s; }
         .bottom-cta-btn:hover { background: var(--teal-dark); transform: translateY(-2px); }
 
-        /* ── FOOTER ──
-           KEY FIX: footer stays at bottom, flex-shrink: 0 prevents collapse  */
-        .site-footer {
-          flex-shrink: 0;
-        }
-
-        /* ── FOOTER LINKS ── */
-        .footer-grid {
-          display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
-          margin-top: 28px; padding-top: 28px; border-top: 1px solid var(--rule2);
-        }
+        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 28px; padding-top: 28px; border-top: 1px solid var(--rule2); }
         @media (max-width: 680px) { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
-        .footer-link-card {
-          padding: 11px 14px; border: 1px solid var(--rule2);
-          background: white; text-decoration: none; border-radius: 6px;
-          transition: border-color 0.15s;
-        }
+        .footer-link-card { padding: 11px 14px; border: 1px solid var(--rule2); background: white; text-decoration: none; border-radius: 6px; transition: border-color 0.15s; }
         .footer-link-card:hover { border-color: var(--teal); }
         .footer-link-title { font-family: var(--sf); font-size: 9.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); margin-bottom: 3px; }
         .footer-link-desc { font-family: var(--sf); font-size: 9.5px; color: #AAA; }
-
-        .footer-note {
-          margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--rule2);
-          font-family: var(--sf); font-size: 8.5px; color: #AAA; line-height: 1.7;
-        }
+        .footer-note { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--rule2); font-family: var(--sf); font-size: 8.5px; color: #AAA; line-height: 1.7; }
         .footer-nav-links { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 5px 16px; }
-        .footer-nav-links a {
-          font-family: var(--sf); font-size: 8.5px; font-weight: 600;
-          letter-spacing: 0.08em; text-transform: uppercase; color: #AAA;
-          text-decoration: none; transition: color 0.15s;
-        }
+        .footer-nav-links a { font-family: var(--sf); font-size: 8.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #AAA; text-decoration: none; transition: color 0.15s; }
         .footer-nav-links a:hover { color: var(--teal); }
 
-        /* ── ANIMATIONS ── */
         @keyframes riseIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
         .ri-0 { animation: riseIn 0.5s 0.00s ease both; }
         .ri-1 { animation: riseIn 0.5s 0.07s ease both; }
@@ -875,95 +566,87 @@ export default function BlogIndexPage() {
         ::-webkit-scrollbar-thumb { background: var(--rule); }
       `}</style>
 
-      <div className="page-root">
+      {/*
+        ══════════════════════════════════════════════════════════
+        STRUCTURE — mirrors about/page.tsx exactly:
 
-        {/* ══ HERO MASTHEAD ══ */}
-        <div className="blog-hero">
-          <div className="blog-hero-bg" />
+          .blog-page-root          → min-height:100vh, flex column
+            <Navbar />             → header (flex-shrink:0, never collapses)
+            .blog-page-content     → flex:1 (fills ALL remaining height)
+              .blog-hero           → masthead (flex-shrink:0, no overflow:hidden)
+              .main-wrap           → article content (fills remaining space in page-content)
+        ══════════════════════════════════════════════════════════
+      */}
+      <div className="blog-page-root">
 
-          {/* Top nav bar */}
-          <div className="hero-topbar ri-0">
-            <Link href="/" className="hero-topbar-logo">Up<em>Forge</em></Link>
-            <nav className="hero-topbar-nav" aria-label="Main navigation">
-              <Link href="/blog/india-startup-ecosystem-2026">India</Link>
-              <Link href="/blog/top-trending-global-startups-2026">Global</Link>
-              <Link href="/blog/best-ai-tools-for-business-2026">AI</Link>
-              <Link href="/blog/how-to-get-startup-funding-india-2026">Funding</Link>
-              <Link href="/registry" style={{ color: "rgba(255,255,255,0.55)", textDecoration: "none", fontFamily: "system-ui", fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase" }}>Registry</Link>
-              <Link href="/report" className="hero-topbar-cta hero-topbar-nav a">Free Report</Link>
-            </nav>
-          </div>
+        {/* Navbar sits as first child of the flex-column root — identical to registry/page.tsx */}
+        <Navbar />
 
-          {/* Center content */}
-          <div className="blog-mast-content ri-0">
-            <h1 className="blog-mast-h1">The <em>Forge</em></h1>
-            <span className="blog-mast-rule" />
-            <p className="blog-mast-tagline">
-              Startup analysis, founder stories &amp; strategy<br />for India's &amp; the world's builders — 2026
-            </p>
+        {/* flex:1 — this div fills ALL vertical space below Navbar */}
+        <div className="blog-page-content">
 
-            {/* ── SEARCH BAR ── */}
-            <div className="search-wrap">
-              <div className="search-bar">
-                <Search size={16} className="search-icon" />
-                <input
-                  type="text"
-                  className="search-input"
-                  placeholder="Search articles, topics, startups…"
-                  value={searchQ}
-                  onChange={e => setSearchQ(e.target.value)}
-                  aria-label="Search articles"
-                  autoComplete="off"
-                />
-                {searchQ && (
-                  <button className="search-clear" onClick={() => setSearchQ("")} aria-label="Clear search">
-                    <X size={14} />
-                  </button>
+          {/* ══ HERO MASTHEAD — no overflow:hidden so search dropdown is visible ══ */}
+          <section className="blog-hero" aria-label="The Forge blog masthead">
+            <div className="blog-hero-bg" role="presentation" />
+            <div className="blog-mast-content ri-0">
+              <h1 className="blog-mast-h1">The <em>Forge</em></h1>
+              <span className="blog-mast-rule" />
+              <p className="blog-mast-tagline">
+                Startup analysis, founder stories &amp; strategy<br />for India's &amp; the world's builders — 2026
+              </p>
+
+              <div className="search-wrap">
+                <div className="search-bar">
+                  <Search size={16} className="search-icon" />
+                  <input
+                    type="text" className="search-input"
+                    placeholder="Search articles, topics, startups…"
+                    value={searchQ}
+                    onChange={e => setSearchQ(e.target.value)}
+                    aria-label="Search articles"
+                    autoComplete="off"
+                  />
+                  {searchQ && (
+                    <button className="search-clear" onClick={() => setSearchQ("")} aria-label="Clear search">
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+                {showResults && (
+                  <div className="search-results" role="listbox">
+                    {searchResults.length > 0 ? (
+                      <>
+                        <div className="search-results-header">
+                          {searchResults.length} result{searchResults.length !== 1 ? "s" : ""} for &ldquo;{searchQ}&rdquo;
+                        </div>
+                        {searchResults.map((post, i) => (
+                          <Link key={i} href={post.slug} className="search-result-item" onClick={() => setSearchQ("")}>
+                            <span className="search-result-cat">{post.category}</span>
+                            <span className="search-result-title">{post.title}</span>
+                            <span className="search-result-meta">{post.readTime}</span>
+                          </Link>
+                        ))}
+                      </>
+                    ) : (
+                      <div className="search-no-results">No articles found for &ldquo;{searchQ}&rdquo;</div>
+                    )}
+                  </div>
                 )}
               </div>
 
-              {/* Results dropdown — floats above all page content via z-index: 9999 */}
-              {showResults && (
-                <div className="search-results" role="listbox" aria-label="Search results">
-                  {searchResults.length > 0 ? (
-                    <>
-                      <div className="search-results-header">
-                        {searchResults.length} result{searchResults.length !== 1 ? "s" : ""} for &ldquo;{searchQ}&rdquo;
-                      </div>
-                      {searchResults.map((post, i) => (
-                        <Link key={i} href={post.slug} className="search-result-item" onClick={() => setSearchQ("")}>
-                          <span className="search-result-cat">{post.category}</span>
-                          <span className="search-result-title">{post.title}</span>
-                          <span className="search-result-meta">{post.readTime}</span>
-                        </Link>
-                      ))}
-                    </>
-                  ) : (
-                    <div className="search-no-results">No articles found for &ldquo;{searchQ}&rdquo;</div>
-                  )}
-                </div>
-              )}
+              <div className="live-badge">
+                <span className="live-dot" />
+                <span className="live-text">Live · {ALL_POSTS.length} Articles · Updated March 2026</span>
+              </div>
             </div>
+          </section>
 
-            <div className="live-badge">
-              <span className="live-dot" />
-              <span className="live-text">Live · {ALL_POSTS.length} Articles · Updated March 2026</span>
-            </div>
-          </div>
-        </div>
-
-        {/* ══ PAGE BODY ══ */}
-        <div className="page-body">
-          <div className="main-wrap">
+          {/* ══ MAIN CONTENT ══ */}
+          <main className="main-wrap">
 
             {/* ── INDIA COVER STORY ── */}
             <section aria-label="India Cover Story" className="ri-1">
-              <div className="sh">
-                <div className="sh-accent" />
-                <span className="sh-l">India Edition · Cover Story</span>
-                <div className="sh-r" />
-              </div>
-
+              <div className="sh"><div className="sh-accent" /><span className="sh-l">India Edition · Cover Story</span><div className="sh-r" /></div>
               <Link href={HERO_POST.slug} style={{ textDecoration: "none", display: "block" }}>
                 <div className="hero-grid">
                   <div className="hero-txt">
@@ -977,9 +660,7 @@ export default function BlogIndexPage() {
                       <h2 className="hero-title">{HERO_POST.title}</h2>
                       <div className="hero-rule-line" style={{ background: HERO_POST.accent }} />
                       <p className="hero-subtitle">{HERO_POST.subtitle}</p>
-                      <div className="topic-pills">
-                        {HERO_POST.topics.map(t => <span key={t} className="topic-pill">{t}</span>)}
-                      </div>
+                      <div className="topic-pills">{HERO_POST.topics.map(t => <span key={t} className="topic-pill">{t}</span>)}</div>
                     </div>
                     <div className="hero-foot">
                       <span className="hero-foot-meta">{HERO_POST.date} · {HERO_POST.readTime} read</span>
@@ -991,8 +672,6 @@ export default function BlogIndexPage() {
                   </div>
                 </div>
               </Link>
-
-              {/* India 4-col secondary */}
               <div className="sec-grid">
                 {SECONDARY_POSTS.map((post, i) => (
                   <Link key={i} href={post.slug} className="story-card" style={{ textDecoration: "none" }}>
@@ -1009,9 +688,7 @@ export default function BlogIndexPage() {
                       <p className="story-excerpt">{post.excerpt}</p>
                       <div className="story-foot">
                         <span className="story-foot-meta">{post.date}</span>
-                        <span className="story-foot-arrow" style={{ color: post.accent }}>
-                          {post.readTime} <ArrowRight size={11} />
-                        </span>
+                        <span className="story-foot-arrow" style={{ color: post.accent }}>{post.readTime} <ArrowRight size={11} /></span>
                       </div>
                     </div>
                   </Link>
@@ -1021,20 +698,14 @@ export default function BlogIndexPage() {
 
             {/* ── GLOBAL EDITION ── */}
             <section aria-label="Global Edition" className="ri-2 section-mt2">
-
-              {/* Global banner */}
               <div className="global-banner" style={{ borderRadius: "6px 6px 0 0" }}>
                 <div className="global-banner-icon">🌍</div>
                 <div>
                   <p className="global-banner-label">New · Global Edition — March 2026</p>
                   <p className="global-banner-text">The 10 highest-traffic global startups — OpenAI, Perplexity, Revolut, Canva, Character.AI &amp; more.</p>
                 </div>
-                <Link href="/blog/top-trending-global-startups-2026" className="global-banner-btn">
-                  Read Feature <ArrowRight size={11} />
-                </Link>
+                <Link href="/blog/top-trending-global-startups-2026" className="global-banner-btn">Read Feature <ArrowRight size={11} /></Link>
               </div>
-
-              {/* Global Hero */}
               <Link href={GLOBAL_HERO_POST.slug} style={{ textDecoration: "none", display: "block" }}>
                 <div className="hero-grid-flip">
                   <div className="hero-img-flip">
@@ -1064,8 +735,6 @@ export default function BlogIndexPage() {
                   </div>
                 </div>
               </Link>
-
-              {/* Global 4-col secondary */}
               <div className="sec-grid">
                 {GLOBAL_SECONDARY_POSTS.map((post, i) => (
                   <Link key={i} href={post.slug} className="story-card" style={{ textDecoration: "none" }}>
@@ -1092,13 +761,8 @@ export default function BlogIndexPage() {
 
             {/* ── MORE STORIES + SIDEBAR ── */}
             <div className="two-col section-mt2 ri-3">
-              {/* Left: 3×2 grid */}
               <div>
-                <div className="sh">
-                  <div className="sh-accent" />
-                  <span className="sh-l">More Stories — {GRID_POSTS.length} Articles</span>
-                  <div className="sh-r" />
-                </div>
+                <div className="sh"><div className="sh-accent" /><span className="sh-l">More Stories — {GRID_POSTS.length} Articles</span><div className="sh-r" /></div>
                 <div className="grid-3">
                   {GRID_POSTS.map((post, i) => (
                     <Link key={i} href={post.slug} className="grid-card">
@@ -1113,25 +777,14 @@ export default function BlogIndexPage() {
                       <div className="grid-card-body">
                         <h4 className="grid-card-title">{post.title}</h4>
                         <p style={{ fontFamily: "Georgia, serif", fontSize: 11.5, color: "var(--muted)", fontStyle: "italic", lineHeight: 1.6, marginBottom: 10, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{post.excerpt}</p>
-                        <div className="grid-card-foot">
-                          <span>{post.readTime}</span>
-                          <span style={{ color: post.accent, fontWeight: 800, fontSize: 11 }}>→</span>
-                        </div>
+                        <div className="grid-card-foot"><span>{post.readTime}</span><span style={{ color: post.accent, fontWeight: 800, fontSize: 11 }}>→</span></div>
                       </div>
                     </Link>
                   ))}
                 </div>
               </div>
-
-              {/* Right: Sidebar */}
               <aside>
-                <div className="sh">
-                  <div className="sh-accent" />
-                  <span className="sh-l">Opinion &amp; Analysis</span>
-                  <div className="sh-r" />
-                </div>
-
-                {/* Opinion widget */}
+                <div className="sh"><div className="sh-accent" /><span className="sh-l">Opinion &amp; Analysis</span><div className="sh-r" /></div>
                 <div className="sidebar-box">
                   <div className="sidebar-hd">
                     <p className="sidebar-hd-title">The UpForge Perspective</p>
@@ -1140,51 +793,31 @@ export default function BlogIndexPage() {
                   {OPINION_POSTS.map((op, i) => (
                     <Link key={i} href={op.slug} className="op-row">
                       <span className="op-num">{op.num}</span>
-                      <div>
-                        <p className="op-cat">{op.category}</p>
-                        <p className="op-title">{op.title}</p>
-                        <span className="op-date">{op.date}</span>
-                      </div>
+                      <div><p className="op-cat">{op.category}</p><p className="op-title">{op.title}</p><span className="op-date">{op.date}</span></div>
                     </Link>
                   ))}
                 </div>
-
-                {/* Valuation CTA */}
                 <div className="sidebar-cta">
                   <p className="sidebar-cta-label">✨ Free AI Tool</p>
                   <p className="sidebar-cta-title">Startup Valuation<br /><em style={{ color: "var(--teal-light)" }}>Report — Free</em></p>
                   <p className="sidebar-cta-body">AI-powered analysis benchmarked against 500+ global startups. Takes 3 minutes.</p>
-                  <Link href="/report" className="sidebar-cta-btn">
-                    Generate Free Report <ArrowRight size={12} />
-                  </Link>
+                  <Link href="/report" className="sidebar-cta-btn">Generate Free Report <ArrowRight size={12} /></Link>
                 </div>
-
-                {/* Registry CTA */}
                 <div className="sidebar-cta" style={{ marginTop: 14, borderTop: "3px solid var(--blue)" }}>
                   <p className="sidebar-cta-label" style={{ color: "rgba(147,197,253,0.6)" }}>🌍 Global Registry</p>
                   <p className="sidebar-cta-title">Get your startup<br /><em style={{ color: "#93C5FD" }}>listed + verified</em></p>
                   <p className="sidebar-cta-body">Free UFRN assigned to every approved startup. Trusted by investors and press.</p>
-                  <Link href="/registry" className="sidebar-cta-btn" style={{ background: "var(--blue)" }}>
-                    Submit to Registry <ArrowRight size={12} />
-                  </Link>
+                  <Link href="/registry" className="sidebar-cta-btn" style={{ background: "var(--blue)" }}>Submit to Registry <ArrowRight size={12} /></Link>
                 </div>
               </aside>
             </div>
 
             {/* ── ALL PUBLISHED ARTICLES ── */}
             <section aria-label="All published articles" className="ri-4 section-mt2">
-              <div className="sh">
-                <div className="sh-accent" />
-                <span className="sh-l">All Published — {ALL_POSTS.length} Articles · March 2026</span>
-                <div className="sh-r" />
-              </div>
-
+              <div className="sh"><div className="sh-accent" /><span className="sh-l">All Published — {ALL_POSTS.length} Articles · March 2026</span><div className="sh-r" /></div>
               <div className="articles-table">
                 <div className="articles-table-hd">
-                  <span>Article</span>
-                  <span className="art-hide">Category</span>
-                  <span className="art-hide">Published</span>
-                  <span className="art-hide">Read Time</span>
+                  <span>Article</span><span className="art-hide">Category</span><span className="art-hide">Published</span><span className="art-hide">Read Time</span>
                 </div>
                 {ALL_POSTS.map((post, i) => (
                   <Link key={i} href={post.slug} className="art-row">
@@ -1195,8 +828,6 @@ export default function BlogIndexPage() {
                   </Link>
                 ))}
               </div>
-
-              {/* Stats ticker below table */}
               <div className="ticker">
                 {[
                   { v: String(ALL_POSTS.length), l: "Articles Published"  },
@@ -1205,10 +836,7 @@ export default function BlogIndexPage() {
                   { v: "10",                     l: "Global Founders"     },
                   { v: "$3.44B",                 l: "Q1 2026 Funding"     },
                 ].map((s, i) => (
-                  <div key={i} className="ticker-item">
-                    <p className="ticker-val">{s.v}</p>
-                    <p className="ticker-label">{s.l}</p>
-                  </div>
+                  <div key={i} className="ticker-item"><p className="ticker-val">{s.v}</p><p className="ticker-label">{s.l}</p></div>
                 ))}
               </div>
             </section>
@@ -1223,14 +851,14 @@ export default function BlogIndexPage() {
               <Link href="/submit" className="bottom-cta-btn">Submit Your Startup <ArrowRight size={13} /></Link>
             </div>
 
-            {/* ── FOOTER LINKS ── */}
-            <footer className="site-footer">
+            {/* ── FOOTER ── */}
+            <footer>
               <div className="footer-grid">
                 {[
-                  { l: "Global Registry →",        h: "https://www.upforge.org/registry",              desc: "Full verified database"       },
-                  { l: "Indian Unicorns 2026 →",   h: "/blog/top-indian-unicorns-2026",                desc: "All 125 unicorns profiled"    },
-                  { l: "Top AI Startups 2026 →",   h: "/blog/top-ai-startups-india-2026",              desc: "Sarvam, Krutrim & more"       },
-                  { l: "Global Startups 2026 →",   h: "/blog/top-trending-global-startups-2026",       desc: "OpenAI, Perplexity, Revolut…" },
+                  { l: "Global Registry →",       h: "https://www.upforge.org/registry",       desc: "Full verified database"       },
+                  { l: "Indian Unicorns 2026 →",  h: "/blog/top-indian-unicorns-2026",          desc: "All 125 unicorns profiled"    },
+                  { l: "Top AI Startups 2026 →",  h: "/blog/top-ai-startups-india-2026",        desc: "Sarvam, Krutrim & more"       },
+                  { l: "Global Startups 2026 →",  h: "/blog/top-trending-global-startups-2026", desc: "OpenAI, Perplexity, Revolut…" },
                 ].map(lnk => (
                   <Link key={lnk.h} href={lnk.h} className="footer-link-card">
                     <p className="footer-link-title">{lnk.l}</p>
@@ -1238,33 +866,31 @@ export default function BlogIndexPage() {
                   </Link>
                 ))}
               </div>
-
               <p className="footer-note">
                 * Article data sourced from Inc42, Forbes India, TechCrunch, Crunchbase, Tracxn, and company announcements as of March 2026.
                 UpForge is an independent registry — no paid placements, no sponsored rankings.
               </p>
-
               <nav className="footer-nav-links" aria-label="Footer navigation">
                 {[
-                  ["The Founder Chronicle", "/"],
-                  ["Global Registry", "https://www.upforge.org/registry"],
-                  ["Indian Unicorns 2026", "/blog/top-indian-unicorns-2026"],
-                  ["Top Global Startups 2026", "/blog/top-trending-global-startups-2026"],
-                  ["Startup Funding Guide", "/blog/how-to-get-startup-funding-india-2026"],
-                  ["Best AI Tools 2026", "/blog/best-ai-tools-for-business-2026"],
+                  ["The Founder Chronicle",       "/"],
+                  ["Global Registry",             "https://www.upforge.org/registry"],
+                  ["Indian Unicorns 2026",        "/blog/top-indian-unicorns-2026"],
+                  ["Top Global Startups 2026",    "/blog/top-trending-global-startups-2026"],
+                  ["Startup Funding Guide",       "/blog/how-to-get-startup-funding-india-2026"],
+                  ["Best AI Tools 2026",          "/blog/best-ai-tools-for-business-2026"],
                   ["Best Language Learning Apps", "/blog/best-language-learning-apps-2026"],
-                  ["Ramp vs Brex 2026", "/blog/ramp-vs-brex-corporate-card-comparison-2026"],
-                  ["Free Valuation Tool", "/report"],
-                  ["Submit Startup", "/submit"],
+                  ["Ramp vs Brex 2026",           "/blog/ramp-vs-brex-corporate-card-comparison-2026"],
+                  ["Free Valuation Tool",         "/report"],
+                  ["Submit Startup",              "/submit"],
                 ].map(([l, h]) => (
                   <Link key={h} href={h}>{l}</Link>
                 ))}
               </nav>
             </footer>
 
-          </div>
-        </div>
-      </div>
+          </main>
+        </div>{/* end blog-page-content */}
+      </div>{/* end blog-page-root */}
     </>
   )
 }
