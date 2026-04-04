@@ -1,14 +1,85 @@
-"use client"
-
 // app/blog/page.tsx
-// FIXED: Header/footer taken EXACTLY from about/page.tsx
-// - about page has NO <Navbar /> import — it owns its header inline
-// - Same ab-root → ab-hero (header) → ab-main (content) → ab-footer pattern
-// - Same stats band, same live badge, same footer nav
+// THE FORGE — Blog Index (www.upforge.in/blog + www.upforge.org/blog)
+// v3: Added title search, removed eyebrow text from masthead.
 
 import Link from "next/link"
-import { ArrowRight, ArrowUpRight, Search, X } from "lucide-react"
-import { useState, useMemo } from "react"
+import type { Metadata } from "next"
+import { ArrowRight, ArrowUpRight } from "lucide-react"
+
+export const metadata: Metadata = {
+  title: "The Forge — Startup Intelligence, Founder Stories & Strategy | UpForge",
+  description:
+    "Deep analysis on global and Indian startups, founder stories, AI tools, funding guides, unicorn profiles, and leadership lessons. Trusted by founders, investors, and builders worldwide.",
+  keywords: [
+    "startup blog 2026",
+    "Indian startup blog",
+    "startup founder stories",
+    "startup intelligence 2026",
+    "AI startup analysis 2026",
+    "startup funding guide India",
+    "Indian unicorns blog",
+    "top AI startups 2026",
+    "ChatGPT OpenAI startup story",
+    "Perplexity vs Google 2026",
+    "best language learning apps 2026",
+    "Canva AI image generator startup",
+  ],
+  alternates: { canonical: "https://www.upforge.in/blog" },
+  openGraph: {
+    title: "The Forge — Startup Intelligence by UpForge",
+    description:
+      "Global and Indian startup analysis — AI tools, founder stories, funding guides, unicorn profiles, and business strategy.",
+    url: "https://www.upforge.in/blog",
+    siteName: "UpForge",
+    images: [{ url: "https://www.upforge.in/og-blog.png", width: 1200, height: 630 }],
+    locale: "en_IN",
+    type: "website",
+  },
+  robots: { index: true, follow: true },
+}
+
+// ─── JSON-LD ──────────────────────────────────────────────────────────────────
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Blog",
+      "@id": "https://www.upforge.in/blog",
+      "name": "The Forge — UpForge Intelligence",
+      "url": "https://www.upforge.in/blog",
+      "description": "Startup analysis, founder stories, AI startup guides, and business strategy for global builders.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "UpForge",
+        "url": "https://www.upforge.in",
+        "logo": { "@type": "ImageObject", "url": "https://www.upforge.in/logo.jpg" },
+      },
+      "blogPost": [
+        // India posts
+        { "@type": "BlogPosting", "headline": "India Startup Ecosystem 2026: State of the Nation",              "url": "https://www.upforge.in/blog/india-startup-ecosystem-2026"                      },
+        { "@type": "BlogPosting", "headline": "How to Get Startup Funding in India 2026",                       "url": "https://www.upforge.in/blog/how-to-get-startup-funding-india-2026"            },
+        { "@type": "BlogPosting", "headline": "Top Indian Unicorns 2026: Ranked & Profiled",                    "url": "https://www.upforge.in/blog/top-indian-unicorns-2026"                        },
+        { "@type": "BlogPosting", "headline": "25 Best Indian Startup Founders to Follow 2026",                 "url": "https://www.upforge.in/blog/best-indian-startup-founders-to-follow-2026"     },
+        { "@type": "BlogPosting", "headline": "Top AI Startups in India (2026 Updated List)",                   "url": "https://www.upforge.in/blog/top-ai-startups-india-2026"                      },
+        { "@type": "BlogPosting", "headline": "How to Start a Startup in India (Step-by-Step Guide 2026)",      "url": "https://www.upforge.in/blog/how-to-start-startup-india-2026"                  },
+        // Global posts
+        { "@type": "BlogPosting", "headline": "Top Trending Global Startups 2026 — OpenAI, Perplexity & More", "url": "https://www.upforge.in/blog/top-trending-global-startups-2026"               },
+        { "@type": "BlogPosting", "headline": "ChatGPT Plus vs Perplexity AI: Which AI Search Wins in 2026?",  "url": "https://www.upforge.in/blog/chatgpt-plus-vs-perplexity-ai-2026"              },
+        { "@type": "BlogPosting", "headline": "Best AI Tools for Business 2026 — Complete Guide",               "url": "https://www.upforge.in/blog/best-ai-tools-for-business-2026"                 },
+        { "@type": "BlogPosting", "headline": "Best Language Learning Apps 2026: Preply vs Duolingo Ranked",    "url": "https://www.upforge.in/blog/best-language-learning-apps-2026"                },
+        { "@type": "BlogPosting", "headline": "Ramp vs Brex 2026: Which Corporate Card Wins?",                  "url": "https://www.upforge.in/blog/ramp-vs-brex-corporate-card-comparison-2026"    },
+        { "@type": "BlogPosting", "headline": "Best Travel Card 2026: Revolut vs Wise vs Monzo",                "url": "https://www.upforge.in/blog/best-travel-card-2026-revolut-wise-compared"    },
+      ],
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "UpForge",          "item": "https://www.upforge.in/"     },
+        { "@type": "ListItem", "position": 2, "name": "The Forge — Blog", "item": "https://www.upforge.in/blog" },
+      ],
+    },
+  ],
+}
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
 
@@ -20,9 +91,10 @@ const HERO_POST = {
   date:     "March 2026",
   readTime: "20 min",
   img:      "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1600&q=85&auto=format",
-  tag:      "Cover Story",
+  tag:      "Must Read",
   topics:   ["Funding Trends", "Top Sectors", "City Rankings", "5 Macro Trends", "Policy Landscape"],
-  accent:   "#0D9488",
+  accent:   "#B45309",
+  accentBg: "#FEF3C7",
 }
 
 const SECONDARY_POSTS = [
@@ -72,9 +144,10 @@ const SECONDARY_POSTS = [
   },
 ]
 
+// ── Global Trending Posts ────────────────────────────────────────────────
 const GLOBAL_HERO_POST = {
   title:    "Top 10 Trending Global Startups of 2026 — OpenAI, Perplexity, Revolut & More",
-  subtitle: "The 10 highest-traffic startups in the world right now — ranked by search volume, monthly visits, and cultural impact.",
+  subtitle: "The 10 highest-traffic startups in the world right now — ranked by search volume, monthly visits, and cultural impact. Founder stories, valuations, and the keywords driving each one.",
   slug:     "/blog/top-trending-global-startups-2026",
   category: "GLOBAL EDITION",
   date:     "March 2026",
@@ -83,6 +156,7 @@ const GLOBAL_HERO_POST = {
   tag:      "🌍 New",
   topics:   ["OpenAI", "Perplexity AI", "Revolut", "Canva", "Character.AI", "Anthropic", "Ramp", "Preply"],
   accent:   "#2563EB",
+  accentBg: "#EFF6FF",
 }
 
 const GLOBAL_SECONDARY_POSTS = [
@@ -99,7 +173,7 @@ const GLOBAL_SECONDARY_POSTS = [
   },
   {
     title:    "Best Travel Card 2026: Revolut vs Wise vs Monzo Compared",
-    excerpt:  "Multi-currency cards ranked for international travellers — exchange rates, ATM limits, crypto, and which card saves you the most money abroad.",
+    excerpt:  "Multi-currency cards ranked for international travellers — exchange rates, ATM limits, crypto, and which card saves you the most money abroad in 2026.",
     slug:     "/blog/best-travel-card-2026-revolut-wise-compared",
     category: "FINTECH GUIDE",
     date:     "March 2026",
@@ -135,705 +209,401 @@ const GLOBAL_SECONDARY_POSTS = [
 const GRID_POSTS = [
   {
     title:    "10 Best Indian Startup Founders to Follow in 2026",
-    excerpt:  "Philosophies, playbooks, and patterns of India's most influential builders.",
+    excerpt:  "Philosophies, playbooks, and patterns of India's most influential builders — from Alakh Pandey to Nithin Kamath to Kunal Shah.",
     slug:     "/blog/best-indian-startup-founders-to-follow-2026",
     category: "FOUNDER PROFILES",
     date:     "March 2026",
     readTime: "18 min",
     img:      "https://media.licdn.com/dms/image/v2/D5612AQGfFSvn9o_bfQ/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1696065814097?e=2147483647&v=beta&t=Y1m22xcvOnMrRh33yrvsi5-SwW_0Gdyants9fS5-aAg",
     accent:   "#2563EB",
+    accentBg: "#EFF6FF",
   },
   {
     title:    "Best AI Tools for Business 2026 — Complete Guide",
-    excerpt:  "ChatGPT, Claude, Canva AI, Perplexity — the AI tools every business should use in 2026.",
+    excerpt:  "ChatGPT, Claude, Canva AI, Perplexity — the AI tools every business should be using in 2026, with use cases, pricing, and honest comparisons.",
     slug:     "/blog/best-ai-tools-for-business-2026",
     category: "AI GUIDE",
     date:     "March 2026",
     readTime: "12 min",
     img:      "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&q=80&auto=format",
     accent:   "#10A37F",
+    accentBg: "#F0FDF4",
   },
   {
     title:    "OpenAI vs Anthropic Claude: Which AI Model Is Better in 2026?",
-    excerpt:  "GPT-4o vs Claude — coding, reasoning, safety, API pricing and which to build on.",
+    excerpt:  "GPT-4o vs Claude 3.5 — coding, reasoning, safety, API pricing and which model to build on for your startup in 2026.",
     slug:     "/blog/openai-vs-anthropic-claude-comparison-2026",
     category: "AI COMPARISON",
     date:     "March 2026",
     readTime: "10 min",
     img:      "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=600&q=80&auto=format",
     accent:   "#D97706",
+    accentBg: "#FFFBEB",
   },
   {
     title:    "IND vs NZ Final 2026: 7 Leadership Lessons Every Startup Founder Must Learn",
-    excerpt:  "Calm under pressure, team strategy, resilience — principles born from the crease.",
+    excerpt:  "Calm under pressure, team strategy, resilience — seven principles born from the crease that define both great captains and great founders.",
     slug:     "/blog/leadership-lessons-ind-vs-nz-final-2026",
     category: "LEADERSHIP",
     date:     "March 2026",
     readTime: "7 min",
     img:      "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=600&q=80",
     accent:   "#B45309",
+    accentBg: "#FEF3C7",
   },
   {
     title:    "Remove Background from Image Free: Best AI Tools 2026",
-    excerpt:  "Remove.bg, Canva Background Remover, Adobe Express — ranked for speed, accuracy, and pricing.",
+    excerpt:  "Remove.bg, Canva Background Remover, Adobe Express — the best free and paid AI photo cutout tools ranked for speed, accuracy, and API pricing.",
     slug:     "/blog/remove-background-from-image-free-tools-2026",
     category: "AI TOOLS",
     date:     "March 2026",
     readTime: "6 min",
     img:      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&auto=format",
     accent:   "#06B6D4",
+    accentBg: "#ECFEFF",
   },
   {
     title:    "Compress PDF Free 2026: Smallpdf vs iLovePDF vs Adobe",
-    excerpt:  "The fastest, highest-quality free PDF compression tools — compared on quality, limits, and privacy.",
+    excerpt:  "The fastest, highest-quality free PDF compression tools in 2026 — compared on file size reduction, quality loss, upload limits, and privacy.",
     slug:     "/blog/compress-pdf-free-smallpdf-ilovepdf-compared",
     category: "PRODUCTIVITY",
     date:     "March 2026",
     readTime: "5 min",
     img:      "https://images.unsplash.com/photo-1568667256549-094345857637?w=600&q=80&auto=format",
     accent:   "#EF4444",
+    accentBg: "#FEF2F2",
   },
 ]
 
 const OPINION_POSTS = [
-  { num: "I",    title: "Why India's Startup Valuations Are Being Re-Set — and What It Means for Founders",         category: "Opinion",          date: "Mar 2026", slug: "/blog/india-startup-ecosystem-2026" },
-  { num: "II",   title: "The Bootstrapped Advantage: Why 2026 May Be the Best Year to Build Without VC",           category: "Analysis",         date: "Mar 2026", slug: "/blog/how-to-get-startup-funding-india-2026" },
-  { num: "III",  title: "Why Perplexity AI Will Not Kill Google — But Will Permanently Shrink It",                  category: "AI Opinion",       date: "Mar 2026", slug: "/blog/chatgpt-plus-vs-perplexity-ai-2026" },
-  { num: "IV",   title: "Canva vs Adobe: The Design War That Adobe Is Quietly Losing",                              category: "Sector Analysis",  date: "Mar 2026", slug: "/blog/top-trending-global-startups-2026" },
-  { num: "V",    title: "Founder-Market Fit: Why Domain Obsession Beats MBA Strategy Every Time",                   category: "Strategy",         date: "Mar 2026", slug: "/blog/best-indian-startup-founders-to-follow-2026" },
-  { num: "VI",   title: "Character.AI's Engagement Problem: When 2 Hours/Day Is Both the Strength and the Risk",   category: "AI Opinion",       date: "Mar 2026", slug: "/blog/top-trending-global-startups-2026" },
-  { num: "VII",  title: "India Cannot Be a Consumer of AI Built Elsewhere — the Case for Sarvam & Krutrim",        category: "AI Opinion",       date: "Mar 2026", slug: "/blog/top-ai-startups-india-2026" },
-  { num: "VIII", title: "The Single-Purpose AI Utility Playbook: How Remove.bg Built 150M Visits With One Tool",   category: "Growth Analysis",  date: "Mar 2026", slug: "/blog/remove-background-from-image-free-tools-2026" },
+  { num: "I",    title: "Why India's Startup Valuations Are Being Re-Set — and What It Means for Founders",        category: "Opinion",          date: "Mar 2026", slug: "/blog/india-startup-ecosystem-2026" },
+  { num: "II",   title: "The Bootstrapped Advantage: Why 2026 May Be the Best Year to Build Without VC",          category: "Analysis",         date: "Mar 2026", slug: "/blog/how-to-get-startup-funding-india-2026" },
+  { num: "III",  title: "Why Perplexity AI Will Not Kill Google — But Will Permanently Shrink It",                 category: "AI Opinion",       date: "Mar 2026", slug: "/blog/chatgpt-plus-vs-perplexity-ai-2026" },
+  { num: "IV",   title: "Canva vs Adobe: The Design War That Adobe Is Quietly Losing",                             category: "Sector Analysis",  date: "Mar 2026", slug: "/blog/top-trending-global-startups-2026" },
+  { num: "V",    title: "Founder-Market Fit: Why Domain Obsession Beats MBA Strategy Every Time",                  category: "Strategy",         date: "Mar 2026", slug: "/blog/best-indian-startup-founders-to-follow-2026" },
+  { num: "VI",   title: "Character.AI's Engagement Problem: When 2 Hours/Day Is Both the Strength and the Risk",  category: "AI Opinion",       date: "Mar 2026", slug: "/blog/top-trending-global-startups-2026" },
+  { num: "VII",  title: "India Cannot Be a Consumer of AI Built Elsewhere — the Case for Sarvam & Krutrim",       category: "AI Opinion",       date: "Mar 2026", slug: "/blog/top-ai-startups-india-2026" },
+  { num: "VIII", title: "The Single-Purpose AI Utility Playbook: How Remove.bg Built 150M Visits With One Tool",  category: "Growth Analysis",  date: "Mar 2026", slug: "/blog/remove-background-from-image-free-tools-2026" },
 ]
 
 const ALL_POSTS = [
-  { title: "Oracle Layoffs 2026: 30,000 Jobs, One Email, No Warning",                    slug: "/blog/oracle-layoffs-2026",                          category: "Global Edition",   date: "Mar 2026", readTime: "16 min" },
-  { title: "India Startup Ecosystem 2026: State of the Nation",                          slug: "/blog/india-startup-ecosystem-2026",                  category: "Annual Report",    date: "Mar 2026", readTime: "20 min" },
-  { title: "How to Get Startup Funding in India 2026",                                   slug: "/blog/how-to-get-startup-funding-india-2026",         category: "Funding Guide",    date: "Mar 2026", readTime: "12 min" },
-  { title: "Top Indian Unicorns 2026: Ranked & Profiled",                                slug: "/blog/top-indian-unicorns-2026",                      category: "Unicorn Report",   date: "Mar 2026", readTime: "15 min" },
-  { title: "25 Best Indian Startup Founders to Follow 2026",                             slug: "/blog/best-indian-startup-founders-to-follow-2026",   category: "Founder Profiles", date: "Mar 2026", readTime: "18 min" },
-  { title: "IND vs NZ Final 2026: 7 Leadership Lessons",                                 slug: "/blog/leadership-lessons-ind-vs-nz-final-2026",       category: "Leadership",       date: "Mar 2026", readTime: "7 min"  },
-  { title: "5 Startup Ideas Inspired by IND vs NZ Final 2026",                           slug: "/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026",category: "Startup Ideas",    date: "Mar 2026", readTime: "6 min"  },
-  { title: "Top AI Startups in India (2026 Updated List)",                                slug: "/blog/top-ai-startups-india-2026",                    category: "AI & Deep Tech",   date: "Mar 2026", readTime: "11 min" },
-  { title: "How to Start a Startup in India (Step-by-Step 2026)",                        slug: "/blog/how-to-start-startup-india-2026",               category: "Founder Playbook", date: "Mar 2026", readTime: "14 min" },
-  { title: "Top 10 Trending Global Startups 2026",                                        slug: "/blog/top-trending-global-startups-2026",             category: "Global Edition",   date: "Mar 2026", readTime: "18 min" },
-  { title: "ChatGPT Plus vs Perplexity AI 2026",                                          slug: "/blog/chatgpt-plus-vs-perplexity-ai-2026",            category: "AI Comparison",    date: "Mar 2026", readTime: "9 min"  },
-  { title: "Best AI Tools for Business 2026",                                              slug: "/blog/best-ai-tools-for-business-2026",               category: "AI Guide",         date: "Mar 2026", readTime: "12 min" },
-  { title: "Best Travel Card 2026: Revolut vs Wise vs Monzo",                            slug: "/blog/best-travel-card-2026-revolut-wise-compared",   category: "FinTech Guide",    date: "Mar 2026", readTime: "8 min"  },
-  { title: "Best Language Learning Apps 2026",                                             slug: "/blog/best-language-learning-apps-2026",              category: "EdTech Guide",     date: "Mar 2026", readTime: "10 min" },
-  { title: "Ramp vs Brex 2026: Which Corporate Card Wins?",                              slug: "/blog/ramp-vs-brex-corporate-card-comparison-2026",   category: "FinTech Guide",    date: "Mar 2026", readTime: "8 min"  },
-  { title: "OpenAI vs Anthropic Claude Comparison 2026",                                  slug: "/blog/openai-vs-anthropic-claude-comparison-2026",    category: "AI Comparison",    date: "Mar 2026", readTime: "10 min" },
-  { title: "Remove Background from Image Free — Best AI Tools 2026",                     slug: "/blog/remove-background-from-image-free-tools-2026",  category: "AI Tools",         date: "Mar 2026", readTime: "6 min"  },
-  { title: "Compress PDF Free 2026: Smallpdf vs iLovePDF",                               slug: "/blog/compress-pdf-free-smallpdf-ilovepdf-compared",  category: "Productivity",     date: "Mar 2026", readTime: "5 min"  },
-  { title: "Character.AI vs ChatGPT — Which Is Better in 2026?",                        slug: "/blog/character-ai-vs-chatgpt-which-is-better-2026",  category: "AI Comparison",    date: "Mar 2026", readTime: "8 min"  },
+  // India
+  { title: "India Startup Ecosystem 2026: State of the Nation",        slug: "/blog/india-startup-ecosystem-2026",                   category: "Annual Report",    date: "Mar 2026", readTime: "20 min" },
+  { title: "How to Get Startup Funding in India 2026",                 slug: "/blog/how-to-get-startup-funding-india-2026",           category: "Funding Guide",    date: "Mar 2026", readTime: "12 min" },
+  { title: "Top Indian Unicorns 2026: Ranked & Profiled",              slug: "/blog/top-indian-unicorns-2026",                       category: "Unicorn Report",   date: "Mar 2026", readTime: "15 min" },
+  { title: "25 Best Indian Startup Founders to Follow 2026",           slug: "/blog/best-indian-startup-founders-to-follow-2026",    category: "Founder Profiles", date: "Mar 2026", readTime: "18 min" },
+  { title: "IND vs NZ Final 2026: 7 Leadership Lessons",               slug: "/blog/leadership-lessons-ind-vs-nz-final-2026",        category: "Leadership",       date: "Mar 2026", readTime: "7 min"  },
+  { title: "5 Startup Ideas Inspired by IND vs NZ Final 2026",         slug: "/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026", category: "Startup Ideas",    date: "Mar 2026", readTime: "6 min"  },
+  { title: "Top AI Startups in India (2026 Updated List)",             slug: "/blog/top-ai-startups-india-2026",                     category: "AI & Deep Tech",   date: "Mar 2026", readTime: "11 min" },
+  { title: "How to Start a Startup in India (Step-by-Step 2026)",      slug: "/blog/how-to-start-startup-india-2026",                category: "Founder Playbook", date: "Mar 2026", readTime: "14 min" },
+  // Global
+  { title: "Top 10 Trending Global Startups 2026",                     slug: "/blog/top-trending-global-startups-2026",              category: "Global Edition",   date: "Mar 2026", readTime: "18 min" },
+  { title: "ChatGPT Plus vs Perplexity AI 2026",                       slug: "/blog/chatgpt-plus-vs-perplexity-ai-2026",             category: "AI Comparison",    date: "Mar 2026", readTime: "9 min"  },
+  { title: "Best AI Tools for Business 2026",                          slug: "/blog/best-ai-tools-for-business-2026",                category: "AI Guide",         date: "Mar 2026", readTime: "12 min" },
+  { title: "Best Travel Card 2026: Revolut vs Wise vs Monzo",          slug: "/blog/best-travel-card-2026-revolut-wise-compared",    category: "FinTech Guide",    date: "Mar 2026", readTime: "8 min"  },
+  { title: "Best Language Learning Apps 2026",                         slug: "/blog/best-language-learning-apps-2026",               category: "EdTech Guide",     date: "Mar 2026", readTime: "10 min" },
+  { title: "Ramp vs Brex 2026: Which Corporate Card Wins?",            slug: "/blog/ramp-vs-brex-corporate-card-comparison-2026",   category: "FinTech Guide",    date: "Mar 2026", readTime: "8 min"  },
+  { title: "OpenAI vs Anthropic Claude Comparison 2026",               slug: "/blog/openai-vs-anthropic-claude-comparison-2026",     category: "AI Comparison",    date: "Mar 2026", readTime: "10 min" },
+  { title: "Remove Background from Image Free — Best AI Tools 2026",   slug: "/blog/remove-background-from-image-free-tools-2026",  category: "AI Tools",         date: "Mar 2026", readTime: "6 min"  },
+  { title: "Compress PDF Free 2026: Smallpdf vs iLovePDF",             slug: "/blog/compress-pdf-free-smallpdf-ilovepdf-compared",  category: "Productivity",     date: "Mar 2026", readTime: "5 min"  },
+  { title: "Character.AI vs ChatGPT — Which Is Better in 2026?",       slug: "/blog/character-ai-vs-chatgpt-which-is-better-2026",  category: "AI Comparison",    date: "Mar 2026", readTime: "8 min"  },
 ]
 
-// ─── NAV LINKS (same as about page nav style) ────────────────────────────────
-const NAV_LINKS = [
-  { l: "Registry",  h: "/startup"  },
-  { l: "Unicorns",  h: "/indian-unicorns" },
-  { l: "The Forge", h: "/blog"     },
-  { l: "Report",    h: "/report"   },
-  { l: "Submit",    h: "/submit"   },
+const CATEGORIES = [
+  "All", "Global Edition", "AI Comparison", "AI Guide", "AI Tools",
+  "FinTech Guide", "EdTech Guide", "Annual Report", "Funding Guide",
+  "Unicorn Report", "Founder Profiles", "Leadership", "Startup Ideas",
+  "AI & Deep Tech", "Founder Playbook", "Productivity",
 ]
 
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 
 export default function BlogIndexPage() {
-  const [searchQ, setSearchQ] = useState("")
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-
-  const searchResults = useMemo(() => {
-    if (!searchQ.trim()) return []
-    const q = searchQ.toLowerCase()
-    return ALL_POSTS.filter(p =>
-      p.title.toLowerCase().includes(q) ||
-      p.category.toLowerCase().includes(q)
-    )
-  }, [searchQ])
-
-  const showResults = searchQ.trim().length > 0
-
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+      />
+
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
-
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
         :root {
           --teal: #0D9488; --teal-dark: #0F766E; --teal-light: #5EEAD4;
           --ink: #0F1A1C; --parch: #F2F4F3; --parch-dark: #E8EDEC;
-          --rule: #C4CCCB; --rule2: #D4DCDA; --muted: #4A6360;
-          --blue: #2563EB; --blue-dark: #1D4ED8;
-          --pf: 'Playfair Display', Georgia, serif;
-          --sf: system-ui, -apple-system, 'Segoe UI', sans-serif;
+          --rule: #C4CCCB; --rule2: #D4DCDA; --muted: #4A6360; --gold: #C59A2E;
         }
-
-        /* ══════════════════════════════════════════════════════════
-           ROOT — copied verbatim from about/page.tsx .ab-root
-        ══════════════════════════════════════════════════════════ */
-        .blog-root {
-          min-height: 100vh;
-          background: var(--parch);
-          font-family: Georgia, 'Times New Roman', serif;
-          color: var(--ink);
-        }
-
-        /* ══════════════════════════════════════════════════════════
-           TOPNAV — inline navbar, same visual as about page header area
-           about page uses breadcrumb eyebrow; we use a proper topnav
-        ══════════════════════════════════════════════════════════ */
-        .blog-topnav {
-          position: relative; z-index: 200;
-          background: var(--ink);
-          border-bottom: 1px solid rgba(255,255,255,0.07);
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 0 clamp(16px, 4vw, 48px);
-          height: 56px;
-        }
-        .blog-topnav::after {
-          content: '';
-          position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-          background: linear-gradient(90deg, #0F766E, #0D9488, #5EEAD4, #0D9488, #0F766E);
-        }
-        .blog-topnav-logo {
-          font-family: var(--pf); font-size: 1.15rem; font-weight: 900;
-          color: white; text-decoration: none; letter-spacing: -0.01em;
-          font-style: italic; flex-shrink: 0;
-        }
-        .blog-topnav-logo em { color: var(--teal-light); font-style: normal; }
-        .blog-topnav-links {
-          display: flex; align-items: center; gap: 2px;
-        }
-        .blog-topnav-links a {
-          font-family: var(--sf); font-size: 9px; font-weight: 700;
-          text-transform: uppercase; letter-spacing: 0.16em;
-          color: rgba(255,255,255,0.5); text-decoration: none;
-          padding: 6px 12px; border-radius: 4px;
-          transition: color 0.15s, background 0.15s;
-        }
-        .blog-topnav-links a:hover { color: white; background: rgba(255,255,255,0.07); }
-        .blog-topnav-links a.active { color: var(--teal-light); }
-        .blog-topnav-cta {
-          display: inline-flex; align-items: center; gap: 6px;
-          background: var(--teal); color: white;
-          padding: 7px 16px; border-radius: 4px;
-          font-family: var(--sf); font-size: 9px; font-weight: 800;
-          letter-spacing: 0.12em; text-transform: uppercase;
-          text-decoration: none; transition: background 0.15s; flex-shrink: 0;
-        }
-        .blog-topnav-cta:hover { background: var(--teal-dark); }
-        @media (max-width: 768px) {
-          .blog-topnav-links { display: none; }
-        }
-
-        /* ══════════════════════════════════════════════════════════
-           HERO — copied from about/page.tsx .ab-hero exactly
-           (position:relative, no overflow:hidden, z-index layering)
-        ══════════════════════════════════════════════════════════ */
-        .blog-hero {
-          position: relative;
-          background: linear-gradient(135deg, rgba(15,26,28,0.92) 0%, rgba(15,26,28,0.80) 100%);
-          border-bottom: 1px solid var(--rule);
-        }
-        /* Teal gradient strip at top — from about page */
-        .blog-hero::before {
-          content: '';
-          position: absolute; top: 0; left: 0; right: 0; height: 3px;
-          background: linear-gradient(90deg, #0F766E, #0D9488, #5EEAD4, #0D9488, #0F766E);
-          z-index: 2;
-        }
-        .blog-hero-bg {
-          position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-          background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&q=70');
-          background-size: cover; background-position: center 40%;
-          opacity: 0.18; z-index: 0;
-          pointer-events: none;
-        }
-        .blog-hero-bg::after {
-          content: ''; position: absolute; inset: 0;
-          background: linear-gradient(90deg,
-            rgba(15,26,28,0.9) 0%,
-            rgba(15,26,28,0.4) 50%,
-            rgba(15,26,28,0.9) 100%
-          );
-        }
-        /* Centred content — from about .ab-mast-content */
-        .blog-hero-content {
-          position: relative; z-index: 10;
-          text-align: center;
-          padding: 72px 24px 60px;
-        }
-        .blog-h1 {
-          font-family: var(--pf);
-          font-size: clamp(44px, 6.5vw, 76px);
-          font-weight: 900; letter-spacing: -0.02em; color: white;
-          line-height: 1.03; text-shadow: 0 2px 16px rgba(0,0,0,0.4);
-          margin-bottom: 18px;
-        }
-        .blog-h1 em { font-style: italic; color: var(--teal-light); }
-        .blog-mast-rule {
-          display: block; width: 180px; height: 2px;
-          background: linear-gradient(90deg, transparent, var(--teal), var(--teal-light), var(--teal), transparent);
-          margin: 0 auto 20px;
-        }
-        .blog-tagline {
-          font-family: Georgia, serif; font-size: clamp(14px, 1.8vw, 16px);
-          color: rgba(255,255,255,0.82); font-style: italic;
-          line-height: 1.7; max-width: 560px; margin: 0 auto 28px;
-        }
-
-        /* ── SEARCH — z-index:9999 above everything ── */
-        .search-wrap {
-          max-width: 640px; margin: 0 auto;
-          position: relative; z-index: 9999;
-        }
-        .search-bar {
-          display: flex; align-items: center;
-          background: rgba(255,255,255,0.1); backdrop-filter: blur(12px);
-          border: 1px solid rgba(255,255,255,0.22); border-radius: 12px;
-          padding: 4px 4px 4px 18px; gap: 8px;
-          transition: border-color 0.2s, background 0.2s;
-        }
-        .search-bar:focus-within { border-color: rgba(94,234,212,0.6); background: rgba(255,255,255,0.14); }
-        .search-icon { color: rgba(255,255,255,0.45); flex-shrink: 0; }
-        .search-input {
-          flex: 1; border: none; background: transparent;
-          font-family: Georgia, serif; font-size: 14px; font-style: italic;
-          color: white; outline: none; padding: 10px 0; min-width: 0;
-        }
-        .search-input::placeholder { color: rgba(255,255,255,0.38); }
-        .search-clear {
-          width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-          border-radius: 8px; background: rgba(255,255,255,0.1); border: none; cursor: pointer;
-          color: rgba(255,255,255,0.6); transition: background 0.15s; flex-shrink: 0;
-        }
-        .search-clear:hover { background: rgba(255,255,255,0.2); }
-        .search-results {
-          position: absolute; top: calc(100% + 8px); left: 0; right: 0;
-          background: white; border-radius: 12px; border: 1px solid var(--rule2);
-          box-shadow: 0 20px 60px rgba(0,0,0,0.35);
-          max-height: 420px; overflow-y: auto; z-index: 9999;
-        }
-        .search-results-header {
-          padding: 10px 16px; border-bottom: 1px solid var(--rule2);
-          font-family: var(--sf); font-size: 8.5px; font-weight: 800;
-          letter-spacing: 0.2em; text-transform: uppercase; color: #AAA;
-        }
-        .search-result-item {
-          display: flex; align-items: center; gap: 14px;
-          padding: 13px 16px; border-bottom: 1px solid var(--rule2);
-          text-decoration: none; transition: background 0.1s;
-        }
-        .search-result-item:last-child { border-bottom: none; }
-        .search-result-item:hover { background: var(--parch); }
-        .search-result-cat {
-          flex-shrink: 0; font-family: var(--sf); font-size: 7.5px; font-weight: 800;
-          letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal);
-          background: rgba(13,148,136,0.1); padding: 3px 8px; border-radius: 4px;
-          min-width: 80px; text-align: center;
-        }
-        .search-result-title { font-family: var(--pf); font-size: 13px; font-weight: 700; color: var(--ink); flex: 1; line-height: 1.3; }
-        .search-result-meta { font-family: var(--sf); font-size: 9px; color: #AAA; flex-shrink: 0; white-space: nowrap; }
-        .search-no-results { padding: 32px 20px; text-align: center; font-style: italic; color: #AAA; font-size: 13px; }
-
-        /* Live badge — from about page exactly */
-        .live-badge {
-          display: inline-flex; align-items: center; gap: 10px;
-          background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-          border: 1px solid rgba(255,255,255,0.2); padding: 9px 24px;
-          border-radius: 100px; margin-top: 20px;
-        }
-        .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--teal-light); animation: pulse 2s infinite; }
-        .live-text { font-family: var(--sf); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: white; }
-        @keyframes pulse {
-          0%   { box-shadow: 0 0 0 0 rgba(94,234,212,0.5); }
-          70%  { box-shadow: 0 0 0 7px rgba(94,234,212,0); }
-          100% { box-shadow: 0 0 0 0 rgba(94,234,212,0); }
-        }
-
-        /* ══════════════════════════════════════════════════════════
-           STATS BAND — copied from about/page.tsx .ab-stats-band
-        ══════════════════════════════════════════════════════════ */
-        .blog-stats-band {
-          background: var(--ink);
-          border-bottom: 3px solid rgba(255,255,255,0.06);
-        }
-        .blog-stats-inner {
-          max-width: 1340px; margin: 0 auto;
-          display: flex;
-        }
-        .blog-stat-cell {
-          flex: 1; padding: 22px 0; text-align: center;
-          border-right: 1px solid rgba(255,255,255,0.07);
-        }
-        .blog-stat-cell:last-child { border-right: none; }
-        .blog-stat-val {
-          font-family: var(--pf);
-          font-size: clamp(1.4rem, 2.5vw, 2rem);
-          font-weight: 900; color: white; line-height: 1; margin-bottom: 6px;
-        }
-        .blog-stat-label {
-          font-size: 8px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.18em; color: rgba(255,255,255,0.3);
-          font-family: var(--sf);
-        }
-        @media (max-width: 580px) {
-          .blog-stats-inner { flex-wrap: wrap; }
-          .blog-stat-cell { flex: 1 0 50%; border-bottom: 1px solid rgba(255,255,255,0.07); }
-        }
-
-        /* ══════════════════════════════════════════════════════════
-           MAIN — from about/page.tsx .ab-main
-        ══════════════════════════════════════════════════════════ */
-        .blog-main {
-          max-width: 1340px; margin: 0 auto;
-          padding: 28px clamp(16px, 4vw, 48px) 56px;
-        }
-
-        .sh { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-        .sh-accent { width: 18px; height: 2px; background: var(--teal); flex-shrink: 0; }
-        .sh-l { font-family: var(--sf); font-size: 8.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.28em; color: #AAA; white-space: nowrap; }
-        .sh-r { flex: 1; height: 1px; background: var(--rule2); }
-
-        .section-mt  { margin-top: clamp(16px, 2.5vw, 28px); }
-        .section-mt2 { margin-top: clamp(22px, 3.2vw, 40px); }
-
-        /* Hero article grid */
-        .hero-grid { display: grid; grid-template-columns: 1fr 400px; border: 1px solid var(--rule); background: white; overflow: hidden; }
-        @media (max-width: 880px) { .hero-grid { grid-template-columns: 1fr; } .hero-img-col { order: -1; height: 220px !important; border-left: none !important; border-bottom: 1px solid var(--rule) !important; } }
-        .hero-txt { padding: clamp(20px, 3vw, 36px); display: flex; flex-direction: column; justify-content: space-between; }
-        .hero-img-col { position: relative; overflow: hidden; }
-        .hero-img-col img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
-        .hero-grid:hover .hero-img-col img { transform: scale(1.04); }
-
-        /* 4-col secondary grid */
-        .sec-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--rule); border-top: none; background: var(--rule); gap: 1px; }
-        @media (max-width: 1050px) { .sec-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 580px)  { .sec-grid { grid-template-columns: 1fr; } }
-
-        .story-card { background: white; display: flex; flex-direction: column; text-decoration: none; transition: background 0.15s; }
-        .story-card:hover { background: #FAFAF5; }
-        .story-img-wrap { position: relative; overflow: hidden; flex-shrink: 0; }
-        .story-img-wrap img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.55s ease; }
-        .story-card:hover .story-img-wrap img { transform: scale(1.05); }
-        .story-img-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15,26,28,0.7) 0%, transparent 55%); }
-        .story-img-badge { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; align-items: center; }
-        .story-body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; }
-        .story-title { font-family: var(--pf); font-size: clamp(0.9rem, 1.5vw, 1.05rem); font-weight: 700; line-height: 1.22; color: var(--ink); margin-bottom: 8px; flex: 1; }
-        .story-excerpt { font-size: 12px; line-height: 1.68; color: var(--muted); font-style: italic; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .story-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 11px; border-top: 1px solid var(--rule2); font-family: var(--sf); font-size: 8.5px; }
-        .story-foot-meta { color: #AAA; letter-spacing: 0.05em; text-transform: uppercase; }
-        .story-foot-arrow { display: flex; align-items: center; gap: 3px; font-weight: 800; transition: gap 0.15s; }
-        .story-card:hover .story-foot-arrow { gap: 6px; }
-
-        .badge { font-family: var(--sf); font-size: 7.5px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; padding: 3px 8px; display: inline-block; }
-        .badge-cat { color: white; }
-        .badge-tag-trending    { background: #FEFCE8; color: #92400E; border: 1px solid rgba(146,64,14,.2); }
-        .badge-tag-new         { background: #EFF6FF; color: #1D4ED8; border: 1px solid rgba(29,78,216,.2); }
-        .badge-tag-global      { background: #EFF6FF; color: #1D4ED8; border: 1px solid rgba(37,99,235,.25); }
-        .badge-tag-cover       { background: #FEF3C7; color: #92400E; border: 1px solid rgba(180,83,9,.25); }
-        .badge-tag-hightraffic { background: #F0FDF4; color: #15803D; border: 1px solid rgba(21,128,61,.2); }
-
-        /* Global edition banner */
-        .global-banner { background: var(--ink); padding: 20px 28px; display: flex; align-items: center; gap: 18px; border-top: 3px solid var(--blue); border-radius: 6px 6px 0 0; }
-        .global-banner-icon { width: 38px; height: 38px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
-        .global-banner-label { font-family: var(--sf); font-size: 8px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; color: #7BA4F0; margin-bottom: 3px; }
-        .global-banner-text { font-size: 13px; color: rgba(255,255,255,0.68); font-style: italic; }
-        .global-banner-btn { margin-left: auto; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; background: var(--blue); color: white; padding: 9px 20px; border-radius: 4px; font-family: var(--sf); font-size: 9px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; transition: background 0.15s; white-space: nowrap; }
-        .global-banner-btn:hover { background: var(--blue-dark); }
-        @media (max-width: 600px) { .global-banner { flex-wrap: wrap; } .global-banner-btn { margin-left: 0; } }
-
-        /* Flipped hero for global */
-        .hero-grid-flip { display: grid; grid-template-columns: 420px 1fr; border: 1px solid var(--rule); border-top: none; background: white; overflow: hidden; }
-        @media (max-width: 880px) { .hero-grid-flip { grid-template-columns: 1fr; } .hero-img-flip { height: 220px !important; border-right: none !important; border-bottom: 1px solid var(--rule) !important; } }
-        .hero-img-flip { position: relative; overflow: hidden; border-right: 1px solid var(--rule); }
-        .hero-img-flip img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
-        .hero-grid-flip:hover .hero-img-flip img { transform: scale(1.04); }
-
-        .hero-title { font-family: var(--pf); font-size: clamp(1.5rem, 2.8vw, 2.4rem); font-weight: 900; line-height: 1.07; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 12px; }
-        .hero-rule-line { width: 32px; height: 2px; margin-bottom: 12px; }
-        .hero-subtitle { font-size: clamp(13px, 1.4vw, 15px); line-height: 1.76; color: #5A4A30; margin-bottom: 16px; font-style: italic; }
-        .topic-pills { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 22px; }
-        .topic-pill { font-family: var(--sf); font-size: 8px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); background: var(--parch); border: 1px solid var(--rule2); padding: 3px 9px; }
-        .hero-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 18px; border-top: 1px solid var(--rule2); font-family: var(--sf); font-size: 8.5px; }
-        .hero-foot-meta { color: #AAA; letter-spacing: 0.06em; text-transform: uppercase; }
-        .hero-foot-read { display: flex; align-items: center; gap: 5px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; transition: gap 0.15s; }
-        .hero-foot-read:hover { gap: 8px; }
-
-        /* Two-col layout */
-        .two-col { display: grid; grid-template-columns: 1fr 308px; gap: clamp(16px, 2.5vw, 28px); align-items: start; }
-        @media (max-width: 980px) { .two-col { grid-template-columns: 1fr; } }
-
-        /* 3-col grid */
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--rule); background: var(--rule); gap: 1px; }
-        @media (max-width: 880px) { .grid-3 { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 520px) { .grid-3 { grid-template-columns: 1fr; } }
-        .grid-card { background: white; text-decoration: none; display: flex; flex-direction: column; transition: background 0.15s; }
-        .grid-card:hover { background: #FAFAF5; }
-        .grid-card-img { position: relative; height: 110px; overflow: hidden; flex-shrink: 0; }
-        .grid-card-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
-        .grid-card:hover .grid-card-img img { transform: scale(1.06); }
-        .grid-card-img-bar { position: absolute; top: 0; left: 0; right: 0; height: 2px; }
-        .grid-card-body { padding: 12px 14px 14px; flex: 1; display: flex; flex-direction: column; }
-        .grid-card-title { font-family: var(--pf); font-size: 0.88rem; font-weight: 700; line-height: 1.26; color: var(--ink); flex: 1; margin-bottom: 10px; }
-        .grid-card-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 9px; border-top: 1px solid var(--rule2); font-family: var(--sf); font-size: 8px; color: #AAA; text-transform: uppercase; letter-spacing: 0.06em; }
-
-        /* Sidebar */
-        .sidebar-box { border: 1px solid var(--rule); background: white; overflow: hidden; }
-        .sidebar-box + .sidebar-box { margin-top: 14px; }
-        .sidebar-hd { background: var(--ink); padding: 14px 18px; position: relative; }
-        .sidebar-hd::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--teal), var(--teal-light)); }
-        .sidebar-hd-title { font-family: var(--pf); font-size: 0.95rem; font-weight: 700; color: white; font-style: italic; }
-        .sidebar-hd-sub { font-family: var(--sf); font-size: 7.5px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(94,234,212,0.45); margin-top: 3px; }
-        .op-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--rule2); text-decoration: none; transition: background 0.12s; }
-        .op-row:last-child { border-bottom: none; }
-        .op-row:hover { background: var(--parch); }
-        .op-num { font-family: var(--pf); font-size: 1.1rem; font-weight: 900; color: var(--rule); flex-shrink: 0; width: 26px; padding-top: 1px; line-height: 1; }
-        .op-cat { font-family: var(--sf); font-size: 7px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--teal); margin-bottom: 3px; }
-        .op-title { font-family: var(--pf); font-size: 0.8rem; font-weight: 700; line-height: 1.3; color: var(--ink); margin-bottom: 3px; }
-        .op-date { font-family: var(--sf); font-size: 7.5px; color: #AAA; text-transform: uppercase; letter-spacing: 0.06em; }
-
-        .sidebar-cta { background: linear-gradient(135deg, var(--ink) 0%, #1A2A2C 100%); padding: 20px 18px; position: relative; overflow: hidden; margin-top: 14px; border: 1px solid var(--rule); }
-        .sidebar-cta::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--teal), var(--teal-light)); }
-        .sidebar-cta-label { font-family: var(--sf); font-size: 7.5px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; color: rgba(94,234,212,0.5); margin-bottom: 7px; }
-        .sidebar-cta-title { font-family: var(--pf); font-size: 1rem; font-weight: 700; color: white; line-height: 1.3; margin-bottom: 7px; font-style: italic; }
-        .sidebar-cta-body { font-size: 11px; color: rgba(255,255,255,0.38); line-height: 1.6; margin-bottom: 16px; }
-        .sidebar-cta-btn { display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--teal); color: white; padding: 10px 14px; font-family: var(--sf); font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; border-radius: 4px; transition: background 0.15s; }
-        .sidebar-cta-btn:hover { background: var(--teal-dark); }
-
-        /* Articles table */
-        .articles-table { border: 1px solid var(--rule); background: white; overflow: hidden; }
-        .articles-table-hd { background: var(--ink); padding: 9px 18px; display: grid; grid-template-columns: 1fr 150px 78px 68px; gap: 14px; }
-        @media (max-width: 620px) { .articles-table-hd { grid-template-columns: 1fr; } .art-hide { display: none !important; } }
-        .articles-table-hd span { font-family: var(--sf); font-size: 7.5px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.28); }
-        .art-row { display: grid; grid-template-columns: 1fr 150px 78px 68px; gap: 14px; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--rule2); text-decoration: none; background: white; transition: background 0.1s, padding-left 0.15s; }
-        .art-row:last-child { border-bottom: none; }
-        .art-row:hover { background: var(--parch); padding-left: 24px; }
-        @media (max-width: 620px) { .art-row { grid-template-columns: 1fr; } }
-        .art-title { font-family: var(--pf); font-size: 13px; font-weight: 700; color: var(--ink); line-height: 1.3; }
-        .art-cat { font-family: var(--sf); font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); border: 1px solid rgba(13,148,136,.28); padding: 2px 9px; text-align: center; }
-        .art-meta { font-family: var(--sf); font-size: 9px; color: #AAA; }
-
-        /* Ticker */
-        .ticker { display: flex; flex-wrap: wrap; background: var(--ink); border: 1px solid var(--rule); border-top: none; }
-        .ticker-item { flex: 1; min-width: 90px; padding: 16px 20px; text-align: center; border-right: 1px solid rgba(255,255,255,0.06); }
-        .ticker-item:last-child { border-right: none; }
-        .ticker-val { font-family: var(--pf); font-size: 1.5rem; font-weight: 900; color: white; line-height: 1; margin-bottom: 4px; }
-        .ticker-label { font-family: var(--sf); font-size: 7.5px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,.28); }
-
-        /* Bottom CTA */
-        .bottom-cta { background: linear-gradient(135deg, var(--ink) 0%, #1A2A2C 100%); padding: clamp(24px, 4vw, 44px) clamp(20px, 4vw, 52px); margin-top: 36px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; border-top: 3px solid var(--teal); border-radius: 12px; }
-        .bottom-cta-label { font-family: var(--sf); font-size: 8px; font-weight: 800; letter-spacing: 0.26em; text-transform: uppercase; color: rgba(94,234,212,0.5); margin-bottom: 7px; }
-        .bottom-cta-title { font-family: var(--pf); font-size: clamp(1rem, 2vw, 1.4rem); font-weight: 700; color: white; margin-bottom: 5px; }
-        .bottom-cta-sub { font-size: 12px; color: rgba(255,255,255,.35); font-style: italic; }
-        .bottom-cta-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; background: var(--teal); color: white; padding: 13px 26px; border-radius: 40px; font-family: var(--sf); font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; transition: background 0.2s, transform 0.15s; }
-        .bottom-cta-btn:hover { background: var(--teal-dark); transform: translateY(-2px); }
-
-        /* ══════════════════════════════════════════════════════════
-           FOOTER — copied from about/page.tsx .ab-footer exactly
-        ══════════════════════════════════════════════════════════ */
-        .blog-footer {
-          padding-top: 24px; margin-top: 32px;
-          border-top: 1px solid var(--rule2);
-        }
-        .footer-links-grid {
-          display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
-          margin-bottom: 20px;
-        }
-        @media (max-width: 680px) { .footer-links-grid { grid-template-columns: repeat(2, 1fr); } }
-        .footer-link-card {
-          padding: 11px 14px; border: 1px solid var(--rule2);
-          background: white; text-decoration: none; border-radius: 6px;
-          transition: border-color 0.15s, transform 0.15s;
-        }
-        .footer-link-card:hover { border-color: var(--teal); transform: translateY(-2px); }
-        .footer-link-title { font-family: var(--sf); font-size: 9.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); margin-bottom: 3px; }
-        .footer-link-desc  { font-family: var(--sf); font-size: 9.5px; color: #AAA; }
-
-        /* Note — from ab-footer-note */
-        .blog-footer-note {
-          font-size: 8.5px; color: #AAA; line-height: 1.7;
-          font-family: var(--sf); margin-bottom: 14px;
-          padding-top: 16px; border-top: 1px solid var(--rule2);
-        }
-        /* Nav — from ab-footer-nav */
-        .blog-footer-nav {
-          display: flex; flex-wrap: wrap; gap: 5px 16px;
-          list-style: none; padding: 0; margin: 0;
-        }
-        .blog-footer-nav a {
-          font-family: var(--sf); font-size: 8.5px; font-weight: 600;
-          letter-spacing: 0.08em; text-transform: uppercase;
-          color: #AAA; text-decoration: none; transition: color 0.15s;
-        }
-        .blog-footer-nav a:hover { color: var(--teal); }
-
-        /* Animations */
+        .pf { font-family: 'Playfair Display', Georgia, serif !important; }
         @keyframes riseIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
         .ri-0 { animation: riseIn 0.5s 0.00s ease both; }
-        .ri-1 { animation: riseIn 0.5s 0.07s ease both; }
-        .ri-2 { animation: riseIn 0.5s 0.14s ease both; }
-        .ri-3 { animation: riseIn 0.5s 0.21s ease both; }
-        .ri-4 { animation: riseIn 0.5s 0.28s ease both; }
-        .ri-5 { animation: riseIn 0.5s 0.35s ease both; }
+        .ri-1 { animation: riseIn 0.5s 0.08s ease both; }
+        .ri-2 { animation: riseIn 0.5s 0.16s ease both; }
+        .ri-3 { animation: riseIn 0.5s 0.24s ease both; }
+        .ri-4 { animation: riseIn 0.5s 0.32s ease both; }
+        .ri-5 { animation: riseIn 0.5s 0.40s ease both; }
+        .blog-hero { position: relative; background: linear-gradient(135deg, rgba(15,26,28,0.88) 0%, rgba(15,26,28,0.75) 100%); overflow: hidden; border-bottom: 1px solid var(--rule); }
+        .blog-hero-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&q=70'); background-size: cover; background-position: center 40%; opacity: 0.22; z-index: 0; }
+        .blog-hero-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(15,26,28,0.85) 0%, rgba(15,26,28,0.5) 50%, rgba(15,26,28,0.85) 100%); }
+        .blog-hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #0F766E 0%, #0D9488 50%, #5EEAD4 100%); z-index: 2; }
+        .blog-mast { position: relative; z-index: 2; }
+        .blog-mast-content { position: relative; z-index: 10; text-align: center; padding: 100px 24px 80px; }
+        .blog-mast-h1 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(40px, 6vw, 68px); font-weight: 900; letter-spacing: -0.02em; color: white; line-height: 1.05; text-shadow: 0 2px 12px rgba(0,0,0,0.3); margin-bottom: 20px; }
+        .blog-mast-h1 em { font-style: italic; color: var(--teal-light); }
+        .blog-mast-rule { display: block; width: 200px; height: 2px; background: linear-gradient(90deg, transparent, var(--teal), var(--teal-light), var(--teal), transparent); margin: 20px auto 24px; }
+        .blog-mast-tagline { font-family: Georgia, serif; font-size: 16px; color: rgba(255,255,255,0.88); font-style: italic; line-height: 1.7; max-width: 600px; margin: 0 auto 28px; }
+        .blog-live-badge { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.12); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.25); padding: 10px 28px; border-radius: 100px; }
+        .blog-live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal-light); animation: pulse 2s infinite; }
+        .blog-live-text { font-family: system-ui, sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: white; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(94,234,212,0.4); } 70% { box-shadow: 0 0 0 8px rgba(94,234,212,0); } 100% { box-shadow: 0 0 0 0 rgba(94,234,212,0); } }
 
-        ::-webkit-scrollbar { width: 4px; }
+        /* ── SEARCH BAR ── */
+        .search-wrap { position: relative; z-index: 10; margin-top: 20px; display: flex; justify-content: center; }
+        .search-form { display: flex; align-items: center; background: rgba(255,255,255,0.10); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.22); border-radius: 100px; overflow: hidden; width: 100%; max-width: 480px; transition: border-color 0.2s, background 0.2s; }
+        .search-form:focus-within { background: rgba(255,255,255,0.16); border-color: rgba(94,234,212,0.55); }
+        .search-input { flex: 1; background: transparent; border: none; outline: none; padding: 12px 20px; font-family: system-ui, sans-serif; font-size: 13px; color: white; }
+        .search-input::placeholder { color: rgba(255,255,255,0.45); }
+        .search-btn { flex-shrink: 0; background: var(--teal); border: none; cursor: pointer; padding: 10px 18px; display: flex; align-items: center; gap: 6px; font-family: system-ui, sans-serif; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: white; transition: background 0.18s; border-radius: 0 100px 100px 0; }
+        .search-btn:hover { background: var(--teal-dark); }
+        .search-results-overlay { display: none; position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #0F1A1C; border: 1px solid rgba(94,234,212,0.25); border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); overflow: hidden; z-index: 100; }
+        .search-results-overlay.active { display: block; }
+        .search-result-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); text-decoration: none; transition: background 0.12s; }
+        .search-result-item:last-child { border-bottom: none; }
+        .search-result-item:hover { background: rgba(255,255,255,0.06); }
+        .search-result-num { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 11px; color: rgba(94,234,212,0.5); flex-shrink: 0; width: 18px; padding-top: 2px; }
+        .search-result-text { flex: 1; }
+        .search-result-title { font-family: system-ui, sans-serif; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9); line-height: 1.35; margin-bottom: 3px; }
+        .search-result-meta { font-family: system-ui, sans-serif; font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--teal); }
+        .search-no-results { padding: 20px 16px; text-align: center; font-family: system-ui, sans-serif; font-size: 12px; color: rgba(255,255,255,0.35); font-style: italic; }
+
+        .cat-tabs { display: flex; overflow-x: auto; border-bottom: 1px solid var(--rule2); scrollbar-width: none; background: white; padding: 0 24px; }
+        .cat-tabs::-webkit-scrollbar { display: none; }
+        .cat-tab { flex-shrink: 0; padding: 14px 20px; font-family: system-ui, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #999; text-decoration: none; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; cursor: pointer; }
+        .cat-tab:hover { color: var(--ink); }
+        .cat-tab.on { color: var(--teal); border-bottom-color: var(--teal); }
+        .page-root { min-height: 100vh; background: var(--parch); font-family: 'Georgia', 'Times New Roman', serif; }
+        .sh { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+        .sh-l { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3em; color: #AAA; font-family: system-ui, sans-serif; white-space: nowrap; }
+        .sh-r { flex: 1; height: 1px; background: var(--rule2); }
+        .imgf { position: relative; overflow: hidden; }
+        .imgf img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform .6s ease; }
+        .imgf:hover img { transform: scale(1.04); }
+        .card-hover { transition: transform .15s ease, box-shadow .15s ease; text-decoration: none; display: block; }
+        .card-hover:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--ink); z-index: 1; position: relative; }
+        .hero-grid { display: grid; grid-template-columns: 1fr 420px; border: 1.5px solid var(--ink); overflow: hidden; background: #FDFCF9; }
+        @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr !important; } .hero-img-col { height: 220px !important; border-left: none !important; border-top: 1.5px solid var(--ink) !important; order: -1; } }
+        .sec-grid { display: grid; grid-template-columns: repeat(4,1fr); border: 1.5px solid var(--ink); background: var(--ink); gap: 1.5px; }
+        @media (max-width: 1100px) { .sec-grid { grid-template-columns: repeat(2,1fr) !important; } }
+        @media (max-width: 640px)  { .sec-grid { grid-template-columns: 1fr !important; } }
+        .main-grid { display: grid; grid-template-columns: 1fr 320px; gap: clamp(14px, 2vw, 22px); align-items: start; }
+        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr !important; } }
+        .grid-6 { display: grid; grid-template-columns: repeat(3,1fr); border: 1.5px solid var(--ink); background: var(--ink); gap: 1.5px; }
+        @media (max-width: 900px) { .grid-6 { grid-template-columns: repeat(2,1fr) !important; } }
+        @media (max-width: 480px) { .grid-6 { grid-template-columns: 1fr !important; } }
+        .arch-row { display: grid; grid-template-columns: 1fr 145px 85px 70px; align-items: center; gap: 16px; padding: 13px 16px; border-bottom: 1px solid var(--rule2); text-decoration: none; background: #FDFCF9; transition: background .12s, padding-left .15s; }
+        .arch-row:last-child { border-bottom: none; }
+        .arch-row:hover { background: #EDE9DF; padding-left: 22px; }
+        @media (max-width: 640px) { .arch-row { grid-template-columns: 1fr !important; } .arch-meta { display: none !important; } }
+        .op-row { display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--rule2); text-decoration: none; transition: padding-left .15s; }
+        .op-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .op-row:hover { padding-left: 6px; }
+        .tag-badge { display: inline-block; font-size: 7px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; padding: 2px 8px; font-family: system-ui, sans-serif; }
+        .tag-trending    { background: #FEFCE8; color: #854D0E; border: 1px solid rgba(133,77,14,.25); }
+        .tag-new         { background: #EFF6FF; color: #1D4ED8; border: 1px solid rgba(29,78,216,.25); }
+        .tag-global      { background: #EFF6FF; color: #1D4ED8; border: 1px solid rgba(37,99,235,.3); }
+        .tag-mustread    { background: #FEF3C7; color: #92400E; border: 1px solid rgba(180,83,9,.30); }
+        .tag-hightraffic { background: #F0FDF4; color: #15803D; border: 1px solid rgba(21,128,61,.25); }
+        .global-divider { background: linear-gradient(135deg, #0F1A1C 0%, #1A2A2C 100%); padding: 16px 24px; display: flex; align-items: center; gap: 16px; border-top: 3px solid #2563EB; border-bottom: 1px solid rgba(255,255,255,.08); }
+        .nl-box { background: linear-gradient(135deg, var(--ink) 0%, #1A2A2C 100%); position: relative; overflow: hidden; padding: clamp(16px, 2.8vw, 28px); }
+        .nl-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #0F766E, #0D9488, #5EEAD4, #0D9488, #0F766E); }
+        .ticker-wrap { display: flex; overflow: hidden; flex-wrap: wrap; border: 1.5px solid var(--ink); background: var(--ink); }
+        .ticker-item { padding: 14px 24px; border-right: 1px solid rgba(255,255,255,.07); flex: 1; text-align: center; min-width: 90px; }
+        .cta-block { background: linear-gradient(135deg, var(--ink) 0%, #1A2A2C 100%); border-radius: 20px; padding: 36px 44px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; margin-top: 48px; position: relative; overflow: hidden; }
+        .cta-block::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #0F766E, #0D9488, #5EEAD4, #0D9488, #0F766E); }
+        .cta-ey { font-size: 8.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.3em; color: rgba(94,234,212,0.7); margin-bottom: 8px; font-family: system-ui, sans-serif; }
+        .cta-h { font-family: 'Playfair Display', Georgia, serif; font-size: 19px; font-weight: 700; color: white; margin-bottom: 6px; }
+        .cta-p { font-size: 12px; color: rgba(255,255,255,0.45); font-style: italic; }
+        .cta-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: 10px; background: var(--teal); color: white; padding: 13px 28px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; text-decoration: none; border-radius: 40px; transition: all 0.2s; }
+        .cta-btn:hover { background: var(--teal-dark); transform: translateY(-2px); }
+        .links-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 36px; padding-top: 36px; border-top: 1px solid var(--rule2); }
+        @media (max-width: 700px) { .links-grid { grid-template-columns: repeat(2, 1fr); } }
+        .link-card { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--rule2); background: white; text-decoration: none; transition: all 0.2s; }
+        .link-card:hover { border-color: var(--teal); transform: translateY(-1px); }
+        .link-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink); display: flex; align-items: center; gap: 5px; margin-bottom: 4px; font-family: system-ui, sans-serif; }
+        .link-desc { font-size: 10px; color: #AAA; font-family: system-ui, sans-serif; }
+        .main-wrap { max-width: 1300px; margin: 0 auto; padding: 32px 24px 56px; }
+        @media (max-width: 768px) { .blog-mast-content { padding: 120px 20px 70px !important; } .main-wrap { padding: 24px 16px 40px; } .cta-block { padding: 24px 20px; } }
+        @media (max-width: 480px) { .blog-mast-content { padding: 100px 16px 60px !important; } .blog-mast-h1 { font-size: 36px; } }
+        ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-thumb { background: var(--rule); }
       `}</style>
 
-      {/*
-        ══════════════════════════════════════════════════════════
-        STRUCTURE — mirrors about/page.tsx exactly:
+      {/* ── SEARCH SCRIPT ── */}
+      <script dangerouslySetInnerHTML={{ __html: `
+        (function() {
+          var ALL_POSTS = ${JSON.stringify(ALL_POSTS)};
 
-          .blog-root              (ab-root)
-            .blog-topnav          (inline header — no <Navbar /> import)
-            .blog-hero            (ab-hero — no overflow:hidden)
-            .blog-stats-band      (ab-stats-band)
-            main.blog-main        (ab-main)
-              ...content...
-              footer.blog-footer  (ab-footer)
-        ══════════════════════════════════════════════════════════
-      */}
-      <div className="blog-root">
+          function initSearch() {
+            var input = document.getElementById('forge-search-input');
+            var btn = document.getElementById('forge-search-btn');
+            var overlay = document.getElementById('forge-search-results');
+            if (!input || !btn || !overlay) return;
 
-        {/* ══ TOPNAV (inline — same pattern as about page's self-contained header) ══ */}
-        <nav className="blog-topnav ri-0" aria-label="Main navigation">
-          <Link href="/" className="blog-topnav-logo">Up<em>Forge</em></Link>
-          <div className="blog-topnav-links">
-            {NAV_LINKS.map(n => (
-              <Link key={n.h} href={n.h} className={n.h === "/blog" ? "active" : ""}>{n.l}</Link>
-            ))}
-          </div>
-          <Link href="/submit" className="blog-topnav-cta">
-            List Free <ArrowRight size={11} />
-          </Link>
-        </nav>
+            function doSearch() {
+              var q = input.value.trim().toLowerCase();
+              overlay.innerHTML = '';
+              if (!q) { overlay.classList.remove('active'); return; }
+              var results = ALL_POSTS.filter(function(p) {
+                return p.title.toLowerCase().includes(q) || p.category.toLowerCase().includes(q);
+              });
+              if (results.length === 0) {
+                overlay.innerHTML = '<div class="search-no-results">No articles found for "' + input.value + '"</div>';
+              } else {
+                results.slice(0, 8).forEach(function(p, i) {
+                  var a = document.createElement('a');
+                  a.href = p.slug;
+                  a.className = 'search-result-item';
+                  a.innerHTML =
+                    '<span class="search-result-num">' + (i + 1) + '</span>' +
+                    '<span class="search-result-text">' +
+                      '<div class="search-result-title">' + p.title + '</div>' +
+                      '<div class="search-result-meta">' + p.category + ' · ' + p.readTime + ' read</div>' +
+                    '</span>';
+                  overlay.appendChild(a);
+                });
+              }
+              overlay.classList.add('active');
+            }
 
-        {/* ══ HERO — no overflow:hidden, position:relative, z-index layering ══ */}
-        <section className="blog-hero ri-0" aria-label="The Forge blog masthead">
-          <div className="blog-hero-bg" role="presentation" />
-          <div className="blog-hero-content">
-            <h1 className="blog-h1">The <em>Forge</em></h1>
-            <span className="blog-mast-rule" />
-            <p className="blog-tagline">
-              Startup analysis, founder stories &amp; strategy<br />for India's &amp; the world's builders — 2026
-            </p>
+            input.addEventListener('input', doSearch);
+            btn.addEventListener('click', function(e) { e.preventDefault(); doSearch(); });
+            input.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); doSearch(); } });
 
-            {/* Search */}
-            <div className="search-wrap">
-              <div className="search-bar">
-                <Search size={16} className="search-icon" />
-                <input
-                  type="text" className="search-input"
-                  placeholder="Search articles, topics, startups…"
-                  value={searchQ}
-                  onChange={e => setSearchQ(e.target.value)}
-                  aria-label="Search articles"
-                  autoComplete="off"
-                />
-                {searchQ && (
-                  <button className="search-clear" onClick={() => setSearchQ("")} aria-label="Clear search">
-                    <X size={14} />
-                  </button>
-                )}
+            document.addEventListener('click', function(e) {
+              if (!overlay.contains(e.target) && e.target !== input && e.target !== btn) {
+                overlay.classList.remove('active');
+              }
+            });
+          }
+
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initSearch);
+          } else {
+            initSearch();
+          }
+        })();
+      `}} />
+
+      <div className="page-root">
+
+        {/* ── HERO ── */}
+        <div className="blog-hero">
+          <div className="blog-hero-bg" />
+          <div className="blog-mast">
+            <div className="blog-mast-content ri-0">
+              {/* eyebrow text removed */}
+              <h1 className="blog-mast-h1">The <em>Forge</em></h1>
+              <span className="blog-mast-rule" />
+              <p className="blog-mast-tagline">
+                Startup analysis, founder stories &amp; strategy<br />for India's &amp; the world's builders — March 2026
+              </p>
+              <div className="blog-live-badge">
+                <span className="blog-live-dot" />
+                <span className="blog-live-text">Live · {ALL_POSTS.length} Articles · Updated March 2026</span>
               </div>
-              {showResults && (
-                <div className="search-results" role="listbox">
-                  {searchResults.length > 0 ? (
-                    <>
-                      <div className="search-results-header">
-                        {searchResults.length} result{searchResults.length !== 1 ? "s" : ""} for &ldquo;{searchQ}&rdquo;
-                      </div>
-                      {searchResults.map((post, i) => (
-                        <Link key={i} href={post.slug} className="search-result-item" onClick={() => setSearchQ("")}>
-                          <span className="search-result-cat">{post.category}</span>
-                          <span className="search-result-title">{post.title}</span>
-                          <span className="search-result-meta">{post.readTime}</span>
-                        </Link>
-                      ))}
-                    </>
-                  ) : (
-                    <div className="search-no-results">No articles found for &ldquo;{searchQ}&rdquo;</div>
-                  )}
+
+              {/* ── SEARCH BAR ── */}
+              <div className="search-wrap" style={{ marginTop: 20 }}>
+                <div style={{ position: "relative", width: "100%", maxWidth: 480 }}>
+                  <div className="search-form">
+                    <input
+                      id="forge-search-input"
+                      className="search-input"
+                      type="text"
+                      placeholder="Search articles by title or topic…"
+                      autoComplete="off"
+                    />
+                    <button id="forge-search-btn" className="search-btn" type="button">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                      Search
+                    </button>
+                  </div>
+                  <div id="forge-search-results" className="search-results-overlay" />
                 </div>
-              )}
-            </div>
-
-            <div className="live-badge">
-              <span className="live-dot" />
-              <span className="live-text">Live · {ALL_POSTS.length} Articles · Updated March 2026</span>
-            </div>
-          </div>
-        </section>
-
-        {/* ══ STATS BAND — from about/page.tsx ab-stats-band ══ */}
-        <div className="blog-stats-band ri-1">
-          <div className="blog-stats-inner">
-            {[
-              { v: `${ALL_POSTS.length}`,  l: "Articles Published"  },
-              { v: "650K+",                l: "Registered Startups" },
-              { v: "125+",                 l: "Indian Unicorns"     },
-              { v: "$3.44B",               l: "Q1 2026 Funding"     },
-              { v: "Free",                 l: "Always & Forever"    },
-            ].map((s, i, arr) => (
-              <div key={i} className="blog-stat-cell" style={{ borderRight: i < arr.length - 1 ? undefined : "none" }}>
-                <p className="blog-stat-val">{s.v}</p>
-                <p className="blog-stat-label">{s.l}</p>
               </div>
-            ))}
+            </div>
           </div>
         </div>
 
-        {/* ══ MAIN CONTENT — from about/page.tsx .ab-main ══ */}
-        <main className="blog-main">
+        {/* ── CATEGORY TABS ── */}
+        <nav className="cat-tabs" aria-label="Browse by category">
+          <span style={{ fontSize: 9, color: "#CCC", textTransform: "uppercase", letterSpacing: ".2em", padding: "14px 8px 14px 0", flexShrink: 0, fontFamily: "system-ui, sans-serif" }}>Browse:</span>
+          {CATEGORIES.map((cat, i) => (
+            <span key={i} className={`cat-tab${i === 0 ? " on" : ""}`}>{cat}</span>
+          ))}
+        </nav>
 
-          {/* ── INDIA COVER STORY ── */}
-          <section aria-label="India Cover Story" className="ri-1">
-            <div className="sh"><div className="sh-accent" /><span className="sh-l">India Edition · Cover Story</span><div className="sh-r" /></div>
-            <Link href={HERO_POST.slug} style={{ textDecoration: "none", display: "block" }}>
+        <main className="main-wrap">
+
+          {/* ── INDIA HERO POST ── */}
+          <section aria-label="India cover story" className="ri-1">
+            <div className="sh">
+              <span style={{ color: "var(--teal)", fontSize: 12 }}>◆</span>
+              <span className="sh-l">India Cover Story · Most Comprehensive</span>
+              <div className="sh-r" />
+            </div>
+            <Link href={HERO_POST.slug} className="card-hover" style={{ display: "block" }}>
               <div className="hero-grid">
-                <div className="hero-txt">
+                <div style={{ padding: "clamp(16px,2.4vw,30px)", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "#FDFCF9" }}>
                   <div>
-                    <div style={{ height: 3, background: `linear-gradient(90deg, var(--teal-dark), ${HERO_POST.accent}, #E8C547)`, marginBottom: 14 }} />
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                      <span className="badge badge-cat" style={{ background: HERO_POST.accent, fontSize: "7.5px", letterSpacing: "0.2em" }}>{HERO_POST.category}</span>
-                      <span className="badge badge-tag-cover">{HERO_POST.tag}</span>
-                      <span style={{ fontFamily: "system-ui", fontSize: 8.5, color: "#AAA", textTransform: "uppercase", letterSpacing: "0.1em" }}>{HERO_POST.date}</span>
+                    <div style={{ height: 3, background: `linear-gradient(90deg,#0F766E,${HERO_POST.accent},#E8C547,${HERO_POST.accent},#0F766E)`, marginBottom: 14 }} />
+                    <div className="flex items-center gap-3 mb-3" style={{ fontFamily: "system-ui,sans-serif" }}>
+                      <span className="text-[8px] font-black tracking-[0.26em] uppercase px-3 py-1.5 text-white" style={{ background: HERO_POST.accent }}>{HERO_POST.category}</span>
+                      <span className="tag-badge tag-mustread">{HERO_POST.tag}</span>
+                      <span className="text-[8.5px] text-[#AAA] uppercase tracking-wider" style={{ fontFamily: "system-ui,sans-serif" }}>{HERO_POST.date}</span>
                     </div>
-                    <h2 className="hero-title">{HERO_POST.title}</h2>
-                    <div className="hero-rule-line" style={{ background: HERO_POST.accent }} />
-                    <p className="hero-subtitle">{HERO_POST.subtitle}</p>
-                    <div className="topic-pills">{HERO_POST.topics.map(t => <span key={t} className="topic-pill">{t}</span>)}</div>
+                    <h2 className="pf font-black leading-[1.06] mb-4" style={{ fontSize: "clamp(1.5rem,3.2vw,2.6rem)", color: "var(--ink)" }}>{HERO_POST.title}</h2>
+                    <div style={{ width: 40, height: 3, background: HERO_POST.accent, marginBottom: 12 }} />
+                    <p className="italic leading-[1.78] mb-4" style={{ fontSize: "clamp(13px,1.6vw,15px)", color: "#5A4A30", maxWidth: 520 }}>{HERO_POST.subtitle}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {HERO_POST.topics.map(t => (<span key={t} className="text-[8px] uppercase tracking-wider" style={{ color: "#6B5C40", border: "1px solid var(--rule2)", padding: "3px 9px", background: "var(--parch)", fontFamily: "system-ui,sans-serif" }}>{t}</span>))}
+                    </div>
                   </div>
-                  <div className="hero-foot">
-                    <span className="hero-foot-meta">{HERO_POST.date} · {HERO_POST.readTime} read</span>
-                    <span className="hero-foot-read" style={{ color: HERO_POST.accent }}>Read Report <ArrowUpRight size={12} /></span>
+                  <div className="flex items-center justify-between mt-5 pt-4" style={{ borderTop: "1px solid var(--rule2)", fontFamily: "system-ui,sans-serif" }}>
+                    <div className="flex gap-4 items-center">
+                      <span className="text-[8.5px] text-[#AAA] uppercase tracking-wider">{HERO_POST.date}</span>
+                      <span style={{ color: "var(--rule)", fontSize: 10 }}>·</span>
+                      <span className="text-[8.5px] text-[#AAA] uppercase tracking-wider">{HERO_POST.readTime} read</span>
+                    </div>
+                    <span className="text-[9px] font-black uppercase tracking-wider flex items-center gap-1" style={{ color: HERO_POST.accent, fontFamily: "system-ui,sans-serif" }}>Read Report <ArrowUpRight className="w-3 h-3" aria-hidden="true" /></span>
                   </div>
                 </div>
-                <div className="hero-img-col" style={{ minHeight: 320, borderLeft: "1px solid var(--rule)" }}>
+                <div className="hero-img-col imgf" style={{ minHeight: 340, borderLeft: "1.5px solid var(--ink)" }}>
                   <img src={HERO_POST.img} alt={HERO_POST.title} />
                 </div>
               </div>
             </Link>
+          </section>
+
+          {/* ── INDIA SECONDARY 4-col ── */}
+          <section aria-label="India essential reads" className="ri-2" style={{ marginTop: "clamp(14px,2vw,20px)" }}>
+            <div className="sh"><span className="sh-l">India Edition · Essential Reads</span><div className="sh-r" /></div>
             <div className="sec-grid">
               {SECONDARY_POSTS.map((post, i) => (
-                <Link key={i} href={post.slug} className="story-card" style={{ textDecoration: "none" }}>
-                  <div className="story-img-wrap" style={{ height: "clamp(110px,11vw,148px)" }}>
-                    <img src={post.img} alt={post.title} loading="lazy" />
-                    <div className="story-img-overlay" />
-                    <div className="story-img-badge">
-                      <span className="badge badge-cat" style={{ background: post.accent, fontSize: "7px", letterSpacing: "0.15em" }}>{post.category}</span>
-                      <span className={`badge ${post.tag === "New" ? "badge-tag-new" : post.tag === "Trending" ? "badge-tag-trending" : "badge-tag-hightraffic"}`}>{post.tag}</span>
+                <Link key={i} href={post.slug} className="card-hover" style={{ background: "#FDFCF9", display: "flex", flexDirection: "column" }}>
+                  <div className="imgf" style={{ height: "clamp(110px,12vw,150px)", borderBottom: "1px solid var(--rule2)", flexShrink: 0 }}>
+                    <img src={post.img} alt={post.title} />
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,26,28,.65) 0%, transparent 55%)" }} />
+                    <div style={{ position: "absolute", top: 12, left: 14, display: "flex", gap: 7, alignItems: "center" }}>
+                      <span className="text-[7.5px] font-black tracking-[0.18em] uppercase px-2 py-1 text-white" style={{ background: post.accent, fontFamily: "system-ui,sans-serif" }}>{post.category}</span>
+                      <span className={`tag-badge ${post.tag === "New" ? "tag-new" : post.tag === "Trending" ? "tag-trending" : "tag-hightraffic"}`}>{post.tag}</span>
                     </div>
                   </div>
-                  <div className="story-body">
-                    <h3 className="story-title">{post.title}</h3>
-                    <p className="story-excerpt">{post.excerpt}</p>
-                    <div className="story-foot">
-                      <span className="story-foot-meta">{post.date}</span>
-                      <span className="story-foot-arrow" style={{ color: post.accent }}>{post.readTime} <ArrowRight size={11} /></span>
+                  <div style={{ padding: "clamp(10px,1.4vw,14px)", flex: 1, display: "flex", flexDirection: "column" }}>
+                    <h3 className="pf font-bold leading-[1.2] mb-2" style={{ fontSize: "clamp(.9rem,1.5vw,1.1rem)", color: "var(--ink)" }}>{post.title}</h3>
+                    <p className="italic leading-[1.72] flex-1 mb-3" style={{ fontSize: "clamp(11px,1.1vw,12.5px)", color: "#5A4A30", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{post.excerpt}</p>
+                    <div className="flex items-center justify-between pt-3" style={{ borderTop: "1px solid var(--rule2)", fontFamily: "system-ui,sans-serif" }}>
+                      <span className="text-[8.5px] text-[#AAA] uppercase tracking-wider">{post.date}</span>
+                      <span className="text-[8.5px] font-black uppercase tracking-wider flex items-center gap-1" style={{ color: post.accent }}>Read <ArrowRight className="w-2.5 h-2.5" aria-hidden="true" /></span>
                     </div>
                   </div>
                 </Link>
@@ -841,62 +611,74 @@ export default function BlogIndexPage() {
             </div>
           </section>
 
-          {/* ── GLOBAL EDITION ── */}
-          <section aria-label="Global Edition" className="ri-2 section-mt2">
-            <div className="global-banner">
-              <div className="global-banner-icon">🌍</div>
-              <div>
-                <p className="global-banner-label">New · Global Edition — March 2026</p>
-                <p className="global-banner-text">The 10 highest-traffic global startups — OpenAI, Perplexity, Revolut, Canva, Character.AI &amp; more.</p>
-              </div>
-              <Link href="/blog/top-trending-global-startups-2026" className="global-banner-btn">Read Feature <ArrowRight size={11} /></Link>
+          {/* ── GLOBAL EDITION DIVIDER ── */}
+          <div className="global-divider ri-3" style={{ marginTop: "clamp(14px,2.2vw,22px)", borderRadius: 8 }}>
+            <div style={{ width: 32, height: 32, background: "#2563EB", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 16 }}>🌍</div>
+            <div>
+              <p style={{ fontFamily: "system-ui,sans-serif", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.24em", color: "rgba(94,234,212,.7)", marginBottom: 2 }}>New · Global Edition — March 2026</p>
+              <p style={{ fontFamily: "system-ui,sans-serif", fontSize: 12, color: "rgba(255,255,255,.6)" }}>The 10 highest-traffic global startups — OpenAI, Perplexity, Revolut, Canva, Character.AI &amp; more.</p>
             </div>
-            <Link href={GLOBAL_HERO_POST.slug} style={{ textDecoration: "none", display: "block" }}>
-              <div className="hero-grid-flip">
-                <div className="hero-img-flip">
+            <Link href="/blog/top-trending-global-startups-2026" style={{ marginLeft: "auto", flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 6, background: "#2563EB", color: "white", padding: "8px 18px", borderRadius: 40, fontFamily: "system-ui,sans-serif", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", textDecoration: "none", whiteSpace: "nowrap" }}>
+              Read Feature <ArrowRight size={12} />
+            </Link>
+          </div>
+
+          {/* ── GLOBAL HERO POST ── */}
+          <section aria-label="Global cover story" className="ri-3" style={{ marginTop: "clamp(14px,2vw,20px)" }}>
+            <div className="sh">
+              <span style={{ color: "#2563EB", fontSize: 12 }}>◆</span>
+              <span className="sh-l">Global Cover Story · March 2026 Edition</span>
+              <div className="sh-r" />
+            </div>
+            <Link href={GLOBAL_HERO_POST.slug} className="card-hover" style={{ display: "block" }}>
+              <div className="hero-grid">
+                <div className="hero-img-col imgf" style={{ minHeight: 340, borderRight: "1.5px solid var(--ink)" }}>
                   <img src={GLOBAL_HERO_POST.img} alt={GLOBAL_HERO_POST.title} />
-                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, transparent 50%, rgba(15,26,28,0.5) 100%)" }} />
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, transparent 40%, rgba(15,26,28,.9) 100%)" }} />
                 </div>
-                <div className="hero-txt" style={{ borderLeft: "1px solid var(--rule)" }}>
+                <div style={{ padding: "clamp(16px,2.4vw,30px)", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "#FDFCF9" }}>
                   <div>
-                    <div style={{ height: 3, background: `linear-gradient(90deg, var(--blue-dark), var(--blue), #93C5FD)`, marginBottom: 14 }} />
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                      <span className="badge badge-cat" style={{ background: GLOBAL_HERO_POST.accent, fontSize: "7.5px", letterSpacing: "0.2em" }}>{GLOBAL_HERO_POST.category}</span>
-                      <span className="badge badge-tag-global">{GLOBAL_HERO_POST.tag}</span>
+                    <div style={{ height: 3, background: `linear-gradient(90deg,#1D4ED8,#2563EB,#60A5FA,#2563EB,#1D4ED8)`, marginBottom: 14 }} />
+                    <div className="flex items-center gap-3 mb-3" style={{ fontFamily: "system-ui,sans-serif" }}>
+                      <span className="text-[8px] font-black tracking-[0.26em] uppercase px-3 py-1.5 text-white" style={{ background: "#2563EB" }}>{GLOBAL_HERO_POST.category}</span>
+                      <span className="tag-badge tag-global">{GLOBAL_HERO_POST.tag}</span>
                     </div>
-                    <h2 className="hero-title">{GLOBAL_HERO_POST.title}</h2>
-                    <div className="hero-rule-line" style={{ background: GLOBAL_HERO_POST.accent }} />
-                    <p className="hero-subtitle">{GLOBAL_HERO_POST.subtitle}</p>
-                    <div className="topic-pills">
-                      {GLOBAL_HERO_POST.topics.map(t => (
-                        <span key={t} className="topic-pill" style={{ color: "var(--blue-dark)", borderColor: "rgba(37,99,235,0.2)", background: "#EEF2FF" }}>{t}</span>
-                      ))}
+                    <h2 className="pf font-black leading-[1.06] mb-4" style={{ fontSize: "clamp(1.3rem,2.8vw,2.2rem)", color: "var(--ink)" }}>{GLOBAL_HERO_POST.title}</h2>
+                    <div style={{ width: 40, height: 3, background: "#2563EB", marginBottom: 12 }} />
+                    <p className="italic leading-[1.78] mb-4" style={{ fontSize: "clamp(12px,1.5vw,14px)", color: "#5A4A30", maxWidth: 480 }}>{GLOBAL_HERO_POST.subtitle}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {GLOBAL_HERO_POST.topics.map(t => (<span key={t} className="text-[8px] uppercase tracking-wider" style={{ color: "#3B5291", border: "1px solid rgba(37,99,235,.25)", padding: "3px 9px", background: "#EFF6FF", fontFamily: "system-ui,sans-serif" }}>{t}</span>))}
                     </div>
                   </div>
-                  <div className="hero-foot">
-                    <span className="hero-foot-meta">{GLOBAL_HERO_POST.date} · {GLOBAL_HERO_POST.readTime} read</span>
-                    <span className="hero-foot-read" style={{ color: GLOBAL_HERO_POST.accent }}>Read Report <ArrowUpRight size={12} /></span>
+                  <div className="flex items-center justify-between mt-5 pt-4" style={{ borderTop: "1px solid var(--rule2)", fontFamily: "system-ui,sans-serif" }}>
+                    <span className="text-[8.5px] text-[#AAA] uppercase tracking-wider">{GLOBAL_HERO_POST.readTime} read · {GLOBAL_HERO_POST.date}</span>
+                    <span className="text-[9px] font-black uppercase tracking-wider flex items-center gap-1" style={{ color: "#2563EB" }}>Read Report <ArrowUpRight className="w-3 h-3" /></span>
                   </div>
                 </div>
               </div>
             </Link>
+          </section>
+
+          {/* ── GLOBAL SECONDARY 4-col ── */}
+          <section aria-label="Global essential reads" className="ri-3" style={{ marginTop: "clamp(14px,2vw,20px)" }}>
+            <div className="sh"><span className="sh-l">Global Edition · High-Traffic Comparisons</span><div className="sh-r" /></div>
             <div className="sec-grid">
               {GLOBAL_SECONDARY_POSTS.map((post, i) => (
-                <Link key={i} href={post.slug} className="story-card" style={{ textDecoration: "none" }}>
-                  <div className="story-img-wrap" style={{ height: "clamp(110px,11vw,140px)" }}>
-                    <img src={post.img} alt={post.title} loading="lazy" />
-                    <div className="story-img-overlay" />
-                    <div className="story-img-badge">
-                      <span className="badge badge-cat" style={{ background: post.accent, fontSize: "7px", letterSpacing: "0.15em" }}>{post.category}</span>
-                      <span className={`badge ${post.tag === "New" ? "badge-tag-new" : post.tag === "Trending" ? "badge-tag-trending" : "badge-tag-hightraffic"}`}>{post.tag}</span>
+                <Link key={i} href={post.slug} className="card-hover" style={{ background: "#FDFCF9", display: "flex", flexDirection: "column" }}>
+                  <div className="imgf" style={{ height: "clamp(110px,12vw,150px)", borderBottom: "1px solid var(--rule2)", flexShrink: 0 }}>
+                    <img src={post.img} alt={post.title} />
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,26,28,.65) 0%, transparent 55%)" }} />
+                    <div style={{ position: "absolute", top: 12, left: 14, display: "flex", gap: 7, alignItems: "center" }}>
+                      <span className="text-[7.5px] font-black tracking-[0.18em] uppercase px-2 py-1 text-white" style={{ background: post.accent, fontFamily: "system-ui,sans-serif" }}>{post.category}</span>
+                      <span className={`tag-badge ${post.tag === "New" ? "tag-new" : post.tag === "Trending" ? "tag-trending" : "tag-hightraffic"}`}>{post.tag}</span>
                     </div>
                   </div>
-                  <div className="story-body">
-                    <h3 className="story-title" style={{ fontSize: "0.9rem" }}>{post.title}</h3>
-                    <p className="story-excerpt">{post.excerpt}</p>
-                    <div className="story-foot">
-                      <span className="story-foot-meta">{post.date}</span>
-                      <span className="story-foot-arrow" style={{ color: post.accent }}>{post.readTime} <ArrowRight size={11} /></span>
+                  <div style={{ padding: "clamp(10px,1.4vw,14px)", flex: 1, display: "flex", flexDirection: "column" }}>
+                    <h3 className="pf font-bold leading-[1.2] mb-2" style={{ fontSize: "clamp(.9rem,1.5vw,1.1rem)", color: "var(--ink)" }}>{post.title}</h3>
+                    <p className="italic leading-[1.72] flex-1 mb-3" style={{ fontSize: "clamp(11px,1.1vw,12.5px)", color: "#5A4A30", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{post.excerpt}</p>
+                    <div className="flex items-center justify-between pt-3" style={{ borderTop: "1px solid var(--rule2)", fontFamily: "system-ui,sans-serif" }}>
+                      <span className="text-[8.5px] text-[#AAA] uppercase tracking-wider">{post.date}</span>
+                      <span className="text-[8.5px] font-black uppercase tracking-wider flex items-center gap-1" style={{ color: post.accent }}>Read <ArrowRight className="w-2.5 h-2.5" /></span>
                     </div>
                   </div>
                 </Link>
@@ -904,139 +686,166 @@ export default function BlogIndexPage() {
             </div>
           </section>
 
-          {/* ── MORE STORIES + SIDEBAR ── */}
-          <div className="two-col section-mt2 ri-3">
+          {/* ── MAIN 2-COL: 6-card grid + sidebar ── */}
+          <div className="main-grid ri-4" style={{ marginTop: "clamp(14px,2.2vw,22px)" }}>
             <div>
-              <div className="sh"><div className="sh-accent" /><span className="sh-l">More Stories — {GRID_POSTS.length} Articles</span><div className="sh-r" /></div>
-              <div className="grid-3">
+              <div className="sh"><span className="sh-l">Latest Articles — {GRID_POSTS.length} Articles</span><div className="sh-r" /></div>
+              <div className="grid-6">
                 {GRID_POSTS.map((post, i) => (
-                  <Link key={i} href={post.slug} className="grid-card">
-                    <div className="grid-card-img">
-                      <img src={post.img} alt={post.title} loading="lazy" />
-                      <div className="grid-card-img-bar" style={{ background: post.accent }} />
-                      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.08)" }} />
+                  <Link key={i} href={post.slug} className="card-hover" style={{ background: "#FDFCF9", display: "flex", flexDirection: "column" }}>
+                    <div className="imgf" style={{ height: 110, borderBottom: "1px solid var(--rule2)", flexShrink: 0 }}>
+                      <img src={post.img} alt={post.title} />
+                      <div style={{ position: "absolute", inset: 0, background: "rgba(15,26,28,.1)" }} />
+                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: post.accent }} />
                       <div style={{ position: "absolute", bottom: 8, left: 10 }}>
-                        <span style={{ fontFamily: "system-ui", fontSize: 7, fontWeight: 800, color: "rgba(255,255,255,0.75)", textTransform: "uppercase", letterSpacing: "0.14em" }}>{post.category}</span>
+                        <span className="text-[7px] font-black tracking-[0.18em] uppercase" style={{ color: "#E8C547", fontFamily: "system-ui,sans-serif" }}>{post.category}</span>
                       </div>
                     </div>
-                    <div className="grid-card-body">
-                      <h4 className="grid-card-title">{post.title}</h4>
-                      <p style={{ fontFamily: "Georgia, serif", fontSize: 11.5, color: "var(--muted)", fontStyle: "italic", lineHeight: 1.6, marginBottom: 10, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{post.excerpt}</p>
-                      <div className="grid-card-foot"><span>{post.readTime}</span><span style={{ color: post.accent, fontWeight: 800, fontSize: 11 }}>→</span></div>
+                    <div style={{ padding: "10px 12px 12px", flex: 1, display: "flex", flexDirection: "column" }}>
+                      <h4 className="pf font-bold leading-[1.22] mb-2 flex-1" style={{ fontSize: "clamp(0.82rem,1.1vw,0.92rem)", color: "var(--ink)" }}>{post.title}</h4>
+                      <p className="leading-[1.6] mb-3" style={{ fontSize: 11, color: "#5A4A30", fontFamily: "'Georgia',serif", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{post.excerpt}</p>
+                      <div className="flex items-center justify-between" style={{ fontFamily: "system-ui,sans-serif" }}>
+                        <span className="text-[8px] text-[#AAA] uppercase tracking-wider">{post.readTime}</span>
+                        <span className="text-[8px] font-black" style={{ color: post.accent }}>→</span>
+                      </div>
                     </div>
                   </Link>
                 ))}
               </div>
             </div>
-            <aside>
-              <div className="sh"><div className="sh-accent" /><span className="sh-l">Opinion &amp; Analysis</span><div className="sh-r" /></div>
-              <div className="sidebar-box">
-                <div className="sidebar-hd">
-                  <p className="sidebar-hd-title">The UpForge Perspective</p>
-                  <p className="sidebar-hd-sub">India &amp; Global · 2026</p>
+
+            {/* SIDEBAR */}
+            <div>
+              <div className="sh"><span className="sh-l">Analysis &amp; Opinion</span><div className="sh-r" /></div>
+              <div style={{ border: "1.5px solid var(--ink)", background: "#FDFCF9" }}>
+                <div style={{ background: "linear-gradient(135deg, var(--ink) 0%, #1A2A2C 100%)", padding: "14px 18px", position: "relative" }}>
+                  <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg, #0F766E, #0D9488, #5EEAD4)" }} />
+                  <p className="pf font-bold text-white italic" style={{ fontSize: "1rem", lineHeight: 1.25 }}>The UpForge<br />Perspective</p>
+                  <p className="text-[8px] uppercase tracking-[0.16em] mt-1.5" style={{ color: "rgba(94,234,212,.5)", fontFamily: "system-ui,sans-serif" }}>India &amp; Global · Startups · 2026</p>
                 </div>
-                {OPINION_POSTS.map((op, i) => (
-                  <Link key={i} href={op.slug} className="op-row">
-                    <span className="op-num">{op.num}</span>
-                    <div><p className="op-cat">{op.category}</p><p className="op-title">{op.title}</p><span className="op-date">{op.date}</span></div>
-                  </Link>
-                ))}
+                <div style={{ padding: "6px 18px 18px" }}>
+                  {OPINION_POSTS.map((op, i) => (
+                    <Link key={i} href={op.slug} className="op-row">
+                      <span className="pf font-black italic flex-shrink-0" style={{ fontSize: "1.05rem", color: "var(--rule)", lineHeight: 1, width: 28, marginTop: 2 }}>{op.num}</span>
+                      <div style={{ flex: 1 }}>
+                        <span className="text-[7.5px] font-black uppercase tracking-[0.14em] block mb-1" style={{ color: "var(--teal)", fontFamily: "system-ui,sans-serif" }}>{op.category}</span>
+                        <p className="pf font-bold leading-[1.28] mb-1" style={{ fontSize: "0.84rem", color: "var(--ink)" }}>{op.title}</p>
+                        <span className="text-[8px] uppercase tracking-wider" style={{ color: "#AAA", fontFamily: "system-ui,sans-serif" }}>{op.date}</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
               </div>
-              <div className="sidebar-cta">
-                <p className="sidebar-cta-label">✨ Free AI Tool</p>
-                <p className="sidebar-cta-title">Startup Valuation<br /><em style={{ color: "var(--teal-light)" }}>Report — Free</em></p>
-                <p className="sidebar-cta-body">AI-powered analysis benchmarked against 500+ global startups. Takes 3 minutes.</p>
-                <Link href="/report" className="sidebar-cta-btn">Generate Free Report <ArrowRight size={12} /></Link>
+              <div style={{ marginTop: 12, background: "linear-gradient(135deg, var(--ink) 0%, #1A2A2C 100%)", padding: "20px 18px", borderRadius: 16, position: "relative", overflow: "hidden" }}>
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg, #0F766E, #0D9488, #5EEAD4)" }} />
+                <p className="text-[8px] font-black uppercase tracking-[0.24em] mb-2" style={{ color: "rgba(94,234,212,.6)", fontFamily: "system-ui,sans-serif" }}>Free AI Tool</p>
+                <p className="pf font-bold text-white leading-[1.3] mb-2" style={{ fontSize: "1rem" }}>Startup Valuation<br /><em style={{ color: "var(--teal-light)" }}>Report — Free</em></p>
+                <p className="leading-relaxed mb-4" style={{ fontSize: 10.5, color: "rgba(255,255,255,.4)", fontFamily: "system-ui,sans-serif" }}>AI-powered analysis benchmarked against 500+ global startups. Takes 3 minutes.</p>
+                <Link href="/report" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, background: "var(--teal)", padding: "10px", fontFamily: "system-ui,sans-serif", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "white", textDecoration: "none", borderRadius: 10 }}>
+                  Generate Free Report <ArrowRight className="w-3 h-3" />
+                </Link>
               </div>
-              <div className="sidebar-cta" style={{ marginTop: 14, borderTop: "3px solid var(--blue)" }}>
-                <p className="sidebar-cta-label" style={{ color: "rgba(147,197,253,0.6)" }}>🌍 Global Registry</p>
-                <p className="sidebar-cta-title">Get your startup<br /><em style={{ color: "#93C5FD" }}>listed + verified</em></p>
-                <p className="sidebar-cta-body">Free UFRN assigned to every approved startup. Trusted by investors and press.</p>
-                <Link href="/registry" className="sidebar-cta-btn" style={{ background: "var(--blue)" }}>Submit to Registry <ArrowRight size={12} /></Link>
-              </div>
-            </aside>
+            </div>
           </div>
 
           {/* ── ALL PUBLISHED ARTICLES ── */}
-          <section aria-label="All published articles" className="ri-4 section-mt2">
-            <div className="sh"><div className="sh-accent" /><span className="sh-l">All Published — {ALL_POSTS.length} Articles · March 2026</span><div className="sh-r" /></div>
-            <div className="articles-table">
-              <div className="articles-table-hd">
-                <span>Article</span><span className="art-hide">Category</span><span className="art-hide">Published</span><span className="art-hide">Read Time</span>
+          <section aria-label="All published articles" className="ri-5" style={{ marginTop: "clamp(18px,2.8vw,30px)" }}>
+            <div className="sh">
+              <span style={{ color: "var(--teal)", fontSize: 12 }}>◆</span>
+              <span className="sh-l">All Published Articles — {ALL_POSTS.length} Articles · March 2026</span>
+              <div className="sh-r" />
+            </div>
+            <div style={{ border: "1.5px solid var(--ink)", background: "var(--ink)", display: "flex", flexDirection: "column", gap: "1.5px" }}>
+              <div style={{ background: "var(--ink)", padding: "8px 16px", display: "grid", gridTemplateColumns: "1fr 145px 85px 70px", gap: 16, fontFamily: "system-ui,sans-serif" }}>
+                {["Article", "Category", "Published", "Read Time"].map(h => (
+                  <span key={h} className="text-[7.5px] font-black uppercase tracking-[0.2em]" style={{ color: "rgba(255,255,255,.28)" }}>{h}</span>
+                ))}
               </div>
               {ALL_POSTS.map((post, i) => (
-                <Link key={i} href={post.slug} className="art-row">
-                  <p className="art-title">{post.title}</p>
-                  <span className="art-cat art-hide">{post.category}</span>
-                  <span className="art-meta art-hide">{post.date}</span>
-                  <span className="art-meta art-hide">{post.readTime}</span>
+                <Link key={i} href={post.slug} className="arch-row">
+                  <p className="pf font-bold leading-[1.3]" style={{ fontSize: 13, color: "var(--ink)", margin: 0 }}>{post.title}</p>
+                  <span className="arch-meta text-[9px] uppercase tracking-wider text-center" style={{ color: "var(--teal-dark)", border: "1px solid rgba(13,148,136,.3)", padding: "2px 8px", fontFamily: "system-ui,sans-serif" }}>{post.category}</span>
+                  <span className="arch-meta text-[9px] text-[#6B5C40]" style={{ fontFamily: "system-ui,sans-serif" }}>{post.date}</span>
+                  <span className="arch-meta text-[9px] text-[#AAA]" style={{ fontFamily: "system-ui,sans-serif" }}>{post.readTime}</span>
                 </Link>
-              ))}
-            </div>
-            <div className="ticker">
-              {[
-                { v: String(ALL_POSTS.length), l: "Articles Published"  },
-                { v: "650K+",                  l: "Registered Startups" },
-                { v: "125+",                   l: "Indian Unicorns"     },
-                { v: "10",                     l: "Global Founders"     },
-                { v: "$3.44B",                 l: "Q1 2026 Funding"     },
-              ].map((s, i) => (
-                <div key={i} className="ticker-item"><p className="ticker-val">{s.v}</p><p className="ticker-label">{s.l}</p></div>
               ))}
             </div>
           </section>
 
-          {/* ── BOTTOM CTA ── */}
-          <div className="bottom-cta ri-5">
-            <div>
-              <p className="bottom-cta-label">UpForge · The Forge · India &amp; Global</p>
-              <p className="bottom-cta-title">The world's most-read startup analysis. Free. Forever.</p>
-              <p className="bottom-cta-sub">{ALL_POSTS.length} in-depth articles — AI guides, funding playbooks, global founder profiles, and ecosystem reports.</p>
-            </div>
-            <Link href="/submit" className="bottom-cta-btn">Submit Your Startup <ArrowRight size={13} /></Link>
-          </div>
-
-          {/* ══ FOOTER — from about/page.tsx .ab-footer exactly ══ */}
-          <footer className="blog-footer ri-5">
-            <div className="footer-links-grid">
+          {/* ── STATS TICKER ── */}
+          <section aria-label="UpForge key statistics" style={{ marginTop: "clamp(14px,2.5vw,24px)" }}>
+            <div className="ticker-wrap">
               {[
-                { l: "Global Registry →",       h: "https://www.upforge.org/registry",       desc: "Full verified database"       },
-                { l: "Indian Unicorns 2026 →",  h: "/blog/top-indian-unicorns-2026",          desc: "All 125 unicorns profiled"    },
-                { l: "Top AI Startups 2026 →",  h: "/blog/top-ai-startups-india-2026",        desc: "Sarvam, Krutrim & more"       },
-                { l: "Global Startups 2026 →",  h: "/blog/top-trending-global-startups-2026", desc: "OpenAI, Perplexity, Revolut…" },
-              ].map(lnk => (
-                <Link key={lnk.h} href={lnk.h} className="footer-link-card">
-                  <p className="footer-link-title">{lnk.l}</p>
-                  <p className="footer-link-desc">{lnk.desc}</p>
-                </Link>
+                { v: String(ALL_POSTS.length), l: "Articles Published" },
+                { v: "650K+",  l: "Registered Startups" },
+                { v: "125+",   l: "Indian Unicorns"      },
+                { v: "10",     l: "Global Founders"      },
+                { v: "$3.44B", l: "Q1 2026 Funding"      },
+              ].map((s, i) => (
+                <div key={i} className="ticker-item">
+                  <p className="pf font-black text-white leading-none mb-1" style={{ fontSize: "1.4rem" }}>{s.v}</p>
+                  <p className="text-[7.5px] font-black uppercase tracking-[0.16em]" style={{ color: "rgba(255,255,255,.3)", fontFamily: "system-ui,sans-serif" }}>{s.l}</p>
+                </div>
               ))}
             </div>
-            <p className="blog-footer-note">
+          </section>
+
+          {/* ── CTA ── */}
+          <div className="cta-block">
+            <div>
+              <p className="cta-ey">🌍 UpForge · The Forge Blog · India &amp; Global</p>
+              <p className="cta-h">The world's most-read startup analysis. Free. Forever.</p>
+              <p className="cta-p">{ALL_POSTS.length} in-depth articles — AI guides, funding playbooks, global founder profiles, and ecosystem reports.</p>
+            </div>
+            <Link href="/submit" className="cta-btn">Submit Your Startup <ArrowRight size={13} /></Link>
+          </div>
+
+          {/* ── INTERNAL LINKS ── */}
+          <div className="links-grid">
+            {[
+              { l: "Global Registry →",           h: "https://www.upforge.org/registry",               desc: "Full verified database"          },
+              { l: "Indian Unicorns 2026 →",       h: "/blog/top-indian-unicorns-2026",                 desc: "All 125 unicorns profiled"        },
+              { l: "Top AI Startups 2026 →",       h: "/blog/top-ai-startups-india-2026",               desc: "Sarvam, Krutrim & more"           },
+              { l: "Global Startups 2026 →",       h: "/blog/top-trending-global-startups-2026",        desc: "OpenAI, Perplexity, Revolut…"     },
+            ].map(lnk => (
+              <Link key={lnk.h} href={lnk.h} className="link-card">
+                <span className="link-title">{lnk.l}</span>
+                <span className="link-desc">{lnk.desc}</span>
+              </Link>
+            ))}
+          </div>
+
+          {/* ── FOOTER ── */}
+          <footer style={{ borderTop: "1px solid var(--rule2)", paddingTop: "1rem", marginTop: 32 }}>
+            <p style={{ fontSize: "8.5px", lineHeight: 1.7, color: "#AAA", fontFamily: "system-ui,sans-serif" }}>
               * Article data sourced from Inc42, Forbes India, TechCrunch, Crunchbase, Tracxn, and company announcements as of March 2026.
               UpForge is an independent registry — no paid placements, no sponsored rankings.
             </p>
-            <nav aria-label="Footer navigation">
-              <ul className="blog-footer-nav">
+            <nav aria-label="Footer navigation" style={{ marginTop: 16 }}>
+              <ul style={{ display: "flex", flexWrap: "wrap", gap: "8px 16px", listStyle: "none", margin: 0, padding: 0 }}>
                 {[
-                  { l: "The Founder Chronicle",       h: "/"                                              },
-                  { l: "Global Registry",             h: "https://www.upforge.org/registry"              },
-                  { l: "Indian Unicorns 2026",        h: "/blog/top-indian-unicorns-2026"                },
-                  { l: "Top Global Startups 2026",    h: "/blog/top-trending-global-startups-2026"       },
-                  { l: "Startup Funding Guide",       h: "/blog/how-to-get-startup-funding-india-2026"   },
-                  { l: "Best AI Tools 2026",          h: "/blog/best-ai-tools-for-business-2026"         },
-                  { l: "Best Language Learning Apps", h: "/blog/best-language-learning-apps-2026"        },
-                  { l: "Ramp vs Brex 2026",           h: "/blog/ramp-vs-brex-corporate-card-comparison-2026" },
-                  { l: "Free Valuation Tool",         h: "/report"                                       },
-                  { l: "Submit Startup",              h: "/submit"                                       },
-                ].map(({ l, h }) => (
-                  <li key={h}><Link href={h}>{l}</Link></li>
+                  { l: "The Founder Chronicle",           h: "/"                                                   },
+                  { l: "Global Registry",                 h: "https://www.upforge.org/registry"                    },
+                  { l: "Indian Unicorns 2026",            h: "/blog/top-indian-unicorns-2026"                      },
+                  { l: "Top Global Startups 2026",        h: "/blog/top-trending-global-startups-2026"             },
+                  { l: "Startup Funding Guide",           h: "/blog/how-to-get-startup-funding-india-2026"         },
+                  { l: "Best AI Tools 2026",              h: "/blog/best-ai-tools-for-business-2026"               },
+                  { l: "Best Language Learning Apps",     h: "/blog/best-language-learning-apps-2026"              },
+                  { l: "Ramp vs Brex 2026",               h: "/blog/ramp-vs-brex-corporate-card-comparison-2026"  },
+                  { l: "Free Valuation Tool",             h: "/report"                                             },
+                  { l: "Submit Startup",                  h: "/submit"                                             },
+                ].map(lnk => (
+                  <li key={lnk.h}>
+                    <Link href={lnk.h} style={{ fontSize: "8.5px", color: "#AAA", textTransform: "uppercase", letterSpacing: "0.08em", textDecoration: "none", fontFamily: "system-ui,sans-serif" }}>
+                      {lnk.l}
+                    </Link>
+                  </li>
                 ))}
               </ul>
             </nav>
           </footer>
-
         </main>
-      </div>{/* end blog-root */}
+      </div>
     </>
   )
 }
