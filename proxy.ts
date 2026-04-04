@@ -1,4 +1,3 @@
-// proxy.ts
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -6,15 +5,16 @@ export async function proxy(request: NextRequest) {
   const hostname = request.headers.get('host') ?? ''
   const url = request.nextUrl.clone()
 
-  // 1️⃣ REDIRECT .in to .org (Strict check)
-  if (hostname.includes('upforge.in')) {
+  // FIXED: Explicit early-exit for correct domain — prevents any loop edge case
+  if (hostname === 'www.upforge.org') {
+    // Already on the correct domain — fall through to normal handling
+  } else if (hostname.includes('upforge.in')) {
+    // Redirect .in → .org (permanent 301)
     url.hostname = 'www.upforge.org'
     url.protocol = 'https'
     return NextResponse.redirect(url, 301)
-  }
-
-  // 2️⃣ FORCE NON-WWW TO WWW (Strict equality check prevents loops)
-  if (hostname === 'upforge.org') {
+  } else if (hostname === 'upforge.org') {
+    // Redirect non-www → www
     url.hostname = 'www.upforge.org'
     url.protocol = 'https'
     return NextResponse.redirect(url, 301)
@@ -23,9 +23,7 @@ export async function proxy(request: NextRequest) {
   let response = NextResponse.next()
 
   const pathname = request.nextUrl.pathname
-  const domainContext = 'org'
-
-  response.headers.set('x-upforge-domain', domainContext)
+  response.headers.set('x-upforge-domain', 'org')
   response.headers.set('x-upforge-pathname', pathname)
 
   const supabase = createServerClient(
@@ -47,5 +45,6 @@ export async function proxy(request: NextRequest) {
   )
 
   await supabase.auth.getUser()
+
   return response
 }
