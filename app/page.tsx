@@ -387,23 +387,37 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* JSON-LD Scripts (unchanged) */}
-      <script type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildOrganizationSchema(isOrg, liveDate)) }} />
-      <script type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildWebsiteSchema(isOrg)) }} />
+      {/* JSON-LD Scripts */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildOrganizationSchema(isOrg, liveDate)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildWebsiteSchema(isOrg)) }}
+      />
       {isOrg && (
-        <script type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildDatasetSchema(liveDate, startupCount)) }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildDatasetSchema(liveDate, startupCount)) }}
+        />
       )}
-      <script type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildCollectionPageSchema(isOrg, liveDate)) }} />
-      <script type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildItemListSchema(isOrg)) }} />
-      <script type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbSchema(isOrg)) }} />
-      <script type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFAQSchema(isOrg)) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildCollectionPageSchema(isOrg, liveDate)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildItemListSchema(isOrg)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbSchema(isOrg)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFAQSchema(isOrg)) }}
+      />
 
       {/* ENHANCED CLIENT COMPONENT with magazine-style props */}
       <FounderChronicleClient
@@ -428,7 +442,7 @@ export default async function HomePage() {
         ]}
       />
 
-      {/* SEO CONTENT LAYER (unchanged - crawler-only) */}
+      {/* SEO CONTENT LAYER — rendered in DOM, invisible to users, read by crawlers */}
       <div className="sr-only" aria-label="SEO content">
         <section>
           <h1>
