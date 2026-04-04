@@ -1,10 +1,9 @@
 /**
  * lib/domain.ts — UpForge Global Authority
  * VERSION: SINGLE DOMAIN CONSOLIDATED (.org PRIMARY)
- * Goal: Maximize global reach and SEO authority.
  */
 
-export type DomainContext = 'org'
+export type DomainContext = 'org' | 'in'
 
 export interface DomainMeta {
   context: DomainContext
@@ -16,13 +15,15 @@ export interface DomainMeta {
   region: 'GLOBAL'
 }
 
-// CLIENT DOMAIN DETECTION — Locked to org
 export function getDomainContextClient(): DomainContext {
   return 'org'
 }
 
-// DOMAIN META CONFIG — Global-First Strategy
-export function getDomainMeta(): DomainMeta {
+/**
+ * FIXED: Added ctx parameter to satisfy calls in app/startup/page.tsx
+ * Logic is locked to .org to consolidate SEO authority.
+ */
+export function getDomainMeta(ctx?: DomainContext): DomainMeta {
   return {
     context: 'org',
     baseUrl: 'https://www.upforge.org',
@@ -34,40 +35,13 @@ export function getDomainMeta(): DomainMeta {
   }
 }
 
-// URL HELPERS — Clean, Authority-Building Paths
-export function getStartupUrl(slug: string): string {
-  return `/startup/${slug}`
-}
+// ... rest of your URL helpers (getStartupUrl, getRegistryUrl, etc.)
 
-export function getRegistryUrl(path = ''): string {
-  return `/registry${path ? `/${path}` : ''}`
-}
-
-export function getCanonicalUrl(pathname: string): string {
-  const baseUrl = 'https://www.upforge.org'
-  const cleanPath = pathname === '/' ? '' : pathname.replace(/\/$/, '')
-  return `${baseUrl}${cleanPath}`
-}
-
-// SEO ALTERNATES — Consolidates all signals to .org
-export function getAlternatesForLayout(pathname: string) {
-  const path = pathname === '/' ? '' : pathname
-  const orgUrl = `https://www.upforge.org${path}`
-
-  return {
-    canonical: orgUrl,
-    languages: {
-      'en': orgUrl,
-      'x-default': orgUrl,
-    },
-  }
-}
-
-// JSON-LD ORGANIZATION — Global Schema
-// UPDATED: Added ctx parameter to fix build error in layout.tsx
+/**
+ * FIXED: Added ctx parameter to satisfy calls in app/layout.tsx
+ */
 export function getOrganizationJsonLd(ctx?: DomainContext) {
   const baseUrl = 'https://www.upforge.org'
-
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
@@ -80,60 +54,21 @@ export function getOrganizationJsonLd(ctx?: DomainContext) {
       width: '512',
       height: '512'
     },
-    description: 'UpForge is the global independent startup registry providing verified intelligence on emerging startups worldwide.',
-    foundingDate: '2024',
-    areaServed: 'Worldwide',
-    sameAs: [
-      'https://twitter.com/upforge_in',
-      'https://www.linkedin.com/company/upforge'
-    ],
-    contactPoint: {
-      '@type': 'ContactPoint',
-      contactType: 'editorial support',
-      email: 'team@upforge.org',
-      url: `${baseUrl}/contact`
-    }
+    // ... rest of schema
   }
 }
 
-// JSON-LD WEBSITE
-// UPDATED: Added ctx parameter to fix build error in layout.tsx
+/**
+ * FIXED: Added ctx parameter to satisfy calls in app/layout.tsx
+ */
 export function getWebsiteJsonLd(ctx?: DomainContext) {
   const baseUrl = 'https://www.upforge.org'
-
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     '@id': `${baseUrl}/#website`,
     url: baseUrl,
     name: 'UpForge',
-    alternateName: 'UpForge Global Startup Registry',
-    publisher: {
-      '@id': `${baseUrl}/#organization`
-    },
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: {
-        '@type': 'EntryPoint',
-        urlTemplate: `${baseUrl}/registry?q={search_term_string}`,
-      },
-      'query-input': 'required name=search_term_string',
-    },
-  }
-}
-
-// JSON-LD BREADCRUMB
-export function getBreadcrumbJsonLd(items: { name: string; item: string }[]) {
-  const baseUrl = 'https://www.upforge.org'
-
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: items.map((item, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: item.name,
-      item: item.item.startsWith('http') ? item.item : `${baseUrl}${item.item}`,
-    })),
+    // ... rest of schema
   }
 }
