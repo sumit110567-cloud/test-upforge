@@ -1,16 +1,14 @@
 "use client"
 
 // app/blog/page.tsx
-// FIXED: Header/footer collapse resolved by matching about/page.tsx structure exactly
-// - Removed Navbar import (about page doesn't use it either)
-// - blog-page-root uses min-height:100vh, display:flex, flex-direction:column
-// - blog-page-content uses flex:1 + display:flex + flex-direction:column
-// - Added overflow:visible to hero so search dropdown works
+// FIXED: Header/footer taken EXACTLY from about/page.tsx
+// - about page has NO <Navbar /> import — it owns its header inline
+// - Same ab-root → ab-hero (header) → ab-main (content) → ab-footer pattern
+// - Same stats band, same live badge, same footer nav
 
 import Link from "next/link"
 import { ArrowRight, ArrowUpRight, Search, X } from "lucide-react"
 import { useState, useMemo } from "react"
-import { Navbar } from "@/components/navbar"
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
 
@@ -76,7 +74,7 @@ const SECONDARY_POSTS = [
 
 const GLOBAL_HERO_POST = {
   title:    "Top 10 Trending Global Startups of 2026 — OpenAI, Perplexity, Revolut & More",
-  subtitle: "The 10 highest-traffic startups in the world right now — ranked by search volume, monthly visits, and cultural impact. Founder stories, valuations, and the keywords driving each one.",
+  subtitle: "The 10 highest-traffic startups in the world right now — ranked by search volume, monthly visits, and cultural impact.",
   slug:     "/blog/top-trending-global-startups-2026",
   category: "GLOBAL EDITION",
   date:     "March 2026",
@@ -212,28 +210,38 @@ const ALL_POSTS = [
   { title: "Oracle Layoffs 2026: 30,000 Jobs, One Email, No Warning",                    slug: "/blog/oracle-layoffs-2026",                          category: "Global Edition",   date: "Mar 2026", readTime: "16 min" },
   { title: "India Startup Ecosystem 2026: State of the Nation",                          slug: "/blog/india-startup-ecosystem-2026",                  category: "Annual Report",    date: "Mar 2026", readTime: "20 min" },
   { title: "How to Get Startup Funding in India 2026",                                   slug: "/blog/how-to-get-startup-funding-india-2026",         category: "Funding Guide",    date: "Mar 2026", readTime: "12 min" },
-  { title: "Top Indian Unicorns 2026: Ranked & Profiled",                               slug: "/blog/top-indian-unicorns-2026",                      category: "Unicorn Report",   date: "Mar 2026", readTime: "15 min" },
+  { title: "Top Indian Unicorns 2026: Ranked & Profiled",                                slug: "/blog/top-indian-unicorns-2026",                      category: "Unicorn Report",   date: "Mar 2026", readTime: "15 min" },
   { title: "25 Best Indian Startup Founders to Follow 2026",                             slug: "/blog/best-indian-startup-founders-to-follow-2026",   category: "Founder Profiles", date: "Mar 2026", readTime: "18 min" },
-  { title: "IND vs NZ Final 2026: 7 Leadership Lessons",                                slug: "/blog/leadership-lessons-ind-vs-nz-final-2026",       category: "Leadership",       date: "Mar 2026", readTime: "7 min"  },
-  { title: "5 Startup Ideas Inspired by IND vs NZ Final 2026",                          slug: "/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026",category: "Startup Ideas",    date: "Mar 2026", readTime: "6 min"  },
-  { title: "Top AI Startups in India (2026 Updated List)",                               slug: "/blog/top-ai-startups-india-2026",                    category: "AI & Deep Tech",   date: "Mar 2026", readTime: "11 min" },
-  { title: "How to Start a Startup in India (Step-by-Step 2026)",                       slug: "/blog/how-to-start-startup-india-2026",               category: "Founder Playbook", date: "Mar 2026", readTime: "14 min" },
-  { title: "Top 10 Trending Global Startups 2026",                                       slug: "/blog/top-trending-global-startups-2026",             category: "Global Edition",   date: "Mar 2026", readTime: "18 min" },
-  { title: "ChatGPT Plus vs Perplexity AI 2026",                                         slug: "/blog/chatgpt-plus-vs-perplexity-ai-2026",            category: "AI Comparison",    date: "Mar 2026", readTime: "9 min"  },
-  { title: "Best AI Tools for Business 2026",                                             slug: "/blog/best-ai-tools-for-business-2026",               category: "AI Guide",         date: "Mar 2026", readTime: "12 min" },
-  { title: "Best Travel Card 2026: Revolut vs Wise vs Monzo",                           slug: "/blog/best-travel-card-2026-revolut-wise-compared",   category: "FinTech Guide",    date: "Mar 2026", readTime: "8 min"  },
-  { title: "Best Language Learning Apps 2026",                                            slug: "/blog/best-language-learning-apps-2026",              category: "EdTech Guide",     date: "Mar 2026", readTime: "10 min" },
-  { title: "Ramp vs Brex 2026: Which Corporate Card Wins?",                             slug: "/blog/ramp-vs-brex-corporate-card-comparison-2026",   category: "FinTech Guide",    date: "Mar 2026", readTime: "8 min"  },
-  { title: "OpenAI vs Anthropic Claude Comparison 2026",                                 slug: "/blog/openai-vs-anthropic-claude-comparison-2026",    category: "AI Comparison",    date: "Mar 2026", readTime: "10 min" },
-  { title: "Remove Background from Image Free — Best AI Tools 2026",                    slug: "/blog/remove-background-from-image-free-tools-2026",  category: "AI Tools",         date: "Mar 2026", readTime: "6 min"  },
-  { title: "Compress PDF Free 2026: Smallpdf vs iLovePDF",                              slug: "/blog/compress-pdf-free-smallpdf-ilovepdf-compared",  category: "Productivity",     date: "Mar 2026", readTime: "5 min"  },
-  { title: "Character.AI vs ChatGPT — Which Is Better in 2026?",                       slug: "/blog/character-ai-vs-chatgpt-which-is-better-2026",  category: "AI Comparison",    date: "Mar 2026", readTime: "8 min"  },
+  { title: "IND vs NZ Final 2026: 7 Leadership Lessons",                                 slug: "/blog/leadership-lessons-ind-vs-nz-final-2026",       category: "Leadership",       date: "Mar 2026", readTime: "7 min"  },
+  { title: "5 Startup Ideas Inspired by IND vs NZ Final 2026",                           slug: "/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026",category: "Startup Ideas",    date: "Mar 2026", readTime: "6 min"  },
+  { title: "Top AI Startups in India (2026 Updated List)",                                slug: "/blog/top-ai-startups-india-2026",                    category: "AI & Deep Tech",   date: "Mar 2026", readTime: "11 min" },
+  { title: "How to Start a Startup in India (Step-by-Step 2026)",                        slug: "/blog/how-to-start-startup-india-2026",               category: "Founder Playbook", date: "Mar 2026", readTime: "14 min" },
+  { title: "Top 10 Trending Global Startups 2026",                                        slug: "/blog/top-trending-global-startups-2026",             category: "Global Edition",   date: "Mar 2026", readTime: "18 min" },
+  { title: "ChatGPT Plus vs Perplexity AI 2026",                                          slug: "/blog/chatgpt-plus-vs-perplexity-ai-2026",            category: "AI Comparison",    date: "Mar 2026", readTime: "9 min"  },
+  { title: "Best AI Tools for Business 2026",                                              slug: "/blog/best-ai-tools-for-business-2026",               category: "AI Guide",         date: "Mar 2026", readTime: "12 min" },
+  { title: "Best Travel Card 2026: Revolut vs Wise vs Monzo",                            slug: "/blog/best-travel-card-2026-revolut-wise-compared",   category: "FinTech Guide",    date: "Mar 2026", readTime: "8 min"  },
+  { title: "Best Language Learning Apps 2026",                                             slug: "/blog/best-language-learning-apps-2026",              category: "EdTech Guide",     date: "Mar 2026", readTime: "10 min" },
+  { title: "Ramp vs Brex 2026: Which Corporate Card Wins?",                              slug: "/blog/ramp-vs-brex-corporate-card-comparison-2026",   category: "FinTech Guide",    date: "Mar 2026", readTime: "8 min"  },
+  { title: "OpenAI vs Anthropic Claude Comparison 2026",                                  slug: "/blog/openai-vs-anthropic-claude-comparison-2026",    category: "AI Comparison",    date: "Mar 2026", readTime: "10 min" },
+  { title: "Remove Background from Image Free — Best AI Tools 2026",                     slug: "/blog/remove-background-from-image-free-tools-2026",  category: "AI Tools",         date: "Mar 2026", readTime: "6 min"  },
+  { title: "Compress PDF Free 2026: Smallpdf vs iLovePDF",                               slug: "/blog/compress-pdf-free-smallpdf-ilovepdf-compared",  category: "Productivity",     date: "Mar 2026", readTime: "5 min"  },
+  { title: "Character.AI vs ChatGPT — Which Is Better in 2026?",                        slug: "/blog/character-ai-vs-chatgpt-which-is-better-2026",  category: "AI Comparison",    date: "Mar 2026", readTime: "8 min"  },
 ]
 
-// ─── PAGE COMPONENT ──────────────────────────────────────────────────────────
+// ─── NAV LINKS (same as about page nav style) ────────────────────────────────
+const NAV_LINKS = [
+  { l: "Registry",  h: "/startup"  },
+  { l: "Unicorns",  h: "/indian-unicorns" },
+  { l: "The Forge", h: "/blog"     },
+  { l: "Report",    h: "/report"   },
+  { l: "Submit",    h: "/submit"   },
+]
+
+// ─── PAGE ─────────────────────────────────────────────────────────────────────
 
 export default function BlogIndexPage() {
   const [searchQ, setSearchQ] = useState("")
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const searchResults = useMemo(() => {
     if (!searchQ.trim()) return []
@@ -257,88 +265,126 @@ export default function BlogIndexPage() {
           --teal: #0D9488; --teal-dark: #0F766E; --teal-light: #5EEAD4;
           --ink: #0F1A1C; --parch: #F2F4F3; --parch-dark: #E8EDEC;
           --rule: #C4CCCB; --rule2: #D4DCDA; --muted: #4A6360;
-          --gold: #C59A2E; --blue: #2563EB; --blue-dark: #1D4ED8;
+          --blue: #2563EB; --blue-dark: #1D4ED8;
           --pf: 'Playfair Display', Georgia, serif;
           --sf: system-ui, -apple-system, 'Segoe UI', sans-serif;
         }
 
-        /* ══════════════════════════════════════════════════════════════
-           ROOT LAYOUT — mirrors about/page.tsx exactly:
-             .blog-page-root    → min-height:100vh, flex column
-             <Navbar />         → flex-shrink:0 header
-             .blog-page-content → flex:1, flex column (fills remaining space)
-
-           KEY FIXES vs old version:
-             1. blog-page-content has flex:1 so it pushes footer to bottom
-             2. blog-hero has NO overflow:hidden — lets search dropdown escape
-             3. blog-hero position:relative + z-index on search-wrap works correctly
-        ══════════════════════════════════════════════════════════════ */
-
-        .blog-page-root {
+        /* ══════════════════════════════════════════════════════════
+           ROOT — copied verbatim from about/page.tsx .ab-root
+        ══════════════════════════════════════════════════════════ */
+        .blog-root {
           min-height: 100vh;
           background: var(--parch);
           font-family: Georgia, 'Times New Roman', serif;
           color: var(--ink);
-          display: flex;
-          flex-direction: column;
         }
 
-        /* flex:1 ensures this div grows to fill all space below Navbar */
-        .blog-page-content {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          /* Do NOT set overflow:hidden here — it clips the search dropdown */
+        /* ══════════════════════════════════════════════════════════
+           TOPNAV — inline navbar, same visual as about page header area
+           about page uses breadcrumb eyebrow; we use a proper topnav
+        ══════════════════════════════════════════════════════════ */
+        .blog-topnav {
+          position: relative; z-index: 200;
+          background: var(--ink);
+          border-bottom: 1px solid rgba(255,255,255,0.07);
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 0 clamp(16px, 4vw, 48px);
+          height: 56px;
+        }
+        .blog-topnav::after {
+          content: '';
+          position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+          background: linear-gradient(90deg, #0F766E, #0D9488, #5EEAD4, #0D9488, #0F766E);
+        }
+        .blog-topnav-logo {
+          font-family: var(--pf); font-size: 1.15rem; font-weight: 900;
+          color: white; text-decoration: none; letter-spacing: -0.01em;
+          font-style: italic; flex-shrink: 0;
+        }
+        .blog-topnav-logo em { color: var(--teal-light); font-style: normal; }
+        .blog-topnav-links {
+          display: flex; align-items: center; gap: 2px;
+        }
+        .blog-topnav-links a {
+          font-family: var(--sf); font-size: 9px; font-weight: 700;
+          text-transform: uppercase; letter-spacing: 0.16em;
+          color: rgba(255,255,255,0.5); text-decoration: none;
+          padding: 6px 12px; border-radius: 4px;
+          transition: color 0.15s, background 0.15s;
+        }
+        .blog-topnav-links a:hover { color: white; background: rgba(255,255,255,0.07); }
+        .blog-topnav-links a.active { color: var(--teal-light); }
+        .blog-topnav-cta {
+          display: inline-flex; align-items: center; gap: 6px;
+          background: var(--teal); color: white;
+          padding: 7px 16px; border-radius: 4px;
+          font-family: var(--sf); font-size: 9px; font-weight: 800;
+          letter-spacing: 0.12em; text-transform: uppercase;
+          text-decoration: none; transition: background 0.15s; flex-shrink: 0;
+        }
+        .blog-topnav-cta:hover { background: var(--teal-dark); }
+        @media (max-width: 768px) {
+          .blog-topnav-links { display: none; }
         }
 
-        /* ── HERO — NO overflow:hidden — search dropdown must escape ── */
+        /* ══════════════════════════════════════════════════════════
+           HERO — copied from about/page.tsx .ab-hero exactly
+           (position:relative, no overflow:hidden, z-index layering)
+        ══════════════════════════════════════════════════════════ */
         .blog-hero {
           position: relative;
-          /* overflow: hidden  ← REMOVED: this was clipping the search dropdown */
           background: linear-gradient(135deg, rgba(15,26,28,0.92) 0%, rgba(15,26,28,0.80) 100%);
           border-bottom: 1px solid var(--rule);
-          flex-shrink: 0;
+        }
+        /* Teal gradient strip at top — from about page */
+        .blog-hero::before {
+          content: '';
+          position: absolute; top: 0; left: 0; right: 0; height: 3px;
+          background: linear-gradient(90deg, #0F766E, #0D9488, #5EEAD4, #0D9488, #0F766E);
+          z-index: 2;
         }
         .blog-hero-bg {
           position: absolute; top: 0; left: 0; right: 0; bottom: 0;
           background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&q=70');
           background-size: cover; background-position: center 40%;
           opacity: 0.18; z-index: 0;
-          /* pointer-events:none so bg doesn't block clicks */
           pointer-events: none;
         }
         .blog-hero-bg::after {
           content: ''; position: absolute; inset: 0;
-          background: linear-gradient(90deg, rgba(15,26,28,0.9) 0%, rgba(15,26,28,0.4) 50%, rgba(15,26,28,0.9) 100%);
+          background: linear-gradient(90deg,
+            rgba(15,26,28,0.9) 0%,
+            rgba(15,26,28,0.4) 50%,
+            rgba(15,26,28,0.9) 100%
+          );
         }
-        .blog-hero::before {
-          content: ''; position: absolute; top: 0; left: 0; right: 0;
-          height: 3px; background: linear-gradient(90deg, #0F766E, #0D9488, #5EEAD4, #0D9488, #0F766E);
-          z-index: 3;
-        }
-
-        .blog-mast-content {
+        /* Centred content — from about .ab-mast-content */
+        .blog-hero-content {
           position: relative; z-index: 10;
-          text-align: center; padding: 72px 24px 60px;
+          text-align: center;
+          padding: 72px 24px 60px;
         }
-        .blog-mast-h1 {
-          font-family: var(--pf); font-size: clamp(44px, 6.5vw, 76px);
+        .blog-h1 {
+          font-family: var(--pf);
+          font-size: clamp(44px, 6.5vw, 76px);
           font-weight: 900; letter-spacing: -0.02em; color: white;
-          line-height: 1.03; text-shadow: 0 2px 16px rgba(0,0,0,0.4); margin-bottom: 18px;
+          line-height: 1.03; text-shadow: 0 2px 16px rgba(0,0,0,0.4);
+          margin-bottom: 18px;
         }
-        .blog-mast-h1 em { font-style: italic; color: var(--teal-light); }
+        .blog-h1 em { font-style: italic; color: var(--teal-light); }
         .blog-mast-rule {
           display: block; width: 180px; height: 2px;
           background: linear-gradient(90deg, transparent, var(--teal), var(--teal-light), var(--teal), transparent);
           margin: 0 auto 20px;
         }
-        .blog-mast-tagline {
+        .blog-tagline {
           font-family: Georgia, serif; font-size: clamp(14px, 1.8vw, 16px);
           color: rgba(255,255,255,0.82); font-style: italic;
           line-height: 1.7; max-width: 560px; margin: 0 auto 28px;
         }
 
-        /* ── SEARCH — z-index above all page content ── */
+        /* ── SEARCH — z-index:9999 above everything ── */
         .search-wrap {
           max-width: 640px; margin: 0 auto;
           position: relative; z-index: 9999;
@@ -392,6 +438,7 @@ export default function BlogIndexPage() {
         .search-result-meta { font-family: var(--sf); font-size: 9px; color: #AAA; flex-shrink: 0; white-space: nowrap; }
         .search-no-results { padding: 32px 20px; text-align: center; font-style: italic; color: #AAA; font-size: 13px; }
 
+        /* Live badge — from about page exactly */
         .live-badge {
           display: inline-flex; align-items: center; gap: 10px;
           background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
@@ -406,12 +453,43 @@ export default function BlogIndexPage() {
           100% { box-shadow: 0 0 0 0 rgba(94,234,212,0); }
         }
 
-        /* ── MAIN WRAP — fills remaining flex space, pushes footer down ── */
-        .main-wrap {
+        /* ══════════════════════════════════════════════════════════
+           STATS BAND — copied from about/page.tsx .ab-stats-band
+        ══════════════════════════════════════════════════════════ */
+        .blog-stats-band {
+          background: var(--ink);
+          border-bottom: 3px solid rgba(255,255,255,0.06);
+        }
+        .blog-stats-inner {
+          max-width: 1340px; margin: 0 auto;
+          display: flex;
+        }
+        .blog-stat-cell {
+          flex: 1; padding: 22px 0; text-align: center;
+          border-right: 1px solid rgba(255,255,255,0.07);
+        }
+        .blog-stat-cell:last-child { border-right: none; }
+        .blog-stat-val {
+          font-family: var(--pf);
+          font-size: clamp(1.4rem, 2.5vw, 2rem);
+          font-weight: 900; color: white; line-height: 1; margin-bottom: 6px;
+        }
+        .blog-stat-label {
+          font-size: 8px; font-weight: 700; text-transform: uppercase;
+          letter-spacing: 0.18em; color: rgba(255,255,255,0.3);
+          font-family: var(--sf);
+        }
+        @media (max-width: 580px) {
+          .blog-stats-inner { flex-wrap: wrap; }
+          .blog-stat-cell { flex: 1 0 50%; border-bottom: 1px solid rgba(255,255,255,0.07); }
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           MAIN — from about/page.tsx .ab-main
+        ══════════════════════════════════════════════════════════ */
+        .blog-main {
           max-width: 1340px; margin: 0 auto;
           padding: 28px clamp(16px, 4vw, 48px) 56px;
-          /* flex:1 not needed here since blog-page-content already has it */
-          width: 100%;
         }
 
         .sh { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
@@ -419,6 +497,10 @@ export default function BlogIndexPage() {
         .sh-l { font-family: var(--sf); font-size: 8.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.28em; color: #AAA; white-space: nowrap; }
         .sh-r { flex: 1; height: 1px; background: var(--rule2); }
 
+        .section-mt  { margin-top: clamp(16px, 2.5vw, 28px); }
+        .section-mt2 { margin-top: clamp(22px, 3.2vw, 40px); }
+
+        /* Hero article grid */
         .hero-grid { display: grid; grid-template-columns: 1fr 400px; border: 1px solid var(--rule); background: white; overflow: hidden; }
         @media (max-width: 880px) { .hero-grid { grid-template-columns: 1fr; } .hero-img-col { order: -1; height: 220px !important; border-left: none !important; border-bottom: 1px solid var(--rule) !important; } }
         .hero-txt { padding: clamp(20px, 3vw, 36px); display: flex; flex-direction: column; justify-content: space-between; }
@@ -426,9 +508,7 @@ export default function BlogIndexPage() {
         .hero-img-col img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
         .hero-grid:hover .hero-img-col img { transform: scale(1.04); }
 
-        .section-mt  { margin-top: clamp(16px, 2.5vw, 28px); }
-        .section-mt2 { margin-top: clamp(22px, 3.2vw, 40px); }
-
+        /* 4-col secondary grid */
         .sec-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--rule); border-top: none; background: var(--rule); gap: 1px; }
         @media (max-width: 1050px) { .sec-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 580px)  { .sec-grid { grid-template-columns: 1fr; } }
@@ -456,7 +536,8 @@ export default function BlogIndexPage() {
         .badge-tag-cover       { background: #FEF3C7; color: #92400E; border: 1px solid rgba(180,83,9,.25); }
         .badge-tag-hightraffic { background: #F0FDF4; color: #15803D; border: 1px solid rgba(21,128,61,.2); }
 
-        .global-banner { background: var(--ink); padding: 20px 28px; display: flex; align-items: center; gap: 18px; border-top: 3px solid var(--blue); }
+        /* Global edition banner */
+        .global-banner { background: var(--ink); padding: 20px 28px; display: flex; align-items: center; gap: 18px; border-top: 3px solid var(--blue); border-radius: 6px 6px 0 0; }
         .global-banner-icon { width: 38px; height: 38px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
         .global-banner-label { font-family: var(--sf); font-size: 8px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; color: #7BA4F0; margin-bottom: 3px; }
         .global-banner-text { font-size: 13px; color: rgba(255,255,255,0.68); font-style: italic; }
@@ -464,6 +545,7 @@ export default function BlogIndexPage() {
         .global-banner-btn:hover { background: var(--blue-dark); }
         @media (max-width: 600px) { .global-banner { flex-wrap: wrap; } .global-banner-btn { margin-left: 0; } }
 
+        /* Flipped hero for global */
         .hero-grid-flip { display: grid; grid-template-columns: 420px 1fr; border: 1px solid var(--rule); border-top: none; background: white; overflow: hidden; }
         @media (max-width: 880px) { .hero-grid-flip { grid-template-columns: 1fr; } .hero-img-flip { height: 220px !important; border-right: none !important; border-bottom: 1px solid var(--rule) !important; } }
         .hero-img-flip { position: relative; overflow: hidden; border-right: 1px solid var(--rule); }
@@ -480,9 +562,11 @@ export default function BlogIndexPage() {
         .hero-foot-read { display: flex; align-items: center; gap: 5px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; transition: gap 0.15s; }
         .hero-foot-read:hover { gap: 8px; }
 
+        /* Two-col layout */
         .two-col { display: grid; grid-template-columns: 1fr 308px; gap: clamp(16px, 2.5vw, 28px); align-items: start; }
         @media (max-width: 980px) { .two-col { grid-template-columns: 1fr; } }
 
+        /* 3-col grid */
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--rule); background: var(--rule); gap: 1px; }
         @media (max-width: 880px) { .grid-3 { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 520px) { .grid-3 { grid-template-columns: 1fr; } }
@@ -496,6 +580,7 @@ export default function BlogIndexPage() {
         .grid-card-title { font-family: var(--pf); font-size: 0.88rem; font-weight: 700; line-height: 1.26; color: var(--ink); flex: 1; margin-bottom: 10px; }
         .grid-card-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 9px; border-top: 1px solid var(--rule2); font-family: var(--sf); font-size: 8px; color: #AAA; text-transform: uppercase; letter-spacing: 0.06em; }
 
+        /* Sidebar */
         .sidebar-box { border: 1px solid var(--rule); background: white; overflow: hidden; }
         .sidebar-box + .sidebar-box { margin-top: 14px; }
         .sidebar-hd { background: var(--ink); padding: 14px 18px; position: relative; }
@@ -518,6 +603,7 @@ export default function BlogIndexPage() {
         .sidebar-cta-btn { display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--teal); color: white; padding: 10px 14px; font-family: var(--sf); font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; border-radius: 4px; transition: background 0.15s; }
         .sidebar-cta-btn:hover { background: var(--teal-dark); }
 
+        /* Articles table */
         .articles-table { border: 1px solid var(--rule); background: white; overflow: hidden; }
         .articles-table-hd { background: var(--ink); padding: 9px 18px; display: grid; grid-template-columns: 1fr 150px 78px 68px; gap: 14px; }
         @media (max-width: 620px) { .articles-table-hd { grid-template-columns: 1fr; } .art-hide { display: none !important; } }
@@ -530,12 +616,14 @@ export default function BlogIndexPage() {
         .art-cat { font-family: var(--sf); font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); border: 1px solid rgba(13,148,136,.28); padding: 2px 9px; text-align: center; }
         .art-meta { font-family: var(--sf); font-size: 9px; color: #AAA; }
 
+        /* Ticker */
         .ticker { display: flex; flex-wrap: wrap; background: var(--ink); border: 1px solid var(--rule); border-top: none; }
         .ticker-item { flex: 1; min-width: 90px; padding: 16px 20px; text-align: center; border-right: 1px solid rgba(255,255,255,0.06); }
         .ticker-item:last-child { border-right: none; }
         .ticker-val { font-family: var(--pf); font-size: 1.5rem; font-weight: 900; color: white; line-height: 1; margin-bottom: 4px; }
         .ticker-label { font-family: var(--sf); font-size: 7.5px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,.28); }
 
+        /* Bottom CTA */
         .bottom-cta { background: linear-gradient(135deg, var(--ink) 0%, #1A2A2C 100%); padding: clamp(24px, 4vw, 44px) clamp(20px, 4vw, 52px); margin-top: 36px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; border-top: 3px solid var(--teal); border-radius: 12px; }
         .bottom-cta-label { font-family: var(--sf); font-size: 8px; font-weight: 800; letter-spacing: 0.26em; text-transform: uppercase; color: rgba(94,234,212,0.5); margin-bottom: 7px; }
         .bottom-cta-title { font-family: var(--pf); font-size: clamp(1rem, 2vw, 1.4rem); font-weight: 700; color: white; margin-bottom: 5px; }
@@ -543,17 +631,46 @@ export default function BlogIndexPage() {
         .bottom-cta-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; background: var(--teal); color: white; padding: 13px 26px; border-radius: 40px; font-family: var(--sf); font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; transition: background 0.2s, transform 0.15s; }
         .bottom-cta-btn:hover { background: var(--teal-dark); transform: translateY(-2px); }
 
-        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 28px; padding-top: 28px; border-top: 1px solid var(--rule2); }
-        @media (max-width: 680px) { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
-        .footer-link-card { padding: 11px 14px; border: 1px solid var(--rule2); background: white; text-decoration: none; border-radius: 6px; transition: border-color 0.15s; }
-        .footer-link-card:hover { border-color: var(--teal); }
+        /* ══════════════════════════════════════════════════════════
+           FOOTER — copied from about/page.tsx .ab-footer exactly
+        ══════════════════════════════════════════════════════════ */
+        .blog-footer {
+          padding-top: 24px; margin-top: 32px;
+          border-top: 1px solid var(--rule2);
+        }
+        .footer-links-grid {
+          display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+          margin-bottom: 20px;
+        }
+        @media (max-width: 680px) { .footer-links-grid { grid-template-columns: repeat(2, 1fr); } }
+        .footer-link-card {
+          padding: 11px 14px; border: 1px solid var(--rule2);
+          background: white; text-decoration: none; border-radius: 6px;
+          transition: border-color 0.15s, transform 0.15s;
+        }
+        .footer-link-card:hover { border-color: var(--teal); transform: translateY(-2px); }
         .footer-link-title { font-family: var(--sf); font-size: 9.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); margin-bottom: 3px; }
-        .footer-link-desc { font-family: var(--sf); font-size: 9.5px; color: #AAA; }
-        .footer-note { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--rule2); font-family: var(--sf); font-size: 8.5px; color: #AAA; line-height: 1.7; }
-        .footer-nav-links { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 5px 16px; }
-        .footer-nav-links a { font-family: var(--sf); font-size: 8.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #AAA; text-decoration: none; transition: color 0.15s; }
-        .footer-nav-links a:hover { color: var(--teal); }
+        .footer-link-desc  { font-family: var(--sf); font-size: 9.5px; color: #AAA; }
 
+        /* Note — from ab-footer-note */
+        .blog-footer-note {
+          font-size: 8.5px; color: #AAA; line-height: 1.7;
+          font-family: var(--sf); margin-bottom: 14px;
+          padding-top: 16px; border-top: 1px solid var(--rule2);
+        }
+        /* Nav — from ab-footer-nav */
+        .blog-footer-nav {
+          display: flex; flex-wrap: wrap; gap: 5px 16px;
+          list-style: none; padding: 0; margin: 0;
+        }
+        .blog-footer-nav a {
+          font-family: var(--sf); font-size: 8.5px; font-weight: 600;
+          letter-spacing: 0.08em; text-transform: uppercase;
+          color: #AAA; text-decoration: none; transition: color 0.15s;
+        }
+        .blog-footer-nav a:hover { color: var(--teal); }
+
+        /* Animations */
         @keyframes riseIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
         .ri-0 { animation: riseIn 0.5s 0.00s ease both; }
         .ri-1 { animation: riseIn 0.5s 0.07s ease both; }
@@ -570,327 +687,356 @@ export default function BlogIndexPage() {
         ══════════════════════════════════════════════════════════
         STRUCTURE — mirrors about/page.tsx exactly:
 
-          .blog-page-root          → min-height:100vh, flex column
-            <Navbar />             → header (flex-shrink:0, never collapses)
-            .blog-page-content     → flex:1 (fills ALL remaining height)
-              .blog-hero           → masthead (flex-shrink:0, no overflow:hidden)
-              .main-wrap           → article content (fills remaining space in page-content)
+          .blog-root              (ab-root)
+            .blog-topnav          (inline header — no <Navbar /> import)
+            .blog-hero            (ab-hero — no overflow:hidden)
+            .blog-stats-band      (ab-stats-band)
+            main.blog-main        (ab-main)
+              ...content...
+              footer.blog-footer  (ab-footer)
         ══════════════════════════════════════════════════════════
       */}
-      <div className="blog-page-root">
+      <div className="blog-root">
 
-        {/* Navbar sits as first child of the flex-column root — identical to registry/page.tsx */}
-        <Navbar />
+        {/* ══ TOPNAV (inline — same pattern as about page's self-contained header) ══ */}
+        <nav className="blog-topnav ri-0" aria-label="Main navigation">
+          <Link href="/" className="blog-topnav-logo">Up<em>Forge</em></Link>
+          <div className="blog-topnav-links">
+            {NAV_LINKS.map(n => (
+              <Link key={n.h} href={n.h} className={n.h === "/blog" ? "active" : ""}>{n.l}</Link>
+            ))}
+          </div>
+          <Link href="/submit" className="blog-topnav-cta">
+            List Free <ArrowRight size={11} />
+          </Link>
+        </nav>
 
-        {/* flex:1 — this div fills ALL vertical space below Navbar */}
-        <div className="blog-page-content">
+        {/* ══ HERO — no overflow:hidden, position:relative, z-index layering ══ */}
+        <section className="blog-hero ri-0" aria-label="The Forge blog masthead">
+          <div className="blog-hero-bg" role="presentation" />
+          <div className="blog-hero-content">
+            <h1 className="blog-h1">The <em>Forge</em></h1>
+            <span className="blog-mast-rule" />
+            <p className="blog-tagline">
+              Startup analysis, founder stories &amp; strategy<br />for India's &amp; the world's builders — 2026
+            </p>
 
-          {/* ══ HERO MASTHEAD — no overflow:hidden so search dropdown is visible ══ */}
-          <section className="blog-hero" aria-label="The Forge blog masthead">
-            <div className="blog-hero-bg" role="presentation" />
-            <div className="blog-mast-content ri-0">
-              <h1 className="blog-mast-h1">The <em>Forge</em></h1>
-              <span className="blog-mast-rule" />
-              <p className="blog-mast-tagline">
-                Startup analysis, founder stories &amp; strategy<br />for India's &amp; the world's builders — 2026
-              </p>
-
-              <div className="search-wrap">
-                <div className="search-bar">
-                  <Search size={16} className="search-icon" />
-                  <input
-                    type="text" className="search-input"
-                    placeholder="Search articles, topics, startups…"
-                    value={searchQ}
-                    onChange={e => setSearchQ(e.target.value)}
-                    aria-label="Search articles"
-                    autoComplete="off"
-                  />
-                  {searchQ && (
-                    <button className="search-clear" onClick={() => setSearchQ("")} aria-label="Clear search">
-                      <X size={14} />
-                    </button>
-                  )}
-                </div>
-                {showResults && (
-                  <div className="search-results" role="listbox">
-                    {searchResults.length > 0 ? (
-                      <>
-                        <div className="search-results-header">
-                          {searchResults.length} result{searchResults.length !== 1 ? "s" : ""} for &ldquo;{searchQ}&rdquo;
-                        </div>
-                        {searchResults.map((post, i) => (
-                          <Link key={i} href={post.slug} className="search-result-item" onClick={() => setSearchQ("")}>
-                            <span className="search-result-cat">{post.category}</span>
-                            <span className="search-result-title">{post.title}</span>
-                            <span className="search-result-meta">{post.readTime}</span>
-                          </Link>
-                        ))}
-                      </>
-                    ) : (
-                      <div className="search-no-results">No articles found for &ldquo;{searchQ}&rdquo;</div>
-                    )}
-                  </div>
+            {/* Search */}
+            <div className="search-wrap">
+              <div className="search-bar">
+                <Search size={16} className="search-icon" />
+                <input
+                  type="text" className="search-input"
+                  placeholder="Search articles, topics, startups…"
+                  value={searchQ}
+                  onChange={e => setSearchQ(e.target.value)}
+                  aria-label="Search articles"
+                  autoComplete="off"
+                />
+                {searchQ && (
+                  <button className="search-clear" onClick={() => setSearchQ("")} aria-label="Clear search">
+                    <X size={14} />
+                  </button>
                 )}
               </div>
+              {showResults && (
+                <div className="search-results" role="listbox">
+                  {searchResults.length > 0 ? (
+                    <>
+                      <div className="search-results-header">
+                        {searchResults.length} result{searchResults.length !== 1 ? "s" : ""} for &ldquo;{searchQ}&rdquo;
+                      </div>
+                      {searchResults.map((post, i) => (
+                        <Link key={i} href={post.slug} className="search-result-item" onClick={() => setSearchQ("")}>
+                          <span className="search-result-cat">{post.category}</span>
+                          <span className="search-result-title">{post.title}</span>
+                          <span className="search-result-meta">{post.readTime}</span>
+                        </Link>
+                      ))}
+                    </>
+                  ) : (
+                    <div className="search-no-results">No articles found for &ldquo;{searchQ}&rdquo;</div>
+                  )}
+                </div>
+              )}
+            </div>
 
-              <div className="live-badge">
-                <span className="live-dot" />
-                <span className="live-text">Live · {ALL_POSTS.length} Articles · Updated March 2026</span>
+            <div className="live-badge">
+              <span className="live-dot" />
+              <span className="live-text">Live · {ALL_POSTS.length} Articles · Updated March 2026</span>
+            </div>
+          </div>
+        </section>
+
+        {/* ══ STATS BAND — from about/page.tsx ab-stats-band ══ */}
+        <div className="blog-stats-band ri-1">
+          <div className="blog-stats-inner">
+            {[
+              { v: `${ALL_POSTS.length}`,  l: "Articles Published"  },
+              { v: "650K+",                l: "Registered Startups" },
+              { v: "125+",                 l: "Indian Unicorns"     },
+              { v: "$3.44B",               l: "Q1 2026 Funding"     },
+              { v: "Free",                 l: "Always & Forever"    },
+            ].map((s, i, arr) => (
+              <div key={i} className="blog-stat-cell" style={{ borderRight: i < arr.length - 1 ? undefined : "none" }}>
+                <p className="blog-stat-val">{s.v}</p>
+                <p className="blog-stat-label">{s.l}</p>
               </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ══ MAIN CONTENT — from about/page.tsx .ab-main ══ */}
+        <main className="blog-main">
+
+          {/* ── INDIA COVER STORY ── */}
+          <section aria-label="India Cover Story" className="ri-1">
+            <div className="sh"><div className="sh-accent" /><span className="sh-l">India Edition · Cover Story</span><div className="sh-r" /></div>
+            <Link href={HERO_POST.slug} style={{ textDecoration: "none", display: "block" }}>
+              <div className="hero-grid">
+                <div className="hero-txt">
+                  <div>
+                    <div style={{ height: 3, background: `linear-gradient(90deg, var(--teal-dark), ${HERO_POST.accent}, #E8C547)`, marginBottom: 14 }} />
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                      <span className="badge badge-cat" style={{ background: HERO_POST.accent, fontSize: "7.5px", letterSpacing: "0.2em" }}>{HERO_POST.category}</span>
+                      <span className="badge badge-tag-cover">{HERO_POST.tag}</span>
+                      <span style={{ fontFamily: "system-ui", fontSize: 8.5, color: "#AAA", textTransform: "uppercase", letterSpacing: "0.1em" }}>{HERO_POST.date}</span>
+                    </div>
+                    <h2 className="hero-title">{HERO_POST.title}</h2>
+                    <div className="hero-rule-line" style={{ background: HERO_POST.accent }} />
+                    <p className="hero-subtitle">{HERO_POST.subtitle}</p>
+                    <div className="topic-pills">{HERO_POST.topics.map(t => <span key={t} className="topic-pill">{t}</span>)}</div>
+                  </div>
+                  <div className="hero-foot">
+                    <span className="hero-foot-meta">{HERO_POST.date} · {HERO_POST.readTime} read</span>
+                    <span className="hero-foot-read" style={{ color: HERO_POST.accent }}>Read Report <ArrowUpRight size={12} /></span>
+                  </div>
+                </div>
+                <div className="hero-img-col" style={{ minHeight: 320, borderLeft: "1px solid var(--rule)" }}>
+                  <img src={HERO_POST.img} alt={HERO_POST.title} />
+                </div>
+              </div>
+            </Link>
+            <div className="sec-grid">
+              {SECONDARY_POSTS.map((post, i) => (
+                <Link key={i} href={post.slug} className="story-card" style={{ textDecoration: "none" }}>
+                  <div className="story-img-wrap" style={{ height: "clamp(110px,11vw,148px)" }}>
+                    <img src={post.img} alt={post.title} loading="lazy" />
+                    <div className="story-img-overlay" />
+                    <div className="story-img-badge">
+                      <span className="badge badge-cat" style={{ background: post.accent, fontSize: "7px", letterSpacing: "0.15em" }}>{post.category}</span>
+                      <span className={`badge ${post.tag === "New" ? "badge-tag-new" : post.tag === "Trending" ? "badge-tag-trending" : "badge-tag-hightraffic"}`}>{post.tag}</span>
+                    </div>
+                  </div>
+                  <div className="story-body">
+                    <h3 className="story-title">{post.title}</h3>
+                    <p className="story-excerpt">{post.excerpt}</p>
+                    <div className="story-foot">
+                      <span className="story-foot-meta">{post.date}</span>
+                      <span className="story-foot-arrow" style={{ color: post.accent }}>{post.readTime} <ArrowRight size={11} /></span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
             </div>
           </section>
 
-          {/* ══ MAIN CONTENT ══ */}
-          <main className="main-wrap">
-
-            {/* ── INDIA COVER STORY ── */}
-            <section aria-label="India Cover Story" className="ri-1">
-              <div className="sh"><div className="sh-accent" /><span className="sh-l">India Edition · Cover Story</span><div className="sh-r" /></div>
-              <Link href={HERO_POST.slug} style={{ textDecoration: "none", display: "block" }}>
-                <div className="hero-grid">
-                  <div className="hero-txt">
-                    <div>
-                      <div style={{ height: 3, background: `linear-gradient(90deg, var(--teal-dark), ${HERO_POST.accent}, #E8C547)`, marginBottom: 14 }} />
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                        <span className="badge badge-cat" style={{ background: HERO_POST.accent, fontSize: "7.5px", letterSpacing: "0.2em" }}>{HERO_POST.category}</span>
-                        <span className="badge badge-tag-cover">{HERO_POST.tag}</span>
-                        <span style={{ fontFamily: "system-ui", fontSize: 8.5, color: "#AAA", textTransform: "uppercase", letterSpacing: "0.1em" }}>{HERO_POST.date}</span>
-                      </div>
-                      <h2 className="hero-title">{HERO_POST.title}</h2>
-                      <div className="hero-rule-line" style={{ background: HERO_POST.accent }} />
-                      <p className="hero-subtitle">{HERO_POST.subtitle}</p>
-                      <div className="topic-pills">{HERO_POST.topics.map(t => <span key={t} className="topic-pill">{t}</span>)}</div>
-                    </div>
-                    <div className="hero-foot">
-                      <span className="hero-foot-meta">{HERO_POST.date} · {HERO_POST.readTime} read</span>
-                      <span className="hero-foot-read" style={{ color: HERO_POST.accent }}>Read Report <ArrowUpRight size={12} /></span>
-                    </div>
-                  </div>
-                  <div className="hero-img-col" style={{ minHeight: 320, borderLeft: "1px solid var(--rule)" }}>
-                    <img src={HERO_POST.img} alt={HERO_POST.title} />
-                  </div>
-                </div>
-              </Link>
-              <div className="sec-grid">
-                {SECONDARY_POSTS.map((post, i) => (
-                  <Link key={i} href={post.slug} className="story-card" style={{ textDecoration: "none" }}>
-                    <div className="story-img-wrap" style={{ height: "clamp(110px,11vw,148px)" }}>
-                      <img src={post.img} alt={post.title} loading="lazy" />
-                      <div className="story-img-overlay" />
-                      <div className="story-img-badge">
-                        <span className="badge badge-cat" style={{ background: post.accent, fontSize: "7px", letterSpacing: "0.15em" }}>{post.category}</span>
-                        <span className={`badge ${post.tag === "New" ? "badge-tag-new" : post.tag === "Trending" ? "badge-tag-trending" : "badge-tag-hightraffic"}`}>{post.tag}</span>
-                      </div>
-                    </div>
-                    <div className="story-body">
-                      <h3 className="story-title">{post.title}</h3>
-                      <p className="story-excerpt">{post.excerpt}</p>
-                      <div className="story-foot">
-                        <span className="story-foot-meta">{post.date}</span>
-                        <span className="story-foot-arrow" style={{ color: post.accent }}>{post.readTime} <ArrowRight size={11} /></span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-
-            {/* ── GLOBAL EDITION ── */}
-            <section aria-label="Global Edition" className="ri-2 section-mt2">
-              <div className="global-banner" style={{ borderRadius: "6px 6px 0 0" }}>
-                <div className="global-banner-icon">🌍</div>
-                <div>
-                  <p className="global-banner-label">New · Global Edition — March 2026</p>
-                  <p className="global-banner-text">The 10 highest-traffic global startups — OpenAI, Perplexity, Revolut, Canva, Character.AI &amp; more.</p>
-                </div>
-                <Link href="/blog/top-trending-global-startups-2026" className="global-banner-btn">Read Feature <ArrowRight size={11} /></Link>
-              </div>
-              <Link href={GLOBAL_HERO_POST.slug} style={{ textDecoration: "none", display: "block" }}>
-                <div className="hero-grid-flip">
-                  <div className="hero-img-flip">
-                    <img src={GLOBAL_HERO_POST.img} alt={GLOBAL_HERO_POST.title} />
-                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, transparent 50%, rgba(15,26,28,0.5) 100%)" }} />
-                  </div>
-                  <div className="hero-txt" style={{ borderLeft: "1px solid var(--rule)" }}>
-                    <div>
-                      <div style={{ height: 3, background: `linear-gradient(90deg, var(--blue-dark), var(--blue), #93C5FD)`, marginBottom: 14 }} />
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                        <span className="badge badge-cat" style={{ background: GLOBAL_HERO_POST.accent, fontSize: "7.5px", letterSpacing: "0.2em" }}>{GLOBAL_HERO_POST.category}</span>
-                        <span className="badge badge-tag-global">{GLOBAL_HERO_POST.tag}</span>
-                      </div>
-                      <h2 className="hero-title">{GLOBAL_HERO_POST.title}</h2>
-                      <div className="hero-rule-line" style={{ background: GLOBAL_HERO_POST.accent }} />
-                      <p className="hero-subtitle">{GLOBAL_HERO_POST.subtitle}</p>
-                      <div className="topic-pills">
-                        {GLOBAL_HERO_POST.topics.map(t => (
-                          <span key={t} className="topic-pill" style={{ color: "var(--blue-dark)", borderColor: "rgba(37,99,235,0.2)", background: "#EEF2FF" }}>{t}</span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="hero-foot">
-                      <span className="hero-foot-meta">{GLOBAL_HERO_POST.date} · {GLOBAL_HERO_POST.readTime} read</span>
-                      <span className="hero-foot-read" style={{ color: GLOBAL_HERO_POST.accent }}>Read Report <ArrowUpRight size={12} /></span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-              <div className="sec-grid">
-                {GLOBAL_SECONDARY_POSTS.map((post, i) => (
-                  <Link key={i} href={post.slug} className="story-card" style={{ textDecoration: "none" }}>
-                    <div className="story-img-wrap" style={{ height: "clamp(110px,11vw,140px)" }}>
-                      <img src={post.img} alt={post.title} loading="lazy" />
-                      <div className="story-img-overlay" />
-                      <div className="story-img-badge">
-                        <span className="badge badge-cat" style={{ background: post.accent, fontSize: "7px", letterSpacing: "0.15em" }}>{post.category}</span>
-                        <span className={`badge ${post.tag === "New" ? "badge-tag-new" : post.tag === "Trending" ? "badge-tag-trending" : "badge-tag-hightraffic"}`}>{post.tag}</span>
-                      </div>
-                    </div>
-                    <div className="story-body">
-                      <h3 className="story-title" style={{ fontSize: "0.9rem" }}>{post.title}</h3>
-                      <p className="story-excerpt">{post.excerpt}</p>
-                      <div className="story-foot">
-                        <span className="story-foot-meta">{post.date}</span>
-                        <span className="story-foot-arrow" style={{ color: post.accent }}>{post.readTime} <ArrowRight size={11} /></span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-
-            {/* ── MORE STORIES + SIDEBAR ── */}
-            <div className="two-col section-mt2 ri-3">
+          {/* ── GLOBAL EDITION ── */}
+          <section aria-label="Global Edition" className="ri-2 section-mt2">
+            <div className="global-banner">
+              <div className="global-banner-icon">🌍</div>
               <div>
-                <div className="sh"><div className="sh-accent" /><span className="sh-l">More Stories — {GRID_POSTS.length} Articles</span><div className="sh-r" /></div>
-                <div className="grid-3">
-                  {GRID_POSTS.map((post, i) => (
-                    <Link key={i} href={post.slug} className="grid-card">
-                      <div className="grid-card-img">
-                        <img src={post.img} alt={post.title} loading="lazy" />
-                        <div className="grid-card-img-bar" style={{ background: post.accent }} />
-                        <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.08)" }} />
-                        <div style={{ position: "absolute", bottom: 8, left: 10 }}>
-                          <span style={{ fontFamily: "system-ui", fontSize: 7, fontWeight: 800, color: "rgba(255,255,255,0.75)", textTransform: "uppercase", letterSpacing: "0.14em" }}>{post.category}</span>
-                        </div>
-                      </div>
-                      <div className="grid-card-body">
-                        <h4 className="grid-card-title">{post.title}</h4>
-                        <p style={{ fontFamily: "Georgia, serif", fontSize: 11.5, color: "var(--muted)", fontStyle: "italic", lineHeight: 1.6, marginBottom: 10, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{post.excerpt}</p>
-                        <div className="grid-card-foot"><span>{post.readTime}</span><span style={{ color: post.accent, fontWeight: 800, fontSize: 11 }}>→</span></div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
+                <p className="global-banner-label">New · Global Edition — March 2026</p>
+                <p className="global-banner-text">The 10 highest-traffic global startups — OpenAI, Perplexity, Revolut, Canva, Character.AI &amp; more.</p>
               </div>
-              <aside>
-                <div className="sh"><div className="sh-accent" /><span className="sh-l">Opinion &amp; Analysis</span><div className="sh-r" /></div>
-                <div className="sidebar-box">
-                  <div className="sidebar-hd">
-                    <p className="sidebar-hd-title">The UpForge Perspective</p>
-                    <p className="sidebar-hd-sub">India &amp; Global · 2026</p>
+              <Link href="/blog/top-trending-global-startups-2026" className="global-banner-btn">Read Feature <ArrowRight size={11} /></Link>
+            </div>
+            <Link href={GLOBAL_HERO_POST.slug} style={{ textDecoration: "none", display: "block" }}>
+              <div className="hero-grid-flip">
+                <div className="hero-img-flip">
+                  <img src={GLOBAL_HERO_POST.img} alt={GLOBAL_HERO_POST.title} />
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, transparent 50%, rgba(15,26,28,0.5) 100%)" }} />
+                </div>
+                <div className="hero-txt" style={{ borderLeft: "1px solid var(--rule)" }}>
+                  <div>
+                    <div style={{ height: 3, background: `linear-gradient(90deg, var(--blue-dark), var(--blue), #93C5FD)`, marginBottom: 14 }} />
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                      <span className="badge badge-cat" style={{ background: GLOBAL_HERO_POST.accent, fontSize: "7.5px", letterSpacing: "0.2em" }}>{GLOBAL_HERO_POST.category}</span>
+                      <span className="badge badge-tag-global">{GLOBAL_HERO_POST.tag}</span>
+                    </div>
+                    <h2 className="hero-title">{GLOBAL_HERO_POST.title}</h2>
+                    <div className="hero-rule-line" style={{ background: GLOBAL_HERO_POST.accent }} />
+                    <p className="hero-subtitle">{GLOBAL_HERO_POST.subtitle}</p>
+                    <div className="topic-pills">
+                      {GLOBAL_HERO_POST.topics.map(t => (
+                        <span key={t} className="topic-pill" style={{ color: "var(--blue-dark)", borderColor: "rgba(37,99,235,0.2)", background: "#EEF2FF" }}>{t}</span>
+                      ))}
+                    </div>
                   </div>
-                  {OPINION_POSTS.map((op, i) => (
-                    <Link key={i} href={op.slug} className="op-row">
-                      <span className="op-num">{op.num}</span>
-                      <div><p className="op-cat">{op.category}</p><p className="op-title">{op.title}</p><span className="op-date">{op.date}</span></div>
-                    </Link>
-                  ))}
+                  <div className="hero-foot">
+                    <span className="hero-foot-meta">{GLOBAL_HERO_POST.date} · {GLOBAL_HERO_POST.readTime} read</span>
+                    <span className="hero-foot-read" style={{ color: GLOBAL_HERO_POST.accent }}>Read Report <ArrowUpRight size={12} /></span>
+                  </div>
                 </div>
-                <div className="sidebar-cta">
-                  <p className="sidebar-cta-label">✨ Free AI Tool</p>
-                  <p className="sidebar-cta-title">Startup Valuation<br /><em style={{ color: "var(--teal-light)" }}>Report — Free</em></p>
-                  <p className="sidebar-cta-body">AI-powered analysis benchmarked against 500+ global startups. Takes 3 minutes.</p>
-                  <Link href="/report" className="sidebar-cta-btn">Generate Free Report <ArrowRight size={12} /></Link>
-                </div>
-                <div className="sidebar-cta" style={{ marginTop: 14, borderTop: "3px solid var(--blue)" }}>
-                  <p className="sidebar-cta-label" style={{ color: "rgba(147,197,253,0.6)" }}>🌍 Global Registry</p>
-                  <p className="sidebar-cta-title">Get your startup<br /><em style={{ color: "#93C5FD" }}>listed + verified</em></p>
-                  <p className="sidebar-cta-body">Free UFRN assigned to every approved startup. Trusted by investors and press.</p>
-                  <Link href="/registry" className="sidebar-cta-btn" style={{ background: "var(--blue)" }}>Submit to Registry <ArrowRight size={12} /></Link>
-                </div>
-              </aside>
+              </div>
+            </Link>
+            <div className="sec-grid">
+              {GLOBAL_SECONDARY_POSTS.map((post, i) => (
+                <Link key={i} href={post.slug} className="story-card" style={{ textDecoration: "none" }}>
+                  <div className="story-img-wrap" style={{ height: "clamp(110px,11vw,140px)" }}>
+                    <img src={post.img} alt={post.title} loading="lazy" />
+                    <div className="story-img-overlay" />
+                    <div className="story-img-badge">
+                      <span className="badge badge-cat" style={{ background: post.accent, fontSize: "7px", letterSpacing: "0.15em" }}>{post.category}</span>
+                      <span className={`badge ${post.tag === "New" ? "badge-tag-new" : post.tag === "Trending" ? "badge-tag-trending" : "badge-tag-hightraffic"}`}>{post.tag}</span>
+                    </div>
+                  </div>
+                  <div className="story-body">
+                    <h3 className="story-title" style={{ fontSize: "0.9rem" }}>{post.title}</h3>
+                    <p className="story-excerpt">{post.excerpt}</p>
+                    <div className="story-foot">
+                      <span className="story-foot-meta">{post.date}</span>
+                      <span className="story-foot-arrow" style={{ color: post.accent }}>{post.readTime} <ArrowRight size={11} /></span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
             </div>
+          </section>
 
-            {/* ── ALL PUBLISHED ARTICLES ── */}
-            <section aria-label="All published articles" className="ri-4 section-mt2">
-              <div className="sh"><div className="sh-accent" /><span className="sh-l">All Published — {ALL_POSTS.length} Articles · March 2026</span><div className="sh-r" /></div>
-              <div className="articles-table">
-                <div className="articles-table-hd">
-                  <span>Article</span><span className="art-hide">Category</span><span className="art-hide">Published</span><span className="art-hide">Read Time</span>
-                </div>
-                {ALL_POSTS.map((post, i) => (
-                  <Link key={i} href={post.slug} className="art-row">
-                    <p className="art-title">{post.title}</p>
-                    <span className="art-cat art-hide">{post.category}</span>
-                    <span className="art-meta art-hide">{post.date}</span>
-                    <span className="art-meta art-hide">{post.readTime}</span>
+          {/* ── MORE STORIES + SIDEBAR ── */}
+          <div className="two-col section-mt2 ri-3">
+            <div>
+              <div className="sh"><div className="sh-accent" /><span className="sh-l">More Stories — {GRID_POSTS.length} Articles</span><div className="sh-r" /></div>
+              <div className="grid-3">
+                {GRID_POSTS.map((post, i) => (
+                  <Link key={i} href={post.slug} className="grid-card">
+                    <div className="grid-card-img">
+                      <img src={post.img} alt={post.title} loading="lazy" />
+                      <div className="grid-card-img-bar" style={{ background: post.accent }} />
+                      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.08)" }} />
+                      <div style={{ position: "absolute", bottom: 8, left: 10 }}>
+                        <span style={{ fontFamily: "system-ui", fontSize: 7, fontWeight: 800, color: "rgba(255,255,255,0.75)", textTransform: "uppercase", letterSpacing: "0.14em" }}>{post.category}</span>
+                      </div>
+                    </div>
+                    <div className="grid-card-body">
+                      <h4 className="grid-card-title">{post.title}</h4>
+                      <p style={{ fontFamily: "Georgia, serif", fontSize: 11.5, color: "var(--muted)", fontStyle: "italic", lineHeight: 1.6, marginBottom: 10, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{post.excerpt}</p>
+                      <div className="grid-card-foot"><span>{post.readTime}</span><span style={{ color: post.accent, fontWeight: 800, fontSize: 11 }}>→</span></div>
+                    </div>
                   </Link>
                 ))}
               </div>
-              <div className="ticker">
-                {[
-                  { v: String(ALL_POSTS.length), l: "Articles Published"  },
-                  { v: "650K+",                  l: "Registered Startups" },
-                  { v: "125+",                   l: "Indian Unicorns"     },
-                  { v: "10",                     l: "Global Founders"     },
-                  { v: "$3.44B",                 l: "Q1 2026 Funding"     },
-                ].map((s, i) => (
-                  <div key={i} className="ticker-item"><p className="ticker-val">{s.v}</p><p className="ticker-label">{s.l}</p></div>
-                ))}
-              </div>
-            </section>
-
-            {/* ── BOTTOM CTA ── */}
-            <div className="bottom-cta ri-5">
-              <div>
-                <p className="bottom-cta-label">UpForge · The Forge · India &amp; Global</p>
-                <p className="bottom-cta-title">The world's most-read startup analysis. Free. Forever.</p>
-                <p className="bottom-cta-sub">{ALL_POSTS.length} in-depth articles — AI guides, funding playbooks, global founder profiles, and ecosystem reports.</p>
-              </div>
-              <Link href="/submit" className="bottom-cta-btn">Submit Your Startup <ArrowRight size={13} /></Link>
             </div>
-
-            {/* ── FOOTER ── */}
-            <footer>
-              <div className="footer-grid">
-                {[
-                  { l: "Global Registry →",       h: "https://www.upforge.org/registry",       desc: "Full verified database"       },
-                  { l: "Indian Unicorns 2026 →",  h: "/blog/top-indian-unicorns-2026",          desc: "All 125 unicorns profiled"    },
-                  { l: "Top AI Startups 2026 →",  h: "/blog/top-ai-startups-india-2026",        desc: "Sarvam, Krutrim & more"       },
-                  { l: "Global Startups 2026 →",  h: "/blog/top-trending-global-startups-2026", desc: "OpenAI, Perplexity, Revolut…" },
-                ].map(lnk => (
-                  <Link key={lnk.h} href={lnk.h} className="footer-link-card">
-                    <p className="footer-link-title">{lnk.l}</p>
-                    <p className="footer-link-desc">{lnk.desc}</p>
+            <aside>
+              <div className="sh"><div className="sh-accent" /><span className="sh-l">Opinion &amp; Analysis</span><div className="sh-r" /></div>
+              <div className="sidebar-box">
+                <div className="sidebar-hd">
+                  <p className="sidebar-hd-title">The UpForge Perspective</p>
+                  <p className="sidebar-hd-sub">India &amp; Global · 2026</p>
+                </div>
+                {OPINION_POSTS.map((op, i) => (
+                  <Link key={i} href={op.slug} className="op-row">
+                    <span className="op-num">{op.num}</span>
+                    <div><p className="op-cat">{op.category}</p><p className="op-title">{op.title}</p><span className="op-date">{op.date}</span></div>
                   </Link>
                 ))}
               </div>
-              <p className="footer-note">
-                * Article data sourced from Inc42, Forbes India, TechCrunch, Crunchbase, Tracxn, and company announcements as of March 2026.
-                UpForge is an independent registry — no paid placements, no sponsored rankings.
-              </p>
-              <nav className="footer-nav-links" aria-label="Footer navigation">
-                {[
-                  ["The Founder Chronicle",       "/"],
-                  ["Global Registry",             "https://www.upforge.org/registry"],
-                  ["Indian Unicorns 2026",        "/blog/top-indian-unicorns-2026"],
-                  ["Top Global Startups 2026",    "/blog/top-trending-global-startups-2026"],
-                  ["Startup Funding Guide",       "/blog/how-to-get-startup-funding-india-2026"],
-                  ["Best AI Tools 2026",          "/blog/best-ai-tools-for-business-2026"],
-                  ["Best Language Learning Apps", "/blog/best-language-learning-apps-2026"],
-                  ["Ramp vs Brex 2026",           "/blog/ramp-vs-brex-corporate-card-comparison-2026"],
-                  ["Free Valuation Tool",         "/report"],
-                  ["Submit Startup",              "/submit"],
-                ].map(([l, h]) => (
-                  <Link key={h} href={h}>{l}</Link>
-                ))}
-              </nav>
-            </footer>
+              <div className="sidebar-cta">
+                <p className="sidebar-cta-label">✨ Free AI Tool</p>
+                <p className="sidebar-cta-title">Startup Valuation<br /><em style={{ color: "var(--teal-light)" }}>Report — Free</em></p>
+                <p className="sidebar-cta-body">AI-powered analysis benchmarked against 500+ global startups. Takes 3 minutes.</p>
+                <Link href="/report" className="sidebar-cta-btn">Generate Free Report <ArrowRight size={12} /></Link>
+              </div>
+              <div className="sidebar-cta" style={{ marginTop: 14, borderTop: "3px solid var(--blue)" }}>
+                <p className="sidebar-cta-label" style={{ color: "rgba(147,197,253,0.6)" }}>🌍 Global Registry</p>
+                <p className="sidebar-cta-title">Get your startup<br /><em style={{ color: "#93C5FD" }}>listed + verified</em></p>
+                <p className="sidebar-cta-body">Free UFRN assigned to every approved startup. Trusted by investors and press.</p>
+                <Link href="/registry" className="sidebar-cta-btn" style={{ background: "var(--blue)" }}>Submit to Registry <ArrowRight size={12} /></Link>
+              </div>
+            </aside>
+          </div>
 
-          </main>
-        </div>{/* end blog-page-content */}
-      </div>{/* end blog-page-root */}
+          {/* ── ALL PUBLISHED ARTICLES ── */}
+          <section aria-label="All published articles" className="ri-4 section-mt2">
+            <div className="sh"><div className="sh-accent" /><span className="sh-l">All Published — {ALL_POSTS.length} Articles · March 2026</span><div className="sh-r" /></div>
+            <div className="articles-table">
+              <div className="articles-table-hd">
+                <span>Article</span><span className="art-hide">Category</span><span className="art-hide">Published</span><span className="art-hide">Read Time</span>
+              </div>
+              {ALL_POSTS.map((post, i) => (
+                <Link key={i} href={post.slug} className="art-row">
+                  <p className="art-title">{post.title}</p>
+                  <span className="art-cat art-hide">{post.category}</span>
+                  <span className="art-meta art-hide">{post.date}</span>
+                  <span className="art-meta art-hide">{post.readTime}</span>
+                </Link>
+              ))}
+            </div>
+            <div className="ticker">
+              {[
+                { v: String(ALL_POSTS.length), l: "Articles Published"  },
+                { v: "650K+",                  l: "Registered Startups" },
+                { v: "125+",                   l: "Indian Unicorns"     },
+                { v: "10",                     l: "Global Founders"     },
+                { v: "$3.44B",                 l: "Q1 2026 Funding"     },
+              ].map((s, i) => (
+                <div key={i} className="ticker-item"><p className="ticker-val">{s.v}</p><p className="ticker-label">{s.l}</p></div>
+              ))}
+            </div>
+          </section>
+
+          {/* ── BOTTOM CTA ── */}
+          <div className="bottom-cta ri-5">
+            <div>
+              <p className="bottom-cta-label">UpForge · The Forge · India &amp; Global</p>
+              <p className="bottom-cta-title">The world's most-read startup analysis. Free. Forever.</p>
+              <p className="bottom-cta-sub">{ALL_POSTS.length} in-depth articles — AI guides, funding playbooks, global founder profiles, and ecosystem reports.</p>
+            </div>
+            <Link href="/submit" className="bottom-cta-btn">Submit Your Startup <ArrowRight size={13} /></Link>
+          </div>
+
+          {/* ══ FOOTER — from about/page.tsx .ab-footer exactly ══ */}
+          <footer className="blog-footer ri-5">
+            <div className="footer-links-grid">
+              {[
+                { l: "Global Registry →",       h: "https://www.upforge.org/registry",       desc: "Full verified database"       },
+                { l: "Indian Unicorns 2026 →",  h: "/blog/top-indian-unicorns-2026",          desc: "All 125 unicorns profiled"    },
+                { l: "Top AI Startups 2026 →",  h: "/blog/top-ai-startups-india-2026",        desc: "Sarvam, Krutrim & more"       },
+                { l: "Global Startups 2026 →",  h: "/blog/top-trending-global-startups-2026", desc: "OpenAI, Perplexity, Revolut…" },
+              ].map(lnk => (
+                <Link key={lnk.h} href={lnk.h} className="footer-link-card">
+                  <p className="footer-link-title">{lnk.l}</p>
+                  <p className="footer-link-desc">{lnk.desc}</p>
+                </Link>
+              ))}
+            </div>
+            <p className="blog-footer-note">
+              * Article data sourced from Inc42, Forbes India, TechCrunch, Crunchbase, Tracxn, and company announcements as of March 2026.
+              UpForge is an independent registry — no paid placements, no sponsored rankings.
+            </p>
+            <nav aria-label="Footer navigation">
+              <ul className="blog-footer-nav">
+                {[
+                  { l: "The Founder Chronicle",       h: "/"                                              },
+                  { l: "Global Registry",             h: "https://www.upforge.org/registry"              },
+                  { l: "Indian Unicorns 2026",        h: "/blog/top-indian-unicorns-2026"                },
+                  { l: "Top Global Startups 2026",    h: "/blog/top-trending-global-startups-2026"       },
+                  { l: "Startup Funding Guide",       h: "/blog/how-to-get-startup-funding-india-2026"   },
+                  { l: "Best AI Tools 2026",          h: "/blog/best-ai-tools-for-business-2026"         },
+                  { l: "Best Language Learning Apps", h: "/blog/best-language-learning-apps-2026"        },
+                  { l: "Ramp vs Brex 2026",           h: "/blog/ramp-vs-brex-corporate-card-comparison-2026" },
+                  { l: "Free Valuation Tool",         h: "/report"                                       },
+                  { l: "Submit Startup",              h: "/submit"                                       },
+                ].map(({ l, h }) => (
+                  <li key={h}><Link href={h}>{l}</Link></li>
+                ))}
+              </ul>
+            </nav>
+          </footer>
+
+        </main>
+      </div>{/* end blog-root */}
     </>
   )
 }
