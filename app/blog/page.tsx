@@ -1,6 +1,6 @@
 // app/blog/page.tsx
 // THE FORGE — Blog Index (www.upforge.in/blog + www.upforge.org/blog)
-// v3: Added title search, removed eyebrow text from masthead.
+// v4: Registry-style sticky search toolbar, search results z-index fix, opinion posts trimmed to 3.
 
 import Link from "next/link"
 import type { Metadata } from "next"
@@ -55,14 +55,12 @@ const JSON_LD = {
         "logo": { "@type": "ImageObject", "url": "https://www.upforge.in/logo.jpg" },
       },
       "blogPost": [
-        // India posts
         { "@type": "BlogPosting", "headline": "India Startup Ecosystem 2026: State of the Nation",              "url": "https://www.upforge.in/blog/india-startup-ecosystem-2026"                      },
         { "@type": "BlogPosting", "headline": "How to Get Startup Funding in India 2026",                       "url": "https://www.upforge.in/blog/how-to-get-startup-funding-india-2026"            },
         { "@type": "BlogPosting", "headline": "Top Indian Unicorns 2026: Ranked & Profiled",                    "url": "https://www.upforge.in/blog/top-indian-unicorns-2026"                        },
         { "@type": "BlogPosting", "headline": "25 Best Indian Startup Founders to Follow 2026",                 "url": "https://www.upforge.in/blog/best-indian-startup-founders-to-follow-2026"     },
         { "@type": "BlogPosting", "headline": "Top AI Startups in India (2026 Updated List)",                   "url": "https://www.upforge.in/blog/top-ai-startups-india-2026"                      },
         { "@type": "BlogPosting", "headline": "How to Start a Startup in India (Step-by-Step Guide 2026)",      "url": "https://www.upforge.in/blog/how-to-start-startup-india-2026"                  },
-        // Global posts
         { "@type": "BlogPosting", "headline": "Top Trending Global Startups 2026 — OpenAI, Perplexity & More", "url": "https://www.upforge.in/blog/top-trending-global-startups-2026"               },
         { "@type": "BlogPosting", "headline": "ChatGPT Plus vs Perplexity AI: Which AI Search Wins in 2026?",  "url": "https://www.upforge.in/blog/chatgpt-plus-vs-perplexity-ai-2026"              },
         { "@type": "BlogPosting", "headline": "Best AI Tools for Business 2026 — Complete Guide",               "url": "https://www.upforge.in/blog/best-ai-tools-for-business-2026"                 },
@@ -144,7 +142,6 @@ const SECONDARY_POSTS = [
   },
 ]
 
-// ── Global Trending Posts ────────────────────────────────────────────────
 const GLOBAL_HERO_POST = {
   title:    "Top 10 Trending Global Startups of 2026 — OpenAI, Perplexity, Revolut & More",
   subtitle: "The 10 highest-traffic startups in the world right now — ranked by search volume, monthly visits, and cultural impact. Founder stories, valuations, and the keywords driving each one.",
@@ -275,19 +272,14 @@ const GRID_POSTS = [
   },
 ]
 
+// ── CHANGE 3: Trimmed to 3 opinion posts only ────────────────────────────────
 const OPINION_POSTS = [
-  { num: "I",    title: "Why India's Startup Valuations Are Being Re-Set — and What It Means for Founders",        category: "Opinion",          date: "Mar 2026", slug: "/blog/india-startup-ecosystem-2026" },
-  { num: "II",   title: "The Bootstrapped Advantage: Why 2026 May Be the Best Year to Build Without VC",          category: "Analysis",         date: "Mar 2026", slug: "/blog/how-to-get-startup-funding-india-2026" },
-  { num: "III",  title: "Why Perplexity AI Will Not Kill Google — But Will Permanently Shrink It",                 category: "AI Opinion",       date: "Mar 2026", slug: "/blog/chatgpt-plus-vs-perplexity-ai-2026" },
-  { num: "IV",   title: "Canva vs Adobe: The Design War That Adobe Is Quietly Losing",                             category: "Sector Analysis",  date: "Mar 2026", slug: "/blog/top-trending-global-startups-2026" },
-  { num: "V",    title: "Founder-Market Fit: Why Domain Obsession Beats MBA Strategy Every Time",                  category: "Strategy",         date: "Mar 2026", slug: "/blog/best-indian-startup-founders-to-follow-2026" },
-  { num: "VI",   title: "Character.AI's Engagement Problem: When 2 Hours/Day Is Both the Strength and the Risk",  category: "AI Opinion",       date: "Mar 2026", slug: "/blog/top-trending-global-startups-2026" },
-  { num: "VII",  title: "India Cannot Be a Consumer of AI Built Elsewhere — the Case for Sarvam & Krutrim",       category: "AI Opinion",       date: "Mar 2026", slug: "/blog/top-ai-startups-india-2026" },
-  { num: "VIII", title: "The Single-Purpose AI Utility Playbook: How Remove.bg Built 150M Visits With One Tool",  category: "Growth Analysis",  date: "Mar 2026", slug: "/blog/remove-background-from-image-free-tools-2026" },
+  { num: "I",   title: "Why India's Startup Valuations Are Being Re-Set — and What It Means for Founders",  category: "Opinion",    date: "Mar 2026", slug: "/blog/india-startup-ecosystem-2026" },
+  { num: "II",  title: "The Bootstrapped Advantage: Why 2026 May Be the Best Year to Build Without VC",     category: "Analysis",   date: "Mar 2026", slug: "/blog/how-to-get-startup-funding-india-2026" },
+  { num: "III", title: "Why Perplexity AI Will Not Kill Google — But Will Permanently Shrink It",            category: "AI Opinion", date: "Mar 2026", slug: "/blog/chatgpt-plus-vs-perplexity-ai-2026" },
 ]
 
 const ALL_POSTS = [
-  // India
   { title: "India Startup Ecosystem 2026: State of the Nation",        slug: "/blog/india-startup-ecosystem-2026",                   category: "Annual Report",    date: "Mar 2026", readTime: "20 min" },
   { title: "How to Get Startup Funding in India 2026",                 slug: "/blog/how-to-get-startup-funding-india-2026",           category: "Funding Guide",    date: "Mar 2026", readTime: "12 min" },
   { title: "Top Indian Unicorns 2026: Ranked & Profiled",              slug: "/blog/top-indian-unicorns-2026",                       category: "Unicorn Report",   date: "Mar 2026", readTime: "15 min" },
@@ -296,17 +288,16 @@ const ALL_POSTS = [
   { title: "5 Startup Ideas Inspired by IND vs NZ Final 2026",         slug: "/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026", category: "Startup Ideas",    date: "Mar 2026", readTime: "6 min"  },
   { title: "Top AI Startups in India (2026 Updated List)",             slug: "/blog/top-ai-startups-india-2026",                     category: "AI & Deep Tech",   date: "Mar 2026", readTime: "11 min" },
   { title: "How to Start a Startup in India (Step-by-Step 2026)",      slug: "/blog/how-to-start-startup-india-2026",                category: "Founder Playbook", date: "Mar 2026", readTime: "14 min" },
-  // Global
   { title: "Top 10 Trending Global Startups 2026",                     slug: "/blog/top-trending-global-startups-2026",              category: "Global Edition",   date: "Mar 2026", readTime: "18 min" },
   { title: "ChatGPT Plus vs Perplexity AI 2026",                       slug: "/blog/chatgpt-plus-vs-perplexity-ai-2026",             category: "AI Comparison",    date: "Mar 2026", readTime: "9 min"  },
   { title: "Best AI Tools for Business 2026",                          slug: "/blog/best-ai-tools-for-business-2026",                category: "AI Guide",         date: "Mar 2026", readTime: "12 min" },
   { title: "Best Travel Card 2026: Revolut vs Wise vs Monzo",          slug: "/blog/best-travel-card-2026-revolut-wise-compared",    category: "FinTech Guide",    date: "Mar 2026", readTime: "8 min"  },
   { title: "Best Language Learning Apps 2026",                         slug: "/blog/best-language-learning-apps-2026",               category: "EdTech Guide",     date: "Mar 2026", readTime: "10 min" },
-  { title: "Ramp vs Brex 2026: Which Corporate Card Wins?",            slug: "/blog/ramp-vs-brex-corporate-card-comparison-2026",   category: "FinTech Guide",    date: "Mar 2026", readTime: "8 min"  },
+  { title: "Ramp vs Brex 2026: Which Corporate Card Wins?",            slug: "/blog/ramp-vs-brex-corporate-card-comparison-2026",    category: "FinTech Guide",    date: "Mar 2026", readTime: "8 min"  },
   { title: "OpenAI vs Anthropic Claude Comparison 2026",               slug: "/blog/openai-vs-anthropic-claude-comparison-2026",     category: "AI Comparison",    date: "Mar 2026", readTime: "10 min" },
-  { title: "Remove Background from Image Free — Best AI Tools 2026",   slug: "/blog/remove-background-from-image-free-tools-2026",  category: "AI Tools",         date: "Mar 2026", readTime: "6 min"  },
-  { title: "Compress PDF Free 2026: Smallpdf vs iLovePDF",             slug: "/blog/compress-pdf-free-smallpdf-ilovepdf-compared",  category: "Productivity",     date: "Mar 2026", readTime: "5 min"  },
-  { title: "Character.AI vs ChatGPT — Which Is Better in 2026?",       slug: "/blog/character-ai-vs-chatgpt-which-is-better-2026",  category: "AI Comparison",    date: "Mar 2026", readTime: "8 min"  },
+  { title: "Remove Background from Image Free — Best AI Tools 2026",   slug: "/blog/remove-background-from-image-free-tools-2026",   category: "AI Tools",         date: "Mar 2026", readTime: "6 min"  },
+  { title: "Compress PDF Free 2026: Smallpdf vs iLovePDF",             slug: "/blog/compress-pdf-free-smallpdf-ilovepdf-compared",   category: "Productivity",     date: "Mar 2026", readTime: "5 min"  },
+  { title: "Character.AI vs ChatGPT — Which Is Better in 2026?",       slug: "/blog/character-ai-vs-chatgpt-which-is-better-2026",   category: "AI Comparison",    date: "Mar 2026", readTime: "8 min"  },
 ]
 
 const CATEGORIES = [
@@ -341,6 +332,8 @@ export default function BlogIndexPage() {
         .ri-3 { animation: riseIn 0.5s 0.24s ease both; }
         .ri-4 { animation: riseIn 0.5s 0.32s ease both; }
         .ri-5 { animation: riseIn 0.5s 0.40s ease both; }
+
+        /* ── HERO ── */
         .blog-hero { position: relative; background: linear-gradient(135deg, rgba(15,26,28,0.88) 0%, rgba(15,26,28,0.75) 100%); overflow: hidden; border-bottom: 1px solid var(--rule); }
         .blog-hero-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&q=70'); background-size: cover; background-position: center 40%; opacity: 0.22; z-index: 0; }
         .blog-hero-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(15,26,28,0.85) 0%, rgba(15,26,28,0.5) 50%, rgba(15,26,28,0.85) 100%); }
@@ -356,30 +349,109 @@ export default function BlogIndexPage() {
         .blog-live-text { font-family: system-ui, sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: white; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(94,234,212,0.4); } 70% { box-shadow: 0 0 0 8px rgba(94,234,212,0); } 100% { box-shadow: 0 0 0 0 rgba(94,234,212,0); } }
 
-        /* ── SEARCH BAR ── */
-        .search-wrap { position: relative; z-index: 10; margin-top: 20px; display: flex; justify-content: center; }
-        .search-form { display: flex; align-items: center; background: rgba(255,255,255,0.10); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.22); border-radius: 100px; overflow: hidden; width: 100%; max-width: 480px; transition: border-color 0.2s, background 0.2s; }
-        .search-form:focus-within { background: rgba(255,255,255,0.16); border-color: rgba(94,234,212,0.55); }
-        .search-input { flex: 1; background: transparent; border: none; outline: none; padding: 12px 20px; font-family: system-ui, sans-serif; font-size: 13px; color: white; }
-        .search-input::placeholder { color: rgba(255,255,255,0.45); }
-        .search-btn { flex-shrink: 0; background: var(--teal); border: none; cursor: pointer; padding: 10px 18px; display: flex; align-items: center; gap: 6px; font-family: system-ui, sans-serif; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: white; transition: background 0.18s; border-radius: 0 100px 100px 0; }
-        .search-btn:hover { background: var(--teal-dark); }
-        .search-results-overlay { display: none; position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #0F1A1C; border: 1px solid rgba(94,234,212,0.25); border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); overflow: hidden; z-index: 100; }
-        .search-results-overlay.active { display: block; }
-        .search-result-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); text-decoration: none; transition: background 0.12s; }
-        .search-result-item:last-child { border-bottom: none; }
-        .search-result-item:hover { background: rgba(255,255,255,0.06); }
-        .search-result-num { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 11px; color: rgba(94,234,212,0.5); flex-shrink: 0; width: 18px; padding-top: 2px; }
-        .search-result-text { flex: 1; }
-        .search-result-title { font-family: system-ui, sans-serif; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9); line-height: 1.35; margin-bottom: 3px; }
-        .search-result-meta { font-family: system-ui, sans-serif; font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--teal); }
-        .search-no-results { padding: 20px 16px; text-align: center; font-family: system-ui, sans-serif; font-size: 12px; color: rgba(255,255,255,0.35); font-style: italic; }
+        /* ── CHANGE 1 & 2: REGISTRY-STYLE STICKY SEARCH TOOLBAR ── */
+        .forge-toolbar {
+          position: sticky;
+          top: 0;
+          z-index: 100;
+          background: rgba(242,244,243,0.97);
+          backdrop-filter: blur(8px);
+          border-bottom: 1px solid var(--rule);
+        }
+        .forge-toolbar-inner { max-width: 1300px; margin: 0 auto; padding: 0 24px; }
 
+        /* Search row */
+        .forge-search-row {
+          display: flex; align-items: center; height: 52px; background: white;
+          border-radius: 12px; margin: 14px 0 10px; border: 1px solid var(--rule2);
+          position: relative;
+        }
+        .forge-search-icon { padding: 0 14px; color: #BBB; flex-shrink: 0; display: flex; align-items: center; }
+        .forge-search-inp {
+          flex: 1; border: none; background: transparent; font-size: 14px;
+          font-style: italic; color: var(--ink); outline: none; padding: 0; min-width: 0;
+          font-family: Georgia, serif;
+        }
+        .forge-search-inp::placeholder { color: #CCC; font-size: 13px; font-style: italic; }
+        .forge-search-btn {
+          height: 40px; padding: 0 24px; background: var(--ink); color: #fff; border: none;
+          font-size: 9px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase;
+          cursor: pointer; flex-shrink: 0; border-radius: 10px; margin-right: 8px;
+          transition: background 0.2s; font-family: system-ui, sans-serif;
+        }
+        .forge-search-btn:hover { background: var(--teal); }
+
+        /* Search results dropdown — z-index 9999 so it always appears above page content */
+        .forge-search-results {
+          display: none;
+          position: absolute;
+          top: calc(100% + 6px);
+          left: 0;
+          right: 0;
+          background: #0F1A1C;
+          border: 1px solid rgba(94,234,212,0.25);
+          border-radius: 14px;
+          box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+          overflow: hidden;
+          z-index: 9999;
+        }
+        .forge-search-results.active { display: block; }
+        .forge-search-result-item {
+          display: flex; align-items: flex-start; gap: 10px; padding: 12px 16px;
+          border-bottom: 1px solid rgba(255,255,255,0.06); text-decoration: none; transition: background 0.12s;
+        }
+        .forge-search-result-item:last-child { border-bottom: none; }
+        .forge-search-result-item:hover { background: rgba(255,255,255,0.06); }
+        .forge-sr-num { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 11px; color: rgba(94,234,212,0.5); flex-shrink: 0; width: 18px; padding-top: 2px; }
+        .forge-sr-title { font-family: system-ui, sans-serif; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9); line-height: 1.35; margin-bottom: 3px; }
+        .forge-sr-meta { font-family: system-ui, sans-serif; font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--teal); }
+        .forge-sr-empty { padding: 20px 16px; text-align: center; font-family: system-ui, sans-serif; font-size: 12px; color: rgba(255,255,255,0.35); font-style: italic; }
+
+        /* Filter toggle row */
+        .forge-filter-toggle-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .forge-filter-btn {
+          display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 16px;
+          background: white; border: 1px solid var(--rule2); border-radius: 10px; cursor: pointer;
+          font-family: system-ui, sans-serif; font-size: 10px; font-weight: 700;
+          letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); transition: all 0.2s; flex-shrink: 0;
+        }
+        .forge-filter-btn:hover { border-color: var(--teal); color: var(--teal); }
+        .forge-filter-btn.open { border-color: var(--teal); color: var(--teal); background: #F0FDFB; }
+        .forge-filter-chevron { width: 14px; height: 14px; flex-shrink: 0; transition: transform 0.25s ease; display: flex; align-items: center; justify-content: center; }
+        .forge-filter-btn.open .forge-filter-chevron { transform: rotate(180deg); }
+        .forge-filter-count { background: var(--teal); color: white; border-radius: 100px; font-size: 9px; font-weight: 800; padding: 1px 7px; }
+
+        /* Sort quick links */
+        .forge-sort-quick { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+        .forge-sort-link { padding: 0 10px; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #BBB; cursor: pointer; white-space: nowrap; font-family: system-ui, sans-serif; }
+        .forge-sort-link.on { color: var(--teal); font-weight: 800; }
+        .forge-t-div { width: 1px; height: 20px; background: var(--rule2); flex-shrink: 0; }
+
+        /* Collapsible filter panel */
+        .forge-filter-panel-wrap { overflow: hidden; max-height: 0; transition: max-height 0.3s ease, opacity 0.25s ease, margin-bottom 0.25s ease; opacity: 0; margin-bottom: 0; }
+        .forge-filter-panel-wrap.open { max-height: 240px; opacity: 1; margin-bottom: 12px; }
+        .forge-filter-panel { background: white; border: 1px solid var(--rule2); border-radius: 12px; padding: 16px 18px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+        .forge-fp-group { display: flex; flex-direction: column; gap: 4px; }
+        .forge-fp-label { font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: #BBB; font-family: system-ui, sans-serif; }
+        .forge-fp-sel {
+          height: 34px; border: 1px solid var(--rule2); border-radius: 8px; background: white;
+          font-size: 11px; color: var(--muted); padding: 0 10px; cursor: pointer; min-width: 140px;
+          font-family: system-ui, sans-serif; transition: border-color 0.2s;
+        }
+        .forge-fp-sel:focus { outline: none; border-color: var(--teal); }
+        .forge-fp-sel.active { border-color: var(--teal); color: var(--teal); background: #F0FDFB; }
+        .forge-fp-divider { width: 1px; height: 40px; background: var(--rule2); flex-shrink: 0; align-self: center; }
+        .forge-clear-link { font-size: 9px; font-weight: 700; color: #DC2626; text-decoration: none; flex-shrink: 0; padding: 6px 12px; border: 1px solid rgba(220,38,38,0.25); border-radius: 8px; transition: all 0.2s; background: rgba(220,38,38,0.04); font-family: system-ui, sans-serif; cursor: pointer; }
+        .forge-clear-link:hover { background: rgba(220,38,38,0.1); }
+
+        /* ── CATEGORY TABS ── */
         .cat-tabs { display: flex; overflow-x: auto; border-bottom: 1px solid var(--rule2); scrollbar-width: none; background: white; padding: 0 24px; }
         .cat-tabs::-webkit-scrollbar { display: none; }
         .cat-tab { flex-shrink: 0; padding: 14px 20px; font-family: system-ui, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #999; text-decoration: none; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; cursor: pointer; }
         .cat-tab:hover { color: var(--ink); }
         .cat-tab.on { color: var(--teal); border-bottom-color: var(--teal); }
+
+        /* ── GENERAL ── */
         .page-root { min-height: 100vh; background: var(--parch); font-family: 'Georgia', 'Times New Roman', serif; }
         .sh { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
         .sh-l { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3em; color: #AAA; font-family: system-ui, sans-serif; white-space: nowrap; }
@@ -413,8 +485,6 @@ export default function BlogIndexPage() {
         .tag-mustread    { background: #FEF3C7; color: #92400E; border: 1px solid rgba(180,83,9,.30); }
         .tag-hightraffic { background: #F0FDF4; color: #15803D; border: 1px solid rgba(21,128,61,.25); }
         .global-divider { background: linear-gradient(135deg, #0F1A1C 0%, #1A2A2C 100%); padding: 16px 24px; display: flex; align-items: center; gap: 16px; border-top: 3px solid #2563EB; border-bottom: 1px solid rgba(255,255,255,.08); }
-        .nl-box { background: linear-gradient(135deg, var(--ink) 0%, #1A2A2C 100%); position: relative; overflow: hidden; padding: clamp(16px, 2.8vw, 28px); }
-        .nl-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #0F766E, #0D9488, #5EEAD4, #0D9488, #0F766E); }
         .ticker-wrap { display: flex; overflow: hidden; flex-wrap: wrap; border: 1.5px solid var(--ink); background: var(--ink); }
         .ticker-item { padding: 14px 24px; border-right: 1px solid rgba(255,255,255,.07); flex: 1; text-align: center; min-width: 90px; }
         .cta-block { background: linear-gradient(135deg, var(--ink) 0%, #1A2A2C 100%); border-radius: 20px; padding: 36px 44px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; margin-top: 48px; position: relative; overflow: hidden; }
@@ -431,21 +501,26 @@ export default function BlogIndexPage() {
         .link-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink); display: flex; align-items: center; gap: 5px; margin-bottom: 4px; font-family: system-ui, sans-serif; }
         .link-desc { font-size: 10px; color: #AAA; font-family: system-ui, sans-serif; }
         .main-wrap { max-width: 1300px; margin: 0 auto; padding: 32px 24px 56px; }
-        @media (max-width: 768px) { .blog-mast-content { padding: 120px 20px 70px !important; } .main-wrap { padding: 24px 16px 40px; } .cta-block { padding: 24px 20px; } }
+        @media (max-width: 768px) { .blog-mast-content { padding: 120px 20px 70px !important; } .main-wrap { padding: 24px 16px 40px; } .cta-block { padding: 24px 20px; } .forge-sort-quick { display: none; } }
         @media (max-width: 480px) { .blog-mast-content { padding: 100px 16px 60px !important; } .blog-mast-h1 { font-size: 36px; } }
         ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-thumb { background: var(--rule); }
       `}</style>
 
-      {/* ── SEARCH SCRIPT ── */}
+      {/* ── CHANGE 1 & 2: UPDATED SEARCH + FILTER SCRIPT ── */}
       <script dangerouslySetInnerHTML={{ __html: `
         (function() {
           var ALL_POSTS = ${JSON.stringify(ALL_POSTS)};
 
           function initSearch() {
-            var input = document.getElementById('forge-search-input');
-            var btn = document.getElementById('forge-search-btn');
-            var overlay = document.getElementById('forge-search-results');
+            var input       = document.getElementById('forge-search-input');
+            var btn         = document.getElementById('forge-search-btn');
+            var overlay     = document.getElementById('forge-search-results');
+            var filterBtn   = document.getElementById('forge-filter-btn');
+            var filterPanel = document.getElementById('forge-filter-panel');
+            var catSel      = document.getElementById('forge-cat-sel');
+            var regionSel   = document.getElementById('forge-region-sel');
+
             if (!input || !btn || !overlay) return;
 
             function doSearch() {
@@ -456,17 +531,17 @@ export default function BlogIndexPage() {
                 return p.title.toLowerCase().includes(q) || p.category.toLowerCase().includes(q);
               });
               if (results.length === 0) {
-                overlay.innerHTML = '<div class="search-no-results">No articles found for "' + input.value + '"</div>';
+                overlay.innerHTML = '<div class="forge-sr-empty">No articles found for &ldquo;' + input.value + '&rdquo;</div>';
               } else {
                 results.slice(0, 8).forEach(function(p, i) {
                   var a = document.createElement('a');
                   a.href = p.slug;
-                  a.className = 'search-result-item';
+                  a.className = 'forge-search-result-item';
                   a.innerHTML =
-                    '<span class="search-result-num">' + (i + 1) + '</span>' +
-                    '<span class="search-result-text">' +
-                      '<div class="search-result-title">' + p.title + '</div>' +
-                      '<div class="search-result-meta">' + p.category + ' · ' + p.readTime + ' read</div>' +
+                    '<span class="forge-sr-num">' + (i + 1) + '</span>' +
+                    '<span style="flex:1">' +
+                      '<div class="forge-sr-title">' + p.title + '</div>' +
+                      '<div class="forge-sr-meta">' + p.category + ' &middot; ' + p.readTime + ' read</div>' +
                     '</span>';
                   overlay.appendChild(a);
                 });
@@ -477,12 +552,29 @@ export default function BlogIndexPage() {
             input.addEventListener('input', doSearch);
             btn.addEventListener('click', function(e) { e.preventDefault(); doSearch(); });
             input.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); doSearch(); } });
-
             document.addEventListener('click', function(e) {
               if (!overlay.contains(e.target) && e.target !== input && e.target !== btn) {
                 overlay.classList.remove('active');
               }
             });
+
+            /* Filter toggle */
+            if (filterBtn && filterPanel) {
+              filterBtn.addEventListener('click', function() {
+                var isOpen = filterPanel.classList.toggle('open');
+                filterBtn.classList.toggle('open', isOpen);
+              });
+            }
+
+            /* Category select — filters the cat tabs visually & could wire routing */
+            if (catSel) {
+              catSel.addEventListener('change', function() {
+                var val = this.value;
+                document.querySelectorAll('.cat-tab').forEach(function(tab) {
+                  tab.classList.toggle('on', tab.textContent.trim() === (val || 'All'));
+                });
+              });
+            }
           }
 
           if (document.readyState === 'loading') {
@@ -500,7 +592,6 @@ export default function BlogIndexPage() {
           <div className="blog-hero-bg" />
           <div className="blog-mast">
             <div className="blog-mast-content ri-0">
-              {/* eyebrow text removed */}
               <h1 className="blog-mast-h1">The <em>Forge</em></h1>
               <span className="blog-mast-rule" />
               <p className="blog-mast-tagline">
@@ -510,27 +601,88 @@ export default function BlogIndexPage() {
                 <span className="blog-live-dot" />
                 <span className="blog-live-text">Live · {ALL_POSTS.length} Articles · Updated March 2026</span>
               </div>
+            </div>
+          </div>
+        </div>
 
-              {/* ── SEARCH BAR ── */}
-              <div className="search-wrap" style={{ marginTop: 20 }}>
-                <div style={{ position: "relative", width: "100%", maxWidth: 480 }}>
-                  <div className="search-form">
-                    <input
-                      id="forge-search-input"
-                      className="search-input"
-                      type="text"
-                      placeholder="Search articles by title or topic…"
-                      autoComplete="off"
-                    />
-                    <button id="forge-search-btn" className="search-btn" type="button">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                      Search
-                    </button>
-                  </div>
-                  <div id="forge-search-results" className="search-results-overlay" />
+        {/* ── CHANGE 1 & 2: REGISTRY-STYLE STICKY SEARCH TOOLBAR ── */}
+        <div className="forge-toolbar">
+          <div className="forge-toolbar-inner">
+
+            {/* Search row with results dropdown */}
+            <div className="forge-search-row">
+              <span className="forge-search-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              </span>
+              <input
+                id="forge-search-input"
+                className="forge-search-inp"
+                type="text"
+                placeholder="Search articles by title, category, topic…"
+                autoComplete="off"
+              />
+              <button id="forge-search-btn" className="forge-search-btn" type="button">
+                Search
+              </button>
+              {/* Results dropdown — z-index 9999, always in front */}
+              <div id="forge-search-results" className="forge-search-results" />
+            </div>
+
+            {/* Filter toggle row */}
+            <div className="forge-filter-toggle-row">
+              <button id="forge-filter-btn" className="forge-filter-btn" type="button" aria-expanded="false" aria-controls="forge-filter-panel">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <line x1="2" y1="4" x2="14" y2="4"/><line x1="4" y1="8" x2="12" y2="8"/><line x1="6" y1="12" x2="10" y2="12"/>
+                </svg>
+                Filters
+                <span className="forge-filter-chevron">
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="2,3 5,7 8,3"/></svg>
+                </span>
+              </button>
+
+              {/* Sort quick links */}
+              <div className="forge-sort-quick">
+                <span className="forge-t-div" />
+                <span className="forge-sort-link on">All</span>
+                <span className="forge-sort-link">India</span>
+                <span className="forge-sort-link">Global</span>
+                <span className="forge-sort-link">AI</span>
+                <span className="forge-sort-link">Fintech</span>
+              </div>
+            </div>
+
+            {/* Collapsible filter panel */}
+            <div className="forge-filter-panel-wrap" id="forge-filter-panel" role="region" aria-label="Filters">
+              <div className="forge-filter-panel">
+                <div className="forge-fp-group">
+                  <label className="forge-fp-label" htmlFor="forge-cat-sel">Category</label>
+                  <select className="forge-fp-sel" id="forge-cat-sel" aria-label="Filter by category">
+                    <option value="">All Categories</option>
+                    {CATEGORIES.filter(c => c !== "All").map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="forge-fp-group">
+                  <label className="forge-fp-label" htmlFor="forge-region-sel">Region</label>
+                  <select className="forge-fp-sel" id="forge-region-sel" aria-label="Filter by region">
+                    <option value="">All Regions</option>
+                    <option value="india">India Edition</option>
+                    <option value="global">Global Edition</option>
+                  </select>
+                </div>
+                <div className="forge-fp-group">
+                  <label className="forge-fp-label" htmlFor="forge-time-sel">Read Time</label>
+                  <select className="forge-fp-sel" id="forge-time-sel" aria-label="Filter by read time">
+                    <option value="">Any Length</option>
+                    <option value="short">Under 8 min</option>
+                    <option value="medium">8–12 min</option>
+                    <option value="long">12+ min</option>
+                  </select>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
 
@@ -714,7 +866,7 @@ export default function BlogIndexPage() {
               </div>
             </div>
 
-            {/* SIDEBAR */}
+            {/* SIDEBAR — CHANGE 3: Only 3 opinion posts */}
             <div>
               <div className="sh"><span className="sh-l">Analysis &amp; Opinion</span><div className="sh-r" /></div>
               <div style={{ border: "1.5px solid var(--ink)", background: "#FDFCF9" }}>
