@@ -2,15 +2,14 @@
 
 import Image from "next/image"
 import { useState, useEffect, useRef, useCallback } from "react"
-import { X, Send, Loader2, Minus, RotateCcw, ChevronRight, Globe } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { X, Send, Loader2, Minus, RotateCcw, Globe } from "lucide-react"
 
 interface Message {
   role: "user" | "assistant"
   content: string
 }
 
-// ─── RICH TEXT ────────────────────────────────────────────────────────────────
+// ─── RICH TEXT ─────────────────────────────────────────────────────────────
 
 function RichText({ text }: { text: string }) {
   const lines = text.split("\n").reduce<string[]>((acc, line, i, arr) => {
@@ -22,11 +21,18 @@ function RichText({ text }: { text: string }) {
   const inline = (str: string): React.ReactNode[] =>
     str.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g).map((p, i) => {
       if (p.startsWith("**") && p.endsWith("**"))
-        return <strong key={i} style={{ fontWeight: 700, color: "#0D0D0D" }}>{p.slice(2, -2)}</strong>
+        return <strong key={i} style={{ fontWeight: 700, color: "#111" }}>{p.slice(2, -2)}</strong>
       if (p.startsWith("*") && p.endsWith("*"))
-        return <em key={i} style={{ color: "#555" }}>{p.slice(1, -1)}</em>
+        return <em key={i} style={{ color: "#555", fontStyle: "italic" }}>{p.slice(1, -1)}</em>
       if (p.startsWith("`") && p.endsWith("`"))
-        return <code key={i} style={{ background: "#F0EBE3", color: "#0D0D0D", padding: "1px 5px", fontSize: 10, fontFamily: "monospace", border: "1px solid #E2DDD4" }}>{p.slice(1, -1)}</code>
+        return (
+          <code key={i} style={{
+            background: "#F2EFE9", color: "#111", padding: "1px 5px",
+            fontSize: 10.5, fontFamily: "monospace", border: "1px solid #E5E0D8",
+          }}>
+            {p.slice(1, -1)}
+          </code>
+        )
       return <span key={i}>{p}</span>
     })
 
@@ -35,7 +41,7 @@ function RichText({ text }: { text: string }) {
 
   while (i < lines.length) {
     const t = lines[i].trim()
-    if (!t) { els.push(<div key={`s${i}`} style={{ height: 6 }} />); i++; continue }
+    if (!t) { els.push(<div key={`s${i}`} style={{ height: 5 }} />); i++; continue }
 
     if (/^(\d+)[.)]\s/.test(t)) {
       const items: { n: string; text: string }[] = []
@@ -45,16 +51,18 @@ function RichText({ text }: { text: string }) {
         items.push({ n: m[1], text: m[2] }); i++
       }
       els.push(
-        <ol key={`ol${i}`} style={{ margin: "8px 0", display: "flex", flexDirection: "column", gap: 6 }}>
+        <div key={`ol${i}`} style={{ display: "flex", flexDirection: "column", gap: 5, margin: "6px 0" }}>
           {items.map((it, ix) => (
-            <li key={ix} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-              <span style={{ flexShrink: 0, width: 16, height: 16, background: "#0D0D0D", color: "white", fontSize: 8, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", marginTop: 2, fontFamily: "system-ui" }}>
-                {it.n}
+            <div key={ix} style={{ display: "flex", gap: 9, alignItems: "flex-start" }}>
+              <span style={{ flexShrink: 0, fontFamily: "system-ui", fontSize: 9, fontWeight: 800, color: "#C59A2E", minWidth: 14, paddingTop: 3 }}>
+                {it.n}.
               </span>
-              <span style={{ fontSize: 12, lineHeight: 1.7, color: "#333", fontFamily: "'Georgia', serif" }}>{inline(it.text)}</span>
-            </li>
+              <span style={{ fontSize: 12, lineHeight: 1.7, color: "#2A2520", fontFamily: "'Georgia', serif" }}>
+                {inline(it.text)}
+              </span>
+            </div>
           ))}
-        </ol>
+        </div>
       )
       continue
     }
@@ -67,14 +75,16 @@ function RichText({ text }: { text: string }) {
         items.push(m[1]); i++
       }
       els.push(
-        <ul key={`ul${i}`} style={{ margin: "6px 0", display: "flex", flexDirection: "column", gap: 5 }}>
+        <div key={`ul${i}`} style={{ display: "flex", flexDirection: "column", gap: 4, margin: "5px 0" }}>
           {items.map((b, ix) => (
-            <li key={ix} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-              <span style={{ flexShrink: 0, marginTop: 7, width: 4, height: 4, background: "#C59A2E", transform: "rotate(45deg)", display: "inline-block" }} />
-              <span style={{ fontSize: 12, lineHeight: 1.7, color: "#333", fontFamily: "'Georgia', serif" }}>{inline(b)}</span>
-            </li>
+            <div key={ix} style={{ display: "flex", gap: 9, alignItems: "flex-start" }}>
+              <span style={{ flexShrink: 0, marginTop: 8, width: 3, height: 3, background: "#C59A2E", display: "inline-block" }} />
+              <span style={{ fontSize: 12, lineHeight: 1.7, color: "#2A2520", fontFamily: "'Georgia', serif" }}>
+                {inline(b)}
+              </span>
+            </div>
           ))}
-        </ul>
+        </div>
       )
       continue
     }
@@ -82,7 +92,7 @@ function RichText({ text }: { text: string }) {
     const hm = t.match(/^(#{1,3})\s+(.+)$/)
     if (hm) {
       els.push(
-        <p key={`h${i}`} style={{ fontSize: 9, fontWeight: 800, color: "#0D0D0D", textTransform: "uppercase", letterSpacing: "0.18em", fontFamily: "system-ui", marginTop: 12, marginBottom: 4, borderBottom: "1px solid #E2DDD4", paddingBottom: 4 }}>
+        <p key={`h${i}`} style={{ fontSize: 9, fontWeight: 800, color: "#999", textTransform: "uppercase", letterSpacing: "0.18em", fontFamily: "system-ui", marginTop: 10, marginBottom: 2 }}>
           {inline(hm[2])}
         </p>
       )
@@ -90,97 +100,65 @@ function RichText({ text }: { text: string }) {
     }
 
     if (t === "---") {
-      els.push(<div key={`hr${i}`} style={{ height: 1, background: "#E2DDD4", margin: "10px 0" }} />)
+      els.push(<div key={`hr${i}`} style={{ height: 1, background: "#EDE9E0", margin: "8px 0" }} />)
       i++; continue
     }
 
     els.push(
-      <p key={`p${i}`} style={{ fontSize: 12, lineHeight: 1.8, color: "#333", fontFamily: "'Georgia', serif" }}>
+      <p key={`p${i}`} style={{ fontSize: 12.5, lineHeight: 1.75, color: "#2A2520", fontFamily: "'Georgia', serif", margin: 0 }}>
         {inline(t)}
       </p>
     )
     i++
   }
 
-  return <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>{els}</div>
+  return <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>{els}</div>
 }
 
-// ─── TYPING INDICATOR ─────────────────────────────────────────────────────────
+// ─── TYPING DOTS ─────────────────────────────────────────────────────────────
 
 function TypingDots() {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "10px 12px" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "8px 0" }}>
       {[0, 1, 2].map(i => (
         <span key={i} style={{
-          width: 4, height: 4,
-          background: "#C59A2E",
-          display: "inline-block",
-          borderRadius: 2,
-          animation: `ufBounce 1.1s ${i * 0.16}s ease-in-out infinite`,
+          width: 4, height: 4, background: "#D5CFC4", display: "inline-block",
+          animation: `forgeDot 1.2s ${i * 0.18}s ease-in-out infinite`,
         }} />
       ))}
     </div>
   )
 }
 
-// ─── BUBBLE ───────────────────────────────────────────────────────────────────
-
-function Bubble({ msg, isNew }: { msg: Message; isNew: boolean }) {
-  const isUser = msg.role === "user"
-  return (
-    <motion.div
-      initial={isNew ? { opacity: 0, y: 8 } : false}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
-      style={{ display: "flex", justifyContent: isUser ? "flex-end" : "flex-start", alignItems: "flex-end", gap: 8 }}
-    >
-      {!isUser && (
-        <div style={{ width: 22, height: 22, flexShrink: 0, overflow: "hidden", border: "1px solid #E2DDD4", marginBottom: 2 }}>
-          <Image src="/robot.jpg" alt="Forge" width={22} height={22} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} />
-        </div>
-      )}
-      {isUser ? (
-        <div style={{ maxWidth: "80%", padding: "8px 12px", background: "#0D0D0D", borderLeft: "2px solid #C59A2E" }}>
-          <span style={{ fontSize: 12, color: "#F0EBE0", fontFamily: "'Georgia', serif", lineHeight: 1.6 }}>{msg.content}</span>
-        </div>
-      ) : (
-        <div style={{ maxWidth: "82%", padding: "10px 12px", background: "#FFFFFF", border: "1px solid #E8E3DB", borderLeft: "2px solid #C59A2E" }}>
-          <RichText text={msg.content} />
-        </div>
-      )}
-    </motion.div>
-  )
-}
-
 // ─── QUICK PROMPTS ────────────────────────────────────────────────────────────
 
 const PROMPTS = [
-  { q: "Top global AI startups 2026?", cat: "Global" },
-  { q: "How to list my startup free?", cat: "Registry" },
-  { q: "Hottest sectors worldwide?", cat: "Trends" },
-  { q: "What's a UFRN number?", cat: "Verify" },
+  { q: "Top global AI startups 2026?",    cat: "Global"   },
+  { q: "How do I list my startup?",        cat: "Registry" },
+  { q: "What sectors are growing fastest?", cat: "Trends"  },
+  { q: "What is a UFRN number?",           cat: "Verify"   },
 ]
 
-// ─── MAIN CHATBOT ─────────────────────────────────────────────────────────────
+// ─── MAIN ─────────────────────────────────────────────────────────────────────
 
 export function Chatbot() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen]       = useState(false)
   const [minimized, setMinimized] = useState(false)
-  const [input, setInput] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [badge, setBadge] = useState(0)
-  const [showTooltip, setShowTooltip] = useState(false)
-  const [msgs, setMsgs] = useState<Message[]>([{
+  const [input, setInput]         = useState("")
+  const [loading, setLoading]     = useState(false)
+  const [badge, setBadge]         = useState(0)
+  const [showTip, setShowTip]     = useState(false)
+  const [msgs, setMsgs]           = useState<Message[]>([{
     role: "assistant",
-    content: "Hello — I'm **Forge**, UpForge's global intelligence AI.\n\nI cover:\n- Verified startup data across 40+ countries\n- Unicorn founders & funding intelligence\n- Sector trends and market analysis\n- How to list or verify your startup\n\nWhat would you like to explore?",
+    content: "I'm **forge** — UpForge's global intelligence AI.\n\nAsk me about:\n- Verified startups across 40+ countries\n- Funding data, unicorns, sector trends\n- How to list or verify a startup\n\nWhat would you like to know?",
   }])
-  const [justAdded, setJustAdded] = useState<Set<number>>(new Set())
+  const [newIdxs, setNewIdxs] = useState<Set<number>>(new Set())
 
   const scrollRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef  = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    const t = setTimeout(() => setShowTooltip(true), 3000)
+    const t = setTimeout(() => setShowTip(true), 3500)
     return () => clearTimeout(t)
   }, [])
 
@@ -190,8 +168,8 @@ export function Chatbot() {
 
   useEffect(() => {
     if (isOpen && !minimized) {
-      setShowTooltip(false)
-      setTimeout(() => inputRef.current?.focus(), 120)
+      setShowTip(false)
+      setTimeout(() => inputRef.current?.focus(), 80)
     }
   }, [isOpen, minimized])
 
@@ -203,11 +181,11 @@ export function Chatbot() {
     const userMsg: Message = { role: "user", content: msg }
     const nextIdx = msgs.length + 1
     setMsgs(p => [...p, userMsg])
-    setJustAdded(p => new Set(p).add(msgs.length))
+    setNewIdxs(p => new Set(p).add(msgs.length))
     setInput("")
     setLoading(true)
     try {
-      const res = await fetch("/api/chat", {
+      const res  = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: [...msgs, userMsg] }),
@@ -215,7 +193,7 @@ export function Chatbot() {
       const data = await res.json()
       const reply = data.message ?? data.error ?? "Couldn't process that — please try again."
       setMsgs(p => [...p, { role: "assistant", content: reply }])
-      setJustAdded(p => new Set(p).add(nextIdx))
+      setNewIdxs(p => new Set(p).add(nextIdx))
       if (!isOpen) setBadge(c => c + 1)
     } catch {
       setMsgs(p => [...p, { role: "assistant", content: "Network issue — please try again." }])
@@ -227,370 +205,251 @@ export function Chatbot() {
   const reset = () => {
     setMsgs([{
       role: "assistant",
-      content: "Hello — I'm **Forge**, UpForge's global intelligence AI.\n\nI cover:\n- Verified startup data across 40+ countries\n- Unicorn founders & funding intelligence\n- Sector trends and market analysis\n- How to list or verify your startup\n\nWhat would you like to explore?",
+      content: "I'm **forge** — UpForge's global intelligence AI.\n\nAsk me about:\n- Verified startups across 40+ countries\n- Funding data, unicorns, sector trends\n- How to list or verify a startup\n\nWhat would you like to know?",
     }])
-    setJustAdded(new Set())
+    setNewIdxs(new Set())
     setInput("")
   }
 
   return (
     <>
       <style>{`
-        @keyframes ufBounce {
-          0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-          30% { transform: translateY(-5px); opacity: 1; }
+        @keyframes forgeDot {
+          0%,60%,100% { opacity:.3; transform:translateY(0); }
+          30% { opacity:1; transform:translateY(-3px); }
         }
-        @keyframes ufPulse {
-          0%, 100% { opacity: 0.15; transform: scale(1); }
-          50% { opacity: 0.35; transform: scale(1.06); }
+        @keyframes forgeIn {
+          from { opacity:0; transform:translateY(8px); }
+          to   { opacity:1; transform:translateY(0); }
         }
-        @keyframes ufSpin { to { transform: rotate(360deg); } }
-        .uf-chat-scroll::-webkit-scrollbar { width: 2px; }
-        .uf-chat-scroll::-webkit-scrollbar-thumb { background: #E2DDD4; }
-        .uf-prompt:hover { background: #0D0D0D !important; border-color: #0D0D0D !important; }
-        .uf-prompt:hover .pcat { color: #C59A2E !important; }
-        .uf-prompt:hover .plabel { color: #F0EBE0 !important; }
-        .uf-prompt:hover .parrow { opacity: 1 !important; }
-        .uf-send:not([disabled]):hover { background: #C59A2E !important; border-color: #C59A2E !important; }
-        .uf-input:focus { outline: none; border-color: #0D0D0D !important; box-shadow: inset 0 0 0 1px #0D0D0D; }
+        @keyframes forgeSpin { to { transform:rotate(360deg); } }
+        .asc::-webkit-scrollbar{width:2px}
+        .asc::-webkit-scrollbar-thumb{background:#E5E0D8}
+        .ap:hover{background:#F7F3EC!important;border-color:#D5C88A!important;}
+        .ai:focus{outline:none;border-color:#C59A2E!important;}
+        .ab:not([disabled]):hover{background:#C59A2E!important;border-color:#C59A2E!important;}
+        .ac:hover{color:#C59A2E!important;}
       `}</style>
 
-      <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 50, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+      <div style={{ position:"fixed", bottom:24, right:24, zIndex:9999, display:"flex", flexDirection:"column", alignItems:"flex-end" }}>
 
-        {/* Chat window */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              role="dialog"
-              aria-modal="true"
-              aria-label="Forge — UpForge Global Intelligence"
-              initial={{ opacity: 0, y: 16, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 16, scale: 0.96 }}
-              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              style={{
-                marginBottom: 12,
-                width: "min(92vw, 368px)",
-                height: minimized ? "auto" : "min(560px, 80vh)",
-                display: "flex",
-                flexDirection: "column",
-                overflow: "hidden",
-                background: "#FFFCF7",
-                border: "1px solid #E2DDD4",
-                borderTop: "3px solid #C59A2E",
-                boxShadow: "0 24px 64px rgba(0,0,0,0.14), 0 4px 16px rgba(0,0,0,0.06)",
-              }}
-            >
-              {/* Header */}
-              <div style={{ background: "#0D0D0D", flexShrink: 0 }}>
-                {/* Gold rule */}
-                <div style={{ height: 1, background: "linear-gradient(90deg, transparent, #C59A2E 30%, #E8C547 50%, #C59A2E 70%, transparent)" }} />
-
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px 10px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    {/* Avatar */}
-                    <div style={{ position: "relative", flexShrink: 0 }}>
-                      <div style={{ width: 32, height: 32, overflow: "hidden", border: "1.5px solid #C59A2E" }}>
-                        <Image src="/robot.jpg" alt="Forge" width={32} height={32} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} priority />
-                      </div>
-                      <span style={{ position: "absolute", bottom: -1, right: -1, width: 8, height: 8, background: "#22C55E", borderRadius: "50%", border: "1.5px solid #0D0D0D" }} />
-                    </div>
-                    <div>
-                      <div style={{ fontFamily: "'Georgia', serif", fontSize: 13, fontWeight: 700, color: "#F0EBE0", lineHeight: 1 }}>
-                        Forge
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 3 }}>
-                        <Globe size={8} style={{ color: "#C59A2E" }} />
-                        <span style={{ fontSize: 9, color: "#555", letterSpacing: "0.12em", fontFamily: "system-ui", textTransform: "uppercase" }}>
-                          UpForge Global Intelligence
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Controls */}
-                  <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    {[
-                      { Icon: RotateCcw, label: "Reset", action: reset },
-                      { Icon: Minus, label: minimized ? "Expand" : "Minimise", action: () => setMinimized(v => !v) },
-                      { Icon: X, label: "Close", action: () => setIsOpen(false) },
-                    ].map(({ Icon, label, action }) => (
-                      <button
-                        key={label}
-                        onClick={action}
-                        aria-label={label}
-                        style={{ padding: 6, color: "rgba(255,255,255,0.25)", cursor: "pointer", background: "none", border: "none", transition: "color 0.15s", display: "flex" }}
-                        onMouseEnter={e => (e.currentTarget.style.color = "#C59A2E")}
-                        onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.25)")}
-                      >
-                        <Icon style={{ width: 12, height: 12 }} />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Collapsible body */}
-              <AnimatePresence initial={false}>
-                {!minimized && (
-                  <motion.div
-                    key="body"
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.18 }}
-                    style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden", minHeight: 0 }}
-                  >
-                    {/* Messages */}
-                    <div
-                      ref={scrollRef}
-                      aria-live="polite"
-                      className="uf-chat-scroll"
-                      style={{ flex: 1, overflowY: "auto", padding: "16px 14px", display: "flex", flexDirection: "column", gap: 12, background: "#FDFAF5" }}
-                    >
-                      {/* Date stamp */}
-                      <div style={{ textAlign: "center", fontSize: 9, color: "#CCC", letterSpacing: "0.18em", fontFamily: "system-ui", textTransform: "uppercase", marginBottom: 4 }}>
-                        {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })} · Global Edition
-                      </div>
-
-                      {msgs.map((m, idx) => (
-                        <Bubble key={idx} msg={m} isNew={justAdded.has(idx)} />
-                      ))}
-
-                      {loading && (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: "flex", alignItems: "flex-end", gap: 8 }}>
-                          <div style={{ width: 22, height: 22, overflow: "hidden", border: "1px solid #E2DDD4", flexShrink: 0 }}>
-                            <Image src="/robot.jpg" alt="" width={22} height={22} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} />
-                          </div>
-                          <div style={{ background: "#FFFFFF", border: "1px solid #E8E3DB", borderLeft: "2px solid #C59A2E" }}>
-                            <TypingDots />
-                          </div>
-                        </motion.div>
-                      )}
-                    </div>
-
-                    {/* Quick prompts */}
-                    {msgs.length === 1 && (
-                      <div style={{ padding: "12px 14px", borderTop: "1px solid #E8E3DB", background: "#F5F1EA", flexShrink: 0 }}>
-                        <div style={{ fontSize: 8, letterSpacing: "0.22em", textTransform: "uppercase", color: "#AAA", fontFamily: "system-ui", fontWeight: 700, marginBottom: 8 }}>
-                          Explore —
-                        </div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                          {PROMPTS.map((p, idx) => (
-                            <button
-                              key={idx}
-                              onClick={() => send(p.q)}
-                              className="uf-prompt"
-                              style={{
-                                textAlign: "left",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                padding: "8px 10px",
-                                background: "white",
-                                border: "1px solid #E2DDD4",
-                                cursor: "pointer",
-                                transition: "all 0.15s",
-                              }}
-                            >
-                              <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
-                                <span className="pcat" style={{ fontSize: 7.5, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.18em", color: "#C59A2E", fontFamily: "system-ui", flexShrink: 0, transition: "color 0.15s" }}>
-                                  {p.cat}
-                                </span>
-                                <span className="plabel" style={{ fontSize: 11.5, color: "#333", fontFamily: "'Georgia', serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", transition: "color 0.15s" }}>
-                                  {p.q}
-                                </span>
-                              </div>
-                              <ChevronRight className="parrow" style={{ width: 10, height: 10, color: "#C59A2E", opacity: 0, flexShrink: 0, transition: "opacity 0.15s" }} />
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Input */}
-                    <div style={{ padding: "12px 14px", borderTop: "1px solid #E2DDD4", background: "#FFFCF7", flexShrink: 0 }}>
-                      <div style={{ display: "flex", alignItems: "stretch", gap: 8 }}>
-                        <input
-                          ref={inputRef}
-                          value={input}
-                          disabled={loading}
-                          onChange={e => setInput(e.target.value)}
-                          onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send() } }}
-                          placeholder="Ask about global startups…"
-                          aria-label="Message Forge"
-                          className="uf-input"
-                          style={{
-                            flex: 1,
-                            padding: "9px 12px",
-                            fontSize: 12,
-                            fontFamily: "'Georgia', serif",
-                            background: "#FDFAF5",
-                            border: "1px solid #E2DDD4",
-                            color: "#0D0D0D",
-                            outline: "none",
-                            transition: "border-color 0.15s",
-                          }}
-                        />
-                        <button
-                          onClick={() => send()}
-                          disabled={loading || !input.trim()}
-                          aria-label="Send"
-                          className="uf-send"
-                          style={{
-                            width: 38,
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            background: loading || !input.trim() ? "#F0EBE3" : "#0D0D0D",
-                            color: loading || !input.trim() ? "#CCC" : "white",
-                            border: `1px solid ${loading || !input.trim() ? "#E2DDD4" : "#0D0D0D"}`,
-                            cursor: loading || !input.trim() ? "not-allowed" : "pointer",
-                            transition: "all 0.15s",
-                            flexShrink: 0,
-                          }}
-                        >
-                          {loading
-                            ? <Loader2 style={{ width: 13, height: 13, animation: "ufSpin 1s linear infinite" }} />
-                            : <Send style={{ width: 13, height: 13 }} />
-                          }
-                        </button>
-                      </div>
-                      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 7 }}>
-                        <span style={{ fontSize: 9, color: "#CCC", fontFamily: "system-ui", letterSpacing: "0.1em" }}>
-                          Forge · UpForge · No paid placements
-                        </span>
-                        <span style={{ fontSize: 9, color: "#CCC", fontFamily: "system-ui" }}>⏎ send</span>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Tooltip */}
-        <AnimatePresence>
-          {!isOpen && showTooltip && msgs.length === 1 && (
-            <motion.div
-              initial={{ opacity: 0, x: 8 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 8 }}
-              transition={{ duration: 0.2 }}
-              style={{ position: "absolute", right: 62, bottom: 12, pointerEvents: "none" }}
-            >
-              <div style={{
-                background: "#0D0D0D",
-                border: "1px solid #2A2520",
-                padding: "8px 14px",
-                whiteSpace: "nowrap",
-                boxShadow: "3px 3px 0 #2A2520",
-                borderTop: "2px solid #C59A2E",
-                position: "relative",
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <Globe size={10} style={{ color: "#C59A2E" }} />
-                  <div>
-                    <div style={{ fontFamily: "'Georgia', serif", fontSize: 11, fontWeight: 700, color: "#F0EBE0" }}>
-                      Ask <span style={{ color: "#C59A2E" }}>Forge</span>
-                    </div>
-                    <div style={{ fontSize: 8, color: "#555", letterSpacing: "0.1em", fontFamily: "system-ui", marginTop: 2 }}>
-                      Global Startup Intelligence · Free
-                    </div>
-                  </div>
-                </div>
-                {/* Arrow */}
-                <div style={{
-                  position: "absolute",
-                  right: -6, top: "50%", transform: "translateY(-50%)",
-                  width: 0, height: 0,
-                  borderTop: "5px solid transparent",
-                  borderBottom: "5px solid transparent",
-                  borderLeft: "6px solid #0D0D0D",
-                }} />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* FAB */}
-        <button
-          onClick={() => { setIsOpen(v => !v); setMinimized(false); setShowTooltip(false) }}
-          aria-label="Open Forge — UpForge Global Intelligence"
-          style={{ position: "relative", width: 52, height: 52, flexShrink: 0 }}
-        >
-          {/* Pulse ring */}
-          <span style={{
-            position: "absolute",
-            inset: -6,
-            border: "1px solid rgba(197,154,46,0.2)",
-            animation: "ufPulse 3s ease-in-out infinite",
-            pointerEvents: "none",
-          }} />
-
-          {/* Face */}
+        {/* ── PANEL ─────────────────────────────────────────────── */}
+        {isOpen && (
           <div style={{
-            position: "absolute",
-            inset: 0,
-            background: "#0D0D0D",
-            border: "1.5px solid #C59A2E",
-            boxShadow: "0 8px 24px rgba(0,0,0,0.3), 2px 2px 0 #C59A2E",
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column",
+            marginBottom: 12,
+            width: "min(92vw, 356px)",
+            height: minimized ? "auto" : "min(530px, 76vh)",
+            display: "flex", flexDirection: "column", overflow: "hidden",
+            background: "#FFFCF8",
+            border: "1px solid #E0DBD2",
+            boxShadow: "0 12px 40px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.04)",
+            animation: "forgeIn 0.18s ease forwards",
           }}>
-            <AnimatePresence mode="wait">
-              {isOpen ? (
-                <motion.div
-                  key="close"
-                  initial={{ opacity: 0, scale: 0.7 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.7 }}
-                  transition={{ duration: 0.15 }}
-                  style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}
-                >
-                  <X style={{ width: 16, height: 16, color: "white" }} />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="open"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.15 }}
-                  style={{ flex: 1, display: "flex", flexDirection: "column" }}
-                >
-                  <div style={{ flex: 1, overflow: "hidden" }}>
-                    <Image src="/robot.jpg" alt="Forge AI" width={52} height={44} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} priority />
-                  </div>
-                  <div style={{ height: 12, background: "#C59A2E", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <span style={{ fontSize: 6, fontWeight: 900, color: "#0D0D0D", letterSpacing: "0.22em", fontFamily: "system-ui" }}>Forge</span>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
 
-          {/* Badge */}
-          <AnimatePresence>
-            {!isOpen && badge > 0 && (
-              <motion.span
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-                style={{
-                  position: "absolute", top: -4, right: -4, zIndex: 10,
-                  minWidth: 16, height: 16,
-                  background: "#C59A2E", color: "#0D0D0D",
-                  fontSize: 8, fontFamily: "system-ui", fontWeight: 900,
-                  border: "1.5px solid white",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  padding: "0 3px",
-                }}
-              >
-                {badge > 9 ? "9+" : badge}
-              </motion.span>
+            {/* Header */}
+            <div style={{ background:"#111", flexShrink:0 }}>
+              <div style={{ height:2, background:"linear-gradient(90deg,#8B6914,#C59A2E 40%,#E8C547 50%,#C59A2E 60%,#8B6914)" }} />
+              <div style={{ display:"flex", alignItems:"center", padding:"10px 14px", gap:10 }}>
+                <div style={{ position:"relative", flexShrink:0 }}>
+                  <div style={{ width:28, height:28, overflow:"hidden", border:"1px solid #2A2520" }}>
+                    <Image src="/robot.jpg" alt="forge" width={28} height={28} style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"top" }} priority />
+                  </div>
+                  <span style={{ position:"absolute", bottom:-1, right:-1, width:7, height:7, background:"#22C55E", borderRadius:"50%", border:"1.5px solid #111" }} />
+                </div>
+
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontFamily:"'Georgia',serif", fontSize:13, fontWeight:700, color:"#F5F0E8", lineHeight:1 }}>forge</div>
+                  <div style={{ display:"flex", alignItems:"center", gap:4, marginTop:3 }}>
+                    <Globe size={8} style={{ color:"#C59A2E" }} />
+                    <span style={{ fontSize:9, color:"#666", letterSpacing:"0.12em", fontFamily:"system-ui", textTransform:"uppercase" }}>
+                      UpForge Global Intelligence
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ display:"flex" }}>
+                  {([
+                    ["Reset",     <RotateCcw key="r" style={{ width:10, height:10 }} />, reset],
+                    [minimized?"Expand":"Minimise", <Minus key="m" style={{ width:10, height:10 }} />, () => setMinimized(v => !v)],
+                    ["Close",     <X key="x" style={{ width:10, height:10 }} />,         () => setIsOpen(false)],
+                  ] as [string, React.ReactNode, () => void][]).map(([label, icon, fn]) => (
+                    <button key={label} onClick={fn} aria-label={label} className="ac"
+                      style={{ padding:"4px 5px", background:"none", border:"none", cursor:"pointer", color:"#444", display:"flex", alignItems:"center", transition:"color .12s" }}>
+                      {icon}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Body */}
+            {!minimized && (
+              <>
+                {/* Messages */}
+                <div ref={scrollRef} aria-live="polite" className="asc"
+                  style={{ flex:1, overflowY:"auto", padding:"14px 14px", display:"flex", flexDirection:"column", gap:10, background:"#FDFAF5" }}>
+
+                  <div style={{ textAlign:"center", fontSize:9, color:"#D5CFC4", letterSpacing:"0.16em", fontFamily:"system-ui", marginBottom:2 }}>
+                    {new Date().toLocaleDateString("en-US",{month:"long",year:"numeric"}).toUpperCase()}
+                  </div>
+
+                  {msgs.map((m, idx) => {
+                    const isUser = m.role === "user"
+                    return (
+                      <div key={idx} style={{
+                        display:"flex", justifyContent:isUser?"flex-end":"flex-start", alignItems:"flex-end", gap:8,
+                        animation: newIdxs.has(idx) ? "forgeIn 0.16s ease forwards" : "none",
+                        opacity: newIdxs.has(idx) ? 0 : 1,
+                      }}>
+                        {!isUser && (
+                          <div style={{ width:18, height:18, overflow:"hidden", flexShrink:0, border:"1px solid #E5E0D8", marginBottom:1 }}>
+                            <Image src="/robot.jpg" alt="" width={18} height={18} style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"top" }} />
+                          </div>
+                        )}
+                        {isUser ? (
+                          <div style={{ maxWidth:"78%", padding:"8px 11px", background:"#111", borderLeft:"2px solid #C59A2E" }}>
+                            <span style={{ fontSize:12.5, color:"#F0EBE0", fontFamily:"'Georgia',serif", lineHeight:1.65 }}>{m.content}</span>
+                          </div>
+                        ) : (
+                          <div style={{ maxWidth:"85%", padding:"9px 11px", background:"#FFF", border:"1px solid #EDE9E0", borderLeft:"2px solid #C59A2E" }}>
+                            <RichText text={m.content} />
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+
+                  {loading && (
+                    <div style={{ display:"flex", alignItems:"flex-end", gap:8 }}>
+                      <div style={{ width:18, height:18, overflow:"hidden", flexShrink:0, border:"1px solid #E5E0D8" }}>
+                        <Image src="/robot.jpg" alt="" width={18} height={18} style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"top" }} />
+                      </div>
+                      <div style={{ background:"#FFF", border:"1px solid #EDE9E0", borderLeft:"2px solid #C59A2E", padding:"0 10px" }}>
+                        <TypingDots />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Quick prompts */}
+                {msgs.length === 1 && (
+                  <div style={{ padding:"9px 14px", borderTop:"1px solid #EDE9E0", background:"#F7F3EC", flexShrink:0 }}>
+                    <div style={{ fontSize:8, letterSpacing:"0.2em", textTransform:"uppercase", color:"#BBB", fontFamily:"system-ui", fontWeight:700, marginBottom:7 }}>Try asking</div>
+                    <div style={{ display:"flex", flexDirection:"column", gap:5 }}>
+                      {PROMPTS.map((p, idx) => (
+                        <button key={idx} onClick={() => send(p.q)} className="ap"
+                          style={{ textAlign:"left", display:"flex", alignItems:"center", gap:8, padding:"7px 10px", background:"#FFF", border:"1px solid #EDE9E0", cursor:"pointer", transition:"background .12s, border-color .12s" }}>
+                          <span style={{ fontSize:7.5, fontWeight:800, textTransform:"uppercase", letterSpacing:"0.18em", color:"#C59A2E", fontFamily:"system-ui", flexShrink:0 }}>{p.cat}</span>
+                          <span style={{ fontSize:11.5, color:"#444", fontFamily:"'Georgia',serif", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.q}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Input */}
+                <div style={{ padding:"10px 14px", borderTop:"1px solid #EDE9E0", background:"#FFFCF8", flexShrink:0 }}>
+                  <div style={{ display:"flex", gap:7 }}>
+                    <input
+                      ref={inputRef}
+                      value={input}
+                      disabled={loading}
+                      onChange={e => setInput(e.target.value)}
+                      onKeyDown={e => { if (e.key==="Enter" && !e.shiftKey){ e.preventDefault(); send() } }}
+                      placeholder="Ask about global startups…"
+                      aria-label="Message forge"
+                      className="ai"
+                      style={{
+                        flex:1, padding:"9px 11px", fontSize:12.5,
+                        fontFamily:"'Georgia',serif", background:"#FFF",
+                        border:"1px solid #E5E0D8", color:"#111", outline:"none",
+                        transition:"border-color .15s",
+                      }}
+                    />
+                    <button onClick={() => send()} disabled={loading || !input.trim()} aria-label="Send" className="ab"
+                      style={{
+                        width:37, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center",
+                        background: loading || !input.trim() ? "#F2EFE9" : "#111",
+                        color:      loading || !input.trim() ? "#CCC"     : "#FFF",
+                        border:"1px solid", borderColor: loading || !input.trim() ? "#E5E0D8" : "#111",
+                        cursor: loading || !input.trim() ? "not-allowed" : "pointer",
+                        transition:"background .12s, border-color .12s",
+                      }}>
+                      {loading
+                        ? <Loader2 style={{ width:13, height:13, animation:"forgeSpin 1s linear infinite" }} />
+                        : <Send style={{ width:13, height:13 }} />
+                      }
+                    </button>
+                  </div>
+                  <div style={{ display:"flex", justifyContent:"space-between", marginTop:6 }}>
+                    <span style={{ fontSize:9, color:"#CCC", fontFamily:"system-ui", letterSpacing:"0.08em" }}>forge · UpForge · No paid placements</span>
+                    <span style={{ fontSize:9, color:"#DDD", fontFamily:"system-ui" }}>⏎ send</span>
+                  </div>
+                </div>
+              </>
             )}
-          </AnimatePresence>
+          </div>
+        )}
+
+        {/* ── TOOLTIP ───────────────────────────────────────────── */}
+        {!isOpen && showTip && msgs.length === 1 && (
+          <div style={{ position:"absolute", right:58, bottom:13, pointerEvents:"none", animation:"forgeIn 0.18s ease forwards" }}>
+            <div style={{ background:"#111", border:"1px solid #222", borderTop:"2px solid #C59A2E", padding:"8px 13px", whiteSpace:"nowrap", boxShadow:"0 4px 14px rgba(0,0,0,0.16)", position:"relative" }}>
+              <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                <Globe size={10} style={{ color:"#C59A2E" }} />
+                <div>
+                  <div style={{ fontFamily:"'Georgia',serif", fontSize:11.5, fontWeight:700, color:"#F0EBE0" }}>
+                    Ask <span style={{ color:"#C59A2E" }}>forge</span>
+                  </div>
+                  <div style={{ fontSize:8.5, color:"#666", letterSpacing:"0.1em", fontFamily:"system-ui", marginTop:1 }}>
+                    Global startup intelligence · Free
+                  </div>
+                </div>
+              </div>
+              <div style={{ position:"absolute", right:-6, top:"50%", transform:"translateY(-50%)", width:0, height:0, borderTop:"5px solid transparent", borderBottom:"5px solid transparent", borderLeft:"6px solid #111" }} />
+            </div>
+          </div>
+        )}
+
+        {/* ── FAB ───────────────────────────────────────────────── */}
+        <button
+          onClick={() => { setIsOpen(v => !v); setMinimized(false); setShowTip(false) }}
+          aria-label="Open forge"
+          style={{
+            width:48, height:48, flexShrink:0, cursor:"pointer", overflow:"hidden",
+            background:"#111", border:"1.5px solid #C59A2E",
+            boxShadow:"0 4px 14px rgba(0,0,0,0.2), 2px 2px 0 #C59A2E",
+            display:"flex", flexDirection:"column", position:"relative",
+            transition:"box-shadow .15s",
+          }}
+          onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 4px 14px rgba(0,0,0,0.2), 2px 2px 0 #C59A2E, 0 0 0 4px rgba(197,154,46,0.12)")}
+          onMouseLeave={e => (e.currentTarget.style.boxShadow = "0 4px 14px rgba(0,0,0,0.2), 2px 2px 0 #C59A2E")}
+        >
+          {isOpen ? (
+            <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center" }}>
+              <X style={{ width:15, height:15, color:"#FFF" }} />
+            </div>
+          ) : (
+            <>
+              <div style={{ flex:1, overflow:"hidden" }}>
+                <Image src="/robot.jpg" alt="forge" width={48} height={39} style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"top" }} priority />
+              </div>
+              <div style={{ height:10, background:"#C59A2E", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <span style={{ fontSize:5.5, fontWeight:900, color:"#111", letterSpacing:"0.22em", fontFamily:"system-ui" }}>forge</span>
+              </div>
+            </>
+          )}
+
+          {/* Unread badge */}
+          {!isOpen && badge > 0 && (
+            <span style={{
+              position:"absolute", top:-3, right:-3, minWidth:15, height:15,
+              background:"#C59A2E", color:"#111", fontSize:8, fontFamily:"system-ui", fontWeight:900,
+              border:"1.5px solid white", display:"flex", alignItems:"center", justifyContent:"center", padding:"0 3px",
+            }}>
+              {badge > 9 ? "9+" : badge}
+            </span>
+          )}
         </button>
       </div>
     </>
