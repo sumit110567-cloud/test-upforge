@@ -1,60 +1,46 @@
 /**
- * lib/domain.ts — UpForge Domain Utilities
- * FINAL SEO CONSOLIDATED VERSION (.org PRIMARY)
+ * lib/domain.ts — UpForge Global Authority
+ * VERSION: SINGLE DOMAIN CONSOLIDATED (.org PRIMARY)
+ * Goal: Maximize global reach and SEO authority.
  */
 
-export type DomainContext = 'in' | 'org'
+export type DomainContext = 'org'
 
 export interface DomainMeta {
   context: DomainContext
   baseUrl: string
-  alternateUrl: string
-  isIndia: boolean
   isGlobal: boolean
   locale: string
   hreflangSelf: string
-  hreflangAlternate: string
   siteName: string
-  region: 'IN' | 'GLOBAL'
+  region: 'GLOBAL'
 }
 
-// CLIENT DOMAIN DETECTION
+// CLIENT DOMAIN DETECTION — Locked to org
 export function getDomainContextClient(): DomainContext {
-  if (typeof window === 'undefined') return 'org'
-  const htmlDomain = document.documentElement.getAttribute('data-domain')
-  return htmlDomain === 'in' ? 'in' : 'org'
+  return 'org'
 }
 
-// DOMAIN META CONFIG
-export function getDomainMeta(context: DomainContext): DomainMeta {
-  const isIndia = context === 'in'
-
+// DOMAIN META CONFIG — Global-First Strategy
+export function getDomainMeta(): DomainMeta {
   return {
-    context,
+    context: 'org',
     baseUrl: 'https://www.upforge.org',
-    alternateUrl: 'https://www.upforge.in',
-    isIndia,
     isGlobal: true,
-    locale: isIndia ? 'en-IN' : 'en-US',
-    hreflangSelf: isIndia ? 'en-IN' : 'en',
-    hreflangAlternate: isIndia ? 'en' : 'en-IN',
+    locale: 'en-US',
+    hreflangSelf: 'en',
     siteName: 'UpForge',
-    region: isIndia ? 'IN' : 'GLOBAL',
+    region: 'GLOBAL',
   }
 }
 
-// URL HELPERS — UPDATED TO ACCEPT DOMAIN CONTEXT
-export function getStartupUrl(slug: string, context: DomainContext = 'in'): string {
-  // Logic: If on .org, return absolute URL to maintain authority. If on .in, return relative.
-  if (context === 'org') {
-    return `https://www.upforge.org/startup/${slug}`
-  }
+// URL HELPERS — Clean, Authority-Building Paths
+export function getStartupUrl(slug: string): string {
   return `/startup/${slug}`
 }
 
-export function getRegistryUrl(path = '', context: DomainContext = 'in'): string {
-  const base = context === 'org' ? 'https://www.upforge.org/registry' : '/registry'
-  return `${base}${path ? `/${path}` : ''}`
+export function getRegistryUrl(path = ''): string {
+  return `/registry${path ? `/${path}` : ''}`
 }
 
 export function getCanonicalUrl(pathname: string): string {
@@ -63,7 +49,7 @@ export function getCanonicalUrl(pathname: string): string {
   return `${baseUrl}${cleanPath}`
 }
 
-// HREFLANG + CANONICAL
+// SEO ALTERNATES — Consolidates all signals to .org
 export function getAlternatesForLayout(pathname: string) {
   const path = pathname === '/' ? '' : pathname
   const orgUrl = `https://www.upforge.org${path}`
@@ -71,16 +57,15 @@ export function getAlternatesForLayout(pathname: string) {
   return {
     canonical: orgUrl,
     languages: {
-      en: orgUrl,
+      'en': orgUrl,
       'x-default': orgUrl,
     },
   }
 }
 
-// JSON-LD ORGANIZATION
-export function getOrganizationJsonLd(context: DomainContext = 'org') {
-  const meta = getDomainMeta(context)
-  const baseUrl = meta.baseUrl
+// JSON-LD ORGANIZATION — Global Schema
+export function getOrganizationJsonLd() {
+  const baseUrl = 'https://www.upforge.org'
 
   return {
     '@context': 'https://schema.org',
@@ -96,11 +81,7 @@ export function getOrganizationJsonLd(context: DomainContext = 'org') {
     },
     description: 'UpForge is the global independent startup registry providing verified intelligence on emerging startups worldwide.',
     foundingDate: '2024',
-    areaServed: [
-      { '@type': 'Country', name: 'India' },
-      { '@type': 'Country', name: 'United States' },
-      { '@type': 'Country', name: 'United Kingdom' }
-    ],
+    areaServed: 'Worldwide',
     sameAs: [
       'https://twitter.com/upforge_in',
       'https://www.linkedin.com/company/upforge'
@@ -115,9 +96,8 @@ export function getOrganizationJsonLd(context: DomainContext = 'org') {
 }
 
 // JSON-LD WEBSITE
-export function getWebsiteJsonLd(context: DomainContext = 'org') {
-  const meta = getDomainMeta(context)
-  const baseUrl = meta.baseUrl
+export function getWebsiteJsonLd() {
+  const baseUrl = 'https://www.upforge.org'
 
   return {
     '@context': 'https://schema.org',
