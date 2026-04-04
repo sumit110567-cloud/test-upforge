@@ -1,19 +1,16 @@
-// components/chatbot.tsx
 "use client"
 
 import Image from "next/image"
 import { useState, useEffect, useRef, useCallback } from "react"
-import { X, Send, Loader2, Minus, RotateCcw, ChevronRight } from "lucide-react"
+import { X, Send, Loader2, Minus, RotateCcw, ChevronRight, Globe } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-
-// ─── TYPES ────────────────────────────────────────────────────────────────────
 
 interface Message {
   role: "user" | "assistant"
   content: string
 }
 
-// ─── RICH TEXT — Newspaper editorial style ────────────────────────────────────
+// ─── RICH TEXT ────────────────────────────────────────────────────────────────
 
 function RichText({ text }: { text: string }) {
   const lines = text.split("\n").reduce<string[]>((acc, line, i, arr) => {
@@ -25,20 +22,11 @@ function RichText({ text }: { text: string }) {
   const inline = (str: string): React.ReactNode[] =>
     str.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g).map((p, i) => {
       if (p.startsWith("**") && p.endsWith("**"))
-        return (
-          <strong key={i} style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, color: "#1A1208" }}>
-            {p.slice(2, -2)}
-          </strong>
-        )
+        return <strong key={i} style={{ fontWeight: 700, color: "#0D0D0D" }}>{p.slice(2, -2)}</strong>
       if (p.startsWith("*") && p.endsWith("*"))
-        return <em key={i} className="italic text-[#5A4A30]">{p.slice(1, -1)}</em>
+        return <em key={i} style={{ color: "#555" }}>{p.slice(1, -1)}</em>
       if (p.startsWith("`") && p.endsWith("`"))
-        return (
-          <code key={i} className="px-1 py-0.5 text-[10px] font-mono rounded-none"
-            style={{ background: "#EDE9DF", color: "#1A1208", border: "1px solid #C8C2B4" }}>
-            {p.slice(1, -1)}
-          </code>
-        )
+        return <code key={i} style={{ background: "#F0EBE3", color: "#0D0D0D", padding: "1px 5px", fontSize: 10, fontFamily: "monospace", border: "1px solid #E2DDD4" }}>{p.slice(1, -1)}</code>
       return <span key={i}>{p}</span>
     })
 
@@ -47,9 +35,8 @@ function RichText({ text }: { text: string }) {
 
   while (i < lines.length) {
     const t = lines[i].trim()
-    if (!t) { els.push(<div key={`s${i}`} className="h-2" />); i++; continue }
+    if (!t) { els.push(<div key={`s${i}`} style={{ height: 6 }} />); i++; continue }
 
-    // Numbered list
     if (/^(\d+)[.)]\s/.test(t)) {
       const items: { n: string; text: string }[] = []
       while (i < lines.length) {
@@ -58,19 +45,13 @@ function RichText({ text }: { text: string }) {
         items.push({ n: m[1], text: m[2] }); i++
       }
       els.push(
-        <ol key={`ol${i}`} className="space-y-2 my-2.5">
+        <ol key={`ol${i}`} style={{ margin: "8px 0", display: "flex", flexDirection: "column", gap: 6 }}>
           {items.map((it, ix) => (
-            <li key={ix} className="flex items-start gap-2.5">
-              <span
-                className="flex-shrink-0 w-4 h-4 flex items-center justify-center text-white text-[8px] font-black mt-[1px]"
-                style={{ background: "#1A1208", fontFamily: "system-ui" }}
-              >
+            <li key={ix} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+              <span style={{ flexShrink: 0, width: 16, height: 16, background: "#0D0D0D", color: "white", fontSize: 8, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", marginTop: 2, fontFamily: "system-ui" }}>
                 {it.n}
               </span>
-              <span className="flex-1 text-[11.5px] leading-relaxed text-[#2C2010]"
-                style={{ fontFamily: "'Georgia', Times New Roman, serif" }}>
-                {inline(it.text)}
-              </span>
+              <span style={{ fontSize: 12, lineHeight: 1.7, color: "#333", fontFamily: "'Georgia', serif" }}>{inline(it.text)}</span>
             </li>
           ))}
         </ol>
@@ -78,7 +59,6 @@ function RichText({ text }: { text: string }) {
       continue
     }
 
-    // Bullet list
     if (/^[-•]\s/.test(t)) {
       const items: string[] = []
       while (i < lines.length) {
@@ -87,14 +67,11 @@ function RichText({ text }: { text: string }) {
         items.push(m[1]); i++
       }
       els.push(
-        <ul key={`ul${i}`} className="space-y-1.5 my-2.5">
+        <ul key={`ul${i}`} style={{ margin: "6px 0", display: "flex", flexDirection: "column", gap: 5 }}>
           {items.map((b, ix) => (
-            <li key={ix} className="flex items-start gap-2.5">
-              <span className="flex-shrink-0 mt-[7px]" style={{ width: 5, height: 5, background: "#D97706", transform: "rotate(45deg)", display: "inline-block" }} />
-              <span className="flex-1 text-[11.5px] leading-relaxed text-[#2C2010]"
-                style={{ fontFamily: "'Georgia', Times New Roman, serif" }}>
-                {inline(b)}
-              </span>
+            <li key={ix} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+              <span style={{ flexShrink: 0, marginTop: 7, width: 4, height: 4, background: "#C59A2E", transform: "rotate(45deg)", display: "inline-block" }} />
+              <span style={{ fontSize: 12, lineHeight: 1.7, color: "#333", fontFamily: "'Georgia', serif" }}>{inline(b)}</span>
             </li>
           ))}
         </ul>
@@ -102,121 +79,72 @@ function RichText({ text }: { text: string }) {
       continue
     }
 
-    // Headings
     const hm = t.match(/^(#{1,3})\s+(.+)$/)
     if (hm) {
       els.push(
-        <p key={`h${i}`}
-          className="font-black text-[#1A1208] mt-3 mb-1 uppercase tracking-[0.1em]"
-          style={{
-            fontFamily: "system-ui, sans-serif",
-            fontSize: hm[1].length === 1 ? 10 : 9,
-            borderBottom: "1px solid #C8C2B4",
-            paddingBottom: 4,
-          }}>
+        <p key={`h${i}`} style={{ fontSize: 9, fontWeight: 800, color: "#0D0D0D", textTransform: "uppercase", letterSpacing: "0.18em", fontFamily: "system-ui", marginTop: 12, marginBottom: 4, borderBottom: "1px solid #E2DDD4", paddingBottom: 4 }}>
           {inline(hm[2])}
         </p>
       )
       i++; continue
     }
 
-    // Horizontal rule
     if (t === "---") {
-      els.push(
-        <div key={`hr${i}`} className="flex items-center gap-2 my-3">
-          <div className="flex-1 h-px" style={{ background: "#C8C2B4" }} />
-          <span style={{ color: "#C8C2B4", fontSize: 8 }}>✦</span>
-          <div className="flex-1 h-px" style={{ background: "#C8C2B4" }} />
-        </div>
-      )
+      els.push(<div key={`hr${i}`} style={{ height: 1, background: "#E2DDD4", margin: "10px 0" }} />)
       i++; continue
     }
 
-    // Regular paragraph
     els.push(
-      <p key={`p${i}`}
-        className="text-[11.5px] leading-[1.85] text-[#2C2010]"
-        style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+      <p key={`p${i}`} style={{ fontSize: 12, lineHeight: 1.8, color: "#333", fontFamily: "'Georgia', serif" }}>
         {inline(t)}
       </p>
     )
     i++
   }
 
-  return <div className="space-y-[3px]">{els}</div>
+  return <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>{els}</div>
 }
 
 // ─── TYPING INDICATOR ─────────────────────────────────────────────────────────
 
 function TypingDots() {
   return (
-    <div className="flex items-center gap-1.5 px-3 py-3">
+    <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "10px 12px" }}>
       {[0, 1, 2].map(i => (
-        <span
-          key={i}
-          style={{
-            width: 4,
-            height: 4,
-            background: "#C8C2B4",
-            display: "inline-block",
-            animation: `chronicleBounce 1.2s ${i * 0.18}s ease-in-out infinite`,
-          }}
-        />
+        <span key={i} style={{
+          width: 4, height: 4,
+          background: "#C59A2E",
+          display: "inline-block",
+          borderRadius: 2,
+          animation: `ufBounce 1.1s ${i * 0.16}s ease-in-out infinite`,
+        }} />
       ))}
     </div>
   )
 }
 
-// ─── MESSAGE BUBBLE ───────────────────────────────────────────────────────────
+// ─── BUBBLE ───────────────────────────────────────────────────────────────────
 
 function Bubble({ msg, isNew }: { msg: Message; isNew: boolean }) {
   const isUser = msg.role === "user"
-
   return (
     <motion.div
-      initial={isNew ? { opacity: 0, y: 6 } : false}
+      initial={isNew ? { opacity: 0, y: 8 } : false}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
-      className={`flex ${isUser ? "justify-end" : "justify-start"} items-end gap-2`}
+      transition={{ duration: 0.2 }}
+      style={{ display: "flex", justifyContent: isUser ? "flex-end" : "flex-start", alignItems: "flex-end", gap: 8 }}
     >
-      {/* Assistant avatar */}
       {!isUser && (
-        <div
-          className="flex-shrink-0 mb-0.5 overflow-hidden"
-          style={{ width: 22, height: 22, background: "#1A1208" }}
-        >
-          <Image
-            src="/robot.jpg"
-            alt="Forge"
-            width={22}
-            height={22}
-            className="w-full h-full object-cover object-top"
-          />
+        <div style={{ width: 22, height: 22, flexShrink: 0, overflow: "hidden", border: "1px solid #E2DDD4", marginBottom: 2 }}>
+          <Image src="/robot.jpg" alt="Atlas" width={22} height={22} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} />
         </div>
       )}
-
-      {/* Bubble */}
       {isUser ? (
-        <div
-          className="max-w-[80%] px-3 py-2"
-          style={{ background: "#1A1208", borderLeft: "2px solid #D97706" }}
-        >
-          <span
-            className="text-[11.5px] leading-relaxed text-white"
-            style={{ fontFamily: "'Georgia', Times New Roman, serif" }}
-          >
-            {msg.content}
-          </span>
+        <div style={{ maxWidth: "80%", padding: "8px 12px", background: "#0D0D0D", borderLeft: "2px solid #C59A2E" }}>
+          <span style={{ fontSize: 12, color: "#F0EBE0", fontFamily: "'Georgia', serif", lineHeight: 1.6 }}>{msg.content}</span>
         </div>
       ) : (
-        <div
-          className="max-w-[82%] px-3 py-2.5"
-          style={{
-            background: "#FDFCF9",
-            border: "1px solid #DDD8CE",
-            borderLeft: "2px solid #D97706",
-          }}
-        >
+        <div style={{ maxWidth: "82%", padding: "10px 12px", background: "#FFFFFF", border: "1px solid #E8E3DB", borderLeft: "2px solid #C59A2E" }}>
           <RichText text={msg.content} />
         </div>
       )}
@@ -227,23 +155,11 @@ function Bubble({ msg, isNew }: { msg: Message; isNew: boolean }) {
 // ─── QUICK PROMPTS ────────────────────────────────────────────────────────────
 
 const PROMPTS = [
+  { q: "Top global AI startups 2026?", cat: "Global" },
   { q: "How to list my startup free?", cat: "Registry" },
-  { q: "Hottest sectors in India 2026?", cat: "Trends" },
-  { q: "What makes a unicorn founder?", cat: "Founders" },
-  { q: "SaaS valuation benchmarks?", cat: "Finance" },
+  { q: "Hottest sectors worldwide?", cat: "Trends" },
+  { q: "What's a UFRN number?", cat: "Verify" },
 ]
-
-// ─── EDITION HEADER ORNAMENT ──────────────────────────────────────────────────
-
-function EditionRule() {
-  return (
-    <div className="flex items-center gap-2 px-4 py-1.5" style={{ borderBottom: "1px solid #2E2410" }}>
-      <div className="flex-1 h-px" style={{ background: "#2E2410" }} />
-      <span style={{ color: "#D97706", fontSize: 7, letterSpacing: "0.3em", fontFamily: "system-ui" }}>✦ FORGE AI ✦</span>
-      <div className="flex-1 h-px" style={{ background: "#2E2410" }} />
-    </div>
-  )
-}
 
 // ─── MAIN CHATBOT ─────────────────────────────────────────────────────────────
 
@@ -256,7 +172,7 @@ export function Chatbot() {
   const [showTooltip, setShowTooltip] = useState(false)
   const [msgs, setMsgs] = useState<Message[]>([{
     role: "assistant",
-    content: "Good day — I'm **Forge**, UpForge's editorial AI.\n\nAsk me anything about:\n- Indian startup funding & valuations\n- Founder stories & hot sectors\n- How to list your startup free\n- Investor landscape & unicorn data\n\nWhat would you like to know?",
+    content: "Hello — I'm **Atlas**, UpForge's global intelligence AI.\n\nI cover:\n- Verified startup data across 40+ countries\n- Unicorn founders & funding intelligence\n- Sector trends and market analysis\n- How to list or verify your startup\n\nWhat would you like to explore?",
   }])
   const [justAdded, setJustAdded] = useState<Set<number>>(new Set())
 
@@ -264,13 +180,12 @@ export function Chatbot() {
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowTooltip(true), 2800)
-    return () => clearTimeout(timer)
+    const t = setTimeout(() => setShowTooltip(true), 3000)
+    return () => clearTimeout(t)
   }, [])
 
   useEffect(() => {
-    if (scrollRef.current)
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight
   }, [msgs, loading])
 
   useEffect(() => {
@@ -312,7 +227,7 @@ export function Chatbot() {
   const reset = () => {
     setMsgs([{
       role: "assistant",
-      content: "Good day — I'm **Forge**, UpForge's editorial AI.\n\nAsk me anything about:\n- Indian startup funding & valuations\n- Founder stories & hot sectors\n- How to list your startup free\n- Investor landscape & unicorn data\n\nWhat would you like to know?",
+      content: "Hello — I'm **Atlas**, UpForge's global intelligence AI.\n\nI cover:\n- Verified startup data across 40+ countries\n- Unicorn founders & funding intelligence\n- Sector trends and market analysis\n- How to list or verify your startup\n\nWhat would you like to explore?",
     }])
     setJustAdded(new Set())
     setInput("")
@@ -321,202 +236,101 @@ export function Chatbot() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
-
-        @keyframes chronicleBounce {
-          0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
-          30% { transform: translateY(-4px); opacity: 1; }
+        @keyframes ufBounce {
+          0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+          30% { transform: translateY(-5px); opacity: 1; }
         }
-
-        @keyframes inkPulse {
-          0%, 100% { opacity: 0.06; transform: scale(1); }
-          50% { opacity: 0.18; transform: scale(1.08); }
+        @keyframes ufPulse {
+          0%, 100% { opacity: 0.15; transform: scale(1); }
+          50% { opacity: 0.35; transform: scale(1.06); }
         }
-
-        @keyframes pageIn {
-          from { opacity: 0; transform: translateY(2px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes goldSpin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-
-        .chronicle-scroll::-webkit-scrollbar { width: 2px; }
-        .chronicle-scroll::-webkit-scrollbar-thumb { background: #C8C2B4; }
-        .chronicle-scroll::-webkit-scrollbar-track { background: transparent; }
-
-        .prompt-chip:hover {
-          background: #1A1208 !important;
-          border-color: #1A1208 !important;
-          color: white !important;
-        }
-        .prompt-chip:hover .chip-cat {
-          color: #D97706 !important;
-        }
-        .prompt-chip:hover .chip-arrow {
-          opacity: 1 !important;
-          color: #D97706 !important;
-        }
-
-        .forge-input:focus {
-          outline: none;
-          border-color: #1A1208 !important;
-          box-shadow: inset 0 0 0 1px #1A1208;
-        }
-
-        .send-btn:not([disabled]):hover {
-          background: #D97706 !important;
-          color: white !important;
-        }
-
-        .forge-fab-img {
-          transition: transform 0.3s ease;
-        }
-        .forge-fab:hover .forge-fab-img {
-          transform: scale(1.04);
-        }
+        @keyframes ufSpin { to { transform: rotate(360deg); } }
+        .uf-chat-scroll::-webkit-scrollbar { width: 2px; }
+        .uf-chat-scroll::-webkit-scrollbar-thumb { background: #E2DDD4; }
+        .uf-prompt:hover { background: #0D0D0D !important; border-color: #0D0D0D !important; }
+        .uf-prompt:hover .pcat { color: #C59A2E !important; }
+        .uf-prompt:hover .plabel { color: #F0EBE0 !important; }
+        .uf-prompt:hover .parrow { opacity: 1 !important; }
+        .uf-send:not([disabled]):hover { background: #C59A2E !important; border-color: #C59A2E !important; }
+        .uf-input:focus { outline: none; border-color: #0D0D0D !important; box-shadow: inset 0 0 0 1px #0D0D0D; }
       `}</style>
 
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+      <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 50, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
 
-        {/* ═══════════════════════════════════════════════════
-            CHAT WINDOW — Broadsheet newspaper panel
-        ═══════════════════════════════════════════════════ */}
+        {/* Chat window */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
               role="dialog"
               aria-modal="true"
-              aria-label="Forge — UpForge AI startup analyst"
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              aria-label="Atlas — UpForge Global Intelligence"
+              initial={{ opacity: 0, y: 16, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-              className="mb-3 flex flex-col overflow-hidden"
+              exit={{ opacity: 0, y: 16, scale: 0.96 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
               style={{
-                width: "min(92vw, 364px)",
-                height: minimized ? "auto" : "min(580px, 80vh)",
-                background: "#F3EFE5",
-                border: "2px solid #1A1208",
-                boxShadow: "6px 6px 0px #1A1208, 0 24px 64px rgba(0,0,0,0.22)",
+                marginBottom: 12,
+                width: "min(92vw, 368px)",
+                height: minimized ? "auto" : "min(560px, 80vh)",
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+                background: "#FFFCF7",
+                border: "1px solid #E2DDD4",
+                borderTop: "3px solid #C59A2E",
+                boxShadow: "0 24px 64px rgba(0,0,0,0.14), 0 4px 16px rgba(0,0,0,0.06)",
               }}
             >
+              {/* Header */}
+              <div style={{ background: "#0D0D0D", flexShrink: 0 }}>
+                {/* Gold rule */}
+                <div style={{ height: 1, background: "linear-gradient(90deg, transparent, #C59A2E 30%, #E8C547 50%, #C59A2E 70%, transparent)" }} />
 
-              {/* ── MASTHEAD ─────────────────────────────────────── */}
-              <div style={{ background: "#1A1208", flexShrink: 0 }}>
-
-                {/* Gold rule top */}
-                <div style={{ height: 2, background: "linear-gradient(90deg, #8B6914, #D97706, #E8C547, #D97706, #8B6914)" }} />
-
-                {/* Publication name row */}
-                <div
-                  className="flex items-center justify-between px-3.5 pt-2 pb-1"
-                  style={{ borderBottom: "1px solid #2E2410" }}
-                >
-                  <div>
-                    <p
-                      className="text-white leading-none tracking-tight"
-                      style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 15, fontWeight: 900 }}
-                    >
-                      The Forge
-                    </p>
-                    <p
-                      className="uppercase tracking-[0.28em] leading-none mt-0.5"
-                      style={{ fontFamily: "system-ui", fontSize: 7, color: "#D97706" }}
-                    >
-                      AI Edition · UpForge
-                    </p>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px 10px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    {/* Avatar */}
+                    <div style={{ position: "relative", flexShrink: 0 }}>
+                      <div style={{ width: 32, height: 32, overflow: "hidden", border: "1.5px solid #C59A2E" }}>
+                        <Image src="/robot.jpg" alt="Atlas" width={32} height={32} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} priority />
+                      </div>
+                      <span style={{ position: "absolute", bottom: -1, right: -1, width: 8, height: 8, background: "#22C55E", borderRadius: "50%", border: "1.5px solid #0D0D0D" }} />
+                    </div>
+                    <div>
+                      <div style={{ fontFamily: "'Georgia', serif", fontSize: 13, fontWeight: 700, color: "#F0EBE0", lineHeight: 1 }}>
+                        Atlas
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 3 }}>
+                        <Globe size={8} style={{ color: "#C59A2E" }} />
+                        <span style={{ fontSize: 9, color: "#555", letterSpacing: "0.12em", fontFamily: "system-ui", textTransform: "uppercase" }}>
+                          UpForge Global Intelligence
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Controls */}
-                  <div className="flex items-center gap-0">
-                    <button
-                      onClick={reset}
-                      aria-label="New conversation"
-                      className="p-1.5 transition-colors"
-                      style={{ color: "rgba(255,255,255,0.25)" }}
-                      onMouseEnter={e => (e.currentTarget.style.color = "#D97706")}
-                      onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.25)")}
-                    >
-                      <RotateCcw style={{ width: 11, height: 11 }} />
-                    </button>
-                    <button
-                      onClick={() => setMinimized(v => !v)}
-                      aria-label={minimized ? "Expand" : "Minimise"}
-                      className="p-1.5 transition-colors"
-                      style={{ color: "rgba(255,255,255,0.25)" }}
-                      onMouseEnter={e => (e.currentTarget.style.color = "#D97706")}
-                      onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.25)")}
-                    >
-                      <Minus style={{ width: 11, height: 11 }} />
-                    </button>
-                    <button
-                      onClick={() => setIsOpen(false)}
-                      aria-label="Close"
-                      className="p-1.5 transition-colors"
-                      style={{ color: "rgba(255,255,255,0.25)" }}
-                      onMouseEnter={e => (e.currentTarget.style.color = "#D97706")}
-                      onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.25)")}
-                    >
-                      <X style={{ width: 11, height: 11 }} />
-                    </button>
+                  <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    {[
+                      { Icon: RotateCcw, label: "Reset", action: reset },
+                      { Icon: Minus, label: minimized ? "Expand" : "Minimise", action: () => setMinimized(v => !v) },
+                      { Icon: X, label: "Close", action: () => setIsOpen(false) },
+                    ].map(({ Icon, label, action }) => (
+                      <button
+                        key={label}
+                        onClick={action}
+                        aria-label={label}
+                        style={{ padding: 6, color: "rgba(255,255,255,0.25)", cursor: "pointer", background: "none", border: "none", transition: "color 0.15s", display: "flex" }}
+                        onMouseEnter={e => (e.currentTarget.style.color = "#C59A2E")}
+                        onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.25)")}
+                      >
+                        <Icon style={{ width: 12, height: 12 }} />
+                      </button>
+                    ))}
                   </div>
                 </div>
-
-                {/* Byline / edition row */}
-                <EditionRule />
-
-                {/* Avatar + headline row */}
-                <div className="flex items-center gap-3 px-3.5 py-2.5">
-                  {/* Forge portrait */}
-                  <div className="relative flex-shrink-0">
-                    <div
-                      className="overflow-hidden"
-                      style={{
-                        width: 36,
-                        height: 36,
-                        border: "1.5px solid #D97706",
-                        background: "#111",
-                      }}
-                    >
-                      <Image
-                        src="/robot.jpg"
-                        alt="Forge AI"
-                        width={36}
-                        height={36}
-                        className="w-full h-full object-cover object-top"
-                        priority
-                      />
-                    </div>
-                    {/* Online dot */}
-                    <span
-                      className="absolute -bottom-0.5 -right-0.5 rounded-full border"
-                      style={{ width: 8, height: 8, background: "#22C55E", borderColor: "#1A1208", borderWidth: 1.5 }}
-                    />
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <p
-                      className="text-white leading-none"
-                      style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 12, fontWeight: 700 }}
-                    >
-                      Forge — India Startup AI
-                    </p>
-                    <p
-                      className="mt-0.5 leading-snug"
-                      style={{ fontFamily: "system-ui", fontSize: 9, color: "rgba(255,255,255,0.35)", letterSpacing: "0.06em" }}
-                    >
-                      Startup analyst · Real-time insight · Free registry guide
-                    </p>
-                  </div>
-                </div>
-
               </div>
-              {/* end masthead */}
 
-              {/* ── COLLAPSIBLE BODY ─────────────────────────────── */}
+              {/* Collapsible body */}
               <AnimatePresence initial={false}>
                 {!minimized && (
                   <motion.div
@@ -524,24 +338,19 @@ export function Chatbot() {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2, ease: "easeInOut" }}
-                    className="flex flex-col flex-1 overflow-hidden"
-                    style={{ minHeight: 0 }}
+                    transition={{ duration: 0.18 }}
+                    style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden", minHeight: 0 }}
                   >
-
-                    {/* ── MESSAGES ───────────────────────────────── */}
+                    {/* Messages */}
                     <div
                       ref={scrollRef}
                       aria-live="polite"
-                      className="chronicle-scroll flex-1 overflow-y-auto px-3.5 py-4 space-y-3"
-                      style={{ background: "#F3EFE5" }}
+                      className="uf-chat-scroll"
+                      style={{ flex: 1, overflowY: "auto", padding: "16px 14px", display: "flex", flexDirection: "column", gap: 12, background: "#FDFAF5" }}
                     >
-                      {/* Dateline decorative */}
-                      <div
-                        className="flex items-center justify-center mb-1"
-                        style={{ fontFamily: "system-ui", fontSize: 8, color: "#BBB0A0", letterSpacing: "0.2em" }}
-                      >
-                        ──── MARCH 2026 · INDIA EDITION ────
+                      {/* Date stamp */}
+                      <div style={{ textAlign: "center", fontSize: 9, color: "#CCC", letterSpacing: "0.18em", fontFamily: "system-ui", textTransform: "uppercase", marginBottom: 4 }}>
+                        {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })} · Global Edition
                       </div>
 
                       {msgs.map((m, idx) => (
@@ -549,348 +358,232 @@ export function Chatbot() {
                       ))}
 
                       {loading && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 4 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="flex items-end gap-2"
-                        >
-                          <div
-                            className="flex-shrink-0 overflow-hidden"
-                            style={{ width: 22, height: 22, background: "#1A1208" }}
-                          >
-                            <Image src="/robot.jpg" alt="" width={22} height={22} className="w-full h-full object-cover object-top" />
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: "flex", alignItems: "flex-end", gap: 8 }}>
+                          <div style={{ width: 22, height: 22, overflow: "hidden", border: "1px solid #E2DDD4", flexShrink: 0 }}>
+                            <Image src="/robot.jpg" alt="" width={22} height={22} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} />
                           </div>
-                          <div
-                            style={{
-                              background: "#FDFCF9",
-                              border: "1px solid #DDD8CE",
-                              borderLeft: "2px solid #D97706",
-                            }}
-                          >
+                          <div style={{ background: "#FFFFFF", border: "1px solid #E8E3DB", borderLeft: "2px solid #C59A2E" }}>
                             <TypingDots />
                           </div>
                         </motion.div>
                       )}
                     </div>
 
-                    {/* ── QUICK PROMPTS (first message only) ─────── */}
+                    {/* Quick prompts */}
                     {msgs.length === 1 && (
-                      <div
-                        className="px-3.5 pt-3 pb-3 flex-shrink-0"
-                        style={{
-                          borderTop: "1px solid #C8C2B4",
-                          background: "#EDE9DF",
-                        }}
-                      >
-                        {/* Column head */}
-                        <p
-                          className="uppercase tracking-[0.28em] mb-2"
-                          style={{ fontFamily: "system-ui", fontSize: 8, color: "#AAA09A", fontWeight: 700 }}
-                        >
-                          Try asking Forge —
-                        </p>
-
-                        <div className="grid grid-cols-1 gap-1.5">
+                      <div style={{ padding: "12px 14px", borderTop: "1px solid #E8E3DB", background: "#F5F1EA", flexShrink: 0 }}>
+                        <div style={{ fontSize: 8, letterSpacing: "0.22em", textTransform: "uppercase", color: "#AAA", fontFamily: "system-ui", fontWeight: 700, marginBottom: 8 }}>
+                          Explore —
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                           {PROMPTS.map((p, idx) => (
                             <button
                               key={idx}
                               onClick={() => send(p.q)}
-                              className="prompt-chip text-left flex items-center justify-between px-2.5 py-2 transition-all duration-150"
+                              className="uf-prompt"
                               style={{
+                                textAlign: "left",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                padding: "8px 10px",
                                 background: "white",
-                                border: "1px solid #D8D2C4",
-                                fontFamily: "'Georgia', Times New Roman, serif",
+                                border: "1px solid #E2DDD4",
+                                cursor: "pointer",
+                                transition: "all 0.15s",
                               }}
                             >
-                              <div className="flex items-center gap-2 min-w-0">
-                                <span
-                                  className="chip-cat flex-shrink-0 uppercase tracking-wider font-black"
-                                  style={{ fontFamily: "system-ui", fontSize: 7, color: "#D97706" }}
-                                >
+                              <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                                <span className="pcat" style={{ fontSize: 7.5, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.18em", color: "#C59A2E", fontFamily: "system-ui", flexShrink: 0, transition: "color 0.15s" }}>
                                   {p.cat}
                                 </span>
-                                <span
-                                  className="text-[11px] text-[#2C2010] truncate"
-                                  style={{ fontFamily: "'Georgia', serif" }}
-                                >
+                                <span className="plabel" style={{ fontSize: 11.5, color: "#333", fontFamily: "'Georgia', serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", transition: "color 0.15s" }}>
                                   {p.q}
                                 </span>
                               </div>
-                              <ChevronRight
-                                className="chip-arrow flex-shrink-0 opacity-0 transition-opacity"
-                                style={{ width: 10, height: 10, color: "#D97706" }}
-                              />
+                              <ChevronRight className="parrow" style={{ width: 10, height: 10, color: "#C59A2E", opacity: 0, flexShrink: 0, transition: "opacity 0.15s" }} />
                             </button>
                           ))}
                         </div>
                       </div>
                     )}
 
-                    {/* ── INPUT BAR ──────────────────────────────── */}
-                    <div
-                      className="px-3.5 py-3 flex-shrink-0"
-                      style={{
-                        borderTop: "2px solid #1A1208",
-                        background: "#F3EFE5",
-                      }}
-                    >
-                      {/* Column rule above input */}
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="flex-1 h-px" style={{ background: "#C8C2B4" }} />
-                        <span style={{ fontFamily: "system-ui", fontSize: 7, color: "#C8C2B4", letterSpacing: "0.2em" }}>
-                          YOUR QUERY
-                        </span>
-                        <div className="flex-1 h-px" style={{ background: "#C8C2B4" }} />
-                      </div>
-
-                      <div className="flex items-stretch gap-2">
+                    {/* Input */}
+                    <div style={{ padding: "12px 14px", borderTop: "1px solid #E2DDD4", background: "#FFFCF7", flexShrink: 0 }}>
+                      <div style={{ display: "flex", alignItems: "stretch", gap: 8 }}>
                         <input
                           ref={inputRef}
                           value={input}
                           disabled={loading}
                           onChange={e => setInput(e.target.value)}
-                          onKeyDown={e => {
-                            if (e.key === "Enter" && !e.shiftKey) {
-                              e.preventDefault()
-                              send()
-                            }
-                          }}
-                          placeholder="Ask about Indian startups…"
-                          aria-label="Message Forge"
-                          className="forge-input flex-1 px-3 py-2 text-[11.5px] text-[#1A1208] placeholder-[#BBB0A0] transition-all"
+                          onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send() } }}
+                          placeholder="Ask about global startups…"
+                          aria-label="Message Atlas"
+                          className="uf-input"
                           style={{
-                            fontFamily: "'Georgia', Times New Roman, serif",
-                            background: "white",
-                            border: "1px solid #C8C2B4",
+                            flex: 1,
+                            padding: "9px 12px",
+                            fontSize: 12,
+                            fontFamily: "'Georgia', serif",
+                            background: "#FDFAF5",
+                            border: "1px solid #E2DDD4",
+                            color: "#0D0D0D",
                             outline: "none",
+                            transition: "border-color 0.15s",
                           }}
                         />
                         <button
                           onClick={() => send()}
                           disabled={loading || !input.trim()}
-                          aria-label="Send message"
-                          className="send-btn flex items-center justify-center flex-shrink-0 transition-all duration-150"
+                          aria-label="Send"
+                          className="uf-send"
                           style={{
-                            width: 36,
-                            background: loading || !input.trim() ? "#EDE9DF" : "#1A1208",
-                            color: loading || !input.trim() ? "#C8C2B4" : "white",
-                            border: "1px solid",
-                            borderColor: loading || !input.trim() ? "#D8D2C4" : "#1A1208",
+                            width: 38,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            background: loading || !input.trim() ? "#F0EBE3" : "#0D0D0D",
+                            color: loading || !input.trim() ? "#CCC" : "white",
+                            border: `1px solid ${loading || !input.trim() ? "#E2DDD4" : "#0D0D0D"}`,
                             cursor: loading || !input.trim() ? "not-allowed" : "pointer",
+                            transition: "all 0.15s",
+                            flexShrink: 0,
                           }}
                         >
                           {loading
-                            ? <Loader2 style={{ width: 13, height: 13, animation: "spin 1s linear infinite" }} />
+                            ? <Loader2 style={{ width: 13, height: 13, animation: "ufSpin 1s linear infinite" }} />
                             : <Send style={{ width: 13, height: 13 }} />
                           }
                         </button>
                       </div>
-
-                      {/* Footer caption line */}
-                      <div className="flex items-center justify-between mt-2">
-                        <span
-                          style={{ fontFamily: "system-ui", fontSize: 8, color: "#BBB0A0", letterSpacing: "0.1em" }}
-                        >
-                          Forge · UpForge AI · No paid placements
+                      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 7 }}>
+                        <span style={{ fontSize: 9, color: "#CCC", fontFamily: "system-ui", letterSpacing: "0.1em" }}>
+                          Atlas · UpForge · No paid placements
                         </span>
-                        <span
-                          style={{ fontFamily: "system-ui", fontSize: 8, color: "#BBB0A0" }}
-                        >
-                          ⏎ send
-                        </span>
+                        <span style={{ fontSize: 9, color: "#CCC", fontFamily: "system-ui" }}>⏎ send</span>
                       </div>
                     </div>
-
                   </motion.div>
                 )}
               </AnimatePresence>
-
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* ═══════════════════════════════════════════════════
-            TOOLTIP — editorial callout box
-        ═══════════════════════════════════════════════════ */}
+        {/* Tooltip */}
         <AnimatePresence>
           {!isOpen && showTooltip && msgs.length === 1 && (
             <motion.div
-              initial={{ opacity: 0, x: 8, scale: 0.95 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: 8, scale: 0.95 }}
-              transition={{ duration: 0.22, ease: "easeOut" }}
-              className="absolute pointer-events-none"
-              style={{ right: 62, bottom: 12 }}
+              initial={{ opacity: 0, x: 8 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 8 }}
+              transition={{ duration: 0.2 }}
+              style={{ position: "absolute", right: 62, bottom: 12, pointerEvents: "none" }}
             >
-              <div
-                className="relative overflow-hidden"
-                style={{
-                  background: "#1A1208",
-                  border: "1.5px solid #2E2410",
-                  boxShadow: "3px 3px 0 #2E2410",
-                  whiteSpace: "nowrap",
-                  padding: "8px 12px",
-                }}
-              >
-                {/* Gold top rule */}
-                <div
-                  className="absolute top-0 left-0 right-0"
-                  style={{ height: 2, background: "linear-gradient(90deg, #8B6914, #E8C547, #8B6914)" }}
-                />
-
-                <div className="flex items-center gap-2.5 mt-0.5">
-                  {/* Tiny avatar */}
-                  <div
-                    className="flex-shrink-0 overflow-hidden"
-                    style={{ width: 20, height: 20, border: "1px solid #D97706", background: "#111" }}
-                  >
-                    <Image src="/robot.jpg" alt="Forge" width={20} height={20} className="w-full h-full object-cover object-top" />
-                  </div>
-
+              <div style={{
+                background: "#0D0D0D",
+                border: "1px solid #2A2520",
+                padding: "8px 14px",
+                whiteSpace: "nowrap",
+                boxShadow: "3px 3px 0 #2A2520",
+                borderTop: "2px solid #C59A2E",
+                position: "relative",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <Globe size={10} style={{ color: "#C59A2E" }} />
                   <div>
-                    <p
-                      className="leading-none text-white"
-                      style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 11, fontWeight: 700 }}
-                    >
-                      Ask <span style={{ color: "#E8C547" }}>Forge</span>
-                    </p>
-                    <p
-                      className="mt-0.5 leading-none"
-                      style={{ fontFamily: "system-ui", fontSize: 7.5, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em" }}
-                    >
-                      India Startup AI · Free
-                    </p>
+                    <div style={{ fontFamily: "'Georgia', serif", fontSize: 11, fontWeight: 700, color: "#F0EBE0" }}>
+                      Ask <span style={{ color: "#C59A2E" }}>Atlas</span>
+                    </div>
+                    <div style={{ fontSize: 8, color: "#555", letterSpacing: "0.1em", fontFamily: "system-ui", marginTop: 2 }}>
+                      Global Startup Intelligence · Free
+                    </div>
                   </div>
                 </div>
-
-                {/* Arrow pointing right */}
-                <div
-                  className="absolute"
-                  style={{
-                    right: -6,
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    width: 0,
-                    height: 0,
-                    borderTop: "5px solid transparent",
-                    borderBottom: "5px solid transparent",
-                    borderLeft: "6px solid #1A1208",
-                  }}
-                />
+                {/* Arrow */}
+                <div style={{
+                  position: "absolute",
+                  right: -6, top: "50%", transform: "translateY(-50%)",
+                  width: 0, height: 0,
+                  borderTop: "5px solid transparent",
+                  borderBottom: "5px solid transparent",
+                  borderLeft: "6px solid #0D0D0D",
+                }} />
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* ═══════════════════════════════════════════════════
-            FAB — Broadsheet-inspired floating action button
-        ═══════════════════════════════════════════════════ */}
+        {/* FAB */}
         <button
           onClick={() => { setIsOpen(v => !v); setMinimized(false); setShowTooltip(false) }}
-          aria-label="Open Forge — UpForge AI startup analyst"
-          className="forge-fab relative focus:outline-none"
-          style={{
-            width: 54,
-            height: 54,
-          }}
+          aria-label="Open Atlas — UpForge Global Intelligence"
+          style={{ position: "relative", width: 52, height: 52, flexShrink: 0 }}
         >
-          {/* Outer gold border ring — slow rotate */}
-          <span
-            className="absolute inset-[-3px]"
-            style={{
-              border: "1px solid rgba(217,119,6,0.3)",
-              animation: "goldSpin 16s linear infinite",
-            }}
-          />
+          {/* Pulse ring */}
+          <span style={{
+            position: "absolute",
+            inset: -6,
+            border: "1px solid rgba(197,154,46,0.2)",
+            animation: "ufPulse 3s ease-in-out infinite",
+            pointerEvents: "none",
+          }} />
 
-          {/* Pulse halo */}
-          <span
-            className="absolute inset-[-8px]"
-            style={{
-              border: "1px solid rgba(217,119,6,0.12)",
-              animation: "inkPulse 3.5s ease-in-out infinite",
-            }}
-          />
-
-          {/* Button face */}
-          <div
-            className="absolute inset-0 z-10 overflow-hidden"
-            style={{
-              background: "#1A1208",
-              border: "2px solid #1A1208",
-              boxShadow: "3px 3px 0 #D97706, 0 8px 28px rgba(0,0,0,0.35)",
-            }}
-          >
+          {/* Face */}
+          <div style={{
+            position: "absolute",
+            inset: 0,
+            background: "#0D0D0D",
+            border: "1.5px solid #C59A2E",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.3), 2px 2px 0 #C59A2E",
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+          }}>
             <AnimatePresence mode="wait">
               {isOpen ? (
                 <motion.div
                   key="close"
-                  initial={{ opacity: 0, rotate: -45, scale: 0.7 }}
-                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                  exit={{ opacity: 0, rotate: 45, scale: 0.7 }}
-                  transition={{ duration: 0.16 }}
-                  className="w-full h-full flex items-center justify-center"
+                  initial={{ opacity: 0, scale: 0.7 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.7 }}
+                  transition={{ duration: 0.15 }}
+                  style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}
                 >
                   <X style={{ width: 16, height: 16, color: "white" }} />
                 </motion.div>
               ) : (
                 <motion.div
                   key="open"
-                  initial={{ opacity: 0, scale: 0.85 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.85 }}
-                  transition={{ duration: 0.16 }}
-                  className="w-full h-full flex flex-col"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  style={{ flex: 1, display: "flex", flexDirection: "column" }}
                 >
-                  {/* Portrait fills top */}
-                  <div className="flex-1 overflow-hidden forge-fab-img">
-                    <Image
-                      src="/robot.jpg"
-                      alt="Forge AI"
-                      width={54}
-                      height={46}
-                      className="w-full h-full object-cover object-top"
-                      priority
-                    />
+                  <div style={{ flex: 1, overflow: "hidden" }}>
+                    <Image src="/robot.jpg" alt="Atlas AI" width={52} height={44} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} priority />
                   </div>
-                  {/* Gold label strip */}
-                  <div
-                    className="flex-shrink-0 flex items-center justify-center"
-                    style={{ height: 13, background: "#D97706" }}
-                  >
-                    <span
-                      style={{
-                        fontFamily: "system-ui",
-                        fontSize: 6.5,
-                        fontWeight: 900,
-                        color: "#1A1208",
-                        letterSpacing: "0.2em",
-                      }}
-                    >
-                      FORGE
-                    </span>
+                  <div style={{ height: 12, background: "#C59A2E", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <span style={{ fontSize: 6, fontWeight: 900, color: "#0D0D0D", letterSpacing: "0.22em", fontFamily: "system-ui" }}>ATLAS</span>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
 
-          {/* Unread badge */}
+          {/* Badge */}
           <AnimatePresence>
             {!isOpen && badge > 0 && (
               <motion.span
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 exit={{ scale: 0 }}
-                className="absolute -top-1.5 -right-1.5 z-20 flex items-center justify-center font-black"
                 style={{
-                  minWidth: 18,
-                  height: 18,
-                  background: "#D97706",
-                  color: "#1A1208",
-                  fontSize: 8,
-                  fontFamily: "system-ui",
-                  border: "1.5px solid #1A1208",
+                  position: "absolute", top: -4, right: -4, zIndex: 10,
+                  minWidth: 16, height: 16,
+                  background: "#C59A2E", color: "#0D0D0D",
+                  fontSize: 8, fontFamily: "system-ui", fontWeight: 900,
+                  border: "1.5px solid white",
+                  display: "flex", alignItems: "center", justifyContent: "center",
                   padding: "0 3px",
                 }}
               >
@@ -899,7 +592,6 @@ export function Chatbot() {
             )}
           </AnimatePresence>
         </button>
-
       </div>
     </>
   )
