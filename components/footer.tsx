@@ -1,4 +1,3 @@
-// components/footer.tsx
 "use client";
 
 import Link from "next/link";
@@ -6,44 +5,44 @@ import Image from "next/image";
 import { useState } from "react";
 import {
   ArrowRight, BadgeCheck, Shield, Globe,
-  Linkedin, Twitter, Instagram, Youtube,
+  Linkedin, Twitter, Instagram, Youtube, ShieldCheck,
 } from "lucide-react";
 
 const FOOTER_COLUMNS = [
   {
     heading: "Platform",
     links: [
-      { label: "Startup Registry", href: "/startup" },
-      { label: "Indian Unicorns", href: "/indian-unicorns" },
-      { label: "Verify UFRN", href: "/verify" },
-      { label: "Reports", href: "/reports" },
+      { label: "Startup Registry",  href: "/startup"         },
+      { label: "Indian Unicorns",   href: "/indian-unicorns" },
+      { label: "Verify UFRN",       href: "/verify"          },
+      { label: "Reports",           href: "/reports"         },
     ],
   },
   {
     heading: "Resources",
     links: [
-      { label: "Founder Stories", href: "/founder-stories" },
-      { label: "Startup Research", href: "/research" },
-      { label: "Submit Startup", href: "/submit" },
-      { label: "Newsletter", href: "/newsletter" },
+      { label: "Founder Chronicle", href: "/"                },
+      { label: "Startup Research",  href: "/research"        },
+      { label: "Submit Startup",    href: "/submit"          },
+      { label: "Newsletter",        href: "/newsletter"      },
     ],
   },
   {
     heading: "Company",
     links: [
-      { label: "About", href: "/about" },
-      { label: "Contact", href: "/contact" },
-      { label: "Careers", href: "/careers" },
-      { label: "FAQs", href: "/faq" },
+      { label: "About",    href: "/about"   },
+      { label: "Contact",  href: "/contact" },
+      { label: "Careers",  href: "/careers" },
+      { label: "FAQs",     href: "/faq"     },
     ],
   },
   {
     heading: "Legal",
     links: [
-      { label: "Privacy Policy", href: "/privacy" },
-      { label: "Terms of Service", href: "/terms" },
-      { label: "Cookie Policy", href: "/cookies" },
-      { label: "Accessibility", href: "/accessibility" },
+      { label: "Privacy Policy",  href: "/privacy"       },
+      { label: "Terms of Service",href: "/terms"         },
+      { label: "Cookie Policy",   href: "/cookies"       },
+      { label: "Accessibility",   href: "/accessibility" },
     ],
   },
 ];
@@ -57,101 +56,207 @@ function NewsletterForm() {
     if (email.trim()) { setSubmitted(true); setEmail(""); }
   };
 
-  return submitted ? (
-    <div className="flex items-center gap-2 mt-3">
-      <BadgeCheck size={14} className="text-emerald-600" />
-      <span className="text-[12px] text-[#6B6B6B]">Subscribed to UpForge Intel</span>
-    </div>
-  ) : (
-    <form onSubmit={handleSubmit} className="flex mt-3 max-w-[320px]">
+  if (submitted) {
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "12px" }}>
+        <BadgeCheck size={14} style={{ color: "#2d7a3a", flexShrink: 0 }} />
+        <span style={{ fontFamily: "var(--uf-sans)", fontSize: "12px", color: "var(--uf-ink3)" }}>
+          Subscribed to UpForge Intel
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} style={{ display: "flex", marginTop: "12px" }}>
       <input
-        type="email" required placeholder="your@email.com" value={email}
+        type="email"
+        required
+        placeholder="your@email.com"
+        value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="flex-1 px-3 py-2 text-[12px] border border-[#D8D2C8] border-r-0 bg-white outline-none"
+        style={{
+          flex: 1,
+          padding: "8px 12px",
+          fontFamily: "var(--uf-sans)",
+          fontSize: "12px",
+          border: "1px solid var(--uf-rule)",
+          borderRight: "none",
+          background: "var(--uf-paper)",
+          color: "var(--uf-ink)",
+          outline: "none",
+          minWidth: 0,
+        }}
       />
-      <button type="submit" className="px-4 py-2 text-[11px] font-semibold bg-[#111111] text-white hover:bg-[#333333] flex items-center gap-1">
-        Subscribe <ArrowRight size={11} />
+      <button
+        type="submit"
+        style={{
+          padding: "8px 14px",
+          fontFamily: "var(--uf-sans)",
+          fontSize: "10px",
+          fontWeight: 700,
+          letterSpacing: ".1em",
+          textTransform: "uppercase",
+          background: "var(--uf-ink)",
+          color: "var(--uf-paper)",
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          gap: "5px",
+          flexShrink: 0,
+        }}
+      >
+        Subscribe <ArrowRight size={10} />
       </button>
     </form>
   );
 }
 
-const TRUST_ITEMS = [
-  { icon: Shield,    label: "Independent Platform" },
-  { icon: BadgeCheck, label: "Verified Listings" },
-  { icon: Globe,     label: "Open Data Registry" },
-];
-
 export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#EFE9DF] border-t border-[#D8D2C8]">
+    <footer style={{ background: "var(--uf-paper2)", borderTop: "2px solid var(--uf-ink)" }}>
 
-      {/* TRUST STRIP */}
-      <div className="border-b border-[#D8D2C8] bg-[#F6F3ED]">
-        <div className="max-w-[1400px] mx-auto px-6 py-3 flex flex-wrap gap-6 justify-center lg:justify-between">
-          {TRUST_ITEMS.map(({ icon: Icon, label }) => (
-            <div key={label} className="flex items-center gap-2">
-              <Icon size={13} className="text-[#C59A2E]" />
-              <span className="text-[11px] text-[#6B6B6B] tracking-wider uppercase">{label}</span>
+      {/* ── TRUST STRIP ── */}
+      <div style={{ background: "var(--uf-paper)", borderBottom: "1px solid var(--uf-rule-light)" }}>
+        <div
+          style={{
+            maxWidth: "1440px",
+            margin: "0 auto",
+            padding: "8px 24px",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "20px",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {[
+            { icon: Shield,     label: "Independent Platform" },
+            { icon: BadgeCheck, label: "Manually Verified Listings" },
+            { icon: Globe,      label: "Open Data Registry · upforge.org" },
+            { icon: ShieldCheck,label: "UFRN System · Proof of Existence" },
+          ].map(({ icon: Icon, label }) => (
+            <div key={label} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <Icon size={12} style={{ color: "var(--uf-gold)", flexShrink: 0 }} />
+              <span
+                style={{
+                  fontFamily: "var(--uf-sans)",
+                  fontSize: "10px",
+                  fontWeight: 500,
+                  letterSpacing: ".14em",
+                  textTransform: "uppercase",
+                  color: "var(--uf-ink4)",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {label}
+              </span>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-6">
-
-        {/* MAIN GRID */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-10 gap-y-12 py-14 border-b border-[#D8D2C8]">
-
-          {/* BRAND */}
-          <div className="col-span-2 lg:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="relative w-7 h-7 overflow-hidden">
-                <Image src="/logo.jpg" alt="UpForge" fill className="object-cover" />
+      {/* ── MAIN GRID ── */}
+      <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 24px" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "2fr repeat(4, 1fr)",
+            gap: "40px 32px",
+            padding: "48px 0 40px",
+            borderBottom: "1px solid var(--uf-rule-light)",
+          }}
+          className="footer-grid"
+        >
+          {/* BRAND COLUMN */}
+          <div>
+            <Link href="/" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
+              <div style={{ position: "relative", width: "30px", height: "30px", overflow: "hidden", flexShrink: 0 }}>
+                <Image src="/logo.jpg" alt="UpForge" fill style={{ objectFit: "cover" }} />
               </div>
-              <span className="text-[22px] font-bold text-[#111111]" style={{ fontFamily: "'Playfair Display','Georgia',serif" }}>
+              <span
+                style={{
+                  fontFamily: "var(--uf-serif)",
+                  fontSize: "22px",
+                  fontWeight: 900,
+                  color: "var(--uf-ink)",
+                  letterSpacing: "-.02em",
+                }}
+              >
                 UpForge
               </span>
             </Link>
 
-            <p className="text-[13px] text-[#6B6B6B] leading-relaxed max-w-[280px]">
-              India's independent startup intelligence platform —
-              tracking emerging companies, founder insights,
-              and ecosystem trends.
+            <p
+              style={{
+                fontFamily: "var(--uf-body)",
+                fontSize: "14px",
+                lineHeight: 1.7,
+                color: "var(--uf-ink3)",
+                maxWidth: "280px",
+                marginBottom: "16px",
+                fontStyle: "italic",
+              }}
+            >
+              India's independent startup intelligence platform — tracking emerging companies, founder insights, and ecosystem trends with verified data.
             </p>
 
-            {/* Dual-domain callout — newspaper-style, minimal */}
-            <div className="mt-5 flex flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] uppercase tracking-widest text-[#AAA]">India Hub</span>
-                <span className="text-[10px] text-[#C59A2E] font-mono">upforge.in</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] uppercase tracking-widest text-[#AAA]">Global Registry</span>
-                <a
-                  href="https://www.upforge.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[10px] text-[#C59A2E] font-mono hover:underline"
-                >
-                  upforge.org
-                </a>
-              </div>
+            {/* Dual-domain callout */}
+            <div style={{ marginBottom: "18px", display: "flex", flexDirection: "column", gap: "4px" }}>
+              {[
+                { label: "India Hub", val: "upforge.in", href: null },
+                { label: "Global Registry", val: "upforge.org", href: "https://www.upforge.org" },
+              ].map(({ label, val, href }) => (
+                <div key={label} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span style={{ fontFamily: "var(--uf-sans)", fontSize: "9px", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--uf-ink4)" }}>
+                    {label}
+                  </span>
+                  {href ? (
+                    <a href={href} target="_blank" rel="noopener noreferrer"
+                      style={{ fontFamily: "var(--uf-sans)", fontSize: "10px", color: "var(--uf-gold)", fontWeight: 600, textDecoration: "none" }}>
+                      {val}
+                    </a>
+                  ) : (
+                    <span style={{ fontFamily: "var(--uf-sans)", fontSize: "10px", color: "var(--uf-gold)", fontWeight: 600 }}>
+                      {val}
+                    </span>
+                  )}
+                </div>
+              ))}
             </div>
 
             <Link
               href="/submit"
-              className="inline-flex items-center gap-2 mt-5 text-[11px] font-semibold bg-[#111111] text-white px-4 py-2 hover:bg-[#333333]"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "9px 16px",
+                background: "var(--uf-ink)",
+                color: "var(--uf-paper)",
+                fontFamily: "var(--uf-sans)",
+                fontSize: "10px",
+                fontWeight: 700,
+                letterSpacing: ".12em",
+                textTransform: "uppercase",
+                textDecoration: "none",
+                marginBottom: "24px",
+              }}
             >
-              List Your Startup <ArrowRight size={11} />
+              List Your Startup <ArrowRight size={10} />
             </Link>
 
-            {/* NEWSLETTER */}
-            <div className="mt-7">
-              <p className="text-[10px] uppercase tracking-widest font-semibold">UpForge Intel</p>
-              <p className="text-[12px] text-[#6B6B6B] mt-1">Weekly startup insights and ecosystem research.</p>
+            {/* Newsletter */}
+            <div>
+              <p style={{ fontFamily: "var(--uf-sans)", fontSize: "9px", fontWeight: 700, letterSpacing: ".2em", textTransform: "uppercase", color: "var(--uf-ink)" }}>
+                UpForge Intel
+              </p>
+              <p style={{ fontFamily: "var(--uf-sans)", fontSize: "12px", color: "var(--uf-ink4)", marginTop: "4px" }}>
+                Weekly startup insights and ecosystem research.
+              </p>
               <NewsletterForm />
             </div>
           </div>
@@ -159,75 +264,163 @@ export function Footer() {
           {/* NAV COLUMNS */}
           {FOOTER_COLUMNS.map(({ heading, links }) => (
             <div key={heading}>
-              <h3 className="text-[11px] uppercase tracking-widest font-semibold text-[#111111] mb-4">{heading}</h3>
-              <ul className="space-y-2">
+              <div
+                style={{
+                  fontFamily: "var(--uf-sans)",
+                  fontSize: "9px",
+                  fontWeight: 700,
+                  letterSpacing: ".22em",
+                  textTransform: "uppercase",
+                  color: "var(--uf-ink)",
+                  borderBottom: "1px solid var(--uf-rule-light)",
+                  paddingBottom: "8px",
+                  marginBottom: "14px",
+                }}
+              >
+                {heading}
+              </div>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "8px" }}>
                 {links.map(({ label, href }) => (
                   <li key={href}>
-                    <Link href={href} className="text-[13px] text-[#6B6B6B] hover:text-[#C59A2E]">{label}</Link>
+                    <Link
+                      href={href}
+                      style={{
+                        fontFamily: "var(--uf-sans)",
+                        fontSize: "13px",
+                        color: "var(--uf-ink3)",
+                        textDecoration: "none",
+                        transition: "color .15s",
+                      }}
+                      className="footer-link"
+                    >
+                      {label}
+                    </Link>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
-
         </div>
 
-        {/* GLOBAL REGISTRY BANNER */}
-        <div className="py-6 border-b border-[#D8D2C8] flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Globe size={14} className="text-[#C59A2E]" />
-            <p className="text-[12px] text-[#6B6B6B]">
+        {/* ── GLOBAL REGISTRY BANNER ── */}
+        <div
+          style={{
+            padding: "18px 0",
+            borderBottom: "1px solid var(--uf-rule-light)",
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "12px",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <Globe size={13} style={{ color: "var(--uf-gold)", flexShrink: 0 }} />
+            <p style={{ fontFamily: "var(--uf-sans)", fontSize: "12px", color: "var(--uf-ink4)" }}>
               Looking for the global startup database?{" "}
               <a
                 href="https://www.upforge.org/registry"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#C59A2E] hover:underline font-semibold"
+                style={{ color: "var(--uf-gold)", fontWeight: 600, textDecoration: "none" }}
               >
                 Visit UpForge Global Registry →
               </a>
             </p>
           </div>
-          <span className="text-[10px] uppercase tracking-widest text-[#AAA]">upforge.org</span>
+          <span style={{ fontFamily: "var(--uf-sans)", fontSize: "9px", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--uf-ink4)" }}>
+            upforge.org
+          </span>
         </div>
 
-        {/* SOCIAL */}
-        <div className="py-8 border-b border-[#D8D2C8] flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-[12px] text-[#6B6B6B]">Follow UpForge</p>
-          <div className="flex items-center gap-5">
-            <a href="https://www.linkedin.com/company/upforge-india" className="text-[#6B6B6B] hover:text-[#C59A2E]"><Linkedin size={18} /></a>
-            <a href="#" className="text-[#6B6B6B] hover:text-[#C59A2E]"><Twitter size={18} /></a>
-            <a href="#" className="text-[#6B6B6B] hover:text-[#C59A2E]"><Instagram size={18} /></a>
-            <a href="https://www.youtube.com/@upforge-ind" className="text-[#6B6B6B] hover:text-[#C59A2E]"><Youtube size={18} /></a>
+        {/* ── SOCIAL ROW ── */}
+        <div
+          style={{
+            padding: "20px 0",
+            borderBottom: "1px solid var(--uf-rule-light)",
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "16px",
+          }}
+        >
+          <p style={{ fontFamily: "var(--uf-sans)", fontSize: "10px", letterSpacing: ".14em", textTransform: "uppercase", color: "var(--uf-ink4)" }}>
+            Follow UpForge
+          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+            {[
+              { Icon: Linkedin,  href: "https://www.linkedin.com/company/upforge-india" },
+              { Icon: Twitter,   href: "#" },
+              { Icon: Instagram, href: "#" },
+              { Icon: Youtube,   href: "https://www.youtube.com/@upforge-ind" },
+            ].map(({ Icon, href }) => (
+              <a
+                key={href}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "var(--uf-ink4)", transition: "color .15s" }}
+                className="social-link"
+              >
+                <Icon size={17} />
+              </a>
+            ))}
           </div>
         </div>
 
-        {/* TRUST LINE */}
-        <div className="py-6 text-center border-b border-[#D8D2C8]">
-          <p className="text-[12px] text-[#6B6B6B]">
-            Independent Startup Intelligence Platform · Verified Data · Updated Daily ·{" "}
-            <a href="https://www.upforge.org" target="_blank" rel="noopener noreferrer" className="hover:text-[#C59A2E]">
-              Global Registry at upforge.org
-            </a>
-          </p>
-        </div>
-
-        {/* COPYRIGHT */}
-        <div className="py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        {/* ── COPYRIGHT ── */}
+        <div
+          style={{
+            padding: "20px 0",
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "12px",
+          }}
+        >
           <div>
-            <p className="text-[12px] text-[#6B6B6B]">© {year} UpForge · Built for founders and innovators</p>
-            <p className="text-[10px] text-[#AAA] mt-0.5">
+            <p style={{ fontFamily: "var(--uf-sans)", fontSize: "11px", color: "var(--uf-ink4)" }}>
+              © {year} UpForge · Independent Startup Intelligence · Verified Data · Updated Daily
+            </p>
+            <p style={{ fontFamily: "var(--uf-sans)", fontSize: "10px", color: "var(--uf-ink4)", opacity: .6, marginTop: "2px" }}>
               upforge.in (India) · upforge.org (Global Registry)
             </p>
           </div>
-          <div className="flex gap-6 text-[12px] text-[#6B6B6B]">
-            <Link href="/privacy">Privacy</Link>
-            <Link href="/terms">Terms</Link>
-            <Link href="/cookies">Cookies</Link>
+          <div style={{ display: "flex", gap: "20px" }}>
+            {[
+              { label: "Privacy", href: "/privacy" },
+              { label: "Terms",   href: "/terms"   },
+              { label: "Cookies", href: "/cookies" },
+            ].map(({ label, href }) => (
+              <Link
+                key={href}
+                href={href}
+                style={{ fontFamily: "var(--uf-sans)", fontSize: "11px", color: "var(--uf-ink4)", textDecoration: "none" }}
+                className="footer-link"
+              >
+                {label}
+              </Link>
+            ))}
           </div>
         </div>
-
       </div>
+
+      <style>{`
+        .footer-link:hover { color: var(--uf-gold) !important; }
+        .social-link:hover { color: var(--uf-gold) !important; }
+        @media (max-width: 900px) {
+          .footer-grid {
+            grid-template-columns: 1fr 1fr !important;
+          }
+        }
+        @media (max-width: 540px) {
+          .footer-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </footer>
   );
 }
