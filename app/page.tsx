@@ -1,14 +1,13 @@
-// app/page.tsx - Enhanced Server Component with Theme Support
-// Complete rewrite with psychological authority hooks from FT.com, WSJ, and global registries
-// Features: Creamy/white institutional aesthetic, theme switcher, registry-grade UI
+// app/page.tsx
+// Use your existing Navbar component instead of Header
 
 import type { Metadata } from "next"
 import { headers } from "next/headers"
 import { FounderChronicleClient } from "../components/founder-chronicle-client"
 import { FOUNDERS } from "../data/founders"
 import { createClient } from "@/lib/supabase/server"
+import { Navbar } from "@/components/navbar" 
 import { ThemeProvider } from "@/components/theme-provider"
-import { Navbar } from "@/components/navbar"
 
 // ---------------------------------------------------------------------------
 // DOMAIN DETECTION
@@ -53,11 +52,11 @@ async function getStartupCount(): Promise<number> {
       .eq("status", "approved")
     return count ?? FOUNDERS.length
   } catch (_) {}
-  return 5000 // conservative fallback
+  return 5000
 }
 
 // ---------------------------------------------------------------------------
-// METADATA (Enhanced for institutional authority)
+// METADATA
 // ---------------------------------------------------------------------------
 export async function generateMetadata(): Promise<Metadata> {
   const domain = await getDomain()
@@ -140,7 +139,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // ---------------------------------------------------------------------------
-// STRUCTURED DATA BUILDERS — all now accept liveDate and startupCount
+// STRUCTURED DATA BUILDERS
 // ---------------------------------------------------------------------------
 
 function buildCollectionPageSchema(isOrg: boolean, liveDate: string) {
@@ -365,139 +364,122 @@ function buildFAQSchema(isOrg: boolean) {
 }
 
 // ---------------------------------------------------------------------------
-// PAGE COMPONENT — SERVER RENDERED with Theme Support
+// PAGE COMPONENT — SERVER RENDERED with Navbar
 // ---------------------------------------------------------------------------
 export default async function HomePage() {
   const domain = await getDomain()
   const isOrg  = domain === "org"
 
-  // Fetch live data for schema freshness — both run in parallel
+  // Fetch live data for schema freshness
   const [liveDate, startupCount] = await Promise.all([
     getLatestDate(),
     getStartupCount(),
   ])
 
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="light"
-      enableSystem={false}
-      themes={["light", "dark"]}
-    >
-      <div className="min-h-screen bg-cream-light dark:bg-charcoal-950 transition-colors duration-300">
-        {/* Schema.org scripts - invisible authority layer */}
+    <>
+      {/* Schema.org scripts - invisible authority layer */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildOrganizationSchema(isOrg, liveDate)),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildWebsiteSchema(isOrg)) }}
+      />
+
+      {/* Dataset schema — ONLY on .org — High authority signal */}
+      {isOrg && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(buildOrganizationSchema(isOrg, liveDate)),
+            __html: JSON.stringify(buildDatasetSchema(liveDate, startupCount)),
           }}
         />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildWebsiteSchema(isOrg)) }}
-        />
+      )}
 
-        {/* Dataset schema — ONLY on .org — High authority signal */}
-        {isOrg && (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify(buildDatasetSchema(liveDate, startupCount)),
-            }}
-          />
-        )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildCollectionPageSchema(isOrg, liveDate)),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildItemListSchema(isOrg)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbSchema(isOrg)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFAQSchema(isOrg)) }}
+      />
 
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(buildCollectionPageSchema(isOrg, liveDate)),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildItemListSchema(isOrg)) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbSchema(isOrg)) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFAQSchema(isOrg)) }}
-        />
+      {/* Use your existing Navbar component */}
+      <Navbar />
 
-        {/* Header with theme switcher - institutional registry-grade */}
-        <Header domain={domain} />
+      {/* Main Content */}
+      <main className="pt-14">
+        <FounderChronicleClient
+          founders={FOUNDERS}
+          internalLinks={[
+            { l: "Startup Registry India", h: "/startup", desc: "5000+ verified startups" },
+            { l: "Submit Your Startup", h: "/submit", desc: "Get listed free" },
+            { l: "The Forge — Startup Blog", h: "/blog", desc: "Intelligence & analysis" },
+            { l: "About UpForge", h: "/about", desc: "Our mission" },
+          ]}
+          footerLinks={[
+            { l: "The Founder Chronicle", h: "/" },
+            { l: "Startup Registry", h: "/startup" },
+            { l: "Blog", h: "/blog" },
+            { l: "Submit Startup", h: "/submit" },
+            { l: "About UpForge", h: "/about" },
+          ]}
+        />
+      </main>
 
-        {/* Main Content - Enterprise Newspaper Layout */}
-        <main className="pt-24">
-          <FounderChronicleClient
-            founders={FOUNDERS}
-            internalLinks={[
-              { l: "Startup Registry India", h: "/startup", desc: "5000+ verified startups" },
-              { l: "Submit Your Startup", h: "/submit", desc: "Get listed free" },
-              { l: "The Forge — Startup Blog", h: "/blog", desc: "Intelligence & analysis" },
-              { l: "About UpForge", h: "/about", desc: "Our mission" },
-            ]}
-            footerLinks={[
-              { l: "The Founder Chronicle", h: "/" },
-              { l: "Startup Registry", h: "/startup" },
-              { l: "Blog", h: "/blog" },
-              { l: "Submit Startup", h: "/submit" },
-              { l: "About UpForge", h: "/about" },
-            ]}
-          />
-        </main>
-
-        {/* SEO CONTENT LAYER — rendered in DOM, invisible to users, read by crawlers */}
-        <div className="sr-only" aria-label="SEO content">
-          <section>
-            <h1>
-              {isOrg
-                ? "Global Startup Registry — Verified UFRN Database"
-                : "Indian Startup Founders & Unicorn Stories — The Founder Chronicle 2026"}
-            </h1>
-            <p>
-              {isOrg
-                ? "UpForge Global Registry provides verified proof of existence for startups worldwide through the UFRN system. Every startup receives a unique UpForge Registry Number upon manual verification."
-                : "Explore the verified stories of India's unicorn founders and the journeys behind their multi-billion dollar companies. Updated daily with real funding data."}
-            </p>
-            <nav aria-label="Founder profiles">
-              <ul>
-                {FOUNDERS.map((f) => (
-                  <li key={f.slug}>
-                    <a href={`/startup/${f.slug}`}>
-                      {f.name} — {f.role} at {f.company}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-            <nav aria-label="Startup categories">
-              <ul>
-                <li>
-                  <a href="/startups/fintech">Fintech Startups India</a>
+      {/* SEO CONTENT LAYER — rendered in DOM, invisible to users, read by crawlers */}
+      <div className="sr-only" aria-label="SEO content">
+        <section>
+          <h1>
+            {isOrg
+              ? "Global Startup Registry — Verified UFRN Database"
+              : "Indian Startup Founders & Unicorn Stories — The Founder Chronicle 2026"}
+          </h1>
+          <p>
+            {isOrg
+              ? "UpForge Global Registry provides verified proof of existence for startups worldwide through the UFRN system. Every startup receives a unique UpForge Registry Number upon manual verification."
+              : "Explore the verified stories of India's unicorn founders and the journeys behind their multi-billion dollar companies. Updated daily with real funding data."}
+          </p>
+          {/* Semantic internal link cluster — distributes PageRank to profiles */}
+          <nav aria-label="Founder profiles">
+            <ul>
+              {FOUNDERS.map((f) => (
+                <li key={f.slug}>
+                  <a href={`/startup/${f.slug}`}>
+                    {f.name} — {f.role} at {f.company}
+                  </a>
                 </li>
-                <li>
-                  <a href="/startups/edtech">Edtech Startups India</a>
-                </li>
-                <li>
-                  <a href="/startups/ai">AI Startups India</a>
-                </li>
-                <li>
-                  <a href="/startups/saas">SaaS Startups India</a>
-                </li>
-                <li>
-                  <a href="/startups/d2c">D2C Startups India</a>
-                </li>
-                <li>
-                  <a href="/startups/logistics">Logistics Startups India</a>
-                </li>
-              </ul>
-            </nav>
-          </section>
-        </div>
+              ))}
+            </ul>
+          </nav>
+          {/* Category internal links — help Google understand site structure */}
+          <nav aria-label="Startup categories">
+            <ul>
+              <li><a href="/startups/fintech">Fintech Startups India</a></li>
+              <li><a href="/startups/edtech">Edtech Startups India</a></li>
+              <li><a href="/startups/ai">AI Startups India</a></li>
+              <li><a href="/startups/saas">SaaS Startups India</a></li>
+              <li><a href="/startups/d2c">D2C Startups India</a></li>
+              <li><a href="/startups/logistics">Logistics Startups India</a></li>
+            </ul>
+          </nav>
+        </section>
       </div>
-    </ThemeProvider>
+    </>
   )
 }
