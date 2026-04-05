@@ -1,341 +1,255 @@
+// components/navbar.tsx
+// Institutional registry-grade navbar — FT.com / WSJ / Crunchbase authority patterns
+// Features: Creamy/white aesthetic, theme switcher, search entry point, authority badges
+
 "use client";
-import { useState, useEffect, useRef } from "react";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X, ChevronRight, ShieldCheck, Search, Moon, Sun } from "lucide-react";
+import { Menu, X, ChevronRight, ShieldCheck, Search, Sun, Moon } from "lucide-react";
+import { useTheme } from "next-themes";
 
-type NavLink = { name: string; href: string; external?: boolean };
-
-const LINKS: NavLink[] = [
-  { name: "Chronicle",        href: "/"                },
-  { name: "Startup Registry", href: "/startup"         },
-  { name: "Global Unicorns",  href: "/indian-unicorns" },
-  { name: "Reports",          href: "/reports"         },
-  { name: "The Forge",        href: "/blog"            },
-  { name: "About",            href: "/about"           },
-];
+type NavLink = {
+  name: string;
+  href: string;
+  external?: boolean;
+};
 
 export function Navbar() {
-  const [open,      setOpen]      = useState(false);
-  const [scrolled,  setScrolled]  = useState(false);
-  const [searching, setSearching] = useState(false);
-  const [theme,     setTheme]     = useState<"light" | "dark">("light");
-  const searchRef = useRef<HTMLInputElement>(null);
-  const pathname  = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
-    const stored = localStorage.getItem("uf-theme") as "light" | "dark" | null;
-    const t = stored ?? (window.matchMedia("(prefers-color-scheme:dark)").matches ? "dark" : "light");
-    applyTheme(t);
+    setMounted(true);
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 6);
-    window.addEventListener("scroll", fn, { passive: true });
-    return () => window.removeEventListener("scroll", fn);
-  }, []);
+  useEffect(() => setIsOpen(false), [pathname]);
 
-  useEffect(() => { setOpen(false); setSearching(false); }, [pathname]);
-  useEffect(() => { if (searching) searchRef.current?.focus(); }, [searching]);
+  const links: NavLink[] = [
+    { name: "Registry", href: "/registry" },
+    { name: "Chronicle", href: "/" },
+    { name: "Journal", href: "/blog" },
+    { name: "Reports", href: "/reports" },
+    { name: "About", href: "/about" },
+  ];
 
-  function applyTheme(t: "light" | "dark") {
-    setTheme(t);
-    document.documentElement.setAttribute("data-theme", t);
-    localStorage.setItem("uf-theme", t);
-  }
+  const isLinkActive = (link: NavLink) => {
+    if (link.external) return false;
+    if (link.href === "/") return pathname === "/";
+    return pathname === link.href || pathname.startsWith(link.href + "/");
+  };
 
-  const isActive = (l: NavLink) => {
-    if (l.external) return false;
-    return l.href === "/" ? pathname === "/" : pathname.startsWith(l.href);
+  const desktopClass = (link: NavLink) => {
+    const active = isLinkActive(link);
+    return `relative px-4 py-1 text-[12px] font-medium tracking-wide uppercase transition-colors border-b-2 ${
+      active
+        ? "text-ink-900 dark:text-cream-light border-ink-900 dark:border-cream-light"
+        : "text-ink-500 dark:text-ink-400 border-transparent hover:text-ink-700 dark:hover:text-cream-light hover:border-ink-300 dark:hover:border-ink-600"
+    }`;
+  };
+
+  const mobileClass = (link: NavLink) => {
+    const active = isLinkActive(link);
+    return `flex items-center justify-between px-5 py-4 text-sm font-medium tracking-wide uppercase transition-colors ${
+      active
+        ? "text-ink-900 dark:text-cream-light bg-cream-dark dark:bg-charcoal-800"
+        : "text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-cream-light hover:bg-cream-dark/60 dark:hover:bg-charcoal-800/60"
+    }`;
+  };
+
+  const renderDesktop = (link: NavLink) =>
+    link.external ? (
+      <a key={link.name} href={link.href} className={desktopClass(link)}>
+        {link.name}
+      </a>
+    ) : (
+      <Link key={link.name} href={link.href} className={desktopClass(link)}>
+        {link.name}
+      </Link>
+    );
+
+  const renderMobile = (link: NavLink) => {
+    const active = isLinkActive(link);
+    const inner = (
+      <>
+        {link.name}
+        {active && <span className="w-1.5 h-1.5 rounded-full bg-ink-900 dark:bg-cream-light" />}
+      </>
+    );
+    return link.external ? (
+      <a
+        key={link.name}
+        href={link.href}
+        onClick={() => setIsOpen(false)}
+        className={mobileClass(link)}
+      >
+        {inner}
+      </a>
+    ) : (
+      <Link
+        key={link.name}
+        href={link.href}
+        onClick={() => setIsOpen(false)}
+        className={mobileClass(link)}
+      >
+        {inner}
+      </Link>
+    );
   };
 
   return (
     <>
-      {/* ── RIBBON ── */}
-      <div className="uf-ribbon">
-        <span className="uf-ribbon-date">
-          {new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
-        </span>
-        <div className="uf-ribbon-right">
-          <span>⬡&nbsp;5,247 Verified Startups</span>
-          <span className="uf-ribbon-sep">·</span>
-          <span className="uf-ribbon-hide-sm">Open Registry&nbsp;·&nbsp;</span>
-          <span>upforge.org</span>
-        </div>
-      </div>
-
-      {/* ── MASTHEAD ── */}
-      <div className="uf-masthead">
-        <div className="uf-masthead-inner">
-          <div className="uf-mast-meta uf-mast-left">
-            <div className="uf-mast-label">Global Registry</div>
-            <div className="uf-mast-sub">upforge.org · upforge.in</div>
-          </div>
-
-          <Link href="/" className="uf-brand" aria-label="UpForge Home">
-            <div className="uf-brand-logo">
-              <Image src="/logo.jpg" alt="UpForge" fill style={{ objectFit: "cover" }} priority />
+      <header
+        className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+          scrolled
+            ? "bg-cream-light/95 dark:bg-charcoal-950/95 backdrop-blur-md border-b border-ink-200 dark:border-charcoal-800 shadow-sm"
+            : "bg-cream-light dark:bg-charcoal-950 border-b border-ink-200 dark:border-charcoal-800"
+        }`}
+      >
+        <div className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-6">
+          {/* Brand — LARGER (w-9 h-9) for institutional weight */}
+          <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
+            <div className="relative w-9 h-9 overflow-hidden rounded flex-shrink-0 bg-ink-900 dark:bg-cream-light transition-all duration-200 group-hover:scale-105">
+              <Image
+                src="/logo.jpg"
+                alt="UpForge"
+                fill
+                className="object-cover"
+              />
             </div>
-            <div className="uf-brand-wordmark">UpForge</div>
-            <div className="uf-brand-tagline">The Independent Global Startup Registry</div>
+            <div>
+              <span
+                className="text-xl tracking-tight text-ink-900 dark:text-cream-light group-hover:text-ink-700 dark:group-hover:text-cream-dark transition-colors"
+                style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
+              >
+                UpForge
+              </span>
+              {/* AUTHORITY BADGE — GLOBAL REGISTRY / INDIA REGISTRY */}
+              <span className="block text-[9px] text-ink-500 dark:text-ink-400 tracking-[0.22em] uppercase font-medium">
+                GLOBAL REGISTRY
+              </span>
+            </div>
           </Link>
 
-          <div className="uf-mast-meta uf-mast-right">
-            <div className="uf-mast-label uf-mast-gold">UFRN-Verified</div>
-            <div className="uf-mast-sub">Est. 2024 · Vol. II, Issue 14</div>
+          {/* Desktop Navigation — SPACING INCREASED (gap-2) */}
+          <nav className="hidden md:flex items-center gap-2 flex-1 justify-center">
+            {links.map(renderDesktop)}
+          </nav>
+
+          {/* Right side — Search + Theme + CTAs */}
+          <div className="hidden md:flex items-center gap-1 flex-shrink-0">
+            {/* Search — Registry expectation signal */}
+            <button
+              className="p-2 text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-cream-light transition-colors rounded-full hover:bg-ink-100 dark:hover:bg-charcoal-800"
+              aria-label="Search registry"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+
+            {/* Theme Toggle — Institutional with smooth transition */}
+            {mounted && (
+              <button
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="p-2 text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-cream-light transition-all duration-200 rounded-full hover:bg-ink-100 dark:hover:bg-charcoal-800"
+                aria-label="Toggle theme"
+              >
+                {theme === "dark" ? (
+                  <Sun className="w-5 h-5" />
+                ) : (
+                  <Moon className="w-5 h-5" />
+                )}
+              </button>
+            )}
+
+            {/* CTAs — Registry psychology: Trust CTA + Conversion CTA */}
+            <div className="flex items-center gap-2 ml-2">
+              <Link
+                href="/verify"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 border border-ink-300 dark:border-charcoal-700 bg-cream-light dark:bg-transparent text-[11px] font-semibold tracking-wider uppercase text-ink-700 dark:text-ink-300 hover:border-ink-900 dark:hover:border-cream-light hover:text-ink-900 dark:hover:text-cream-light transition-all rounded"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                Verify UFRN
+              </Link>
+              <Link
+                href="/submit"
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-ink-900 dark:bg-cream-light text-cream-light dark:text-ink-900 text-[11px] font-bold tracking-wider uppercase hover:bg-ink-800 dark:hover:bg-cream-dark transition-all rounded"
+              >
+                List Startup <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Mobile toggle */}
+          <button
+            className="md:hidden p-2 text-ink-900 dark:text-cream-light hover:bg-ink-100 dark:hover:bg-charcoal-800 transition-colors rounded"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle menu"
+          >
+            {isOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile Menu — Enhanced with theme support */}
+      <div
+        className={`fixed inset-0 z-40 md:hidden transition-all duration-200 ${
+          isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <div
+          className="absolute inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm"
+          onClick={() => setIsOpen(false)}
+        />
+        <div
+          className={`absolute top-16 left-0 right-0 bg-cream-light dark:bg-charcoal-950 border-b border-ink-200 dark:border-charcoal-800 transition-transform duration-200 ${
+            isOpen ? "translate-y-0" : "-translate-y-2"
+          }`}
+        >
+          <div className="divide-y divide-ink-100 dark:divide-charcoal-800">
+            {links.map(renderMobile)}
+          </div>
+
+          {/* Mobile CTAs + Theme toggle row */}
+          <div className="px-5 py-4 flex items-center justify-between gap-3 border-t border-ink-200 dark:border-charcoal-800">
+            <Link
+              href="/verify"
+              onClick={() => setIsOpen(false)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-ink-300 dark:border-charcoal-700 bg-cream-light dark:bg-transparent text-[11px] font-semibold tracking-wider uppercase text-ink-700 dark:text-ink-300 hover:border-ink-900 dark:hover:border-cream-light transition-colors rounded"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Verify UFRN
+            </Link>
+            <Link
+              href="/submit"
+              onClick={() => setIsOpen(false)}
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-ink-900 dark:bg-cream-light text-cream-light dark:text-ink-900 text-[11px] font-bold tracking-wider uppercase rounded"
+            >
+              List Startup <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+            {mounted && (
+              <button
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="p-2 text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-cream-light transition-all duration-200 rounded-full hover:bg-ink-100 dark:hover:bg-charcoal-800"
+                aria-label="Toggle theme"
+              >
+                {theme === "dark" ? (
+                  <Sun className="w-4 h-4" />
+                ) : (
+                  <Moon className="w-4 h-4" />
+                )}
+              </button>
+            )}
           </div>
         </div>
       </div>
-
-      {/* ── STICKY NAV ── */}
-      <header className={`uf-navbar${scrolled ? " uf-navbar--scrolled" : ""}`}>
-        <div className="uf-navbar-inner">
-          <nav className="uf-nav-links" aria-label="Main navigation">
-            {LINKS.map((l) => {
-              const active = isActive(l);
-              const El = (l.external ? "a" : Link) as any;
-              return (
-                <El
-                  key={l.name}
-                  href={l.href}
-                  className={`uf-nav-link${active ? " uf-nav-link--active" : ""}`}
-                >
-                  {l.name}
-                </El>
-              );
-            })}
-          </nav>
-
-          <div className="uf-nav-controls">
-            <button className="uf-icon-btn" onClick={() => setSearching((s) => !s)} aria-label="Search">
-              {searching ? <X size={14} /> : <Search size={14} />}
-            </button>
-            <button className="uf-icon-btn" onClick={() => applyTheme(theme === "light" ? "dark" : "light")} aria-label="Toggle theme">
-              {theme === "light" ? <Moon size={14} /> : <Sun size={14} />}
-            </button>
-            <Link href="/verify" className="uf-btn-outline uf-desktop-only">
-              <ShieldCheck size={11} /> Verify UFRN
-            </Link>
-            <Link href="/submit" className="uf-btn-solid uf-desktop-only">
-              List Startup <ChevronRight size={11} />
-            </Link>
-            <button className="uf-icon-btn uf-mobile-only" onClick={() => setOpen((o) => !o)} aria-label="Menu">
-              {open ? <X size={16} /> : <Menu size={16} />}
-            </button>
-          </div>
-        </div>
-
-        {searching && (
-          <div className="uf-search-bar">
-            <div className="uf-search-inner">
-              <Search size={14} style={{ color: "var(--uf-ink4)", flexShrink: 0 }} />
-              <input
-                ref={searchRef}
-                type="search"
-                placeholder="Search startups, founders, UFRN numbers…"
-                className="uf-search-input"
-              />
-              <kbd className="uf-kbd">ESC</kbd>
-            </div>
-          </div>
-        )}
-      </header>
-
-      {/* ── MOBILE MENU ── */}
-      {open && (
-        <div className="uf-mobile-overlay">
-          <div className="uf-mobile-backdrop" onClick={() => setOpen(false)} />
-          <div className="uf-mobile-panel">
-            {LINKS.map((l) => {
-              const active = isActive(l);
-              const El = (l.external ? "a" : Link) as any;
-              return (
-                <El
-                  key={l.name}
-                  href={l.href}
-                  onClick={() => setOpen(false)}
-                  className={`uf-mobile-link${active ? " uf-mobile-link--active" : ""}`}
-                >
-                  <span>{l.name}</span>
-                  {active && <span className="uf-mobile-dot" />}
-                </El>
-              );
-            })}
-            <div className="uf-mobile-ctas">
-              <Link href="/verify" onClick={() => setOpen(false)} className="uf-btn-outline uf-mobile-cta">
-                <ShieldCheck size={11} /> Verify UFRN
-              </Link>
-              <Link href="/submit" onClick={() => setOpen(false)} className="uf-btn-solid uf-mobile-cta">
-                List Startup <ChevronRight size={11} />
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <style>{`
-        :root {
-          --uf-serif:  'Playfair Display','Georgia','Times New Roman',serif;
-          --uf-body:   'EB Garamond','Georgia',serif;
-          --uf-sans:   'DM Sans',system-ui,sans-serif;
-          --uf-ink:    #0E0D08; --uf-ink2: #27261E; --uf-ink3: #4F4D44; --uf-ink4: #888580; --uf-ink5: #BAB7B0;
-          --uf-paper:  #F8F7F2; --uf-paper2: #F0EFE8; --uf-paper3: #E6E4DC; --uf-paper4: #D8D5CA;
-          --uf-gold:   #A87C0C; --uf-gold2: #C9980F; --uf-accent: #8B1A1A;
-          --uf-rule:       rgba(0,0,0,.13);
-          --uf-rule-light: rgba(0,0,0,.07);
-          --uf-navbar-h: 46px;
-        }
-        [data-theme="dark"] {
-          --uf-ink:    #EDE9DC; --uf-ink2: #D0CCB8; --uf-ink3: #9A9688; --uf-ink4: #625E54; --uf-ink5: #3E3B34;
-          --uf-paper:  #131210; --uf-paper2: #1A1916; --uf-paper3: #22201C; --uf-paper4: #2C2A24;
-          --uf-gold:   #D4A90E; --uf-gold2: #F0C520; --uf-accent: #D94040;
-          --uf-rule:       rgba(255,255,255,.11);
-          --uf-rule-light: rgba(255,255,255,.05);
-        }
-
-        .uf-ribbon {
-          background: var(--uf-ink); color: rgba(255,255,255,.5);
-          font-family: var(--uf-sans); font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
-          padding: 5px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
-        }
-        .uf-ribbon-right { display:flex; align-items:center; gap:7px; }
-        .uf-ribbon-sep   { opacity:.25; }
-
-        .uf-masthead { background: var(--uf-ink); padding: 0 24px; border-bottom: 1px solid rgba(255,255,255,.05); }
-        .uf-masthead-inner {
-          max-width: 1440px; margin: 0 auto;
-          display: grid; grid-template-columns: 1fr auto 1fr;
-          align-items: center; padding: 18px 0; gap: 12px;
-        }
-        .uf-mast-meta  { font-family: var(--uf-sans); font-size: 10px; line-height: 1.65; }
-        .uf-mast-left  { text-align: left; }
-        .uf-mast-right { text-align: right; }
-        .uf-mast-label { font-weight:700; letter-spacing:.18em; text-transform:uppercase; font-size:9px; color:rgba(255,255,255,.38); }
-        .uf-mast-gold  { color: var(--uf-gold2) !important; }
-        .uf-mast-sub   { color:rgba(255,255,255,.25); margin-top:2px; }
-
-        .uf-brand { display:flex; flex-direction:column; align-items:center; gap:5px; text-decoration:none; }
-        .uf-brand-logo {
-          position:relative; width:38px; height:38px; overflow:hidden; border-radius:2px; flex-shrink:0;
-          border: 1px solid rgba(255,255,255,.12);
-        }
-        .uf-brand-wordmark {
-          font-family: var(--uf-serif); font-size: clamp(28px,4.5vw,52px);
-          font-weight: 900; letter-spacing: -.02em; color: #fff; line-height: 1;
-        }
-        .uf-brand-tagline {
-          font-family: var(--uf-sans); font-size: 8.5px; letter-spacing: .26em; text-transform: uppercase;
-          color: rgba(255,255,255,.32); border-top:1px solid rgba(255,255,255,.1); border-bottom:1px solid rgba(255,255,255,.1);
-          padding: 3px 14px; white-space: nowrap;
-        }
-
-        .uf-navbar {
-          position:sticky; top:0; z-index:50;
-          background: var(--uf-paper);
-          border-top: 1px solid var(--uf-rule-light);
-          border-bottom: 2px solid var(--uf-ink);
-          transition: background .2s, box-shadow .2s;
-        }
-        .uf-navbar--scrolled {
-          background: color-mix(in srgb,var(--uf-paper) 92%,transparent);
-          backdrop-filter: blur(14px) saturate(1.4);
-          box-shadow: 0 2px 28px rgba(0,0,0,.08);
-        }
-        .uf-navbar-inner {
-          max-width:1440px; margin:0 auto; padding:0 24px;
-          display:flex; align-items:center; height:var(--uf-navbar-h);
-        }
-        .uf-nav-links { display:flex; align-items:center; flex:1; overflow:hidden; }
-        .uf-nav-link {
-          display:block; padding:0 15px; height:var(--uf-navbar-h); line-height:var(--uf-navbar-h);
-          font-family:var(--uf-sans); font-size:11px; font-weight:500; letter-spacing:.12em; text-transform:uppercase;
-          color:var(--uf-ink4); text-decoration:none;
-          border-bottom:2px solid transparent; border-right:1px solid var(--uf-rule-light);
-          white-space:nowrap; transition:color .15s, border-color .15s;
-        }
-        .uf-nav-link:hover      { color:var(--uf-ink); }
-        .uf-nav-link--active    { color:var(--uf-ink); border-bottom-color:var(--uf-ink); }
-
-        .uf-nav-controls { display:flex; align-items:center; gap:6px; padding-left:14px; flex-shrink:0; }
-        .uf-icon-btn {
-          display:inline-flex; align-items:center; justify-content:center;
-          width:32px; height:32px; background:none;
-          border:1px solid var(--uf-rule); color:var(--uf-ink4); cursor:pointer;
-          transition:border-color .15s,color .15s;
-        }
-        .uf-icon-btn:hover { border-color:var(--uf-ink); color:var(--uf-ink); }
-        .uf-btn-outline {
-          display:inline-flex; align-items:center; gap:5px; padding:6px 12px;
-          border:1px solid var(--uf-rule);
-          font-family:var(--uf-sans); font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
-          color:var(--uf-ink3); text-decoration:none; white-space:nowrap;
-          transition:border-color .15s,color .15s;
-        }
-        .uf-btn-outline:hover { border-color:var(--uf-ink); color:var(--uf-ink); }
-        .uf-btn-solid {
-          display:inline-flex; align-items:center; gap:5px; padding:6px 15px;
-          background:var(--uf-ink); border:none;
-          font-family:var(--uf-sans); font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
-          color:var(--uf-paper); text-decoration:none; white-space:nowrap; cursor:pointer;
-          transition:background .15s;
-        }
-        .uf-btn-solid:hover { background:var(--uf-ink3); }
-
-        .uf-search-bar  { background:var(--uf-paper2); border-top:1px solid var(--uf-rule-light); padding:10px 24px; }
-        .uf-search-inner {
-          max-width:1440px; margin:0 auto;
-          display:flex; align-items:center; gap:10px;
-          border:1px solid var(--uf-ink3); padding:9px 14px; background:var(--uf-paper);
-        }
-        .uf-search-input {
-          flex:1; border:none; outline:none; background:transparent;
-          font-family:var(--uf-body); font-size:15px; color:var(--uf-ink);
-        }
-        .uf-search-input::placeholder { color:var(--uf-ink5); }
-        .uf-kbd {
-          font-family:var(--uf-sans); font-size:9px; letter-spacing:.1em; text-transform:uppercase;
-          color:var(--uf-ink5); border:1px solid var(--uf-rule); padding:2px 6px; flex-shrink:0;
-        }
-
-        .uf-mobile-overlay  { position:fixed; inset:0; z-index:40; }
-        .uf-mobile-backdrop { position:absolute; inset:0; background:rgba(0,0,0,.38); backdrop-filter:blur(3px); }
-        .uf-mobile-panel    {
-          position:absolute; top:0; left:0; right:0;
-          background:var(--uf-paper); border-bottom:2px solid var(--uf-ink);
-          padding-top:136px;
-        }
-        .uf-mobile-link {
-          display:flex; align-items:center; justify-content:space-between;
-          padding:14px 20px;
-          font-family:var(--uf-sans); font-size:11px; font-weight:500; letter-spacing:.14em; text-transform:uppercase;
-          color:var(--uf-ink3); text-decoration:none;
-          border-bottom:1px solid var(--uf-rule-light);
-        }
-        .uf-mobile-link--active { color:var(--uf-ink); background:var(--uf-paper2); }
-        .uf-mobile-dot  { width:6px; height:6px; border-radius:50%; background:var(--uf-gold); flex-shrink:0; }
-        .uf-mobile-ctas { display:flex; gap:10px; padding:14px 20px; background:var(--uf-paper2); border-top:1px solid var(--uf-rule); }
-        .uf-mobile-cta  { flex:1; justify-content:center; }
-
-        .uf-desktop-only { display:inline-flex !important; }
-        .uf-mobile-only  { display:none !important; }
-
-        @media (max-width:900px) {
-          .uf-nav-links    { display:none !important; }
-          .uf-desktop-only { display:none !important; }
-          .uf-mobile-only  { display:inline-flex !important; }
-          .uf-mast-meta    { display:none !important; }
-          .uf-masthead-inner { grid-template-columns:1fr; justify-items:center; padding:14px 0; }
-        }
-        @media (max-width:480px) {
-          .uf-ribbon-hide-sm   { display:none; }
-          .uf-brand-tagline    { display:none; }
-          .uf-brand-wordmark   { font-size:28px; }
-          .uf-ribbon           { font-size:9px; padding:4px 16px; }
-          .uf-navbar-inner     { padding:0 16px; }
-          .uf-search-bar       { padding:8px 16px; }
-        }
-      `}</style>
     </>
   );
 }
