@@ -3,17 +3,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import {
-  ArrowRight, BadgeCheck, Shield, Globe,
-  Linkedin, Twitter, Instagram, Youtube, ShieldCheck,
-} from "lucide-react";
+import { ArrowRight, BadgeCheck, Shield, Globe, Linkedin, Twitter, Instagram, Youtube, ShieldCheck } from "lucide-react";
 
-const FOOTER_COLUMNS = [
+const COLUMNS = [
   {
     heading: "Platform",
     links: [
       { label: "Startup Registry",  href: "/startup"         },
-      { label: "Indian Unicorns",   href: "/indian-unicorns" },
+      { label: "Global Unicorns",   href: "/indian-unicorns" },
       { label: "Verify UFRN",       href: "/verify"          },
       { label: "Reports",           href: "/reports"         },
     ],
@@ -39,74 +36,38 @@ const FOOTER_COLUMNS = [
   {
     heading: "Legal",
     links: [
-      { label: "Privacy Policy",  href: "/privacy"       },
-      { label: "Terms of Service",href: "/terms"         },
-      { label: "Cookie Policy",   href: "/cookies"       },
-      { label: "Accessibility",   href: "/accessibility" },
+      { label: "Privacy Policy",   href: "/privacy"       },
+      { label: "Terms of Service", href: "/terms"         },
+      { label: "Cookie Policy",    href: "/cookies"       },
+      { label: "Accessibility",    href: "/accessibility" },
     ],
   },
 ];
 
-function NewsletterForm() {
-  const [email, setEmail] = useState("");
+function Newsletter() {
+  const [email,     setEmail]     = useState("");
   const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email.trim()) { setSubmitted(true); setEmail(""); }
-  };
 
   if (submitted) {
     return (
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "12px" }}>
-        <BadgeCheck size={14} style={{ color: "#2d7a3a", flexShrink: 0 }} />
-        <span style={{ fontFamily: "var(--uf-sans)", fontSize: "12px", color: "var(--uf-ink3)" }}>
-          Subscribed to UpForge Intel
-        </span>
+      <div className="uf-ft-subscribed">
+        <BadgeCheck size={13} style={{ color: "#2d7a3a", flexShrink: 0 }} />
+        <span>Subscribed to UpForge Intelligence</span>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: "flex", marginTop: "12px" }}>
+    <form
+      onSubmit={(e) => { e.preventDefault(); if (email.trim()) { setSubmitted(true); setEmail(""); } }}
+      className="uf-ft-form"
+    >
       <input
-        type="email"
-        required
-        placeholder="your@email.com"
-        value={email}
+        type="email" required value={email} placeholder="your@email.com"
         onChange={(e) => setEmail(e.target.value)}
-        style={{
-          flex: 1,
-          padding: "8px 12px",
-          fontFamily: "var(--uf-sans)",
-          fontSize: "12px",
-          border: "1px solid var(--uf-rule)",
-          borderRight: "none",
-          background: "var(--uf-paper)",
-          color: "var(--uf-ink)",
-          outline: "none",
-          minWidth: 0,
-        }}
+        className="uf-ft-email"
       />
-      <button
-        type="submit"
-        style={{
-          padding: "8px 14px",
-          fontFamily: "var(--uf-sans)",
-          fontSize: "10px",
-          fontWeight: 700,
-          letterSpacing: ".1em",
-          textTransform: "uppercase",
-          background: "var(--uf-ink)",
-          color: "var(--uf-paper)",
-          border: "none",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          gap: "5px",
-          flexShrink: 0,
-        }}
-      >
+      <button type="submit" className="uf-ft-submit">
         Subscribe <ArrowRight size={10} />
       </button>
     </form>
@@ -117,309 +78,236 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer style={{ background: "var(--uf-paper2)", borderTop: "2px solid var(--uf-ink)" }}>
+    <footer className="uf-footer">
 
       {/* ── TRUST STRIP ── */}
-      <div style={{ background: "var(--uf-paper)", borderBottom: "1px solid var(--uf-rule-light)" }}>
-        <div
-          style={{
-            maxWidth: "1440px",
-            margin: "0 auto",
-            padding: "8px 24px",
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "20px",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+      <div className="uf-ft-trust">
+        <div className="uf-ft-trust-inner">
           {[
-            { icon: Shield,     label: "Independent Platform" },
-            { icon: BadgeCheck, label: "Manually Verified Listings" },
-            { icon: Globe,      label: "Open Data Registry · upforge.org" },
-            { icon: ShieldCheck,label: "UFRN System · Proof of Existence" },
-          ].map(({ icon: Icon, label }) => (
-            <div key={label} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            { Icon: Shield,      label: "Independent Platform"              },
+            { Icon: BadgeCheck,  label: "Manually Verified Listings"        },
+            { Icon: Globe,       label: "Open Registry · upforge.org"       },
+            { Icon: ShieldCheck, label: "UFRN · Proof of Existence"         },
+          ].map(({ Icon, label }) => (
+            <div key={label} className="uf-ft-trust-item">
               <Icon size={12} style={{ color: "var(--uf-gold)", flexShrink: 0 }} />
-              <span
-                style={{
-                  fontFamily: "var(--uf-sans)",
-                  fontSize: "10px",
-                  fontWeight: 500,
-                  letterSpacing: ".14em",
-                  textTransform: "uppercase",
-                  color: "var(--uf-ink4)",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {label}
-              </span>
+              <span>{label}</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* ── MAIN GRID ── */}
-      <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 24px" }}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "2fr repeat(4, 1fr)",
-            gap: "40px 32px",
-            padding: "48px 0 40px",
-            borderBottom: "1px solid var(--uf-rule-light)",
-          }}
-          className="footer-grid"
-        >
-          {/* BRAND COLUMN */}
-          <div>
-            <Link href="/" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-              <div style={{ position: "relative", width: "30px", height: "30px", overflow: "hidden", flexShrink: 0 }}>
+      <div className="uf-ft-main">
+        <div className="uf-ft-grid">
+
+          {/* Brand */}
+          <div className="uf-ft-brand-col">
+            <Link href="/" className="uf-ft-logo-link">
+              <div className="uf-ft-logo">
                 <Image src="/logo.jpg" alt="UpForge" fill style={{ objectFit: "cover" }} />
               </div>
-              <span
-                style={{
-                  fontFamily: "var(--uf-serif)",
-                  fontSize: "22px",
-                  fontWeight: 900,
-                  color: "var(--uf-ink)",
-                  letterSpacing: "-.02em",
-                }}
-              >
-                UpForge
-              </span>
+              <span className="uf-ft-wordmark">UpForge</span>
             </Link>
 
-            <p
-              style={{
-                fontFamily: "var(--uf-body)",
-                fontSize: "14px",
-                lineHeight: 1.7,
-                color: "var(--uf-ink3)",
-                maxWidth: "280px",
-                marginBottom: "16px",
-                fontStyle: "italic",
-              }}
-            >
-              India's independent startup intelligence platform — tracking emerging companies, founder insights, and ecosystem trends with verified data.
+            <p className="uf-ft-desc">
+              The world's independent startup intelligence platform — tracking emerging companies, verified founder profiles, and ecosystem intelligence across 50+ countries.
             </p>
 
-            {/* Dual-domain callout */}
-            <div style={{ marginBottom: "18px", display: "flex", flexDirection: "column", gap: "4px" }}>
+            <div className="uf-ft-domains">
               {[
-                { label: "India Hub", val: "upforge.in", href: null },
                 { label: "Global Registry", val: "upforge.org", href: "https://www.upforge.org" },
+                { label: "India Hub",       val: "upforge.in",  href: null                      },
               ].map(({ label, val, href }) => (
-                <div key={label} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <span style={{ fontFamily: "var(--uf-sans)", fontSize: "9px", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--uf-ink4)" }}>
-                    {label}
-                  </span>
-                  {href ? (
-                    <a href={href} target="_blank" rel="noopener noreferrer"
-                      style={{ fontFamily: "var(--uf-sans)", fontSize: "10px", color: "var(--uf-gold)", fontWeight: 600, textDecoration: "none" }}>
-                      {val}
-                    </a>
-                  ) : (
-                    <span style={{ fontFamily: "var(--uf-sans)", fontSize: "10px", color: "var(--uf-gold)", fontWeight: 600 }}>
-                      {val}
-                    </span>
-                  )}
+                <div key={label} className="uf-ft-domain-row">
+                  <span className="uf-ft-domain-label">{label}</span>
+                  {href
+                    ? <a href={href} target="_blank" rel="noopener noreferrer" className="uf-ft-domain-val">{val}</a>
+                    : <span className="uf-ft-domain-val">{val}</span>
+                  }
                 </div>
               ))}
             </div>
 
-            <Link
-              href="/submit"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
-                padding: "9px 16px",
-                background: "var(--uf-ink)",
-                color: "var(--uf-paper)",
-                fontFamily: "var(--uf-sans)",
-                fontSize: "10px",
-                fontWeight: 700,
-                letterSpacing: ".12em",
-                textTransform: "uppercase",
-                textDecoration: "none",
-                marginBottom: "24px",
-              }}
-            >
+            <Link href="/submit" className="uf-btn-solid uf-ft-cta">
               List Your Startup <ArrowRight size={10} />
             </Link>
 
-            {/* Newsletter */}
-            <div>
-              <p style={{ fontFamily: "var(--uf-sans)", fontSize: "9px", fontWeight: 700, letterSpacing: ".2em", textTransform: "uppercase", color: "var(--uf-ink)" }}>
-                UpForge Intel
-              </p>
-              <p style={{ fontFamily: "var(--uf-sans)", fontSize: "12px", color: "var(--uf-ink4)", marginTop: "4px" }}>
-                Weekly startup insights and ecosystem research.
-              </p>
-              <NewsletterForm />
+            <div className="uf-ft-newsletter">
+              <div className="uf-ft-nl-title">UpForge Intelligence</div>
+              <div className="uf-ft-nl-sub">Weekly ecosystem insights, funding data, and founder stories.</div>
+              <Newsletter />
             </div>
           </div>
 
-          {/* NAV COLUMNS */}
-          {FOOTER_COLUMNS.map(({ heading, links }) => (
-            <div key={heading}>
-              <div
-                style={{
-                  fontFamily: "var(--uf-sans)",
-                  fontSize: "9px",
-                  fontWeight: 700,
-                  letterSpacing: ".22em",
-                  textTransform: "uppercase",
-                  color: "var(--uf-ink)",
-                  borderBottom: "1px solid var(--uf-rule-light)",
-                  paddingBottom: "8px",
-                  marginBottom: "14px",
-                }}
-              >
-                {heading}
-              </div>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "8px" }}>
+          {/* Nav columns */}
+          {COLUMNS.map(({ heading, links }) => (
+            <div key={heading} className="uf-ft-nav-col">
+              <div className="uf-ft-col-head">{heading}</div>
+              <ul className="uf-ft-col-links">
                 {links.map(({ label, href }) => (
                   <li key={href}>
-                    <Link
-                      href={href}
-                      style={{
-                        fontFamily: "var(--uf-sans)",
-                        fontSize: "13px",
-                        color: "var(--uf-ink3)",
-                        textDecoration: "none",
-                        transition: "color .15s",
-                      }}
-                      className="footer-link"
-                    >
-                      {label}
-                    </Link>
+                    <Link href={href} className="uf-ft-link">{label}</Link>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
+      </div>
 
-        {/* ── GLOBAL REGISTRY BANNER ── */}
-        <div
-          style={{
-            padding: "18px 0",
-            borderBottom: "1px solid var(--uf-rule-light)",
-            display: "flex",
-            flexWrap: "wrap",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "12px",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      {/* ── GLOBAL REGISTRY BAND ── */}
+      <div className="uf-ft-band">
+        <div className="uf-ft-band-inner">
+          <div className="uf-ft-band-left">
             <Globe size={13} style={{ color: "var(--uf-gold)", flexShrink: 0 }} />
-            <p style={{ fontFamily: "var(--uf-sans)", fontSize: "12px", color: "var(--uf-ink4)" }}>
-              Looking for the global startup database?{" "}
-              <a
-                href="https://www.upforge.org/registry"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "var(--uf-gold)", fontWeight: 600, textDecoration: "none" }}
-              >
-                Visit UpForge Global Registry →
+            <span>
+              Browse the global startup database →&nbsp;
+              <a href="https://www.upforge.org/registry" target="_blank" rel="noopener noreferrer" className="uf-ft-band-link">
+                upforge.org/registry
               </a>
-            </p>
+            </span>
           </div>
-          <span style={{ fontFamily: "var(--uf-sans)", fontSize: "9px", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--uf-ink4)" }}>
-            upforge.org
-          </span>
+          <span className="uf-ft-band-badge">Global · Open · Verified</span>
         </div>
+      </div>
 
-        {/* ── SOCIAL ROW ── */}
-        <div
-          style={{
-            padding: "20px 0",
-            borderBottom: "1px solid var(--uf-rule-light)",
-            display: "flex",
-            flexWrap: "wrap",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "16px",
-          }}
-        >
-          <p style={{ fontFamily: "var(--uf-sans)", fontSize: "10px", letterSpacing: ".14em", textTransform: "uppercase", color: "var(--uf-ink4)" }}>
-            Follow UpForge
-          </p>
-          <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+      {/* ── SOCIAL + COPYRIGHT ── */}
+      <div className="uf-ft-bottom">
+        <div className="uf-ft-bottom-inner">
+          <div className="uf-ft-social">
             {[
               { Icon: Linkedin,  href: "https://www.linkedin.com/company/upforge-india" },
               { Icon: Twitter,   href: "#" },
               { Icon: Instagram, href: "#" },
               { Icon: Youtube,   href: "https://www.youtube.com/@upforge-ind" },
             ].map(({ Icon, href }) => (
-              <a
-                key={href}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "var(--uf-ink4)", transition: "color .15s" }}
-                className="social-link"
-              >
+              <a key={href} href={href} target="_blank" rel="noopener noreferrer" className="uf-ft-social-icon">
                 <Icon size={17} />
               </a>
             ))}
           </div>
-        </div>
 
-        {/* ── COPYRIGHT ── */}
-        <div
-          style={{
-            padding: "20px 0",
-            display: "flex",
-            flexWrap: "wrap",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "12px",
-          }}
-        >
-          <div>
-            <p style={{ fontFamily: "var(--uf-sans)", fontSize: "11px", color: "var(--uf-ink4)" }}>
-              © {year} UpForge · Independent Startup Intelligence · Verified Data · Updated Daily
-            </p>
-            <p style={{ fontFamily: "var(--uf-sans)", fontSize: "10px", color: "var(--uf-ink4)", opacity: .6, marginTop: "2px" }}>
-              upforge.in (India) · upforge.org (Global Registry)
-            </p>
-          </div>
-          <div style={{ display: "flex", gap: "20px" }}>
-            {[
-              { label: "Privacy", href: "/privacy" },
-              { label: "Terms",   href: "/terms"   },
-              { label: "Cookies", href: "/cookies" },
-            ].map(({ label, href }) => (
-              <Link
-                key={href}
-                href={href}
-                style={{ fontFamily: "var(--uf-sans)", fontSize: "11px", color: "var(--uf-ink4)", textDecoration: "none" }}
-                className="footer-link"
-              >
-                {label}
-              </Link>
-            ))}
+          <div className="uf-ft-copy">
+            <span>© {year} UpForge · Independent · Verified · Open</span>
+            <span className="uf-ft-copy-sep">·</span>
+            <Link href="/privacy" className="uf-ft-link">Privacy</Link>
+            <Link href="/terms"   className="uf-ft-link">Terms</Link>
+            <Link href="/cookies" className="uf-ft-link">Cookies</Link>
           </div>
         </div>
       </div>
 
       <style>{`
-        .footer-link:hover { color: var(--uf-gold) !important; }
-        .social-link:hover { color: var(--uf-gold) !important; }
-        @media (max-width: 900px) {
-          .footer-grid {
-            grid-template-columns: 1fr 1fr !important;
-          }
+        .uf-footer     { background:var(--uf-paper2); border-top:2px solid var(--uf-ink); font-family:var(--uf-sans); }
+
+        /* trust strip */
+        .uf-ft-trust       { background:var(--uf-paper); border-bottom:1px solid var(--uf-rule-light); }
+        .uf-ft-trust-inner {
+          max-width:1440px; margin:0 auto; padding:8px 24px;
+          display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:20px;
         }
-        @media (max-width: 540px) {
-          .footer-grid {
-            grid-template-columns: 1fr !important;
-          }
+        .uf-ft-trust-item  { display:flex; align-items:center; gap:6px; }
+        .uf-ft-trust-item span {
+          font-size:10px; font-weight:500; letter-spacing:.14em; text-transform:uppercase;
+          color:var(--uf-ink4); white-space:nowrap;
         }
+
+        /* main grid */
+        .uf-ft-main { max-width:1440px; margin:0 auto; padding:0 24px; }
+        .uf-ft-grid {
+          display:grid; grid-template-columns:2fr repeat(4,1fr);
+          gap:40px 32px; padding:48px 0 40px;
+          border-bottom:1px solid var(--uf-rule-light);
+        }
+
+        /* brand column */
+        .uf-ft-logo-link {
+          display:inline-flex; align-items:center; gap:10px;
+          text-decoration:none; margin-bottom:16px;
+        }
+        .uf-ft-logo {
+          position:relative; width:30px; height:30px; overflow:hidden; flex-shrink:0;
+        }
+        .uf-ft-wordmark {
+          font-family:var(--uf-serif); font-size:22px; font-weight:900;
+          color:var(--uf-ink); letter-spacing:-.02em;
+        }
+        .uf-ft-desc {
+          font-family:var(--uf-body); font-size:14px; line-height:1.7;
+          color:var(--uf-ink3); max-width:280px; margin-bottom:18px; font-style:italic;
+        }
+        .uf-ft-domains       { display:flex; flex-direction:column; gap:5px; margin-bottom:18px; }
+        .uf-ft-domain-row    { display:flex; align-items:center; gap:8px; }
+        .uf-ft-domain-label  { font-size:9px; letter-spacing:.18em; text-transform:uppercase; color:var(--uf-ink5); }
+        .uf-ft-domain-val    { font-size:10px; color:var(--uf-gold); font-weight:600; text-decoration:none; }
+        .uf-ft-domain-val:hover { text-decoration:underline; }
+        .uf-ft-cta { margin-bottom:24px; }
+
+        /* newsletter */
+        .uf-ft-newsletter { margin-top:4px; }
+        .uf-ft-nl-title   { font-size:9px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--uf-ink); }
+        .uf-ft-nl-sub     { font-size:11px; color:var(--uf-ink4); margin-top:4px; margin-bottom:10px; }
+        .uf-ft-form       { display:flex; }
+        .uf-ft-email {
+          flex:1; min-width:0; padding:8px 12px;
+          font-family:var(--uf-sans); font-size:12px;
+          border:1px solid var(--uf-rule); border-right:none;
+          background:var(--uf-paper); color:var(--uf-ink); outline:none;
+        }
+        .uf-ft-submit {
+          padding:8px 14px; background:var(--uf-ink); color:var(--uf-paper);
+          font-family:var(--uf-sans); font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+          border:none; cursor:pointer; display:flex; align-items:center; gap:5px; flex-shrink:0;
+          transition:background .15s;
+        }
+        .uf-ft-submit:hover { background:var(--uf-ink3); }
+        .uf-ft-subscribed   { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--uf-ink3); margin-top:10px; }
+
+        /* nav columns */
+        .uf-ft-col-head {
+          font-size:9px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:var(--uf-ink);
+          border-bottom:1px solid var(--uf-rule-light); padding-bottom:8px; margin-bottom:14px;
+        }
+        .uf-ft-col-links { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:9px; }
+        .uf-ft-link      { font-size:13px; color:var(--uf-ink3); text-decoration:none; transition:color .15s; }
+        .uf-ft-link:hover { color:var(--uf-gold); }
+
+        /* global band */
+        .uf-ft-band       { border-top:1px solid var(--uf-rule-light); border-bottom:1px solid var(--uf-rule-light); }
+        .uf-ft-band-inner {
+          max-width:1440px; margin:0 auto; padding:14px 24px;
+          display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;
+        }
+        .uf-ft-band-left  { display:flex; align-items:center; gap:9px; font-size:12px; color:var(--uf-ink4); }
+        .uf-ft-band-link  { color:var(--uf-gold); font-weight:600; text-decoration:none; }
+        .uf-ft-band-link:hover { text-decoration:underline; }
+        .uf-ft-band-badge { font-size:9px; letter-spacing:.18em; text-transform:uppercase; color:var(--uf-ink5); }
+
+        /* bottom */
+        .uf-ft-bottom       { }
+        .uf-ft-bottom-inner {
+          max-width:1440px; margin:0 auto; padding:16px 24px;
+          display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;
+        }
+        .uf-ft-social       { display:flex; align-items:center; gap:18px; }
+        .uf-ft-social-icon  { color:var(--uf-ink4); transition:color .15s; }
+        .uf-ft-social-icon:hover { color:var(--uf-gold); }
+        .uf-ft-copy         { display:flex; align-items:center; gap:12px; font-size:11px; color:var(--uf-ink4); flex-wrap:wrap; }
+        .uf-ft-copy-sep     { opacity:.3; }
+
+        /* shared button */
+        .uf-btn-solid {
+          display:inline-flex; align-items:center; gap:5px; padding:8px 16px;
+          background:var(--uf-ink); border:none;
+          font-family:var(--uf-sans); font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+          color:var(--uf-paper); text-decoration:none; cursor:pointer; transition:background .15s;
+        }
+        .uf-btn-solid:hover { background:var(--uf-ink3); }
+
+        @media (max-width:1024px) { .uf-ft-grid { grid-template-columns:1fr 1fr 1fr; } .uf-ft-brand-col { grid-column:1/-1; } }
+        @media (max-width:640px)  { .uf-ft-grid { grid-template-columns:1fr 1fr; } .uf-ft-brand-col { grid-column:1/-1; } }
+        @media (max-width:420px)  { .uf-ft-grid { grid-template-columns:1fr; } }
       `}</style>
     </footer>
   );
