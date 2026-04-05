@@ -1,4 +1,5 @@
 // app/sitemap.ts
+
 import { MetadataRoute } from "next"
 import { createClient } from "@/lib/supabase/server"
 import { categoryToSlug } from "@/lib/categories"
@@ -61,34 +62,50 @@ const STATIC_ROUTES = [
   { path: "/contact", priority: 0.5, changeFrequency: "monthly" as const },
 ]
 
-function safeDate(value?: string | null) {
+type StartupRow = {
+  slug: string
+  category?: string | null
+  updated_at?: string | null
+  created_at?: string | null
+  is_featured?: boolean | null
+  ufrn?: string | null
+}
+
+type BlogRow = {
+  slug: string
+  updated_at?: string | null
+  created_at?: string | null
+  is_featured?: boolean | null
+}
+
+function safeDate(value?: string | null): Date {
   if (!value) return STATIC_DATE
   const d = new Date(value)
   return isNaN(d.getTime()) ? STATIC_DATE : d
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  let startups = []
-  let blogs = []
+  let startups: StartupRow[] = []
+  let blogs: BlogRow[] = []
 
   try {
     const supabase = await createClient()
 
-    const startupsRes = await supabase
+    const { data: startupData } = await supabase
       .from("startups")
       .select("slug,category,updated_at,created_at,is_featured,ufrn")
       .eq("status", "approved")
       .not("slug", "is", null)
       .limit(10000)
 
-    startups = startupsRes.data ?? []
+    startups = startupData ?? []
 
-    const blogsRes = await supabase
+    const { data: blogData } = await supabase
       .from("blogs")
       .select("slug,updated_at,created_at,is_featured")
       .limit(5000)
 
-    blogs = blogsRes.data ?? []
+    blogs = blogData ?? []
   } catch {
     startups = []
     blogs = []
@@ -116,12 +133,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   GLOBAL_CATEGORIES.forEach(c => categorySet.add(c))
 
-  const categoryEntries: MetadataRoute.Sitemap = Array.from(categorySet).map(cat => ({
-    url: `${BASE}/startups/${cat}`,
-    lastModified: STATIC_DATE,
-    changeFrequency: "daily",
-    priority: 0.85,
-  }))
+  const categoryEntries: MetadataRoute.Sitemap =
+    Array.from(categorySet).map(cat => ({
+      url: `${BASE}/startups/${cat}`,
+      lastModified: STATIC_DATE,
+      changeFrequency: "daily",
+      priority: 0.85,
+    }))
 
   const allCities = [...GLOBAL_CITIES, ...INDIA_CITIES]
 
@@ -138,52 +156,56 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  const startupEntries: MetadataRoute.Sitemap = startups.map(s => ({
-    url: `${BASE}/startup/${s.slug}`,
-    lastModified: safeDate(s.updated_at ?? s.created_at),
-    changeFrequency: "weekly",
-    priority: s.is_featured ? 0.9 : 0.8,
-  }))
-
-  const founderEntries: MetadataRoute.Sitemap = GLOBAL_FOUNDER_SLUGS.map(slug => ({
-    url: `${BASE}/startup/${slug}`,
-    lastModified: STATIC_DATE,
-    changeFrequency: "weekly",
-    priority: 0.95,
-  }))
-
-  const ufrnEntries: MetadataRoute.Sitemap = startups
-    .filter(s => s.ufrn)
-    .map(s => ({
-      url: `${BASE}/ufrn/${s.ufrn}`,
+  const startupEntries: MetadataRoute.Sitemap =
+    startups.map(s => ({
+      url: `${BASE}/startup/${s.slug}`,
       lastModified: safeDate(s.updated_at ?? s.created_at),
-      changeFrequency: "monthly",
-      priority: 0.85,
+      changeFrequency: "weekly",
+      priority: s.is_featured ? 0.9 : 0.8,
     }))
 
-  const blogEntries: MetadataRoute.Sitemap = blogs.map(b => ({
-    url: `${BASE}/blog/${b.slug}`,
-    lastModified: safeDate(b.updated_at ?? b.created_at),
-    changeFrequency: "monthly",
-    priority: b.is_featured ? 0.8 : 0.7,
-  }))
+  const founderEntries: MetadataRoute.Sitemap =
+    GLOBAL_FOUNDER_SLUGS.map(slug => ({
+      url: `${BASE}/startup/${slug}`,
+      lastModified: STATIC_DATE,
+      changeFrequency: "weekly",
+      priority: 0.95,
+    }))
 
-  const seededBlogs: MetadataRoute.Sitemap = [
-    ...BLOG_SLUGS_INDIA,
-    ...BLOG_SLUGS_GLOBAL,
-  ].map(slug => ({
-    url: `${BASE}/blog/${slug}`,
-    lastModified: STATIC_DATE,
-    changeFrequency: "monthly",
-    priority: 0.75,
-  }))
+  const ufrnEntries: MetadataRoute.Sitemap =
+    startups
+      .filter(s => s.ufrn)
+      .map(s => ({
+        url: `${BASE}/ufrn/${s.ufrn}`,
+        lastModified: safeDate(s.updated_at ?? s.created_at),
+        changeFrequency: "monthly",
+        priority: 0.85,
+      }))
 
-  const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map(route => ({
-    url: `${BASE}${route.path}`,
-    lastModified: STATIC_DATE,
-    changeFrequency: route.changeFrequency,
-    priority: route.priority,
-  }))
+  const blogEntries: MetadataRoute.Sitemap =
+    blogs.map(b => ({
+      url: `${BASE}/blog/${b.slug}`,
+      lastModified: safeDate(b.updated_at ?? b.created_at),
+      changeFrequency: "monthly",
+      priority: b.is_featured ? 0.8 : 0.7,
+    }))
+
+  const seededBlogs: MetadataRoute.Sitemap =
+    [...BLOG_SLUGS_INDIA, ...BLOG_SLUGS_GLOBAL]
+      .map(slug => ({
+        url: `${BASE}/blog/${slug}`,
+        lastModified: STATIC_DATE,
+        changeFrequency: "monthly",
+        priority: 0.75,
+      }))
+
+  const staticEntries: MetadataRoute.Sitemap =
+    STATIC_ROUTES.map(route => ({
+      url: `${BASE}${route.path}`,
+      lastModified: STATIC_DATE,
+      changeFrequency: route.changeFrequency,
+      priority: route.priority,
+    }))
 
   return [
     ...staticEntries,
