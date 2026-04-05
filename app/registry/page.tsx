@@ -1,11 +1,13 @@
-// app/registry/page.tsx — OPTIMISED v4
-  
+// app/registry/page.tsx — WORLD-CLASS AUTHORITY v5
+// SEO + Schema.org + Google Dataset Search Optimised
+
 import { createReadClient } from "@/lib/supabase/server"
 import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
 import { Navbar } from "@/components/navbar"
 import { ArrowRight, ArrowUpRight, MapPin, Calendar, Users } from "lucide-react"
+import { unstable_noStore } from "next/cache"
 
 // ─── NO CACHING — always fresh from DB ───
 export const dynamic = "force-dynamic"
@@ -13,6 +15,7 @@ export const revalidate = 0
 export const fetchCache = "force-no-store"
 
 const PAGE_SIZE = 10
+const BASE_URL = "https://www.upforge.org"
 
 interface StartupRow {
   id: string; name: string; slug: string
@@ -30,7 +33,7 @@ interface PageProps {
   }>
 }
 
-// ─── DATA FETCHERS (direct — no unstable_cache) ───
+// ─── DATA FETCHERS ───
 
 async function getData(
   q: string, year: string, sort: string,
@@ -77,7 +80,6 @@ async function getFilters() {
       .not("country_name", "is", null),
   ])
 
-  // Deduplicate countries into { code, name } pairs
   const countryMap = new Map<string, string>()
   ;(ctd ?? []).forEach(r => {
     if (r.country_code && r.country_name && !countryMap.has(r.country_code)) {
@@ -95,45 +97,157 @@ async function getFilters() {
   }
 }
 
+// ─── HELPERS ───
+
+function buildPageUrl(page: number, extra?: Record<string, string>): string {
+  const p = new URLSearchParams()
+  if (extra?.q)       p.set("q", extra.q)
+  if (extra?.year)    p.set("year", extra.year)
+  if (extra?.sort && extra.sort !== "name") p.set("sort", extra.sort)
+  if (extra?.sector)  p.set("sector", extra.sector)
+  if (extra?.country) p.set("country", extra.country)
+  if (page > 1)       p.set("page", String(page))
+  const s = p.toString()
+  return `${BASE_URL}/registry${s ? `?${s}` : ""}`
+}
+
+function buildDynamicTitle(sp: {
+  q?: string; year?: string; sort?: string; sector?: string; country?: string; page?: string
+}, total: number): string {
+  const n = total > 0 ? total.toLocaleString() : "1,000+"
+  const pg = Number(sp?.page ?? 1)
+  const pgSuffix = pg > 1 ? ` — Page ${pg}` : ""
+
+  if (sp?.q)      return `"${sp.q}" Startup Search — Global Registry${pgSuffix} | UpForge`
+  if (sp?.sector) return `${sp.sector} Startups — Global Registry${pgSuffix} | UpForge`
+  if (sp?.country) return `${sp.country} Startups — Global Registry${pgSuffix} | UpForge`
+  if (sp?.year)   return `Startups Founded ${sp.year} — Global Registry${pgSuffix} | UpForge`
+  if (pg > 1)     return `Global Startup Registry — Page ${pg} | UpForge`
+  return `Global Startup Registry 2026 — ${n}+ Verified Startups | UpForge`
+}
+
+function buildDynamicDescription(sp: {
+  q?: string; year?: string; sort?: string; sector?: string; country?: string
+}, total: number): string {
+  const n = total > 0 ? total.toLocaleString() : "1,000+"
+  if (sp?.sector) return `Browse ${n}+ verified ${sp.sector} startups on UpForge Global Registry. Every listing manually reviewed and assigned a unique UFRN. Free to access forever.`
+  if (sp?.country) return `Explore verified startups from ${sp.country} on UpForge Global Registry. ${n}+ listings, each with a unique UFRN identifier. Free to access.`
+  if (sp?.year)   return `Discover ${n}+ startups founded in ${sp.year} on UpForge Global Registry. Every listing independently verified and assigned a UFRN.`
+  if (sp?.q)      return `Search results for "${sp.q}" across ${n}+ verified global startups on UpForge Registry. Find founders, sectors, cities and more.`
+  return `The open, independent, verified global registry of ${n}+ startups. Every listing is manually reviewed and assigned a unique UpForge Registry Number (UFRN). Search by founder, sector, city, country, year. Free to access, forever.`
+}
+
 // ─── METADATA ───
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
   const sp = await searchParams
   const { total } = await getData("", "", "name", "", "", 1)
-  const n = total > 0 ? total.toLocaleString() : "1,000+"
-  const isFiltered = !!(sp?.q || sp?.year || sp?.sort || sp?.sector || sp?.country)
-  const page = Number(sp?.page ?? 1)
+  const page = Math.max(1, Number(sp?.page ?? 1))
+  const isFiltered = !!(sp?.q || sp?.year || sp?.sector || sp?.country)
+  const sort = sp?.sort ?? "name"
+
+  const title       = buildDynamicTitle(sp ?? {}, total)
+  const description = buildDynamicDescription(sp ?? {}, total)
+
+  // ── Canonical ──
+  const canonicalParams: Record<string, string> = {}
+  if (sp?.q)       canonicalParams.q       = sp.q
+  if (sp?.year)    canonicalParams.year     = sp.year
+  if (sort !== "name") canonicalParams.sort = sort
+  if (sp?.sector)  canonicalParams.sector   = sp.sector
+  if (sp?.country) canonicalParams.country  = sp.country
+  const canonicalUrl = buildPageUrl(page, canonicalParams)
+
+  // ── Prev / Next ──
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+  const prevUrl = page > 1       ? buildPageUrl(page - 1, canonicalParams) : undefined
+  const nextUrl = page < totalPages ? buildPageUrl(page + 1, canonicalParams) : undefined
+
+  // ── Robots logic ──
+  // page 1 unfiltered = index | filtered = noindex | page > 1 = index (paginated)
+  const shouldIndex = !isFiltered || page > 1
+
   return {
-    title: `Global Startup Registry 2026 — ${n}+ Verified Startups | UpForge`,
-    description: `The open, independent, verified global registry of ${n}+ startups. Every listing is manually reviewed and assigned a unique UpForge Registry Number (UFRN). Search by founder, sector, city, country, year. Free to access, forever.`,
+    title,
+    description,
     keywords: [
       "global startup registry", "verified startup database", "UFRN startup registry number",
       "open startup data", "startup proof of existence", "independent startup registry",
       "Indian startup founders 2026", "India unicorn founders", "upforge registry",
       "startup verification", "startup database", "global startup database 2026",
+      "startup directory", "startup search", "founder registry",
     ],
-    alternates: { canonical: "https://www.upforge.org/registry" },
+    alternates: {
+      canonical: canonicalUrl,
+      ...(prevUrl || nextUrl ? {
+        // rel prev/next handled via <link> tags in JSON-LD section below
+        // Next.js Metadata API exposes these through alternates.types
+        types: {
+          ...(prevUrl ? { prev: prevUrl } : {}),
+          ...(nextUrl ? { next: nextUrl } : {}),
+        },
+      } : {}),
+      // hreflang — English default
+      languages: {
+        "en":    canonicalUrl,
+        "en-US": canonicalUrl,
+        "en-IN": canonicalUrl,
+        "x-default": `${BASE_URL}/registry`,
+      },
+    },
     openGraph: {
-      title: `Global Startup Registry 2026 — ${n}+ Verified | UpForge`,
-      description: `Open, independent, verified registry of ${n}+ startups worldwide. Every startup gets a unique UFRN.`,
-      url: "https://www.upforge.org/registry", siteName: "UpForge Global Registry",
-      images: [{ url: "https://www.upforge.in/og/startup-default.png", width: 1200, height: 630 }],
-      locale: "en", type: "website",
+      title,
+      description,
+      url: canonicalUrl,
+      siteName: "UpForge Global Registry",
+      images: [
+        {
+          url: sp?.sector
+            ? `${BASE_URL}/og/sector-${encodeURIComponent((sp.sector ?? "").toLowerCase().replace(/\s+/g, "-"))}.png`
+            : `${BASE_URL}/og/startup-default.png`,
+          width: 1200, height: 630,
+          alt: title,
+          secureUrl: sp?.sector
+            ? `${BASE_URL}/og/sector-${encodeURIComponent((sp.sector ?? "").toLowerCase().replace(/\s+/g, "-"))}.png`
+            : `${BASE_URL}/og/startup-default.png`,
+        },
+        // Fallback OG image
+        { url: `${BASE_URL}/og/startup-default.png`, width: 1200, height: 630, alt: "UpForge Global Startup Registry" },
+      ],
+      locale: "en",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      site: "@UpForgeHQ",
+      creator: "@UpForgeHQ",
+      images: [`${BASE_URL}/og/startup-default.png`],
     },
     robots: {
-      index: !isFiltered && page <= 1, follow: true,
-      googleBot: { index: !isFiltered && page <= 1, follow: true, "max-snippet": -1, "max-image-preview": "large" },
+      index:  shouldIndex,
+      follow: true,
+      googleBot: {
+        index:  shouldIndex,
+        follow: true,
+        "max-snippet": -1,
+        "max-image-preview": "large",
+        "max-video-preview": -1,
+      },
+    },
+    other: {
+      // Speakable hint for Google Assistant / voice search
+      "speakable-css-selector": ".mast-h1,.mast-tagline,.results-q",
     },
   }
 }
 
 // ─── PAGE ───
 
-import { unstable_noStore } from "next/cache"
-
 export default async function RegistryPage({ searchParams }: PageProps) {
 
-  unstable_noStore() // ⬅️ important: disables Next.js caching completely
+  unstable_noStore()
 
   const sp      = await searchParams
   const q       = sp?.q?.trim()       ?? ""
@@ -160,14 +274,9 @@ export default async function RegistryPage({ searchParams }: PageProps) {
       country: country || undefined,
       page:    page > 1 ? String(page) : undefined,
     }
-
     const m = { ...base, ...ov }
     const p = new URLSearchParams()
-
-    Object.entries(m).forEach(([k, v]) => {
-      if (v) p.set(k, v)
-    })
-
+    Object.entries(m).forEach(([k, v]) => { if (v) p.set(k, v) })
     const s = p.toString()
     return `/registry${s ? `?${s}` : ""}`
   }
@@ -176,18 +285,13 @@ export default async function RegistryPage({ searchParams }: PageProps) {
     qs({ page: p === 1 ? undefined : String(p) })
 
   const winSize  = Math.min(5, totalPages)
-
   const winStart =
     page <= 3 || totalPages <= 5
       ? 1
       : page >= totalPages - 2
       ? totalPages - 4
       : page - 2
-
-  const pgNums = Array.from(
-    { length: winSize },
-    (_, i) => winStart + i
-  )
+  const pgNums = Array.from({ length: winSize }, (_, i) => winStart + i)
 
   const featured =
     page === 1 && !isFiltered
@@ -195,65 +299,341 @@ export default async function RegistryPage({ searchParams }: PageProps) {
       : []
 
   const featIds = new Set(featured.map(s => s.id))
-
   const grid =
     page === 1 && !isFiltered
       ? startups.filter(s => !featIds.has(s.id))
       : startups
 
   const baseNum = (page - 1) * PAGE_SIZE
-  
-  // Active filter count for badge
   const activeFilterCount = [year, cat, country, sort !== "name" ? sort : ""].filter(Boolean).length
 
-  const schemas = [
-    {
-      "@context": "https://schema.org", "@type": "Dataset",
-      "@id": "https://www.upforge.org/registry#dataset",
-      name: "UpForge Global Startup Registry",
-      description: `Open, verified, independent database of ${total.toLocaleString()}+ startups. Each assigned a unique UFRN.`,
-      url: "https://www.upforge.org/registry",
-      creator: { "@type": "Organization", name: "UpForge", url: "https://www.upforge.org" },
-      license: "https://creativecommons.org/licenses/by/4.0/",
-      isAccessibleForFree: true,
-    },
-    {
-      "@context": "https://schema.org", "@type": "Organization",
-      "@id": "https://www.upforge.org/#organization",
-      name: "UpForge", url: "https://www.upforge.org",
-      logo: { "@type": "ImageObject", url: "https://www.upforge.in/logo.jpg" },
-      sameAs: ["https://www.upforge.in", "https://www.upforge.org"],
-    },
-    {
-      "@context": "https://schema.org", "@type": "WebSite",
-      name: "UpForge Global Registry", url: "https://www.upforge.org",
-      potentialAction: {
-        "@type": "SearchAction",
-        target: { urlTemplate: "https://www.upforge.org/registry?q={search_term_string}" },
-        "query-input": "required name=search_term_string",
+  // ─── Canonical URL (for JSON-LD) ───
+  const canonicalParams: Record<string, string> = {}
+  if (q)             canonicalParams.q       = q
+  if (year)          canonicalParams.year    = year
+  if (sort !== "name") canonicalParams.sort  = sort
+  if (cat)           canonicalParams.sector  = cat
+  if (country)       canonicalParams.country = country
+  const canonicalUrl = buildPageUrl(page, canonicalParams)
+  const prevUrl = page > 1          ? buildPageUrl(page - 1, canonicalParams) : undefined
+  const nextUrl = page < totalPages  ? buildPageUrl(page + 1, canonicalParams) : undefined
+
+  // ─── All startups on this page for schema ───
+  const allPageStartups = [...featured, ...grid]
+
+  // ─── SCHEMA BLOCKS ───
+
+  // 1. Dataset (enhanced for Google Dataset Search)
+  const datasetSchema = {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    "@id": `${BASE_URL}/registry#dataset`,
+    name: "UpForge Global Startup Registry",
+    alternateName: ["UpForge Registry", "Global Startup Database", "UFRN Registry"],
+    description: `Open, verified, independent database of ${total.toLocaleString()}+ startups worldwide. Each startup is manually reviewed and assigned a unique UpForge Registry Number (UFRN). Free to access forever.`,
+    url: `${BASE_URL}/registry`,
+    sameAs: [
+      "https://www.upforge.in/registry",
+      `${BASE_URL}/registry`,
+    ],
+    keywords: [
+      "startups", "founders", "startup database", "UFRN", "startup registry",
+      "verified startups", "global startups", "fintech", "edtech", "healthtech",
+      "India startups", "startup verification", "2026 startups",
+    ],
+    temporalCoverage: "2010/..",
+    spatialCoverage: {
+      "@type": "Place",
+      name: "Worldwide",
+      geo: {
+        "@type": "GeoShape",
+        box: "-90 -180 90 180",
       },
     },
-    {
-      "@context": "https://schema.org", "@type": "CollectionPage",
-      "@id": "https://www.upforge.org/registry#cp",
-      name: "Global Startup Registry 2026", url: "https://www.upforge.org/registry",
-      description: `The world's open, independent registry of ${total.toLocaleString()}+ verified startups.`,
-      numberOfItems: total, inLanguage: "en",
+    creator: {
+      "@type": "Organization",
+      "@id": `${BASE_URL}/#organization`,
+      name: "UpForge",
+      url: BASE_URL,
     },
-    {
-      "@context": "https://schema.org", "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "UpForge", item: "https://www.upforge.org" },
-        { "@type": "ListItem", position: 2, name: "Global Registry", item: "https://www.upforge.org/registry" },
-      ],
+    publisher: {
+      "@type": "Organization",
+      name: "UpForge",
+      url: BASE_URL,
     },
+    license: "https://creativecommons.org/licenses/by/4.0/",
+    isAccessibleForFree: true,
+    measurementTechnique: "Manual review and editorial verification by UpForge editorial team",
+    variableMeasured: [
+      "Startup name", "Founders", "Year founded", "Sector", "Location", "UFRN identifier",
+    ],
+    distribution: [
+      {
+        "@type": "DataDownload",
+        encodingFormat: "text/html",
+        contentUrl: `${BASE_URL}/registry`,
+      },
+    ],
+    includedInDataCatalog: {
+      "@type": "DataCatalog",
+      name: "UpForge Open Data",
+      url: BASE_URL,
+    },
+  }
+
+  // 2. Organization (with contactPoint)
+  const orgSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": `${BASE_URL}/#organization`,
+    name: "UpForge",
+    url: BASE_URL,
+    logo: {
+      "@type": "ImageObject",
+      url: "https://www.upforge.in/logo.jpg",
+      width: 400,
+      height: 400,
+    },
+    sameAs: [
+      "https://www.upforge.in",
+      BASE_URL,
+      "https://twitter.com/UpForgeHQ",
+      "https://www.linkedin.com/company/upforge",
+    ],
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        email: "hello@upforge.in",
+        url: "https://www.upforge.in/contact",
+        availableLanguage: ["English", "Hindi"],
+      },
+      {
+        "@type": "ContactPoint",
+        contactType: "editorial",
+        email: "registry@upforge.in",
+        url: "https://www.upforge.in/submit",
+        availableLanguage: "English",
+      },
+    ],
+    foundingDate: "2024",
+    areaServed: "Worldwide",
+    description: "UpForge is the world's open, independent, verified global startup registry. Every listed startup receives a unique UFRN.",
+  }
+
+  // 3. WebSite with enhanced SearchAction
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${BASE_URL}/#website`,
+    name: "UpForge Global Registry",
+    url: BASE_URL,
+    inLanguage: "en",
+    potentialAction: [
+      {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: `${BASE_URL}/registry?q={search_term_string}`,
+        },
+        "query-input": {
+          "@type": "PropertyValueSpecification",
+          valueRequired: true,
+          valueName: "search_term_string",
+        },
+      },
+      // Autocomplete / sector search
+      {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: `${BASE_URL}/registry?sector={sector_name}`,
+        },
+        "query-input": {
+          "@type": "PropertyValueSpecification",
+          valueRequired: false,
+          valueName: "sector_name",
+        },
+      },
+    ],
+  }
+
+  // 4. CollectionPage with mainEntity
+  const collectionSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": `${canonicalUrl}#cp`,
+    name: buildDynamicTitle(sp ?? {}, total).replace(" | UpForge", ""),
+    url: canonicalUrl,
+    description: buildDynamicDescription(sp ?? {}, total),
+    numberOfItems: total,
+    inLanguage: "en",
+    isPartOf: { "@id": `${BASE_URL}/#website` },
+    about: { "@id": `${BASE_URL}/registry#dataset` },
+    mainEntity: { "@id": `${canonicalUrl}#itemlist` },
+    speakable: {
+      "@type": "SpeakableSpecification",
+      cssSelector: [".mast-h1", ".mast-tagline", ".results-q", ".live-text"],
+    },
+  }
+
+  // 5. ItemList — all startups shown on this page
+  const itemListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `${canonicalUrl}#itemlist`,
+    name: `Verified Startups — Page ${page}`,
+    numberOfItems: allPageStartups.length,
+    itemListOrder: "https://schema.org/ItemListOrderAscending",
+    itemListElement: allPageStartups.map((s, idx) => ({
+      "@type": "ListItem",
+      position: baseNum + idx + 1,
+      name: s.name,
+      url: `https://www.upforge.in/startup/${s.slug}`,
+      item: {
+        "@type": "Organization",
+        name: s.name,
+        url: `https://www.upforge.in/startup/${s.slug}`,
+        ...(s.logo_url ? { logo: { "@type": "ImageObject", url: s.logo_url } } : {}),
+        ...(s.description ? { description: s.description.slice(0, 200) } : {}),
+        ...(s.founders ? { founder: s.founders.split(/[,;&]/).map(f => ({ "@type": "Person", name: f.trim() })) } : {}),
+        ...(s.founded_year ? { foundingDate: String(s.founded_year) } : {}),
+        ...(s.city || s.country_name ? {
+          location: {
+            "@type": "Place",
+            name: [s.city, s.country_name].filter(Boolean).join(", "),
+            ...(s.country_name ? { address: { "@type": "PostalAddress", addressCountry: s.country_code ?? s.country_name } } : {}),
+          },
+        } : {}),
+        ...(s.ufrn ? {
+          identifier: {
+            "@type": "PropertyValue",
+            propertyID: "UFRN",
+            name: "UpForge Registry Number",
+            value: s.ufrn,
+          },
+        } : {}),
+        ...(s.category ? { knowsAbout: s.category } : {}),
+      },
+    })),
+  }
+
+  // 6. SoftwareApplication — UpForge Registry platform itself
+  const softwareAppSchema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "@id": `${BASE_URL}/#app`,
+    name: "UpForge Global Registry",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    url: `${BASE_URL}/registry`,
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    },
+    description: "The world's open, independent verified startup registry. Search 1,000+ startups globally. Every listing gets a unique UFRN.",
+    screenshot: `${BASE_URL}/og/startup-default.png`,
+    author: { "@id": `${BASE_URL}/#organization` },
+    featureList: [
+      "Global startup search", "UFRN assignment", "Sector filters",
+      "Country filters", "Founded year filters", "Verified listings",
+    ],
+    isAccessibleForFree: true,
+    inLanguage: "en",
+  }
+
+  // 7. BreadcrumbList (improved)
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": `${canonicalUrl}#breadcrumb`,
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "UpForge", item: BASE_URL },
+      { "@type": "ListItem", position: 2, name: "Global Registry", item: `${BASE_URL}/registry` },
+      ...(cat ? [{ "@type": "ListItem", position: 3, name: cat, item: `${BASE_URL}/registry?sector=${encodeURIComponent(cat)}` }] : []),
+      ...(country ? [{ "@type": "ListItem", position: 3, name: country, item: `${BASE_URL}/registry?country=${encodeURIComponent(country)}` }] : []),
+      ...(page > 1 ? [{ "@type": "ListItem", position: (cat || country) ? 4 : 3, name: `Page ${page}`, item: canonicalUrl }] : []),
+    ],
+  }
+
+  // 8. FAQ Schema
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${BASE_URL}/registry#faq`,
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "What is a UFRN (UpForge Registry Number)?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "A UFRN (UpForge Registry Number) is a unique, permanent identifier assigned to every approved startup listed on the UpForge Global Registry. It serves as an official proof of existence, shareable on LinkedIn profiles, investor decks, pitch presentations, and press kits. Format example: UF-2026-IND-00001.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Is the UpForge Global Registry free to access and list on?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes. The UpForge Global Registry is completely free — both to browse and to submit your startup. There are no fees, subscriptions, or hidden charges. Every approved startup receives a free UFRN, forever.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "How does startup verification work on UpForge?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Every startup submitted to UpForge goes through a manual editorial review process. The team verifies the startup's existence, legitimacy, and basic information before approving the listing and assigning a UFRN. Listings marked as verified have been independently reviewed and confirmed.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "How do I submit my startup to the UpForge Global Registry?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Visit https://www.upforge.in/submit and fill in your startup details. The review process typically takes a few business days. Upon approval, your startup will appear in the global registry and receive a unique UFRN.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What countries are included in the UpForge Global Registry?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "The UpForge Global Registry accepts startups from all countries worldwide. You can filter the registry by country to discover startups from specific regions including India, USA, UK, Singapore, UAE, and many more.",
+        },
+      },
+    ],
+  }
+
+  const allSchemas = [
+    datasetSchema,
+    orgSchema,
+    websiteSchema,
+    collectionSchema,
+    itemListSchema,
+    softwareAppSchema,
+    breadcrumbSchema,
+    faqSchema,
   ]
 
   return (
     <>
-      {schemas.map((s, i) => (
+      {/* ── All JSON-LD schemas ── */}
+      {allSchemas.map((s, i) => (
         <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }} />
       ))}
+
+      {/* ── Prev/Next link tags for pagination ── */}
+      {prevUrl && <link rel="prev" href={prevUrl} />}
+      {nextUrl && <link rel="next" href={nextUrl} />}
+
+      {/* ── hreflang alternate links ── */}
+      <link rel="alternate" hrefLang="en"      href={canonicalUrl} />
+      <link rel="alternate" hrefLang="en-US"   href={canonicalUrl} />
+      <link rel="alternate" hrefLang="en-IN"   href={canonicalUrl} />
+      <link rel="alternate" hrefLang="x-default" href={`${BASE_URL}/registry`} />
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
@@ -508,7 +888,7 @@ export default async function RegistryPage({ searchParams }: PageProps) {
         .s-badge-cat { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); background: var(--parch-dark); padding: 2px 8px; border-radius: 4px; font-family: system-ui, sans-serif; white-space: nowrap; }
         .s-badge-verified { display: inline-flex; align-items: center; gap: 3px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--teal); font-family: system-ui, sans-serif; }
 
-        /* ─── COUNTRY CODE BADGE (new) ─── */
+        /* ─── COUNTRY CODE BADGE ─── */
         .s-badge-cc {
           display: inline-flex; align-items: center; gap: 3px;
           font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em;
@@ -717,7 +1097,7 @@ export default async function RegistryPage({ searchParams }: PageProps) {
                     </select>
                   </div>
 
-                  {/* ── Country filter (new) ── */}
+                  {/* ── Country filter ── */}
                   <div className="fp-group">
                     <label className="fp-label" htmlFor="rg-country-sel">Country</label>
                     <select className={`fp-sel${country ? " active" : ""}`} id="rg-country-sel" aria-label="Filter by country">
@@ -810,7 +1190,7 @@ export default async function RegistryPage({ searchParams }: PageProps) {
                     )}
                     <div className="startup-list">
                       {grid.map((s, idx) => {
-                        const rank  = baseNum + idx + 1
+                        const rank   = baseNum + idx + 1
                         const isTop3 = rank <= 3
                         return (
                           <a key={s.id} href={`https://www.upforge.in/startup/${s.slug}`} className="s-row">
@@ -827,7 +1207,6 @@ export default async function RegistryPage({ searchParams }: PageProps) {
                                   <span className="s-name">{s.name}</span>
                                   <div className="s-badges">
                                     {s.category && <span className="s-badge-cat">{s.category}</span>}
-                                    {/* ── Country code badge (new) ── */}
                                     {s.country_code && <span className="s-badge-cc">{s.country_code}</span>}
                                     <span className="s-badge-verified">
                                       <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -888,12 +1267,12 @@ export default async function RegistryPage({ searchParams }: PageProps) {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <nav className="pag">
-                    <Link href={pgHref(page - 1)} className={`pag-btn${page === 1 ? " dis" : ""}`}>← Prev</Link>
+                  <nav className="pag" aria-label="Registry pagination">
+                    <Link href={pgHref(page - 1)} className={`pag-btn${page === 1 ? " dis" : ""}`} aria-disabled={page === 1} rel={page > 1 ? "prev" : undefined}>← Prev</Link>
                     {pgNums.map(p => (
-                      <Link key={p} href={pgHref(p)} className={`pag-num${p === page ? " on" : ""}`}>{p}</Link>
+                      <Link key={p} href={pgHref(p)} className={`pag-num${p === page ? " on" : ""}`} aria-current={p === page ? "page" : undefined}>{p}</Link>
                     ))}
-                    <Link href={pgHref(page + 1)} className={`pag-btn${page === totalPages ? " dis" : ""}`}>Next →</Link>
+                    <Link href={pgHref(page + 1)} className={`pag-btn${page === totalPages ? " dis" : ""}`} aria-disabled={page === totalPages} rel={page < totalPages ? "next" : undefined}>Next →</Link>
                   </nav>
                 )}
               </div>
@@ -930,7 +1309,6 @@ export default async function RegistryPage({ searchParams }: PageProps) {
                     </ul>
                   </div>
                 )}
-                {/* Country quick-pick in sidebar */}
                 {countries.length > 0 && (
                   <div className="aside-box">
                     <p className="aside-ey">🌍 Browse by Country</p>
@@ -980,7 +1358,6 @@ export default async function RegistryPage({ searchParams }: PageProps) {
           var btn   = document.getElementById('filter-toggle-btn');
           var panel = document.getElementById('filter-panel');
           if (btn && panel) {
-            // Restore open state if filters are active (page loaded with active filters)
             var hasActive = ${activeFilterCount > 0 ? "true" : "false"};
             if (hasActive) {
               panel.classList.add('open');
