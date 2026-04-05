@@ -1,11 +1,14 @@
-'use client'
+// components/theme-provider.tsx
+// Theme provider for dark/light mode switching with smooth transitions
 
-import * as React from 'react'
-import {
-  ThemeProvider as NextThemesProvider,
-  type ThemeProviderProps,
-} from 'next-themes'
+"use client"
 
-export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+import * as React from "react"
+import { ThemeProvider as NextThemesProvider } from "next-themes"
+
+export function ThemeProvider({
+  children,
+  ...props
+}: React.ComponentProps<typeof NextThemesProvider>) {
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>
 }
