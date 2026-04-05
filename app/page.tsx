@@ -1,514 +1,446 @@
-// components/founder-chronicle-client.tsx
-"use client"
+// app/page.tsx  ←  SERVER COMPONENT
+// CRITICAL: No "use client" here.
+// All 10 founder stories render as static HTML — visible to Google on first crawl.
+//
+// PREMIUM REDESIGN v2.0 — FT.com / Forbes inspired
+// ─────────────────────────────────────────────────────────────────────────────
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import Image from "next/image"
+import type { Metadata } from "next"
+import { headers } from "next/headers"
+import { FounderChronicleClient } from "../components/founder-chronicle-client"
+import { FOUNDERS } from "../data/founders"
+import { createClient } from "@/lib/supabase/server"
 
-type Founder = {
-  name: string
-  role: string
-  company: string
-  slug: string
-  image?: string
-  valuation?: string
-  funding?: string
-  description: string
+// ---------------------------------------------------------------------------
+// DOMAIN DETECTION
+// ---------------------------------------------------------------------------
+async function getDomain(): Promise<"org" | "in"> {
+  const headersList = await headers()
+  const context = headersList.get("x-upforge-domain")
+  if (context === "org" || context === "in") return context as "org" | "in"
+  const host = headersList.get("host") ?? ""
+  return host.includes("upforge.org") ? "org" : "in"
 }
 
-type LinkItem = {
-  l: string
-  h: string
-  desc?: string
+// ---------------------------------------------------------------------------
+// LIVE DATA FETCHERS
+// ---------------------------------------------------------------------------
+
+/** Real last-updated date from Supabase — used in all dateModified fields */
+async function getLatestDate(): Promise<string> {
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from("startups")
+      .select("updated_at")
+      .eq("status", "approved")
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .single()
+    if (data?.updated_at) {
+      return new Date(data.updated_at).toISOString().split("T")[0]
+    }
+  } catch (_) {}
+  return new Date().toISOString().split("T")[0]
 }
 
-type FounderChronicleClientProps = {
-  founders: Founder[]
-  internalLinks: LinkItem[]
-  footerLinks: LinkItem[]
+/** Real approved startup count — used in Dataset schema recordCount */
+async function getStartupCount(): Promise<number> {
+  try {
+    const supabase = await createClient()
+    const { count } = await supabase
+      .from("startups")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "approved")
+    return count ?? FOUNDERS.length
+  } catch (_) {}
+  return 5000 // conservative fallback
 }
 
-export function FounderChronicleClient({ founders, internalLinks, footerLinks }: FounderChronicleClientProps) {
-  const [isScrolled, setIsScrolled] = useState(false)
+// ---------------------------------------------------------------------------
+// METADATA — Premium, authoritative, globally optimized
+// ---------------------------------------------------------------------------
+export async function generateMetadata(): Promise<Metadata> {
+  const domain = await getDomain()
+  const isOrg  = domain === "org"
 
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50)
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+  const canonicalUrl = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  const ogImage      = "https://www.upforge.in/og/founder-chronicle.png"
+
+  if (isOrg) {
+    return {
+      title: "UpForge Global Registry | Verified Startup Database & UFRN System",
+      description:
+        "The official global startup registry. Every listing manually verified and assigned a unique UpForge Registry Number (UFRN). Trusted by investors, accelerators, and ecosystem leaders worldwide.",
+      keywords: [
+        "global startup registry", "verified startup database", "UFRN registry",
+        "UpForge Registry Number", "open startup data", "startup proof of existence",
+        "independent startup registry", "startup verification", "UFRN lookup",
+        "global founder database", "startup identity number",
+      ],
+      alternates: { canonical: canonicalUrl },
+      openGraph: {
+        title: "UpForge — The Global Standard for Startup Verification",
+        description: "Independent global registry for verified startups. Proof of existence via UFRN.",
+        url: canonicalUrl,
+        siteName: "UpForge Global Registry",
+        locale: "en",
+        type: "website",
+        images: [{ url: ogImage, width: 1200, height: 630, alt: "UpForge Global Startup Registry", type: "image/png" }],
+      },
+      twitter: {
+        card: "summary_large_image",
+        site: "@upforge",
+        title: "UpForge Global Registry — Verified Startups",
+        description: "Open, verified registry of startups. Every company gets a unique UFRN.",
+        images: [ogImage],
+      },
+      robots: {
+        index: true, follow: true,
+        googleBot: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large", "max-video-preview": -1 },
+      },
+    }
+  }
+
+  return {
+    title: "The Founder Chronicle 2026 | India's Greatest Startup Stories",
+    description:
+      "Verified deep-dive profiles of India's most iconic startup founders and unicorn success stories — Zepto, CRED, Zerodha, Nykaa, OYO, Groww, Meesho & more.",
+    keywords: [
+      "Indian startup founders 2026", "India unicorn stories", "startup success stories India",
+      "Aadit Palicha Zepto story", "Kunal Shah CRED profile", "Nithin Kamath Zerodha lessons",
+      "Falguni Nayar Nykaa journey", "Indian unicorn list 2026",
+    ],
+    alternates: { canonical: canonicalUrl },
+    openGraph: {
+      title: "The Founder Chronicle 2026 — India's Unicorn Architects",
+      description: "10 exclusive deep-dive profiles of India's most iconic startup founders.",
+      url: canonicalUrl,
+      siteName: "UpForge",
+      locale: "en_IN",
+      type: "website",
+      images: [{ url: ogImage, width: 1200, height: 630, alt: "UpForge Founder Chronicle 2026", type: "image/png" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      site: "@upforge_in",
+      creator: "@upforge_in",
+      title: "The Founder Chronicle 2026 — India's Startup Stories",
+      description: "Verified founder profiles: Zepto, CRED, Zerodha, Nykaa, OYO & more.",
+      images: [ogImage],
+    },
+    robots: {
+      index: true, follow: true,
+      googleBot: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large", "max-video-preview": -1 },
+    },
+  }
+}
+
+// ---------------------------------------------------------------------------
+// STRUCTURED DATA BUILDERS
+// ---------------------------------------------------------------------------
+
+function buildOrganizationSchema(isOrg: boolean, liveDate: string) {
+  const base = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": `${base}/#organization`,
+    name: "UpForge",
+    url: base,
+    logo: {
+      "@type": "ImageObject",
+      url: "https://www.upforge.in/logo.jpg",
+      width: 512,
+      height: 512,
+    },
+    sameAs: [
+      "https://www.upforge.in",
+      "https://www.upforge.org",
+      "https://www.linkedin.com/company/upforge-india",
+    ],
+    description: isOrg
+      ? "The global open startup registry — independent, verified, and free. Creator of the UFRN system."
+      : "India's independent startup registry and discovery platform tracking 5000+ companies.",
+    foundingDate: "2024",
+    areaServed: isOrg ? "Worldwide" : "India",
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "editorial",
+      url: `${base}/contact`,
+      availableLanguage: "English",
+    },
+    dateModified: liveDate,
+  }
+}
+
+function buildWebsiteSchema(isOrg: boolean) {
+  const base = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${base}/#website`,
+    url: base,
+    name: isOrg ? "UpForge Global Registry" : "UpForge India",
+    publisher: { "@id": `${base}/#organization` },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: { "@type": "EntryPoint", urlTemplate: `${base}/startup?q={search_term_string}` },
+      "query-input": "required name=search_term_string",
+    },
+    inLanguage: isOrg ? "en" : "en-IN",
+  }
+}
+
+function buildCollectionPageSchema(isOrg: boolean, liveDate: string) {
+  const base = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": `${base}/#collectionpage`,
+    name: isOrg
+      ? "UpForge Global Startup Registry — Verified UFRN Database"
+      : "The Founder Chronicle 2026 — Indian Startup Founders & Unicorn Stories",
+    description: isOrg
+      ? "Open, independent, verified database of startups. Every entry is assigned a unique UpForge Registry Number (UFRN)."
+      : "Verified deep-dive profiles of India's most iconic startup founders.",
+    url: base,
+    inLanguage: isOrg ? "en" : "en-IN",
+    isPartOf: { "@id": `${base}/#website` },
+    publisher: { "@id": `${base}/#organization` },
+    datePublished: "2026-03-01",
+    dateModified: liveDate,
+    image: { "@type": "ImageObject", url: "https://www.upforge.in/og/founder-chronicle.png", width: 1200, height: 630 },
+    breadcrumb: { "@id": `${base}/#breadcrumb` },
+  }
+}
+
+function buildDatasetSchema(liveDate: string, startupCount: number) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    "@id": "https://www.upforge.org/#dataset",
+    name: "UpForge Global Startup Registry Dataset (UFRN)",
+    description: "Open, verified database of global startups. Each startup is manually reviewed.",
+    url: "https://www.upforge.org",
+    creator: {
+      "@type": "Organization",
+      "@id": "https://www.upforge.org/#organization",
+      name: "UpForge",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "UpForge",
+    },
+    license: "https://creativecommons.org/licenses/by/4.0/",
+    keywords: ["startups", "UFRN", "startup registry", "verified startups"],
+    variableMeasured: [
+      { "@type": "PropertyValue", name: "UFRN", description: "UpForge Registry Number" },
+      { "@type": "PropertyValue", name: "Status", description: "Verification Status" },
+      { "@type": "PropertyValue", name: "Funding", description: "Funding Amount (USD)" },
+    ],
+    measurementTechnique: "Manual verification by UpForge editorial team",
+    size: `${startupCount}+ verified startup records`,
+    isAccessibleForFree: true,
+    temporalCoverage: "2020/..",
+    dateModified: liveDate,
+    datePublished: "2026-03-01",
+  }
+}
+
+function buildItemListSchema(isOrg: boolean) {
+  const base = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `${base}/#founderlist`,
+    name: "Top Startup Founders & Unicorn Profiles",
+    numberOfItems: FOUNDERS.length,
+    itemListOrder: "https://schema.org/ItemListOrderAscending",
+    itemListElement: FOUNDERS.map((f, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      item: {
+        "@type": "Person",
+        name: f.name,
+        jobTitle: f.role,
+        worksFor: { "@type": "Organization", name: f.company },
+        url: `${base}/startup/${f.slug}`,
+      },
+    })),
+  }
+}
+
+function buildBreadcrumbSchema(isOrg: boolean) {
+  const base = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": `${base}/#breadcrumb`,
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "UpForge", item: base },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: isOrg ? "Global Registry" : "The Founder Chronicle 2026",
+        item: base,
+      },
+    ],
+  }
+}
+
+function buildFAQSchema(isOrg: boolean) {
+  const base = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+
+  const questions = isOrg
+    ? [
+        {
+          q: "What is the UFRN (UpForge Registry Number)?",
+          a: "The UFRN is a unique permanent identifier assigned to every verified startup.",
+        },
+        {
+          q: "How do I look up a startup's UFRN?",
+          a: "Visit upforge.org/ufrn/[UFRN-ID] with the company's registry number.",
+        },
+        {
+          q: "Is UpForge free to use?",
+          a: "Yes. UpForge is a free, independent startup registry.",
+        },
+        {
+          q: "How does UpForge verify startups?",
+          a: "Each submission is manually reviewed by the UpForge editorial team.",
+        },
+      ]
+    : [
+        {
+          q: "Who are the top startup founders in India in 2026?",
+          a: "India's top startup founders include Aadit Palicha (Zepto), Kunal Shah (CRED), and others.",
+        },
+        {
+          q: "Which Indian startups are unicorns in 2026?",
+          a: "Top Indian unicorns include Zepto, CRED, Groww, Meesho, and Nykaa.",
+        },
+        {
+          q: "How do I find verified startups in India?",
+          a: "Browse UpForge's verified Indian startup registry at upforge.in/startup.",
+        },
+        {
+          q: "How do I submit my Indian startup to UpForge?",
+          a: "Submit your startup for free at upforge.in/submit.",
+        },
+      ]
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${base}/#faq`,
+    mainEntity: questions.map(({ q, a }) => ({
+      "@type": "Question",
+      name: q,
+      acceptedAnswer: { "@type": "Answer", text: a },
+    })),
+  }
+}
+
+// ---------------------------------------------------------------------------
+// PAGE COMPONENT — SERVER RENDERED WITH DEFAULT EXPORT
+// ---------------------------------------------------------------------------
+export default async function HomePage() {
+  const domain = await getDomain()
+  const isOrg  = domain === "org"
+
+  // Fetch live data for schema freshness
+  const [liveDate, startupCount] = await Promise.all([
+    getLatestDate(),
+    getStartupCount(),
+  ])
 
   return (
-    <div className="founder-chronicle">
-      {/* Global Styles — Premium Magazine Aesthetic */}
-      <style jsx global>{`
-        :root {
-          --ft-navy: #0a2540;
-          --ft-gold: #d4af37;
-          --ft-silver: #e8ecef;
-          --ft-charcoal: #2c3e50;
-          --ft-ash: #f8f9fa;
-          --forbes-serif: 'Cormorant Garamond', 'Times New Roman', Georgia, serif;
-          --ft-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
+    <>
+      {/* STRUCTURED DATA */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildOrganizationSchema(isOrg, liveDate)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildWebsiteSchema(isOrg)) }}
+      />
+      {isOrg && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildDatasetSchema(liveDate, startupCount)) }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildCollectionPageSchema(isOrg, liveDate)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildItemListSchema(isOrg)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbSchema(isOrg)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFAQSchema(isOrg)) }}
+      />
 
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
+      {/* CLIENT COMPONENT */}
+      <FounderChronicleClient
+        founders={FOUNDERS}
+        internalLinks={[
+          { l: "Global Startup Registry", h: "/startup", desc: `${startupCount}+ verified companies` },
+          { l: "Submit Your Startup",      h: "/submit",  desc: "Get listed free · UFRN assigned" },
+          { l: "Intelligence & Analysis", h: "/blog",    desc: "Ecosystem insights & reports" },
+          { l: "About UpForge",            h: "/about",   desc: "Our mission & standards" },
+        ]}
+        footerLinks={[
+          { l: "The Founder Chronicle", h: "/"        },
+          { l: "Startup Registry",      h: "/startup" },
+          { l: "Intelligence",          h: "/blog"    },
+          { l: "Submit Startup",        h: "/submit"  },
+          { l: "About",                 h: "/about"   },
+        ]}
+      />
 
-        body {
-          font-family: var(--ft-sans);
-          background: white;
-          color: #1a1a1a;
-          line-height: 1.5;
-          scroll-behavior: smooth;
-        }
-
-        /* Premium Header */
-        .premium-header {
-          position: sticky;
-          top: 0;
-          z-index: 1000;
-          background: rgba(255, 255, 255, 0.98);
-          backdrop-filter: blur(10px);
-          border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-          transition: all 0.3s ease;
-        }
-
-        .premium-header.scrolled {
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-          border-bottom-color: rgba(212, 175, 55, 0.3);
-        }
-
-        .header-container {
-          max-width: 1400px;
-          margin: 0 auto;
-          padding: 1rem 2rem;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .logo-area h1 {
-          font-family: var(--forbes-serif);
-          font-size: 1.75rem;
-          font-weight: 600;
-          letter-spacing: -0.02em;
-          background: linear-gradient(135deg, var(--ft-navy) 0%, var(--ft-charcoal) 100%);
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-        }
-
-        .logo-badge {
-          font-size: 0.7rem;
-          color: var(--ft-gold);
-          letter-spacing: 0.5px;
-          font-weight: 500;
-        }
-
-        .nav-links {
-          display: flex;
-          gap: 2rem;
-          align-items: center;
-        }
-
-        .nav-links a {
-          text-decoration: none;
-          color: var(--ft-navy);
-          font-weight: 500;
-          font-size: 0.9rem;
-          transition: color 0.2s;
-        }
-
-        .nav-links a:hover {
-          color: var(--ft-gold);
-        }
-
-        .cta-button {
-          background: var(--ft-navy);
-          color: white !important;
-          padding: 0.5rem 1.25rem;
-          border-radius: 100px;
-          font-weight: 600;
-        }
-
-        .cta-button:hover {
-          background: var(--ft-charcoal);
-          transform: translateY(-1px);
-        }
-
-        /* Hero Section — Forbes/FT Inspired */
-        .hero {
-          background: linear-gradient(135deg, var(--ft-ash) 0%, white 100%);
-          border-bottom: 1px solid #eef2f5;
-        }
-
-        .hero-container {
-          max-width: 1400px;
-          margin: 0 auto;
-          padding: 4rem 2rem 5rem;
-          text-align: center;
-        }
-
-        .hero-eyebrow {
-          font-size: 0.75rem;
-          text-transform: uppercase;
-          letter-spacing: 3px;
-          color: var(--ft-gold);
-          font-weight: 600;
-          margin-bottom: 1rem;
-        }
-
-        .hero h2 {
-          font-family: var(--forbes-serif);
-          font-size: 3.5rem;
-          font-weight: 500;
-          line-height: 1.2;
-          max-width: 900px;
-          margin: 0 auto 1rem;
-          color: var(--ft-navy);
-        }
-
-        .hero-lead {
-          font-size: 1.25rem;
-          color: #4a5568;
-          max-width: 700px;
-          margin: 0 auto 2rem;
-          line-height: 1.6;
-        }
-
-        .trust-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 1rem;
-          background: white;
-          padding: 0.75rem 1.5rem;
-          border-radius: 100px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-          font-size: 0.85rem;
-        }
-
-        .trust-badge span {
-          color: var(--ft-gold);
-          font-weight: 700;
-        }
-
-        /* Stats Row */
-        .stats-row {
-          max-width: 1400px;
-          margin: -2rem auto 0;
-          padding: 2rem;
-          display: flex;
-          justify-content: center;
-          gap: 4rem;
-          background: white;
-          border-radius: 16px;
-          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
-          position: relative;
-          z-index: 10;
-        }
-
-        .stat-item {
-          text-align: center;
-        }
-
-        .stat-number {
-          font-family: var(--forbes-serif);
-          font-size: 2rem;
-          font-weight: 700;
-          color: var(--ft-navy);
-        }
-
-        .stat-label {
-          font-size: 0.8rem;
-          color: #666;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-        }
-
-        /* Founder Grid — Magazine Layout */
-        .founders-section {
-          max-width: 1400px;
-          margin: 5rem auto;
-          padding: 0 2rem;
-        }
-
-        .section-header {
-          text-align: center;
-          margin-bottom: 3rem;
-        }
-
-        .section-header h3 {
-          font-family: var(--forbes-serif);
-          font-size: 2rem;
-          font-weight: 500;
-          color: var(--ft-navy);
-        }
-
-        .section-header p {
-          color: #666;
-          margin-top: 0.5rem;
-        }
-
-        .founder-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-          gap: 2rem;
-        }
-
-        .founder-card {
-          background: white;
-          border-radius: 16px;
-          overflow: hidden;
-          transition: all 0.3s ease;
-          border: 1px solid #eef2f5;
-        }
-
-        .founder-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-          border-color: var(--ft-gold);
-        }
-
-        .card-image {
-          height: 200px;
-          background: linear-gradient(135deg, var(--ft-silver), white);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 3rem;
-          font-weight: 700;
-          color: var(--ft-navy);
-          font-family: var(--forbes-serif);
-        }
-
-        .card-content {
-          padding: 1.5rem;
-        }
-
-        .card-name {
-          font-family: var(--forbes-serif);
-          font-size: 1.35rem;
-          font-weight: 600;
-          color: var(--ft-navy);
-          margin-bottom: 0.25rem;
-        }
-
-        .card-role {
-          font-size: 0.85rem;
-          color: var(--ft-gold);
-          font-weight: 600;
-          margin-bottom: 0.5rem;
-        }
-
-        .card-company {
-          font-weight: 700;
-          margin-bottom: 0.75rem;
-        }
-
-        .card-desc {
-          font-size: 0.9rem;
-          color: #4a5568;
-          line-height: 1.5;
-          margin-bottom: 1rem;
-        }
-
-        .card-meta {
-          display: flex;
-          gap: 1rem;
-          font-size: 0.75rem;
-          color: #888;
-          border-top: 1px solid #eef2f5;
-          padding-top: 0.75rem;
-          margin-top: 0.5rem;
-        }
-
-        .read-link {
-          display: inline-block;
-          margin-top: 0.75rem;
-          color: var(--ft-navy);
-          text-decoration: none;
-          font-weight: 600;
-          font-size: 0.85rem;
-        }
-
-        .read-link:hover {
-          color: var(--ft-gold);
-        }
-
-        /* Internal Links Section */
-        .resources-section {
-          background: var(--ft-ash);
-          padding: 4rem 2rem;
-          border-top: 1px solid #eef2f5;
-        }
-
-        .resources-container {
-          max-width: 1400px;
-          margin: 0 auto;
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-          gap: 2rem;
-        }
-
-        .resource-card {
-          background: white;
-          padding: 1.5rem;
-          border-radius: 12px;
-          text-decoration: none;
-          transition: all 0.2s;
-          border: 1px solid #eef2f5;
-        }
-
-        .resource-card:hover {
-          border-color: var(--ft-gold);
-          transform: translateY(-2px);
-        }
-
-        .resource-title {
-          font-weight: 700;
-          color: var(--ft-navy);
-          margin-bottom: 0.5rem;
-        }
-
-        .resource-desc {
-          font-size: 0.85rem;
-          color: #666;
-        }
-
-        /* Footer */
-        .premium-footer {
-          background: var(--ft-navy);
-          color: white;
-          padding: 3rem 2rem;
-        }
-
-        .footer-container {
-          max-width: 1400px;
-          margin: 0 auto;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 1rem;
-        }
-
-        .footer-links {
-          display: flex;
-          gap: 2rem;
-        }
-
-        .footer-links a {
-          color: rgba(255, 255, 255, 0.8);
-          text-decoration: none;
-          font-size: 0.85rem;
-        }
-
-        .footer-links a:hover {
-          color: var(--ft-gold);
-        }
-
-        .copyright {
-          font-size: 0.75rem;
-          color: rgba(255, 255, 255, 0.6);
-        }
-
-        @media (max-width: 768px) {
-          .hero h2 { font-size: 2rem; }
-          .stats-row { flex-direction: column; gap: 1rem; align-items: center; }
-          .nav-links { display: none; }
-          .founder-grid { grid-template-columns: 1fr; }
-        }
-      `}</style>
-
-      {/* Premium Header */}
-      <header className={`premium-header ${isScrolled ? "scrolled" : ""}`}>
-        <div className="header-container">
-          <div className="logo-area">
-            <h1>UpForge</h1>
-            <div className="logo-badge">GLOBAL REGISTRY · UFRN</div>
-          </div>
-          <div className="nav-links">
-            {internalLinks.slice(0, 3).map((link, i) => (
-              <Link key={i} href={link.h}>{link.l}</Link>
-            ))}
-            <Link href="/submit" className="cta-button">Submit →</Link>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="hero">
-        <div className="hero-container">
-          <div className="hero-eyebrow">THE AUTHORITATIVE SOURCE</div>
-          <h2>Global Startup Registry &<br />Founder Intelligence</h2>
-          <p className="hero-lead">
-            Every startup manually verified. Every founder profiled.<br />
-            The UpForge Registry Number (UFRN) — global proof of existence.
+      {/* SEO CONTENT LAYER — Hidden but readable by crawlers */}
+      <div className="sr-only" aria-label="SEO content">
+        <section>
+          <h1>
+            {isOrg
+              ? "UpForge Global Startup Registry — Verified UFRN Database"
+              : "The Founder Chronicle 2026 — Indian Startup Founders & Unicorn Stories"}
+          </h1>
+          <p>
+            {isOrg
+              ? `UpForge Global Registry provides verified proof of existence for startups worldwide. ${startupCount}+ verified startups.`
+              : "Explore the verified stories of India's unicorn founders and their journeys."}
           </p>
-          <div className="trust-badge">
-            ✓ <span>5,000+</span> Verified Startups · ✓ <span>UFRN</span> Certified · ✓ Open & Free
-          </div>
-        </div>
-      </section>
-
-      {/* Founder Grid — The Chronicle */}
-      <section className="founders-section">
-        <div className="section-header">
-          <h3>The Founder Chronicle 2026</h3>
-          <p>Exclusive deep-dive profiles of the world's most influential startup builders</p>
-        </div>
-        <div className="founder-grid">
-          {founders.map((founder, idx) => (
-            <article key={idx} className="founder-card">
-              <div className="card-image">
-                {founder.name.charAt(0)}
-              </div>
-              <div className="card-content">
-                <div className="card-name">{founder.name}</div>
-                <div className="card-role">{founder.role}</div>
-                <div className="card-company">{founder.company}</div>
-                <p className="card-desc">{founder.description.substring(0, 120)}...</p>
-                <div className="card-meta">
-                  {founder.valuation && <span>💰 {founder.valuation}</span>}
-                  {founder.funding && <span>💵 {founder.funding}</span>}
-                </div>
-                <Link href={`/startup/${founder.slug}`} className="read-link">
-                  Read full profile →
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {/* Resources Section */}
-      <section className="resources-section">
-        <div className="resources-container">
-          {internalLinks.map((link, i) => (
-            <Link key={i} href={link.h} className="resource-card">
-              <div className="resource-title">{link.l}</div>
-              {link.desc && <div className="resource-desc">{link.desc}</div>}
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Premium Footer */}
-      <footer className="premium-footer">
-        <div className="footer-container">
-          <div className="footer-links">
-            {footerLinks.map((link, i) => (
-              <Link key={i} href={link.h}>{link.l}</Link>
-            ))}
-          </div>
-          <div className="copyright">
-            © 2026 UpForge · Global Startup Registry · UFRN™
-          </div>
-        </div>
-      </footer>
-    </div>
+          <nav aria-label="Founder profiles">
+            <ul>
+              {FOUNDERS.map((f) => (
+                <li key={f.slug}>
+                  <a href={`/startup/${f.slug}`}>
+                    {f.name} — {f.role} at {f.company}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <nav aria-label="Startup categories">
+            <ul>
+              <li><a href="/startups/fintech">Fintech Startups</a></li>
+              <li><a href="/startups/edtech">Edtech Startups</a></li>
+              <li><a href="/startups/ai">AI Startups</a></li>
+              <li><a href="/startups/saas">SaaS Startups</a></li>
+            </ul>
+          </nav>
+        </section>
+      </div>
+    </>
   )
 }
