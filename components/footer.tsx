@@ -7,6 +7,7 @@ import { useState } from "react";
 import {
   ArrowRight, BadgeCheck, Shield, Globe,
   Linkedin, Twitter, Instagram, Youtube,
+  Award, Database, Zap, TrendingUp,
 } from "lucide-react";
 
 const FOOTER_COLUMNS = [
@@ -59,17 +60,17 @@ function NewsletterForm() {
 
   return submitted ? (
     <div className="flex items-center gap-2 mt-3">
-      <BadgeCheck size={14} className="text-emerald-600" />
-      <span className="text-[12px] text-[#6B6B6B]">Subscribed to UpForge Intel</span>
+      <BadgeCheck size={14} className="text-[#d4af37]" />
+      <span className="text-[12px] text-[#4a5568] font-medium">✓ Subscribed to UpForge Intel</span>
     </div>
   ) : (
     <form onSubmit={handleSubmit} className="flex mt-3 max-w-[320px]">
       <input
         type="email" required placeholder="your@email.com" value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="flex-1 px-3 py-2 text-[12px] border border-[#D8D2C8] border-r-0 bg-white outline-none"
+        className="flex-1 px-3 py-2 text-[12px] border border-[#d4af37]/30 border-r-0 bg-white outline-none focus:border-[#d4af37] transition-colors"
       />
-      <button type="submit" className="px-4 py-2 text-[11px] font-semibold bg-[#111111] text-white hover:bg-[#333333] flex items-center gap-1">
+      <button type="submit" className="px-4 py-2 text-[11px] font-semibold bg-[#0a2540] text-white hover:bg-[#1a3a5c] flex items-center gap-1 transition-all hover:gap-2">
         Subscribe <ArrowRight size={11} />
       </button>
     </form>
@@ -77,153 +78,221 @@ function NewsletterForm() {
 }
 
 const TRUST_ITEMS = [
-  { icon: Shield,    label: "Independent Platform" },
-  { icon: BadgeCheck, label: "Verified Listings" },
-  { icon: Globe,     label: "Open Data Registry" },
+  { icon: Shield,    label: "Independent Registry", desc: "No corporate bias" },
+  { icon: BadgeCheck, label: "Verified Listings", desc: "Manual review + UFRN" },
+  { icon: Globe,     label: "Open Data", desc: "Free & accessible" },
+  { icon: Award,     label: "Global Standard", desc: "Trusted worldwide" },
 ];
 
 export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#EFE9DF] border-t border-[#D8D2C8]">
+    <footer className="bg-[#faf8f4] border-t border-[#e8e2d6]">
 
-      {/* TRUST STRIP */}
-      <div className="border-b border-[#D8D2C8] bg-[#F6F3ED]">
-        <div className="max-w-[1400px] mx-auto px-6 py-3 flex flex-wrap gap-6 justify-center lg:justify-between">
-          {TRUST_ITEMS.map(({ icon: Icon, label }) => (
-            <div key={label} className="flex items-center gap-2">
-              <Icon size={13} className="text-[#C59A2E]" />
-              <span className="text-[11px] text-[#6B6B6B] tracking-wider uppercase">{label}</span>
-            </div>
-          ))}
+      {/* PREMIUM TRUST STRIP — Forbes/FT inspired */}
+      <div className="border-b border-[#e8e2d6] bg-white">
+        <div className="max-w-[1400px] mx-auto px-6 py-4">
+          <div className="flex flex-wrap gap-8 justify-center lg:justify-between items-center">
+            {TRUST_ITEMS.map(({ icon: Icon, label, desc }) => (
+              <div key={label} className="flex items-center gap-3 group cursor-default">
+                <div className="w-8 h-8 rounded-full bg-[#0a2540]/5 flex items-center justify-center group-hover:bg-[#0a2540]/10 transition-colors">
+                  <Icon size={14} className="text-[#d4af37]" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold text-[#0a2540] uppercase tracking-wider">{label}</p>
+                  <p className="text-[10px] text-[#6b6b6b]">{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       <div className="max-w-[1400px] mx-auto px-6">
 
-        {/* MAIN GRID */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-10 gap-y-12 py-14 border-b border-[#D8D2C8]">
+        {/* MAIN GRID — Magazine layout */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-10 gap-y-12 py-16 border-b border-[#e8e2d6]">
 
-          {/* BRAND */}
+          {/* BRAND COLUMN — Premium typography */}
           <div className="col-span-2 lg:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="relative w-7 h-7 overflow-hidden">
+            <Link href="/" className="flex items-center gap-2 mb-5 group">
+              <div className="relative w-8 h-8 overflow-hidden rounded-full border border-[#d4af37]/30">
                 <Image src="/logo.jpg" alt="UpForge" fill className="object-cover" />
               </div>
-              <span className="text-[22px] font-bold text-[#111111]" style={{ fontFamily: "'Playfair Display','Georgia',serif" }}>
+              <span className="text-[26px] font-bold tracking-tight text-[#0a2540]" style={{ fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif" }}>
                 UpForge
               </span>
+              <span className="text-[9px] uppercase tracking-wider text-[#d4af37] font-semibold ml-1">Global</span>
             </Link>
 
-            <p className="text-[13px] text-[#6B6B6B] leading-relaxed max-w-[280px]">
-              India's independent startup intelligence platform —
-              tracking emerging companies, founder insights,
-              and ecosystem trends.
+            <p className="text-[13px] text-[#4a5568] leading-relaxed max-w-[300px]">
+              The authoritative source for verified startup intelligence — 
+              tracking emerging companies, founder insights, and global ecosystem trends.
             </p>
 
-            {/* Dual-domain callout — newspaper-style, minimal */}
-            <div className="mt-5 flex flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] uppercase tracking-widest text-[#AAA]">India Hub</span>
-                <span className="text-[10px] text-[#C59A2E] font-mono">upforge.in</span>
+            {/* Dual-domain callout — newspaper-style */}
+            <div className="mt-6 flex flex-col gap-2 p-3 bg-[#f0ebe2] rounded-md">
+              <div className="flex items-center gap-3">
+                <span className="text-[9px] uppercase tracking-widest text-[#d4af37] font-bold">🇮🇳 India Hub</span>
+                <span className="text-[11px] text-[#0a2540] font-mono">upforge.in</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] uppercase tracking-widest text-[#AAA]">Global Registry</span>
+              <div className="flex items-center gap-3">
+                <span className="text-[9px] uppercase tracking-widest text-[#d4af37] font-bold">🌍 Global Registry</span>
                 <a
                   href="https://www.upforge.org"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[10px] text-[#C59A2E] font-mono hover:underline"
+                  className="text-[11px] text-[#0a2540] font-mono hover:text-[#d4af37] transition-colors"
                 >
-                  upforge.org
+                  upforge.org →
                 </a>
               </div>
             </div>
 
             <Link
               href="/submit"
-              className="inline-flex items-center gap-2 mt-5 text-[11px] font-semibold bg-[#111111] text-white px-4 py-2 hover:bg-[#333333]"
+              className="inline-flex items-center gap-2 mt-6 text-[12px] font-semibold bg-[#0a2540] text-white px-5 py-2.5 hover:bg-[#1a3a5c] transition-all hover:gap-3"
             >
-              List Your Startup <ArrowRight size={11} />
+              List Your Startup <ArrowRight size={12} />
             </Link>
 
-            {/* NEWSLETTER */}
-            <div className="mt-7">
-              <p className="text-[10px] uppercase tracking-widest font-semibold">UpForge Intel</p>
-              <p className="text-[12px] text-[#6B6B6B] mt-1">Weekly startup insights and ecosystem research.</p>
+            {/* NEWSLETTER — Premium styling */}
+            <div className="mt-8 pt-4 border-t border-[#e8e2d6]">
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingUp size={12} className="text-[#d4af37]" />
+                <p className="text-[10px] uppercase tracking-widest font-semibold text-[#0a2540]">UpForge Intel</p>
+              </div>
+              <p className="text-[12px] text-[#4a5568]">Weekly startup insights and ecosystem research, delivered.</p>
               <NewsletterForm />
             </div>
           </div>
 
-          {/* NAV COLUMNS */}
+          {/* NAV COLUMNS — Clean, readable */}
           {FOOTER_COLUMNS.map(({ heading, links }) => (
             <div key={heading}>
-              <h3 className="text-[11px] uppercase tracking-widest font-semibold text-[#111111] mb-4">{heading}</h3>
-              <ul className="space-y-2">
+              <h3 className="text-[10px] uppercase tracking-wider font-bold text-[#0a2540] mb-5">{heading}</h3>
+              <ul className="space-y-3">
                 {links.map(({ label, href }) => (
                   <li key={href}>
-                    <Link href={href} className="text-[13px] text-[#6B6B6B] hover:text-[#C59A2E]">{label}</Link>
+                    <Link href={href} className="text-[13px] text-[#4a5568] hover:text-[#d4af37] transition-colors">
+                      {label}
+                    </Link>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
 
+          {/* STATS BONUS — Adds authority */}
+          <div className="hidden lg:block">
+            <h3 className="text-[10px] uppercase tracking-wider font-bold text-[#0a2540] mb-5">Global Reach</h3>
+            <div className="space-y-4">
+              <div>
+                <div className="flex items-center gap-2 text-[#d4af37]">
+                  <Database size={14} />
+                  <span className="text-[20px] font-bold text-[#0a2540]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>5,000+</span>
+                </div>
+                <p className="text-[10px] text-[#6b6b6b] mt-1">Verified Startups</p>
+              </div>
+              <div>
+                <div className="flex items-center gap-2 text-[#d4af37]">
+                  <Zap size={14} />
+                  <span className="text-[20px] font-bold text-[#0a2540]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>50+</span>
+                </div>
+                <p className="text-[10px] text-[#6b6b6b] mt-1">Countries Covered</p>
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        {/* GLOBAL REGISTRY BANNER */}
-        <div className="py-6 border-b border-[#D8D2C8] flex flex-col sm:flex-row items-center justify-between gap-4">
+        {/* GLOBAL REGISTRY BANNER — Premium gold accent */}
+        <div className="py-7 border-b border-[#e8e2d6] flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Globe size={14} className="text-[#C59A2E]" />
-            <p className="text-[12px] text-[#6B6B6B]">
-              Looking for the global startup database?{" "}
+            <div className="w-7 h-7 rounded-full bg-[#d4af37]/10 flex items-center justify-center">
+              <Globe size={14} className="text-[#d4af37]" />
+            </div>
+            <p className="text-[12px] text-[#4a5568]">
+              <span className="font-semibold text-[#0a2540]">Global Startup Registry</span> — 
+              The world's most comprehensive verified database.{" "}
               <a
-                href="https://www.upforge.org/registry"
+                href="https://www.upforge.org"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#C59A2E] hover:underline font-semibold"
+                className="text-[#d4af37] hover:underline font-semibold"
               >
-                Visit UpForge Global Registry →
+                Explore upforge.org →
               </a>
             </p>
           </div>
-          <span className="text-[10px] uppercase tracking-widest text-[#AAA]">upforge.org</span>
-        </div>
-
-        {/* SOCIAL */}
-        <div className="py-8 border-b border-[#D8D2C8] flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-[12px] text-[#6B6B6B]">Follow UpForge</p>
-          <div className="flex items-center gap-5">
-            <a href="https://www.linkedin.com/company/upforge-india" className="text-[#6B6B6B] hover:text-[#C59A2E]"><Linkedin size={18} /></a>
-            <a href="#" className="text-[#6B6B6B] hover:text-[#C59A2E]"><Twitter size={18} /></a>
-            <a href="#" className="text-[#6B6B6B] hover:text-[#C59A2E]"><Instagram size={18} /></a>
-            <a href="https://www.youtube.com/@upforge-ind" className="text-[#6B6B6B] hover:text-[#C59A2E]"><Youtube size={18} /></a>
+          <div className="flex items-center gap-2">
+            <span className="text-[9px] uppercase tracking-widest text-[#d4af37] font-bold">UFRN™ Certified</span>
+            <span className="w-1 h-1 rounded-full bg-[#d4af37]/50"></span>
+            <span className="text-[9px] uppercase tracking-widest text-[#6b6b6b]">Open Data</span>
           </div>
         </div>
 
-        {/* TRUST LINE */}
-        <div className="py-6 text-center border-b border-[#D8D2C8]">
-          <p className="text-[12px] text-[#6B6B6B]">
-            Independent Startup Intelligence Platform · Verified Data · Updated Daily ·{" "}
-            <a href="https://www.upforge.org" target="_blank" rel="noopener noreferrer" className="hover:text-[#C59A2E]">
+        {/* SOCIAL + PARTNER BADGES */}
+        <div className="py-8 border-b border-[#e8e2d6] flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-6">
+            <p className="text-[11px] font-semibold text-[#0a2540] uppercase tracking-wider">Follow UpForge</p>
+            <div className="flex items-center gap-5">
+              <a href="https://www.linkedin.com/company/upforge-india" target="_blank" rel="noopener noreferrer" 
+                 className="text-[#6b6b6b] hover:text-[#d4af37] transition-colors">
+                <Linkedin size={18} />
+              </a>
+              <a href="#" target="_blank" rel="noopener noreferrer" 
+                 className="text-[#6b6b6b] hover:text-[#d4af37] transition-colors">
+                <Twitter size={18} />
+              </a>
+              <a href="#" target="_blank" rel="noopener noreferrer" 
+                 className="text-[#6b6b6b] hover:text-[#d4af37] transition-colors">
+                <Instagram size={18} />
+              </a>
+              <a href="https://www.youtube.com/@upforge-ind" target="_blank" rel="noopener noreferrer" 
+                 className="text-[#6b6b6b] hover:text-[#d4af37] transition-colors">
+                <Youtube size={18} />
+              </a>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-[9px] text-[#aaa] uppercase tracking-wider">Trusted By</span>
+            <div className="flex gap-3 text-[10px] font-semibold text-[#0a2540]/60 uppercase tracking-wide">
+              <span>Founders</span>
+              <span>•</span>
+              <span>Investors</span>
+              <span>•</span>
+              <span>Accelerators</span>
+            </div>
+          </div>
+        </div>
+
+        {/* TRUST LINE — Legal & compliance */}
+        <div className="py-7 text-center">
+          <p className="text-[11px] text-[#6b6b6b] leading-relaxed">
+            Independent Startup Intelligence Platform · Verified Data via UFRN System · Updated Daily<br />
+            <a href="https://www.upforge.org" target="_blank" rel="noopener noreferrer" className="text-[#d4af37] hover:underline">
               Global Registry at upforge.org
-            </a>
+            </a>{" "}
+            · <Link href="/privacy" className="hover:text-[#d4af37]">Privacy</Link>
+            {" "}· <Link href="/terms" className="hover:text-[#d4af37]">Terms</Link>
           </p>
         </div>
 
-        {/* COPYRIGHT */}
-        <div className="py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        {/* COPYRIGHT — Clean finish */}
+        <div className="py-6 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-[#e8e2d6]">
           <div>
-            <p className="text-[12px] text-[#6B6B6B]">© {year} UpForge · Built for founders and innovators</p>
-            <p className="text-[10px] text-[#AAA] mt-0.5">
-              upforge.in (India) · upforge.org (Global Registry)
+            <p className="text-[11px] text-[#6b6b6b]">© {year} UpForge · Built for founders, innovators, and the global startup ecosystem</p>
+            <p className="text-[9px] text-[#aaa] mt-1">
+              upforge.in (India) · upforge.org (Global Registry) · UFRN™
             </p>
           </div>
-          <div className="flex gap-6 text-[12px] text-[#6B6B6B]">
-            <Link href="/privacy">Privacy</Link>
-            <Link href="/terms">Terms</Link>
-            <Link href="/cookies">Cookies</Link>
+          <div className="flex gap-6 text-[10px] text-[#6b6b6b]">
+            <Link href="/privacy" className="hover:text-[#d4af37] transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-[#d4af37] transition-colors">Terms</Link>
+            <Link href="/cookies" className="hover:text-[#d4af37] transition-colors">Cookies</Link>
+            <Link href="/accessibility" className="hover:text-[#d4af37] transition-colors">Accessibility</Link>
           </div>
         </div>
 
