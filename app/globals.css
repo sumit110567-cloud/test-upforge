@@ -26,13 +26,54 @@
 }
 
 :root {
-  --background: #FCFCFC;
-  --foreground: #1A1A1A;
-  --muted: #6B7280;
-  --border: #E5E7EB;
-  --link: #1A1A1A;
-  --link-hover: #000000;
+  /* Institutional Registry Color System — FT.com / WSJ / Crunchbase inspired */
+  
+  /* Light mode — Creamy institutional (print authority) */
+  --cream-light: #FFFDF9;
+  --cream-dark: #FDF9F2;
+  --ink-100: #F0EDE8;
+  --ink-200: #E6E2DA;
+  --ink-300: #D5D0C8;
+  --ink-400: #A6A096;
+  --ink-500: #7A7368;
+  --ink-600: #5C554A;
+  --ink-700: #3D3830;
+  --ink-800: #2A2824;
+  --ink-900: #1C1A17;
+  --charcoal-950: #12110F;
+  
+  /* Legacy variables for backward compatibility */
+  --background: var(--cream-light);
+  --foreground: var(--ink-900);
+  --muted: var(--ink-500);
+  --border: var(--ink-200);
+  --link: var(--ink-900);
+  --link-hover: var(--ink-700);
   --radius: 4px;
+}
+
+.dark {
+  /* Dark mode — Charcoal base with cream accents (institutional dark) */
+  --cream-light: #1C1A17;
+  --cream-dark: #12110F;
+  --ink-100: #2A2824;
+  --ink-200: #3D3830;
+  --ink-300: #5C554A;
+  --ink-400: #7A7368;
+  --ink-500: #A6A096;
+  --ink-600: #D5D0C8;
+  --ink-700: #E6E2DA;
+  --ink-800: #F0EDE8;
+  --ink-900: #FDF9F2;
+  --charcoal-950: #FFFDF9;
+  
+  /* Legacy variables for dark mode */
+  --background: var(--cream-light);
+  --foreground: var(--ink-900);
+  --muted: var(--ink-500);
+  --border: var(--ink-200);
+  --link: var(--ink-900);
+  --link-hover: var(--ink-700);
 }
 
 @theme inline {
@@ -42,6 +83,20 @@
   --color-border: var(--border);
   --color-link: var(--link);
   --color-link-hover: var(--link-hover);
+  
+  /* New institutional colors */
+  --color-cream-light: var(--cream-light);
+  --color-cream-dark: var(--cream-dark);
+  --color-ink-100: var(--ink-100);
+  --color-ink-200: var(--ink-200);
+  --color-ink-300: var(--ink-300);
+  --color-ink-400: var(--ink-400);
+  --color-ink-500: var(--ink-500);
+  --color-ink-600: var(--ink-600);
+  --color-ink-700: var(--ink-700);
+  --color-ink-800: var(--ink-800);
+  --color-ink-900: var(--ink-900);
+  --color-charcoal-950: var(--charcoal-950);
 
   /*
     FONT TOKENS
@@ -118,15 +173,24 @@
 
   /* ===== SELECTION ===== */
   ::selection {
-    background: #E5E7EB;
-    color: #1A1A1A;
+    background: var(--ink-300);
+    color: var(--ink-900);
+  }
+  
+  .dark ::selection {
+    background: var(--ink-600);
+    color: var(--cream-light);
   }
 
   /* ===== FOCUS VISIBLE (accessibility) ===== */
   :focus-visible {
-    outline: 2px solid #1A1A1A;
+    outline: 2px solid var(--ink-900);
     outline-offset: 3px;
     border-radius: var(--radius);
+  }
+  
+  .dark :focus-visible {
+    outline: 2px solid var(--cream-light);
   }
 
   /* ===== IMAGES ===== */
@@ -136,7 +200,7 @@
   }
 }
 
-/* ===== LAYOUT UTILITIES ===== */
+/* ===== INSTITUTIONAL UTILITY CLASSES ===== */
 @layer utilities {
   .container-narrow {
     @apply max-w-4xl mx-auto px-4 sm:px-6;
@@ -158,4 +222,86 @@
     white-space: nowrap;
     border-width: 0;
   }
+  
+  /* Registry badge styling — for "GLOBAL REGISTRY" labels */
+  .registry-badge {
+    @apply text-[9px] tracking-[0.22em] uppercase font-medium;
+  }
+  
+  /* Thin uppercase navigation — FT.com style */
+  .nav-link {
+    @apply text-[12px] tracking-wide uppercase font-medium transition-colors;
+  }
+  
+  /* Editorial caption style */
+  .caption {
+    @apply text-[11px] tracking-wide uppercase text-ink-500 dark:text-ink-400;
+  }
+  
+  /* Institutional border separator */
+  .border-institutional {
+    @apply border-ink-200 dark:border-ink-300;
+  }
+  
+  /* Cream to charcoal transition for theme switching */
+  .theme-transition {
+    @apply transition-colors duration-300;
+  }
+  
+  /* Card styling for registry listings */
+  .registry-card {
+    @apply bg-cream-light dark:bg-charcoal-950 border border-ink-200 dark:border-ink-300 rounded-none hover:border-ink-300 dark:hover:border-ink-400 transition-all;
+  }
+  
+  /* Number styling for lists (1., 2., 3.) */
+  .list-number {
+    @apply font-display text-ink-400 dark:text-ink-500 mr-3;
+  }
+}
+
+/* ===== PRINT STYLES (for PDF exports and print) ===== */
+@media print {
+  header, footer, .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white;
+    color: black;
+  }
+  
+  a {
+    text-decoration: underline;
+    color: black;
+  }
+}
+
+/* ===== SCROLLBAR STYLING (institutional minimal) ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ink-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ink-400);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-500);
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: var(--ink-200);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: var(--ink-600);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-500);
 }
