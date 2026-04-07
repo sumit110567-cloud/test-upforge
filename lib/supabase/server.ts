@@ -70,7 +70,7 @@ type CookieToSet = {
 // ---------------------------------------------------------------------------
 export async function createClient() {
   const { url, anonKey } = getSupabaseConfig()
-  const cookieStore = await cookies() // Awaited for Next.js 15 compatibility
+  const cookieStore = await cookies()
 
   return createServerClient(url, anonKey, {
     auth: {
@@ -114,10 +114,14 @@ export function createReadClient() {
       setAll: () => {},
     },
     global: {
-      fetch: (input, init) => {
+      // FIXED: Added explicit types to 'input' and 'init' to satisfy strict TypeScript rules
+      fetch: (
+        input: RequestInfo | URL,
+        init?: RequestInit
+      ): Promise<Response> => {
         return fetch(input, {
           ...init,
-          cache: "no-store",
+          cache: "no-store", // disables caching completely for fresh data
         })
       },
     },
