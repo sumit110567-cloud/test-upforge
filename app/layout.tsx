@@ -13,7 +13,7 @@ import {
 } from "@/lib/domain"
 
 import { getDomainContext } from "@/lib/domain.server"
-import { createClient } from "@/lib/supabase/server"
+import { createReadClient } from "@/lib/supabase/server"
 
 const inter = Inter({
   subsets: ["latin"],
