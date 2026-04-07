@@ -24,7 +24,6 @@ import { cookies } from "next/headers"
 // ---------------------------------------------------------------------------
 // ENVIRONMENT VALIDATION
 // Fail loudly at startup rather than silently at query time.
-// A clear error message saves hours of debugging.
 // ---------------------------------------------------------------------------
 function getSupabaseConfig(): { url: string; anonKey: string } {
   const url     = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -44,13 +43,11 @@ function getSupabaseConfig(): { url: string; anonKey: string } {
     )
   }
 
-  // Validate URL format to catch copy-paste errors
   try {
     new URL(url)
   } catch {
     throw new Error(
-      `[Supabase] NEXT_PUBLIC_SUPABASE_URL is not a valid URL: "${url}"\n` +
-      "It should look like: https://yourproject.supabase.co"
+      `[Supabase] NEXT_PUBLIC_SUPABASE_URL is not a valid URL: "${url}"`
     )
   }
 
@@ -69,32 +66,29 @@ type CookieToSet = {
 // ---------------------------------------------------------------------------
 // FULL CLIENT — with cookie-based auth session
 //
-// Use for:
-//   - Authentication flows (login, logout, session check)
-//   - User-specific data queries
-//   - Server Actions that mutate data on behalf of a user
-//   - Route Handlers that need session context
-//
 // Reads and writes cookies — requires a request context.
 // ---------------------------------------------------------------------------
-// lib/supabase/server.ts
 export async function createClient() {
   const { url, anonKey } = getSupabaseConfig()
-  const cookieStore = await cookies() // Correctly awaited for Next.js 15+
+  const cookieStore = await cookies() // Awaited for Next.js 15 compatibility
 
   return createServerClient(url, anonKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+    },
     cookies: {
       getAll() {
         return cookieStore.getAll()
       },
-      setAll(cookiesToSet) {
-        // Server Components cannot set cookies; only Actions/Route Handlers can.
+      setAll(cookiesToSet: CookieToSet[]) {
         try {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options)
+          cookiesToSet.forEach((cookie) =>
+            cookieStore.set(cookie.name, cookie.value, cookie.options)
           )
         } catch {
-          // Silent catch is standard for Server Components
+          // Expected in Server Components where cookies are read-only
         }
       },
     },
@@ -104,16 +98,7 @@ export async function createClient() {
 // ---------------------------------------------------------------------------
 // READ CLIENT — lightweight, no session management
 //
-// Use for:
-//   - Public data queries (startups, blogs, registry)
-//   - generateMetadata()
-//   - generateStaticParams()
-//   - sitemap.ts
-//   - Any query that does not need user identity
-//
-// Does NOT read or write cookies — safe to call outside request context
-// (e.g. during static build where no cookie store exists).
-// Significantly faster than createClient() for read-only operations.
+// Safe to call outside request context (e.g. generateMetadata).
 // ---------------------------------------------------------------------------
 export function createReadClient() {
   const { url, anonKey } = getSupabaseConfig()
@@ -124,20 +109,15 @@ export function createReadClient() {
       autoRefreshToken: false,
       detectSessionInUrl: false,
     },
-
     cookies: {
       getAll: () => [],
       setAll: () => {},
     },
-
     global: {
-      fetch: (
-        input: RequestInfo | URL,
-        init?: RequestInit
-      ): Promise<Response> => {
+      fetch: (input, init) => {
         return fetch(input, {
           ...init,
-          cache: "no-store", // disables caching completely
+          cache: "no-store",
         })
       },
     },
@@ -145,38 +125,25 @@ export function createReadClient() {
 }
 
 // ---------------------------------------------------------------------------
-// SERVICE ROLE CLIENT (optional — add when needed)
-//
-// Use ONLY for:
-//   - Admin operations (approving/rejecting startups)
-//   - Bypassing RLS for trusted server-side operations
-//
-// NEVER expose SUPABASE_SERVICE_ROLE_KEY to the client.
-// NEVER use NEXT_PUBLIC_ prefix on it.
-// Call only from trusted server-side contexts (Server Actions, API routes).
-//
-// Uncomment when needed:
+// SERVICE ROLE CLIENT
 // ---------------------------------------------------------------------------
-// export function createServiceClient() {
-//   const { url } = getSupabaseConfig()
-//   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-//
-//   if (!serviceKey) {
-//     throw new Error(
-//       "[Supabase] SUPABASE_SERVICE_ROLE_KEY is not defined.\n" +
-//       "Add it only to server-side environment variables — NEVER with NEXT_PUBLIC_ prefix."
-//     )
-//   }
-//
-//   return createServerClient(url, serviceKey, {
-//     auth: {
-//       persistSession: false,
-//       autoRefreshToken: false,
-//       detectSessionInUrl: false,
-//     },
-//     cookies: {
-//       getAll: () => [],
-//       setAll: () => {},
-//     },
-//   })
-// }
+export function createServiceClient() {
+  const { url } = getSupabaseConfig()
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!serviceKey) {
+    throw new Error("[Supabase] SUPABASE_SERVICE_ROLE_KEY is not defined.")
+  }
+
+  return createServerClient(url, serviceKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+    },
+    cookies: {
+      getAll: () => [],
+      setAll: () => {},
+    },
+  })
+}
