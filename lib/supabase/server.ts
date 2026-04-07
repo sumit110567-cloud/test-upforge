@@ -77,33 +77,24 @@ type CookieToSet = {
 //
 // Reads and writes cookies — requires a request context.
 // ---------------------------------------------------------------------------
+// lib/supabase/server.ts
 export async function createClient() {
   const { url, anonKey } = getSupabaseConfig()
-  const cookieStore = await cookies()
+  const cookieStore = await cookies() // Correctly awaited for Next.js 15+
 
   return createServerClient(url, anonKey, {
-    auth: {
-      // Server components are stateless — no point persisting session to storage
-      persistSession: false,
-      // No need to refresh tokens in server context — each request is fresh
-      autoRefreshToken: false,
-      // Detect session from cookies (correct for SSR)
-      detectSessionInUrl: false,
-    },
     cookies: {
-      getAll(): ReturnType<typeof cookieStore.getAll> {
+      getAll() {
         return cookieStore.getAll()
       },
-      setAll(cookiesToSet: CookieToSet[]): void {
+      setAll(cookiesToSet) {
+        // Server Components cannot set cookies; only Actions/Route Handlers can.
         try {
-          cookiesToSet.forEach((cookie: CookieToSet) => {
-            cookieStore.set(cookie.name, cookie.value, cookie.options)
-          })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options)
+          )
         } catch {
-          // Expected in Server Components — cookies are read-only there.
-          // Route Handlers and Server Actions will succeed.
-          // If you need to debug cookie set failures, uncomment:
-          // console.warn("[Supabase] Could not set cookies:", error)
+          // Silent catch is standard for Server Components
         }
       },
     },
