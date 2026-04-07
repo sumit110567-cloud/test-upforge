@@ -422,12 +422,6 @@ export default async function HomePage() {
                     </div>
                   </div>
                   {/* Actual image */}
-                  <img
-                    src={video.thumbnail}
-                    alt={video.title}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none" }}
-                  />
                   {/* Play button overlay */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/30">
                     <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-xl">
