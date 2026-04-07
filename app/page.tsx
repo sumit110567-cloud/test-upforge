@@ -19,7 +19,7 @@ import { GlobeHero } from "../components/globe-hero"
 import { ReviewsSection } from "../components/reviews"
 import { GlobalSearch } from "../components/global-search"
 import { FOUNDERS } from "../data/founders"
-import { createClient } from "@/lib/supabase/server"
+import { createReadClient } from "@/lib/supabase/server"
 import { TrustBar } from "../components/trust-bar"
 
 // ---------------------------------------------------------------------------
@@ -38,7 +38,8 @@ async function getDomain(): Promise<"org" | "in"> {
 // ---------------------------------------------------------------------------
 async function getLatestDate(): Promise<string> {
   try {
-    const supabase = await createClient()
+    // FIXED: Use createReadClient() and remove 'await'
+    const supabase = createReadClient() 
     const { data } = await supabase
       .from("startups")
       .select("updated_at")
@@ -53,7 +54,8 @@ async function getLatestDate(): Promise<string> {
 
 async function getStartupCount(): Promise<number> {
   try {
-    const supabase = await createClient()
+    // FIXED: Use createReadClient() and remove 'await'
+    const supabase = createReadClient()
     const { count } = await supabase
       .from("startups")
       .select("*", { count: "exact", head: true })
@@ -62,7 +64,6 @@ async function getStartupCount(): Promise<number> {
   } catch (_) {}
   return 5000
 }
-
 // ---------------------------------------------------------------------------
 // METADATA — same as before, untouched
 // ---------------------------------------------------------------------------
