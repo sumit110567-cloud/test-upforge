@@ -305,3 +305,12 @@
 .dark ::-webkit-scrollbar-thumb:hover {
   background: var(--ink-500);
 }
+
+/* app/globals.css */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee { 
+  animation: marquee 30s linear infinite; 
+}
