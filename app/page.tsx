@@ -20,6 +20,7 @@ import { ReviewsSection } from "../components/reviews"
 import { GlobalSearch } from "../components/global-search"
 import { FOUNDERS } from "../data/founders"
 import { createClient } from "@/lib/supabase/server"
+import { TrustBar } from "../components/trust-bar"
 
 // ---------------------------------------------------------------------------
 // DOMAIN DETECTION
@@ -342,37 +343,8 @@ export default async function HomePage() {
       {/* ── 1. GLOBE HERO ───────────────────────────────────────────────── */}
       <GlobeHero isOrg={isOrg} />
 
-      {/* ── 2. TRUST BAR ────────────────────────────────────────────────── */}
-      <div className="bg-white border-y border-gray-100 py-6 overflow-hidden">
-        <div className="flex gap-12 animate-marquee whitespace-nowrap items-center">
-          {[
-            "🇮🇳 5000+ Verified Startups",
-            "🌍 50+ Countries",
-            "✅ UFRN Certified",
-            "🔍 Free to Search",
-            "📊 Real Funding Data",
-            "🏆 India's #1 Registry",
-            "🔐 Manually Verified",
-            "📈 Updated Daily",
-            "🌍 Global Reach",
-            "🇮🇳 5000+ Verified Startups",
-            "✅ UFRN Certified",
-            "📊 Real Funding Data",
-          ].map((item, i) => (
-            <span key={i} className="text-sm font-semibold text-gray-500 flex items-center gap-2 flex-shrink-0">
-              {item}
-              <span className="w-1 h-1 rounded-full bg-gray-300 ml-6" />
-            </span>
-          ))}
-        </div>
-        <style jsx>{`
-          @keyframes marquee {
-            from { transform: translateX(0); }
-            to { transform: translateX(-50%); }
-          }
-          .animate-marquee { animation: marquee 30s linear infinite; }
-        `}</style>
-      </div>
+     {/* ── 2. TRUST BAR ────────────────────────────────────────────────── */}
+    <TrustBar />
 
       {/* ── 3. FOUNDER CHRONICLE — scroll-through stories ───────────────── */}
       <section className="bg-[#050b18] py-6">
