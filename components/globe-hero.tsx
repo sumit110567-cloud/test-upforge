@@ -7,19 +7,55 @@
 import { useEffect, useRef, useState } from "react"
 
 const CITIES = [
+  // 🇮🇳 India (Startup Powerhouse)
   { name: "Bangalore", lat: 12.97, lng: 77.59, region: "India" },
   { name: "Mumbai", lat: 19.07, lng: 72.87, region: "India" },
-  { name: "San Francisco", lat: 37.77, lng: -122.41, region: "US" },
-  { name: "London", lat: 51.5, lng: -0.12, region: "UK" },
-  { name: "Singapore", lat: 1.35, lng: 103.82, region: "SEA" },
-  { name: "Dubai", lat: 25.2, lng: 55.27, region: "ME" },
-  { name: "Nairobi", lat: -1.29, lng: 36.82, region: "Africa" },
-  { name: "São Paulo", lat: -23.55, lng: -46.63, region: "LatAm" },
-  { name: "Berlin", lat: 52.52, lng: 13.4, region: "Europe" },
-  { name: "Tokyo", lat: 35.68, lng: 139.69, region: "Asia" },
-  { name: "Sydney", lat: -33.86, lng: 151.2, region: "Pacific" },
   { name: "Delhi", lat: 28.61, lng: 77.2, region: "India" },
-]
+  { name: "Hyderabad", lat: 17.38, lng: 78.48, region: "India" },
+  { name: "Pune", lat: 18.52, lng: 73.85, region: "India" },
+
+  // 🇺🇸 USA (Global Tech Capital)
+  { name: "San Francisco", lat: 37.77, lng: -122.41, region: "US" },
+  { name: "New York", lat: 40.71, lng: -74.0, region: "US" },
+  { name: "Austin", lat: 30.27, lng: -97.74, region: "US" },
+  { name: "Seattle", lat: 47.61, lng: -122.33, region: "US" },
+
+  // 🇬🇧 UK & Europe
+  { name: "London", lat: 51.5, lng: -0.12, region: "UK" },
+  { name: "Berlin", lat: 52.52, lng: 13.4, region: "Europe" },
+  { name: "Paris", lat: 48.85, lng: 2.35, region: "Europe" },
+  { name: "Amsterdam", lat: 52.36, lng: 4.9, region: "Europe" },
+  { name: "Stockholm", lat: 59.33, lng: 18.06, region: "Europe" },
+
+  // 🇸🇬 Southeast Asia
+  { name: "Singapore", lat: 1.35, lng: 103.82, region: "SEA" },
+  { name: "Jakarta", lat: -6.2, lng: 106.8, region: "SEA" },
+  { name: "Bangkok", lat: 13.75, lng: 100.5, region: "SEA" },
+
+  // 🇦🇪 Middle East Innovation Hub
+  { name: "Dubai", lat: 25.2, lng: 55.27, region: "ME" },
+  { name: "Abu Dhabi", lat: 24.45, lng: 54.38, region: "ME" },
+  { name: "Tel Aviv", lat: 32.08, lng: 34.78, region: "ME" },
+
+  // 🇯🇵 East Asia Tech Giants
+  { name: "Tokyo", lat: 35.68, lng: 139.69, region: "Asia" },
+  { name: "Seoul", lat: 37.56, lng: 126.97, region: "Asia" },
+  { name: "Hong Kong", lat: 22.32, lng: 114.17, region: "Asia" },
+
+  // 🇦🇺 Oceania
+  { name: "Sydney", lat: -33.86, lng: 151.2, region: "Pacific" },
+  { name: "Melbourne", lat: -37.81, lng: 144.96, region: "Pacific" },
+
+  // 🌍 Africa Rising Tech Scene
+  { name: "Nairobi", lat: -1.29, lng: 36.82, region: "Africa" },
+  { name: "Lagos", lat: 6.52, lng: 3.37, region: "Africa" },
+  { name: "Cape Town", lat: -33.92, lng: 18.42, region: "Africa" },
+
+  // 🇧🇷 Latin America Startup Growth
+  { name: "São Paulo", lat: -23.55, lng: -46.63, region: "LatAm" },
+  { name: "Mexico City", lat: 19.43, lng: -99.13, region: "LatAm" },
+  { name: "Buenos Aires", lat: -34.6, lng: -58.38, region: "LatAm" },
+];
 
 function project(lat: number, lng: number, rotationDeg: number) {
   const CX = 200, CY = 200, RX = 175, RY = 175
