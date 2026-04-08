@@ -1,14 +1,11 @@
 "use client"
 
-// components/globe-hero.tsx
-// ─────────────────────────────────────────────────────────────────────────────
-// Animated globe hero — pure CSS/SVG, no canvas, no external lib.
-// Represents UpForge as a GLOBAL platform.
-// ─────────────────────────────────────────────────────────────────────────────
+// components/globe-hero.tsx — EDITORIAL REDESIGN v3
+// FT.com / Economist inspired: ivory background, maroon/burgundy, serif typography
+// Pure SVG globe, no external libs
 
 import { useEffect, useRef, useState } from "react"
 
-// Cities on the globe (lat/lng → projected x/y for display)
 const CITIES = [
   { name: "Bangalore", lat: 12.97, lng: 77.59, region: "India" },
   { name: "Mumbai", lat: 19.07, lng: 72.87, region: "India" },
@@ -24,21 +21,17 @@ const CITIES = [
   { name: "Delhi", lat: 28.61, lng: 77.2, region: "India" },
 ]
 
-// Project lat/lng to x,y on a 400×400 ellipse (simple orthographic-like)
-function project(lat: number, lng: number, rotationDeg: number): { x: number; y: number; visible: boolean } {
-  const CX = 200, CY = 200, RX = 180, RY = 180
+function project(lat: number, lng: number, rotationDeg: number) {
+  const CX = 200, CY = 200, RX = 175, RY = 175
   const latR = (lat * Math.PI) / 180
   const lngR = ((lng + rotationDeg) * Math.PI) / 180
-
   const x = CX + RX * Math.cos(latR) * Math.sin(lngR)
   const y = CY - RY * Math.sin(latR)
-  const visible = Math.cos(latR) * Math.cos(lngR) > -0.15 // slightly past horizon
-
+  const visible = Math.cos(latR) * Math.cos(lngR) > -0.1
   return { x, y, visible }
 }
 
-// Generate latitude/longitude lines for the globe wireframe
-function buildMeridians(rotation: number, count = 12) {
+function buildMeridians(rotation: number, count = 10) {
   const lines: string[] = []
   for (let i = 0; i < count; i++) {
     const lng = (i / count) * 360 - 180
@@ -52,20 +45,18 @@ function buildMeridians(rotation: number, count = 12) {
   return lines
 }
 
-function buildParallels(rotation: number, count = 8) {
+function buildParallels(rotation: number, count = 7) {
   const lines: string[] = []
   for (let i = 1; i < count; i++) {
     const lat = (i / count) * 180 - 90
     const pts: string[] = []
     let first = true
-    for (let lng = -180; lng <= 180; lng += 5) {
+    for (let lng = -180; lng <= 180; lng += 4) {
       const { x, y, visible } = project(lat, lng, rotation)
       if (visible) {
         pts.push(`${first ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`)
         first = false
-      } else {
-        first = true
-      }
+      } else { first = true }
     }
     if (pts.length > 1) lines.push(pts.join(" "))
   }
@@ -75,25 +66,24 @@ function buildParallels(rotation: number, count = 8) {
 export function GlobeHero({ isOrg }: { isOrg?: boolean }) {
   const [rotation, setRotation] = useState(0)
   const [activeCityIndex, setActiveCityIndex] = useState(0)
+  const [mounted, setMounted] = useState(false)
   const rafRef = useRef<number | null>(null)
   const lastRef = useRef<number>(0)
 
   useEffect(() => {
+    setMounted(true)
     const animate = (ts: number) => {
       const dt = ts - lastRef.current
       lastRef.current = ts
-      setRotation((r) => (r + dt * 0.008) % 360)
+      setRotation((r) => (r + dt * 0.006) % 360)
       rafRef.current = requestAnimationFrame(animate)
     }
     rafRef.current = requestAnimationFrame(animate)
     return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current) }
   }, [])
 
-  // Cycle active city every 2s
   useEffect(() => {
-    const id = setInterval(() => {
-      setActiveCityIndex((i) => (i + 1) % CITIES.length)
-    }, 2000)
+    const id = setInterval(() => setActiveCityIndex((i) => (i + 1) % CITIES.length), 2500)
     return () => clearInterval(id)
   }, [])
 
@@ -104,63 +94,113 @@ export function GlobeHero({ isOrg }: { isOrg?: boolean }) {
   const activeCityProj = project(activeCity.lat, activeCity.lng, rotation)
 
   return (
-    <section className="globe-hero relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#050b18] px-4">
-      {/* Background starfield */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 60 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-white"
-            style={{
-              width: Math.random() > 0.9 ? "2px" : "1px",
-              height: Math.random() > 0.9 ? "2px" : "1px",
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              opacity: 0.1 + Math.random() * 0.5,
-              animation: `twinkle ${2 + Math.random() * 4}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 4}s`,
-            }}
-          />
-        ))}
+    <section
+      className="globe-hero-editorial relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-4"
+      style={{ background: "linear-gradient(160deg, #faf7f2 0%, #f5f0e8 40%, #f0ebe0 100%)" }}
+    >
+      {/* Top rule */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-[#8b1a1a]" />
+
+      {/* Faint editorial grid texture */}
+      <div className="absolute inset-0 opacity-[0.025] pointer-events-none" style={{
+        backgroundImage: "linear-gradient(#8b1a1a 1px, transparent 1px), linear-gradient(90deg, #8b1a1a 1px, transparent 1px)",
+        backgroundSize: "80px 80px"
+      }} />
+
+      {/* Pull quote decorative marks */}
+      <div className="absolute top-24 left-8 text-[120px] leading-none text-[#8b1a1a] opacity-[0.06] font-serif select-none pointer-events-none">"</div>
+      <div className="absolute bottom-24 right-8 text-[120px] leading-none text-[#8b1a1a] opacity-[0.06] font-serif select-none pointer-events-none">"</div>
+
+      {/* Dateline bar */}
+      <div className="absolute top-6 left-0 right-0 flex items-center justify-center">
+        <div className="flex items-center gap-6 text-[10px] tracking-[0.2em] uppercase text-[#8b1a1a] font-medium" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
+          <span>Est. 2024</span>
+          <span className="w-8 h-px bg-[#8b1a1a] opacity-40" />
+          <span>Global Startup Registry</span>
+          <span className="w-8 h-px bg-[#8b1a1a] opacity-40" />
+          <span>5,000+ Verified</span>
+        </div>
       </div>
 
-      {/* Glow behind globe */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
+      {/* Main content */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 lg:gap-8 py-28">
 
-      {/* Content layout */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-0 py-20">
+        {/* LEFT — Editorial text */}
+        <div className="flex-1 text-center lg:text-left lg:pr-16 max-w-2xl">
 
-        {/* LEFT — text */}
-        <div className="flex-1 text-center lg:text-left lg:pr-12">
-          <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold px-4 py-2 rounded-full mb-8 tracking-widest uppercase">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-            {isOrg ? "Global Startup Registry" : "The Founder Chronicle 2026"}
+          {/* Section label */}
+          <div className="flex items-center gap-3 justify-center lg:justify-start mb-6">
+            <div className="h-px w-8 bg-[#8b1a1a]" />
+            <span className="text-[10px] tracking-[0.25em] uppercase text-[#8b1a1a] font-semibold" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
+              {isOrg ? "The Independent Registry" : "The Founder Chronicle · 2026"}
+            </span>
           </div>
 
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tight mb-6">
+          {/* Main headline — big editorial serif */}
+          <h1
+            className="leading-[1.0] tracking-tight mb-8"
+            style={{
+              fontFamily: "'Times New Roman', Georgia, 'Palatino Linotype', serif",
+              fontSize: "clamp(42px, 6vw, 80px)",
+              color: "#1a0a0a",
+              fontWeight: 700,
+            }}
+          >
             {isOrg ? (
-              <>Where startups<br /><span className="text-blue-400">prove they exist.</span></>
+              <>Where Startups<br />
+              <span style={{ color: "#8b1a1a", fontStyle: "italic" }}>Prove They Exist.</span></>
             ) : (
-              <>Stories that<br /><span className="text-blue-400">shape founders.</span></>
+              <>Stories That<br />
+              <span style={{ color: "#8b1a1a", fontStyle: "italic" }}>Shape Founders.</span></>
             )}
           </h1>
 
-          <p className="text-blue-200/60 text-lg md:text-xl max-w-xl mx-auto lg:mx-0 leading-relaxed mb-10">
+          {/* Horizontal rule */}
+          <div className="flex items-center gap-4 justify-center lg:justify-start mb-8">
+            <div className="h-px flex-1 max-w-[60px] bg-[#8b1a1a]" />
+            <div className="w-1.5 h-1.5 bg-[#8b1a1a] rotate-45" />
+            <div className="h-px flex-1 max-w-[60px] bg-[#8b1a1a]" />
+          </div>
+
+          {/* Body copy */}
+          <p
+            className="text-lg leading-[1.75] mb-10 max-w-lg mx-auto lg:mx-0"
+            style={{
+              fontFamily: "'Times New Roman', Georgia, serif",
+              color: "#3d2b2b",
+            }}
+          >
             {isOrg
-              ? "Every startup deserves a verified identity. UpForge assigns the world's first independent startup registry number — the UFRN — to companies across 50+ countries."
-              : "Deep research, verified data, and real lessons from the founders building India's next generation of unicorns. Updated weekly."}
+              ? "The world's first independent startup registry. Every company is manually verified and assigned a permanent UpForge Registry Number — the global standard for startup identity."
+              : "Deep research, verified data, and real lessons from the founders building India's next generation of unicorn companies. Updated weekly by our editorial team."}
           </p>
 
-          {/* Stats row */}
-          <div className="flex flex-wrap justify-center lg:justify-start gap-8 mb-10">
+          {/* Stats — editorial table style */}
+          <div
+            className="grid grid-cols-3 gap-0 mb-10 border-t border-b"
+            style={{ borderColor: "#c9b99a" }}
+          >
             {[
               { n: "5,000+", l: "Verified Startups" },
               { n: "50+", l: "Countries" },
-              { n: "UFRN", l: "Unique Registry" },
-            ].map((s) => (
-              <div key={s.l} className="text-center lg:text-left">
-                <div className="text-3xl font-black text-white">{s.n}</div>
-                <div className="text-blue-300/50 text-xs font-medium tracking-wide">{s.l}</div>
+              { n: "UFRN™", l: "Registry Standard" },
+            ].map((s, i) => (
+              <div
+                key={s.l}
+                className="py-5 text-center"
+                style={{
+                  borderRight: i < 2 ? "1px solid #c9b99a" : "none",
+                }}
+              >
+                <div
+                  className="text-2xl font-bold mb-1"
+                  style={{ fontFamily: "'Times New Roman', Georgia, serif", color: "#8b1a1a" }}
+                >
+                  {s.n}
+                </div>
+                <div className="text-[10px] tracking-[0.15em] uppercase text-[#8b6a6a]" style={{ fontFamily: "'Times New Roman', serif" }}>
+                  {s.l}
+                </div>
               </div>
             ))}
           </div>
@@ -169,68 +209,99 @@ export function GlobeHero({ isOrg }: { isOrg?: boolean }) {
           <div className="flex flex-wrap justify-center lg:justify-start gap-4">
             <a
               href="/startup"
-              className="bg-blue-500 hover:bg-blue-400 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-200 hover:scale-105 shadow-xl shadow-blue-500/30 text-sm"
+              className="editorial-btn-primary inline-flex items-center gap-2 px-8 py-3.5 text-sm font-semibold transition-all duration-200"
+              style={{
+                background: "#8b1a1a",
+                color: "#faf7f2",
+                fontFamily: "'Times New Roman', Georgia, serif",
+                letterSpacing: "0.05em",
+                border: "1px solid #8b1a1a",
+              }}
             >
-              Explore Registry →
+              Explore Registry
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
             </a>
             <a
               href="/submit"
-              className="bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-200 text-sm"
+              className="inline-flex items-center gap-2 px-8 py-3.5 text-sm font-semibold transition-all duration-200"
+              style={{
+                background: "transparent",
+                color: "#8b1a1a",
+                fontFamily: "'Times New Roman', Georgia, serif",
+                letterSpacing: "0.05em",
+                border: "1px solid #8b1a1a",
+              }}
             >
               List Your Startup
             </a>
           </div>
         </div>
 
-        {/* RIGHT — globe */}
+        {/* RIGHT — Globe, now with maroon/cream palette */}
         <div className="flex-1 flex items-center justify-center relative">
-          {/* Active city tooltip */}
-          {activeCityProj.visible && (
+
+          {/* Active city label */}
+          {mounted && activeCityProj.visible && (
             <div
-              className="absolute z-20 pointer-events-none transition-all duration-500"
+              className="absolute z-20 pointer-events-none transition-all duration-700"
               style={{
-                left: `calc(50% + ${(activeCityProj.x - 200) * 1.2}px + 20px)`,
-                top: `calc(50% + ${(activeCityProj.y - 200) * 1.2}px - 10px)`,
+                left: `calc(50% + ${(activeCityProj.x - 200) * 1.15}px + 18px)`,
+                top: `calc(50% + ${(activeCityProj.y - 200) * 1.15}px - 12px)`,
               }}
             >
-              <div className="bg-white/90 backdrop-blur text-gray-900 text-xs font-bold px-3 py-1.5 rounded-lg shadow-xl whitespace-nowrap">
-                📍 {activeCity.name}
-                <span className="text-gray-400 font-normal ml-1">{activeCity.region}</span>
+              <div
+                className="text-xs font-semibold px-3 py-1.5 whitespace-nowrap shadow-lg"
+                style={{
+                  background: "#faf7f2",
+                  color: "#8b1a1a",
+                  border: "1px solid #c9b99a",
+                  fontFamily: "'Times New Roman', Georgia, serif",
+                }}
+              >
+                {activeCity.name} <span style={{ color: "#8b6a6a", fontWeight: 400 }}>· {activeCity.region}</span>
               </div>
             </div>
           )}
 
           <svg
             viewBox="0 0 400 400"
-            className="w-[320px] h-[320px] md:w-[420px] md:h-[420px] lg:w-[480px] lg:h-[480px] drop-shadow-2xl"
+            className="w-[300px] h-[300px] md:w-[400px] md:h-[400px] lg:w-[460px] lg:h-[460px]"
             aria-hidden="true"
           >
             <defs>
-              <radialGradient id="globeGlow" cx="40%" cy="35%" r="60%">
-                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
-                <stop offset="60%" stopColor="#1e3a8a" stopOpacity="0.15" />
-                <stop offset="100%" stopColor="#000" stopOpacity="0" />
+              <radialGradient id="eGlobeBase" cx="38%" cy="32%" r="65%">
+                <stop offset="0%" stopColor="#faf7f2" />
+                <stop offset="70%" stopColor="#f0e8dc" />
+                <stop offset="100%" stopColor="#e8ddd0" />
               </radialGradient>
-              <radialGradient id="globeBase" cx="40%" cy="35%" r="65%">
-                <stop offset="0%" stopColor="#0f172a" />
-                <stop offset="100%" stopColor="#020617" />
+              <radialGradient id="eGlobeShade" cx="70%" cy="70%" r="50%">
+                <stop offset="0%" stopColor="#3d1515" stopOpacity="0.12" />
+                <stop offset="100%" stopColor="#3d1515" stopOpacity="0" />
               </radialGradient>
-              <filter id="cityGlow">
-                <feGaussianBlur stdDeviation="3" result="blur" />
+              <filter id="eCityGlow">
+                <feGaussianBlur stdDeviation="2.5" result="blur" />
                 <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+              <filter id="eGlobeShadow">
+                <feDropShadow dx="12" dy="16" stdDeviation="20" floodColor="#3d1515" floodOpacity="0.15" />
               </filter>
             </defs>
 
-            {/* Base sphere */}
-            <circle cx="200" cy="200" r="180" fill="url(#globeBase)" />
-            <circle cx="200" cy="200" r="180" fill="url(#globeGlow)" />
+            {/* Shadow */}
+            <ellipse cx="220" cy="370" rx="130" ry="12" fill="#3d1515" opacity="0.08" />
 
-            {/* Wireframe lines */}
+            {/* Base sphere */}
+            <circle cx="200" cy="200" r="175" fill="url(#eGlobeBase)" filter="url(#eGlobeShadow)" />
+            <circle cx="200" cy="200" r="175" fill="url(#eGlobeShade)" />
+
+            {/* Grid lines — maroon, subtle */}
             {meridians.map((d, i) => (
-              <path key={`m${i}`} d={d} stroke="#3b82f6" strokeWidth="0.5" fill="none" opacity="0.25" />
+              <path key={`m${i}`} d={d} stroke="#8b1a1a" strokeWidth="0.6" fill="none" opacity="0.18" />
             ))}
             {parallels.map((d, i) => (
-              <path key={`p${i}`} d={d} stroke="#3b82f6" strokeWidth="0.5" fill="none" opacity="0.2" />
+              <path key={`p${i}`} d={d} stroke="#8b1a1a" strokeWidth="0.6" fill="none" opacity="0.14" />
             ))}
 
             {/* City dots */}
@@ -240,40 +311,49 @@ export function GlobeHero({ isOrg }: { isOrg?: boolean }) {
               return (
                 <g key={c.name}>
                   {isActive && (
-                    <circle cx={c.x} cy={c.y} r="8" fill="#60a5fa" opacity="0.2">
-                      <animate attributeName="r" values="5;12;5" dur="2s" repeatCount="indefinite" />
-                      <animate attributeName="opacity" values="0.3;0;0.3" dur="2s" repeatCount="indefinite" />
+                    <circle cx={c.x} cy={c.y} r="8" fill="#8b1a1a" opacity="0.15">
+                      <animate attributeName="r" values="4;12;4" dur="2.5s" repeatCount="indefinite" />
+                      <animate attributeName="opacity" values="0.2;0;0.2" dur="2.5s" repeatCount="indefinite" />
                     </circle>
                   )}
                   <circle
-                    cx={c.x}
-                    cy={c.y}
-                    r={isActive ? 4 : 2.5}
-                    fill={isActive ? "#60a5fa" : "#93c5fd"}
-                    opacity={isActive ? 1 : 0.7}
-                    filter={isActive ? "url(#cityGlow)" : undefined}
+                    cx={c.x} cy={c.y}
+                    r={isActive ? 4.5 : 2.5}
+                    fill={isActive ? "#8b1a1a" : "#c9836e"}
+                    opacity={isActive ? 1 : 0.6}
+                    filter={isActive ? "url(#eCityGlow)" : undefined}
                   />
                 </g>
               )
             })}
 
-            {/* Sphere rim highlight */}
-            <circle cx="200" cy="200" r="180" fill="none" stroke="#3b82f6" strokeWidth="1" opacity="0.4" />
-            <ellipse cx="155" cy="140" rx="60" ry="35" fill="white" opacity="0.03" transform="rotate(-30 155 140)" />
+            {/* Rim */}
+            <circle cx="200" cy="200" r="175" fill="none" stroke="#8b1a1a" strokeWidth="1" opacity="0.25" />
+            {/* Specular highlight */}
+            <ellipse cx="148" cy="132" rx="52" ry="28" fill="white" opacity="0.22" transform="rotate(-35 148 132)" />
           </svg>
         </div>
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-blue-300/40 text-xs">
-        <span>Scroll to explore</span>
-        <div className="w-px h-8 bg-gradient-to-b from-blue-300/40 to-transparent animate-bounce" />
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+        <span className="text-[9px] tracking-[0.25em] uppercase text-[#8b6a6a]" style={{ fontFamily: "'Times New Roman', serif" }}>
+          Scroll
+        </span>
+        <div className="w-px h-10 bg-gradient-to-b from-[#8b1a1a]/40 to-transparent" style={{
+          animation: "editorialBounce 2s ease-in-out infinite"
+        }} />
       </div>
 
       <style jsx>{`
-        @keyframes twinkle {
-          0%, 100% { opacity: 0.1; }
-          50% { opacity: 0.6; }
+        @keyframes editorialBounce {
+          0%, 100% { opacity: 0.4; transform: scaleY(1); }
+          50% { opacity: 0.9; transform: scaleY(1.15); }
+        }
+        .editorial-btn-primary:hover {
+          background: #6b1212 !important;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 20px rgba(139,26,26,0.25);
         }
       `}</style>
     </section>
