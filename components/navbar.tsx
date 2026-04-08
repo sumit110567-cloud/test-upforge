@@ -18,6 +18,7 @@ type NavLink = {
 };
 
 const NAV_LINKS: NavLink[] = [
+  { name: "Home", href: "/" },
   { name: "Registry", href: "/registry", badge: "5K+" },
   { name: "Unicorns", href: "/indian-unicorns" },
   { name: "Chronicle", href: "/blog" },
@@ -68,6 +69,16 @@ export function Navbar() {
   useEffect(() => {
     if (searchOpen) searchRef.current?.focus();
   }, [searchOpen]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [isOpen]);
 
   const isActive = (link: NavLink) => {
     if (link.external) return false;
@@ -125,7 +136,7 @@ export function Navbar() {
 
           {/* Right: Global domains */}
           <div className="hidden sm:flex items-center gap-4">
-            <a
+            
               href="https://www.upforge.in"
               className="text-[9px] tracking-widest uppercase transition-colors"
               style={{ fontFamily: "'Times New Roman', serif", color: "#8b6a6a" }}
@@ -133,7 +144,7 @@ export function Navbar() {
               🇮🇳 India
             </a>
             <span style={{ color: "#3d2b2b" }}>·</span>
-            <a
+            
               href="https://www.upforge.org"
               className="text-[9px] tracking-widest uppercase transition-colors font-semibold"
               style={{ fontFamily: "'Times New Roman', serif", color: "#c9b99a" }}
@@ -325,74 +336,93 @@ export function Navbar() {
       </div>
 
       {/* ── MOBILE MENU ──────────────────────────────────────────────────── */}
+      {/* Backdrop */}
       <div
-        className={`fixed inset-0 z-40 md:hidden transition-all duration-200 ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+        className={`fixed inset-0 z-40 md:hidden transition-opacity duration-200 ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+        style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(2px)" }}
+        onClick={() => setIsOpen(false)}
+      />
+
+      {/* Panel — positioned below all 3 header tiers */}
+      <div
+        className={`fixed left-0 right-0 z-50 md:hidden border-b-2 transition-all duration-200 overflow-y-auto`}
+        style={{
+          top: 104, // 32px dateline + 72px masthead = 104px
+          maxHeight: "calc(100dvh - 104px)",
+          background: "#faf7f2",
+          borderColor: "#8b1a1a",
+          transform: isOpen ? "translateY(0)" : "translateY(-6px)",
+          opacity: isOpen ? 1 : 0,
+          pointerEvents: isOpen ? "auto" : "none",
+        }}
       >
-        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
-        <div
-          className={`absolute left-0 right-0 border-b-2 transition-transform duration-200 ${isOpen ? "translate-y-0" : "-translate-y-2"}`}
-          style={{
-            top: 64,
-            background: "#faf7f2",
-            borderColor: "#8b1a1a",
-          }}
-        >
-          {/* Search mobile */}
-          <div className="px-4 py-3 border-b" style={{ borderColor: "#e8ddd0" }}>
-            <div className="flex items-center border" style={{ borderColor: "#c9b99a" }}>
-              <Search size={14} color="#8b6a6a" className="ml-3" />
-              <input
-                type="text"
-                placeholder="Search registry…"
-                className="flex-1 px-3 py-2 text-sm outline-none bg-transparent"
-                style={{ fontFamily: "'Times New Roman', serif" }}
-              />
-            </div>
+        {/* Search */}
+        <div className="px-4 py-3 border-b" style={{ borderColor: "#e8ddd0" }}>
+          <div className="flex items-center border" style={{ borderColor: "#c9b99a" }}>
+            <Search size={14} color="#8b6a6a" className="ml-3 flex-shrink-0" />
+            <input
+              type="text"
+              placeholder="Search registry…"
+              className="flex-1 px-3 py-2 text-sm outline-none bg-transparent"
+              style={{ fontFamily: "'Times New Roman', serif" }}
+            />
           </div>
+        </div>
 
-          {NAV_LINKS.map(link => {
-            const active = isActive(link);
-            return (
-              <Link
-                key={link.name}
-                href={link.href}
-                onClick={() => setIsOpen(false)}
-                className="flex items-center justify-between px-5 py-4 border-b"
-                style={{
-                  borderColor: "#e8ddd0",
-                  background: active ? "#f5f0e8" : "transparent",
-                  fontFamily: "'Times New Roman', serif",
-                  fontSize: 13,
-                  fontWeight: active ? 700 : 500,
-                  color: active ? "#8b1a1a" : "#3d2b2b",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.1em",
-                }}
-              >
-                <span>{link.name}</span>
-                {active && <div className="w-1.5 h-1.5 bg-[#8b1a1a] rotate-45" />}
-              </Link>
-            );
-          })}
+        {/* Nav links */}
+        {NAV_LINKS.map(link => {
+          const active = isActive(link);
+          return (
+            <Link
+              key={link.name}
+              href={link.href}
+              onClick={() => setIsOpen(false)}
+              className="flex items-center justify-between px-5 py-4 border-b"
+              style={{
+                borderColor: "#e8ddd0",
+                background: active ? "#f5f0e8" : "transparent",
+                fontFamily: "'Times New Roman', serif",
+                fontSize: 13,
+                fontWeight: active ? 700 : 500,
+                color: active ? "#8b1a1a" : "#3d2b2b",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+              }}
+            >
+              <span className="flex items-center gap-2">
+                {link.name}
+                {link.badge && (
+                  <span
+                    className="text-[8px] px-1.5 py-0.5 font-bold"
+                    style={{ background: "#8b1a1a", color: "#faf7f2", fontFamily: "'Times New Roman', serif" }}
+                  >
+                    {link.badge}
+                  </span>
+                )}
+              </span>
+              {active && <div className="w-1.5 h-1.5 bg-[#8b1a1a] rotate-45 flex-shrink-0" />}
+            </Link>
+          );
+        })}
 
-          <div className="p-4 flex gap-3">
-            <Link
-              href="/verify"
-              onClick={() => setIsOpen(false)}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[10px] font-semibold tracking-widest uppercase"
-              style={{ border: "1px solid #c9b99a", color: "#5a4040", fontFamily: "'Times New Roman', serif" }}
-            >
-              <ShieldCheck size={11} /> Verify UFRN
-            </Link>
-            <Link
-              href="/submit"
-              onClick={() => setIsOpen(false)}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[10px] font-bold tracking-widest uppercase"
-              style={{ background: "#8b1a1a", color: "#faf7f2", fontFamily: "'Times New Roman', serif" }}
-            >
-              List Startup <ChevronRight size={10} />
-            </Link>
-          </div>
+        {/* CTA buttons */}
+        <div className="p-4 flex gap-3" style={{ borderTop: "1px solid #e8ddd0" }}>
+          <Link
+            href="/verify"
+            onClick={() => setIsOpen(false)}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[10px] font-semibold tracking-widest uppercase"
+            style={{ border: "1px solid #c9b99a", color: "#5a4040", fontFamily: "'Times New Roman', serif" }}
+          >
+            <ShieldCheck size={11} /> Verify UFRN
+          </Link>
+          <Link
+            href="/submit"
+            onClick={() => setIsOpen(false)}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[10px] font-bold tracking-widest uppercase"
+            style={{ background: "#8b1a1a", color: "#faf7f2", fontFamily: "'Times New Roman', serif" }}
+          >
+            List Startup <ChevronRight size={10} />
+          </Link>
         </div>
       </div>
 
