@@ -1,15 +1,20 @@
 "use client"
 
+// components/chatbot.tsx — GLOBAL AUTHORITY v5
+// Redesigned: editorial magazine aesthetic, matches UpForge brand perfectly
+// Floating panel with serif typography, maroon accent, global intelligence look
+// Messages: clean cards, not bubbles — editorial style
+
 import Image from "next/image"
 import { useState, useEffect, useRef, useCallback } from "react"
-import { X, Send, Loader2, Minus, RotateCcw, Globe } from "lucide-react"
+import { X, Send, Loader2, Minus, RotateCcw, Globe, ChevronRight, Sparkles } from "lucide-react"
 
 interface Message {
   role: "user" | "assistant"
   content: string
 }
 
-// ─── RICH TEXT ─────────────────────────────────────────────────────────────
+// ─── RICH TEXT ───────────────────────────────────────────────────────────────
 
 function RichText({ text }: { text: string }) {
   const lines = text.split("\n").reduce<string[]>((acc, line, i, arr) => {
@@ -21,14 +26,14 @@ function RichText({ text }: { text: string }) {
   const inline = (str: string): React.ReactNode[] =>
     str.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g).map((p, i) => {
       if (p.startsWith("**") && p.endsWith("**"))
-        return <strong key={i} style={{ fontWeight: 700, color: "#111" }}>{p.slice(2, -2)}</strong>
+        return <strong key={i} style={{ fontWeight: 700, color: "#1a0a0a" }}>{p.slice(2, -2)}</strong>
       if (p.startsWith("*") && p.endsWith("*"))
-        return <em key={i} style={{ color: "#555", fontStyle: "italic" }}>{p.slice(1, -1)}</em>
+        return <em key={i} style={{ color: "#5a4040", fontStyle: "italic" }}>{p.slice(1, -1)}</em>
       if (p.startsWith("`") && p.endsWith("`"))
         return (
           <code key={i} style={{
-            background: "#F2EFE9", color: "#111", padding: "1px 5px",
-            fontSize: 10.5, fontFamily: "monospace", border: "1px solid #E5E0D8",
+            background: "#f5f0e8", color: "#8b1a1a", padding: "1px 5px",
+            fontSize: 10, fontFamily: "monospace", border: "1px solid #e8ddd0",
           }}>
             {p.slice(1, -1)}
           </code>
@@ -41,7 +46,7 @@ function RichText({ text }: { text: string }) {
 
   while (i < lines.length) {
     const t = lines[i].trim()
-    if (!t) { els.push(<div key={`s${i}`} style={{ height: 5 }} />); i++; continue }
+    if (!t) { els.push(<div key={`s${i}`} style={{ height: 4 }} />); i++; continue }
 
     if (/^(\d+)[.)]\s/.test(t)) {
       const items: { n: string; text: string }[] = []
@@ -51,13 +56,16 @@ function RichText({ text }: { text: string }) {
         items.push({ n: m[1], text: m[2] }); i++
       }
       els.push(
-        <div key={`ol${i}`} style={{ display: "flex", flexDirection: "column", gap: 5, margin: "6px 0" }}>
+        <div key={`ol${i}`} style={{ display: "flex", flexDirection: "column", gap: 4, margin: "5px 0" }}>
           {items.map((it, ix) => (
-            <div key={ix} style={{ display: "flex", gap: 9, alignItems: "flex-start" }}>
-              <span style={{ flexShrink: 0, fontFamily: "system-ui", fontSize: 9, fontWeight: 800, color: "#C59A2E", minWidth: 14, paddingTop: 3 }}>
+            <div key={ix} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+              <span style={{
+                flexShrink: 0, fontFamily: "system-ui", fontSize: 8, fontWeight: 800,
+                color: "#8b1a1a", minWidth: 14, paddingTop: 3,
+              }}>
                 {it.n}.
               </span>
-              <span style={{ fontSize: 12, lineHeight: 1.7, color: "#2A2520", fontFamily: "'Georgia', serif" }}>
+              <span style={{ fontSize: 12, lineHeight: 1.7, color: "#2a1a10", fontFamily: "'Times New Roman', Georgia, serif" }}>
                 {inline(it.text)}
               </span>
             </div>
@@ -75,11 +83,11 @@ function RichText({ text }: { text: string }) {
         items.push(m[1]); i++
       }
       els.push(
-        <div key={`ul${i}`} style={{ display: "flex", flexDirection: "column", gap: 4, margin: "5px 0" }}>
+        <div key={`ul${i}`} style={{ display: "flex", flexDirection: "column", gap: 3, margin: "5px 0" }}>
           {items.map((b, ix) => (
-            <div key={ix} style={{ display: "flex", gap: 9, alignItems: "flex-start" }}>
-              <span style={{ flexShrink: 0, marginTop: 8, width: 3, height: 3, background: "#C59A2E", display: "inline-block" }} />
-              <span style={{ fontSize: 12, lineHeight: 1.7, color: "#2A2520", fontFamily: "'Georgia', serif" }}>
+            <div key={ix} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+              <div style={{ flexShrink: 0, marginTop: 7, width: 3, height: 3, background: "#8b1a1a" }} />
+              <span style={{ fontSize: 12, lineHeight: 1.7, color: "#2a1a10", fontFamily: "'Times New Roman', Georgia, serif" }}>
                 {inline(b)}
               </span>
             </div>
@@ -92,7 +100,11 @@ function RichText({ text }: { text: string }) {
     const hm = t.match(/^(#{1,3})\s+(.+)$/)
     if (hm) {
       els.push(
-        <p key={`h${i}`} style={{ fontSize: 9, fontWeight: 800, color: "#999", textTransform: "uppercase", letterSpacing: "0.18em", fontFamily: "system-ui", marginTop: 10, marginBottom: 2 }}>
+        <p key={`h${i}`} style={{
+          fontSize: 8, fontWeight: 800, color: "#8b6a6a",
+          textTransform: "uppercase", letterSpacing: "0.18em",
+          fontFamily: "system-ui", marginTop: 10, marginBottom: 2,
+        }}>
           {inline(hm[2])}
         </p>
       )
@@ -100,12 +112,15 @@ function RichText({ text }: { text: string }) {
     }
 
     if (t === "---") {
-      els.push(<div key={`hr${i}`} style={{ height: 1, background: "#EDE9E0", margin: "8px 0" }} />)
+      els.push(<div key={`hr${i}`} style={{ height: 1, background: "#e8ddd0", margin: "8px 0" }} />)
       i++; continue
     }
 
     els.push(
-      <p key={`p${i}`} style={{ fontSize: 12.5, lineHeight: 1.75, color: "#2A2520", fontFamily: "'Georgia', serif", margin: 0 }}>
+      <p key={`p${i}`} style={{
+        fontSize: 12.5, lineHeight: 1.78, color: "#2a1a10",
+        fontFamily: "'Times New Roman', Georgia, serif", margin: 0,
+      }}>
         {inline(t)}
       </p>
     )
@@ -115,14 +130,15 @@ function RichText({ text }: { text: string }) {
   return <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>{els}</div>
 }
 
-// ─── TYPING DOTS ─────────────────────────────────────────────────────────────
+// ─── TYPING INDICATOR ────────────────────────────────────────────────────────
 
 function TypingDots() {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "8px 0" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 0" }}>
       {[0, 1, 2].map(i => (
         <span key={i} style={{
-          width: 4, height: 4, background: "#D5CFC4", display: "inline-block",
+          width: 5, height: 5, background: "#c9b99a",
+          display: "inline-block",
           animation: `forgeDot 1.2s ${i * 0.18}s ease-in-out infinite`,
         }} />
       ))}
@@ -130,35 +146,35 @@ function TypingDots() {
   )
 }
 
-// ─── QUICK PROMPTS ────────────────────────────────────────────────────────────
+// ─── QUICK PROMPTS ───────────────────────────────────────────────────────────
 
 const PROMPTS = [
-  { q: "Top global AI startups 2026?",    cat: "Global"   },
-  { q: "How do I list my startup?",        cat: "Registry" },
-  { q: "What sectors are growing fastest?", cat: "Trends"  },
-  { q: "What is a UFRN number?",           cat: "Verify"   },
+  { q: "Top global AI startups 2026?", cat: "Global" },
+  { q: "How do I list my startup on UpForge?", cat: "Registry" },
+  { q: "What sectors are growing fastest globally?", cat: "Trends" },
+  { q: "What is a UFRN number and why do I need it?", cat: "Verify" },
 ]
 
-// ─── MAIN ─────────────────────────────────────────────────────────────────────
+// ─── MAIN ────────────────────────────────────────────────────────────────────
 
 export function Chatbot() {
-  const [isOpen, setIsOpen]       = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
   const [minimized, setMinimized] = useState(false)
-  const [input, setInput]         = useState("")
-  const [loading, setLoading]     = useState(false)
-  const [badge, setBadge]         = useState(0)
-  const [showTip, setShowTip]     = useState(false)
-  const [msgs, setMsgs]           = useState<Message[]>([{
+  const [input, setInput] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [badge, setBadge] = useState(0)
+  const [showTip, setShowTip] = useState(false)
+  const [msgs, setMsgs] = useState<Message[]>([{
     role: "assistant",
-    content: "I'm **forge** — UpForge's global intelligence AI.\n\nAsk me about:\n- Verified startups across 40+ countries\n- Funding data, unicorns, sector trends\n- How to list or verify a startup\n\nWhat would you like to know?",
+    content: "I'm **forge** — UpForge's global startup intelligence.\n\nAsk me about:\n- Verified startups across 50+ countries\n- Funding data, unicorns, sector trends\n- How to list or verify a startup via UFRN\n\nWhat would you like to explore?",
   }])
   const [newIdxs, setNewIdxs] = useState<Set<number>>(new Set())
 
   const scrollRef = useRef<HTMLDivElement>(null)
-  const inputRef  = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    const t = setTimeout(() => setShowTip(true), 3500)
+    const t = setTimeout(() => setShowTip(true), 4000)
     return () => clearTimeout(t)
   }, [])
 
@@ -185,7 +201,7 @@ export function Chatbot() {
     setInput("")
     setLoading(true)
     try {
-      const res  = await fetch("/api/chat", {
+      const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: [...msgs, userMsg] }),
@@ -196,7 +212,7 @@ export function Chatbot() {
       setNewIdxs(p => new Set(p).add(nextIdx))
       if (!isOpen) setBadge(c => c + 1)
     } catch {
-      setMsgs(p => [...p, { role: "assistant", content: "Network issue — please try again." }])
+      setMsgs(p => [...p, { role: "assistant", content: "Network issue — please try again shortly." }])
     } finally {
       setLoading(false)
     }
@@ -205,7 +221,7 @@ export function Chatbot() {
   const reset = () => {
     setMsgs([{
       role: "assistant",
-      content: "I'm **forge** — UpForge's global intelligence AI.\n\nAsk me about:\n- Verified startups across 40+ countries\n- Funding data, unicorns, sector trends\n- How to list or verify a startup\n\nWhat would you like to know?",
+      content: "I'm **forge** — UpForge's global startup intelligence.\n\nAsk me about:\n- Verified startups across 50+ countries\n- Funding data, unicorns, sector trends\n- How to list or verify a startup via UFRN\n\nWhat would you like to explore?",
     }])
     setNewIdxs(new Set())
     setInput("")
@@ -219,62 +235,76 @@ export function Chatbot() {
           30% { opacity:1; transform:translateY(-3px); }
         }
         @keyframes forgeIn {
-          from { opacity:0; transform:translateY(8px); }
-          to   { opacity:1; transform:translateY(0); }
+          from { opacity:0; transform:translateY(10px) scale(0.98); }
+          to   { opacity:1; transform:translateY(0) scale(1); }
+        }
+        @keyframes forgePulse {
+          0%,100% { box-shadow: 0 0 0 0 rgba(139,26,26,0.4); }
+          50% { box-shadow: 0 0 0 6px rgba(139,26,26,0); }
         }
         @keyframes forgeSpin { to { transform:rotate(360deg); } }
-        .asc::-webkit-scrollbar{width:2px}
-        .asc::-webkit-scrollbar-thumb{background:#E5E0D8}
-        .ap:hover{background:#F7F3EC!important;border-color:#D5C88A!important;}
-        .ai:focus{outline:none;border-color:#C59A2E!important;}
-        .ab:not([disabled]):hover{background:#C59A2E!important;border-color:#C59A2E!important;}
-        .ac:hover{color:#C59A2E!important;}
+        .forge-scroll::-webkit-scrollbar { width: 2px; }
+        .forge-scroll::-webkit-scrollbar-thumb { background: #e8ddd0; }
+        .forge-prompt:hover { background: #f5f0e8 !important; border-color: #8b1a1a !important; }
+        .forge-input:focus { outline: none; border-color: #8b1a1a !important; }
+        .forge-send:not([disabled]):hover { background: #6b1212 !important; }
+        .forge-ctrl:hover { color: #8b1a1a !important; }
       `}</style>
 
-      <div style={{ position:"fixed", bottom:24, right:24, zIndex:9999, display:"flex", flexDirection:"column", alignItems:"flex-end" }}>
+      <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 9999, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
 
-        {/* ── PANEL ─────────────────────────────────────────────── */}
+        {/* ── PANEL ─── */}
         {isOpen && (
           <div style={{
             marginBottom: 12,
-            width: "min(92vw, 356px)",
-            height: minimized ? "auto" : "min(530px, 76vh)",
-            display: "flex", flexDirection: "column", overflow: "hidden",
-            background: "#FFFCF8",
-            border: "1px solid #E0DBD2",
-            boxShadow: "0 12px 40px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.04)",
-            animation: "forgeIn 0.18s ease forwards",
+            width: "min(94vw, 380px)",
+            height: minimized ? "auto" : "min(560px, 78vh)",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+            background: "#faf7f2",
+            border: "1px solid #e8ddd0",
+            borderTop: "3px solid #8b1a1a",
+            boxShadow: "0 20px 60px rgba(26,10,10,0.18), 0 4px 12px rgba(26,10,10,0.08)",
+            animation: "forgeIn 0.2s cubic-bezier(0.16,1,0.3,1) forwards",
           }}>
 
             {/* Header */}
-            <div style={{ background:"#111", flexShrink:0 }}>
-              <div style={{ height:2, background:"linear-gradient(90deg,#8B6914,#C59A2E 40%,#E8C547 50%,#C59A2E 60%,#8B6914)" }} />
-              <div style={{ display:"flex", alignItems:"center", padding:"10px 14px", gap:10 }}>
-                <div style={{ position:"relative", flexShrink:0 }}>
-                  <div style={{ width:28, height:28, overflow:"hidden", border:"1px solid #2A2520" }}>
-                    <Image src="/robot.jpg" alt="forge" width={28} height={28} style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"top" }} priority />
+            <div style={{ background: "#1a0a0a", flexShrink: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", padding: "10px 14px", gap: 10 }}>
+                <div style={{ position: "relative", flexShrink: 0 }}>
+                  <div style={{ width: 30, height: 30, overflow: "hidden", border: "1px solid #3d1515" }}>
+                    <Image src="/robot.jpg" alt="forge" width={30} height={30} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} priority />
                   </div>
-                  <span style={{ position:"absolute", bottom:-1, right:-1, width:7, height:7, background:"#22C55E", borderRadius:"50%", border:"1.5px solid #111" }} />
+                  <span style={{ position: "absolute", bottom: -1, right: -1, width: 8, height: 8, background: "#22C55E", border: "1.5px solid #1a0a0a" }} />
                 </div>
 
-                <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ fontFamily:"'Georgia',serif", fontSize:13, fontWeight:700, color:"#F5F0E8", lineHeight:1 }}>forge</div>
-                  <div style={{ display:"flex", alignItems:"center", gap:4, marginTop:3 }}>
-                    <Globe size={8} style={{ color:"#C59A2E" }} />
-                    <span style={{ fontSize:9, color:"#666", letterSpacing:"0.12em", fontFamily:"system-ui", textTransform:"uppercase" }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 14, fontWeight: 700, color: "#faf7f2" }}>forge</span>
+                    <span style={{ fontSize: 7, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.15em", color: "#c9b99a", fontFamily: "system-ui", border: "1px solid #3d1515", padding: "1px 5px" }}>AI</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                    <Globe size={8} style={{ color: "#c9b99a", flexShrink: 0 }} />
+                    <span style={{ fontSize: 8.5, color: "#8b6a6a", letterSpacing: "0.1em", fontFamily: "system-ui", textTransform: "uppercase" }}>
                       UpForge Global Intelligence
                     </span>
                   </div>
                 </div>
 
-                <div style={{ display:"flex" }}>
+                <div style={{ display: "flex", gap: 2 }}>
                   {([
-                    ["Reset",     <RotateCcw key="r" style={{ width:10, height:10 }} />, reset],
-                    [minimized?"Expand":"Minimise", <Minus key="m" style={{ width:10, height:10 }} />, () => setMinimized(v => !v)],
-                    ["Close",     <X key="x" style={{ width:10, height:10 }} />,         () => setIsOpen(false)],
+                    ["Reset", <RotateCcw key="r" style={{ width: 10, height: 10 }} />, reset],
+                    [minimized ? "Expand" : "Minimise", <Minus key="m" style={{ width: 10, height: 10 }} />, () => setMinimized(v => !v)],
+                    ["Close", <X key="x" style={{ width: 10, height: 10 }} />, () => setIsOpen(false)],
                   ] as [string, React.ReactNode, () => void][]).map(([label, icon, fn]) => (
-                    <button key={label} onClick={fn} aria-label={label} className="ac"
-                      style={{ padding:"4px 5px", background:"none", border:"none", cursor:"pointer", color:"#444", display:"flex", alignItems:"center", transition:"color .12s" }}>
+                    <button
+                      key={label}
+                      onClick={fn}
+                      aria-label={label}
+                      className="forge-ctrl"
+                      style={{ padding: "4px 5px", background: "none", border: "none", cursor: "pointer", color: "#5a4040", display: "flex", alignItems: "center", transition: "color .12s" }}
+                    >
                       {icon}
                     </button>
                   ))}
@@ -286,32 +316,76 @@ export function Chatbot() {
             {!minimized && (
               <>
                 {/* Messages */}
-                <div ref={scrollRef} aria-live="polite" className="asc"
-                  style={{ flex:1, overflowY:"auto", padding:"14px 14px", display:"flex", flexDirection:"column", gap:10, background:"#FDFAF5" }}>
-
-                  <div style={{ textAlign:"center", fontSize:9, color:"#D5CFC4", letterSpacing:"0.16em", fontFamily:"system-ui", marginBottom:2 }}>
-                    {new Date().toLocaleDateString("en-US",{month:"long",year:"numeric"}).toUpperCase()}
+                <div
+                  ref={scrollRef}
+                  aria-live="polite"
+                  className="forge-scroll"
+                  style={{
+                    flex: 1,
+                    overflowY: "auto",
+                    padding: "16px 14px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 12,
+                    background: "#fdfaf5",
+                  }}
+                >
+                  {/* Date divider */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 0 4px" }}>
+                    <div style={{ flex: 1, height: 1, background: "#e8ddd0" }} />
+                    <span style={{ fontSize: 8, color: "#c9b99a", letterSpacing: "0.18em", fontFamily: "system-ui", textTransform: "uppercase" }}>
+                      {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                    </span>
+                    <div style={{ flex: 1, height: 1, background: "#e8ddd0" }} />
                   </div>
 
                   {msgs.map((m, idx) => {
                     const isUser = m.role === "user"
                     return (
-                      <div key={idx} style={{
-                        display:"flex", justifyContent:isUser?"flex-end":"flex-start", alignItems:"flex-end", gap:8,
-                        animation: newIdxs.has(idx) ? "forgeIn 0.16s ease forwards" : "none",
-                        opacity: newIdxs.has(idx) ? 0 : 1,
-                      }}>
-                        {!isUser && (
-                          <div style={{ width:18, height:18, overflow:"hidden", flexShrink:0, border:"1px solid #E5E0D8", marginBottom:1 }}>
-                            <Image src="/robot.jpg" alt="" width={18} height={18} style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"top" }} />
-                          </div>
-                        )}
+                      <div
+                        key={idx}
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: isUser ? "flex-end" : "flex-start",
+                          animation: newIdxs.has(idx) ? "forgeIn 0.18s ease forwards" : "none",
+                        }}
+                      >
+                        {/* Role label */}
+                        <span style={{
+                          fontSize: 7.5,
+                          fontWeight: 700,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.18em",
+                          color: isUser ? "#8b6a6a" : "#8b1a1a",
+                          fontFamily: "system-ui",
+                          marginBottom: 3,
+                          paddingLeft: isUser ? 0 : 0,
+                        }}>
+                          {isUser ? "You" : "Forge"}
+                        </span>
+
                         {isUser ? (
-                          <div style={{ maxWidth:"78%", padding:"8px 11px", background:"#111", borderLeft:"2px solid #C59A2E" }}>
-                            <span style={{ fontSize:12.5, color:"#F0EBE0", fontFamily:"'Georgia',serif", lineHeight:1.65 }}>{m.content}</span>
+                          // User message — dark card, right aligned
+                          <div style={{
+                            maxWidth: "82%",
+                            padding: "9px 12px",
+                            background: "#1a0a0a",
+                            borderLeft: "3px solid #8b1a1a",
+                          }}>
+                            <span style={{ fontSize: 12.5, color: "#f0ebe0", fontFamily: "'Times New Roman', Georgia, serif", lineHeight: 1.68 }}>
+                              {m.content}
+                            </span>
                           </div>
                         ) : (
-                          <div style={{ maxWidth:"85%", padding:"9px 11px", background:"#FFF", border:"1px solid #EDE9E0", borderLeft:"2px solid #C59A2E" }}>
+                          // Assistant message — parchment card, left aligned
+                          <div style={{
+                            maxWidth: "90%",
+                            padding: "10px 12px",
+                            background: "#fff",
+                            border: "1px solid #e8ddd0",
+                            borderLeft: "3px solid #c9b99a",
+                          }}>
                             <RichText text={m.content} />
                           </div>
                         )}
@@ -320,27 +394,43 @@ export function Chatbot() {
                   })}
 
                   {loading && (
-                    <div style={{ display:"flex", alignItems:"flex-end", gap:8 }}>
-                      <div style={{ width:18, height:18, overflow:"hidden", flexShrink:0, border:"1px solid #E5E0D8" }}>
-                        <Image src="/robot.jpg" alt="" width={18} height={18} style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"top" }} />
-                      </div>
-                      <div style={{ background:"#FFF", border:"1px solid #EDE9E0", borderLeft:"2px solid #C59A2E", padding:"0 10px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                      <span style={{ fontSize: 7.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.18em", color: "#8b1a1a", fontFamily: "system-ui", marginBottom: 3 }}>Forge</span>
+                      <div style={{ background: "#fff", border: "1px solid #e8ddd0", borderLeft: "3px solid #c9b99a", padding: "0 12px" }}>
                         <TypingDots />
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* Quick prompts */}
+                {/* Quick prompts — only on first message */}
                 {msgs.length === 1 && (
-                  <div style={{ padding:"9px 14px", borderTop:"1px solid #EDE9E0", background:"#F7F3EC", flexShrink:0 }}>
-                    <div style={{ fontSize:8, letterSpacing:"0.2em", textTransform:"uppercase", color:"#BBB", fontFamily:"system-ui", fontWeight:700, marginBottom:7 }}>Try asking</div>
-                    <div style={{ display:"flex", flexDirection:"column", gap:5 }}>
+                  <div style={{ padding: "10px 14px 6px", borderTop: "1px solid #e8ddd0", background: "#f5f0e8", flexShrink: 0 }}>
+                    <div style={{ fontSize: 7.5, letterSpacing: "0.2em", textTransform: "uppercase", color: "#8b6a6a", fontFamily: "system-ui", fontWeight: 700, marginBottom: 6, display: "flex", alignItems: "center", gap: 4 }}>
+                      <Sparkles size={8} color="#8b1a1a" />
+                      Try asking
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4 }}>
                       {PROMPTS.map((p, idx) => (
-                        <button key={idx} onClick={() => send(p.q)} className="ap"
-                          style={{ textAlign:"left", display:"flex", alignItems:"center", gap:8, padding:"7px 10px", background:"#FFF", border:"1px solid #EDE9E0", cursor:"pointer", transition:"background .12s, border-color .12s" }}>
-                          <span style={{ fontSize:7.5, fontWeight:800, textTransform:"uppercase", letterSpacing:"0.18em", color:"#C59A2E", fontFamily:"system-ui", flexShrink:0 }}>{p.cat}</span>
-                          <span style={{ fontSize:11.5, color:"#444", fontFamily:"'Georgia',serif", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.q}</span>
+                        <button
+                          key={idx}
+                          onClick={() => send(p.q)}
+                          className="forge-prompt"
+                          style={{
+                            textAlign: "left",
+                            padding: "7px 10px",
+                            background: "#fff",
+                            border: "1px solid #e8ddd0",
+                            cursor: "pointer",
+                            transition: "background .12s, border-color .12s",
+                          }}
+                        >
+                          <span style={{ fontSize: 7, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.18em", color: "#8b1a1a", fontFamily: "system-ui", display: "block", marginBottom: 2 }}>
+                            {p.cat}
+                          </span>
+                          <span style={{ fontSize: 10.5, color: "#3d2b2b", fontFamily: "'Times New Roman', Georgia, serif", lineHeight: 1.4, display: "block" }}>
+                            {p.q}
+                          </span>
                         </button>
                       ))}
                     </div>
@@ -348,42 +438,51 @@ export function Chatbot() {
                 )}
 
                 {/* Input */}
-                <div style={{ padding:"10px 14px", borderTop:"1px solid #EDE9E0", background:"#FFFCF8", flexShrink:0 }}>
-                  <div style={{ display:"flex", gap:7 }}>
+                <div style={{ padding: "10px 14px", borderTop: "1px solid #e8ddd0", background: "#faf7f2", flexShrink: 0 }}>
+                  <div style={{ display: "flex", gap: 6 }}>
                     <input
                       ref={inputRef}
                       value={input}
                       disabled={loading}
                       onChange={e => setInput(e.target.value)}
-                      onKeyDown={e => { if (e.key==="Enter" && !e.shiftKey){ e.preventDefault(); send() } }}
-                      placeholder="Ask about global startups…"
+                      onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send() } }}
+                      placeholder="Ask about startups, unicorns, UFRN…"
                       aria-label="Message forge"
-                      className="ai"
+                      className="forge-input"
                       style={{
-                        flex:1, padding:"9px 11px", fontSize:12.5,
-                        fontFamily:"'Georgia',serif", background:"#FFF",
-                        border:"1px solid #E5E0D8", color:"#111", outline:"none",
-                        transition:"border-color .15s",
+                        flex: 1, padding: "9px 11px", fontSize: 12.5,
+                        fontFamily: "'Times New Roman', Georgia, serif",
+                        background: "#fff", border: "1px solid #e8ddd0",
+                        color: "#1a0a0a", outline: "none",
+                        transition: "border-color .15s",
                       }}
                     />
-                    <button onClick={() => send()} disabled={loading || !input.trim()} aria-label="Send" className="ab"
+                    <button
+                      onClick={() => send()}
+                      disabled={loading || !input.trim()}
+                      aria-label="Send"
+                      className="forge-send"
                       style={{
-                        width:37, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center",
-                        background: loading || !input.trim() ? "#F2EFE9" : "#111",
-                        color:      loading || !input.trim() ? "#CCC"     : "#FFF",
-                        border:"1px solid", borderColor: loading || !input.trim() ? "#E5E0D8" : "#111",
+                        width: 38, flexShrink: 0,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        background: loading || !input.trim() ? "#f5f0e8" : "#8b1a1a",
+                        color: loading || !input.trim() ? "#c9b99a" : "#faf7f2",
+                        border: "1px solid",
+                        borderColor: loading || !input.trim() ? "#e8ddd0" : "#8b1a1a",
                         cursor: loading || !input.trim() ? "not-allowed" : "pointer",
-                        transition:"background .12s, border-color .12s",
-                      }}>
+                        transition: "background .12s, border-color .12s",
+                      }}
+                    >
                       {loading
-                        ? <Loader2 style={{ width:13, height:13, animation:"forgeSpin 1s linear infinite" }} />
-                        : <Send style={{ width:13, height:13 }} />
-                      }
+                        ? <Loader2 style={{ width: 13, height: 13, animation: "forgeSpin 1s linear infinite" }} />
+                        : <Send style={{ width: 13, height: 13 }} />}
                     </button>
                   </div>
-                  <div style={{ display:"flex", justifyContent:"space-between", marginTop:6 }}>
-                    <span style={{ fontSize:9, color:"#CCC", fontFamily:"system-ui", letterSpacing:"0.08em" }}>forge · UpForge · No paid placements</span>
-                    <span style={{ fontSize:9, color:"#DDD", fontFamily:"system-ui" }}>⏎ send</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: 5 }}>
+                    <span style={{ fontSize: 8.5, color: "#c9b99a", fontFamily: "system-ui", letterSpacing: "0.06em" }}>
+                      forge · UpForge · No paid placements
+                    </span>
+                    <span style={{ fontSize: 8.5, color: "#c9b99a", fontFamily: "system-ui" }}>⏎ send</span>
                   </div>
                 </div>
               </>
@@ -391,51 +490,90 @@ export function Chatbot() {
           </div>
         )}
 
-        {/* ── TOOLTIP ───────────────────────────────────────────── */}
+        {/* ── TOOLTIP ─── */}
         {!isOpen && showTip && msgs.length === 1 && (
-          <div style={{ position:"absolute", right:58, bottom:13, pointerEvents:"none", animation:"forgeIn 0.18s ease forwards" }}>
-            <div style={{ background:"#111", border:"1px solid #222", borderTop:"2px solid #C59A2E", padding:"8px 13px", whiteSpace:"nowrap", boxShadow:"0 4px 14px rgba(0,0,0,0.16)", position:"relative" }}>
-              <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                <Globe size={10} style={{ color:"#C59A2E" }} />
+          <div style={{ position: "absolute", right: 60, bottom: 14, pointerEvents: "none", animation: "forgeIn 0.2s ease forwards" }}>
+            <div style={{
+              background: "#1a0a0a",
+              border: "1px solid #3d1515",
+              borderTop: "2px solid #8b1a1a",
+              padding: "8px 14px",
+              whiteSpace: "nowrap",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+              position: "relative",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <Globe size={10} style={{ color: "#c9b99a" }} />
                 <div>
-                  <div style={{ fontFamily:"'Georgia',serif", fontSize:11.5, fontWeight:700, color:"#F0EBE0" }}>
-                    Ask <span style={{ color:"#C59A2E" }}>forge</span>
+                  <div style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 12, fontWeight: 700, color: "#faf7f2" }}>
+                    Ask <span style={{ color: "#c9b99a" }}>forge</span>
                   </div>
-                  <div style={{ fontSize:8.5, color:"#666", letterSpacing:"0.1em", fontFamily:"system-ui", marginTop:1 }}>
+                  <div style={{ fontSize: 8.5, color: "#5a4040", letterSpacing: "0.1em", fontFamily: "system-ui", marginTop: 1 }}>
                     Global startup intelligence · Free
                   </div>
                 </div>
               </div>
-              <div style={{ position:"absolute", right:-6, top:"50%", transform:"translateY(-50%)", width:0, height:0, borderTop:"5px solid transparent", borderBottom:"5px solid transparent", borderLeft:"6px solid #111" }} />
+              {/* Arrow */}
+              <div style={{ position: "absolute", right: -6, top: "50%", transform: "translateY(-50%)", width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: "6px solid #1a0a0a" }} />
             </div>
           </div>
         )}
 
-        {/* ── FAB ───────────────────────────────────────────────── */}
+        {/* ── FAB ─── */}
         <button
           onClick={() => { setIsOpen(v => !v); setMinimized(false); setShowTip(false) }}
-          aria-label="Open forge"
+          aria-label="Open forge AI"
           style={{
-            width:48, height:48, flexShrink:0, cursor:"pointer", overflow:"hidden",
-            background:"#111", border:"1.5px solid #C59A2E",
-            boxShadow:"0 4px 14px rgba(0,0,0,0.2), 2px 2px 0 #C59A2E",
-            display:"flex", flexDirection:"column", position:"relative",
-            transition:"box-shadow .15s",
+            width: 52,
+            height: 52,
+            flexShrink: 0,
+            cursor: "pointer",
+            overflow: "hidden",
+            background: "#1a0a0a",
+            border: "2px solid #8b1a1a",
+            boxShadow: "0 4px 20px rgba(139,26,26,0.3), 3px 3px 0 #8b1a1a",
+            display: "flex",
+            flexDirection: "column",
+            position: "relative",
+            transition: "box-shadow .15s, transform .15s",
+            animation: !isOpen ? "forgePulse 3s ease infinite" : "none",
           }}
-          onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 4px 14px rgba(0,0,0,0.2), 2px 2px 0 #C59A2E, 0 0 0 4px rgba(197,154,46,0.12)")}
-          onMouseLeave={e => (e.currentTarget.style.boxShadow = "0 4px 14px rgba(0,0,0,0.2), 2px 2px 0 #C59A2E")}
+          onMouseEnter={e => {
+            e.currentTarget.style.boxShadow = "0 6px 24px rgba(139,26,26,0.4), 3px 3px 0 #8b1a1a"
+            e.currentTarget.style.transform = "translateY(-1px)"
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.boxShadow = "0 4px 20px rgba(139,26,26,0.3), 3px 3px 0 #8b1a1a"
+            e.currentTarget.style.transform = "translateY(0)"
+          }}
         >
           {isOpen ? (
-            <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center" }}>
-              <X style={{ width:15, height:15, color:"#FFF" }} />
+            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <X style={{ width: 16, height: 16, color: "#faf7f2" }} />
             </div>
           ) : (
             <>
-              <div style={{ flex:1, overflow:"hidden" }}>
-                <Image src="/robot.jpg" alt="forge" width={48} height={39} style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"top" }} priority />
+              <div style={{ flex: 1, overflow: "hidden" }}>
+                <Image
+                  src="/robot.jpg"
+                  alt="forge AI"
+                  width={52}
+                  height={40}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
+                  priority
+                />
               </div>
-              <div style={{ height:10, background:"#C59A2E", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <span style={{ fontSize:5.5, fontWeight:900, color:"#111", letterSpacing:"0.22em", fontFamily:"system-ui" }}>forge</span>
+              <div style={{
+                height: 11,
+                background: "#8b1a1a",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 3,
+              }}>
+                <span style={{ fontSize: 5.5, fontWeight: 900, color: "#faf7f2", letterSpacing: "0.22em", fontFamily: "system-ui" }}>
+                  forge
+                </span>
               </div>
             </>
           )}
@@ -443,9 +581,13 @@ export function Chatbot() {
           {/* Unread badge */}
           {!isOpen && badge > 0 && (
             <span style={{
-              position:"absolute", top:-3, right:-3, minWidth:15, height:15,
-              background:"#C59A2E", color:"#111", fontSize:8, fontFamily:"system-ui", fontWeight:900,
-              border:"1.5px solid white", display:"flex", alignItems:"center", justifyContent:"center", padding:"0 3px",
+              position: "absolute", top: -4, right: -4,
+              minWidth: 16, height: 16,
+              background: "#8b1a1a", color: "#faf7f2",
+              fontSize: 8, fontFamily: "system-ui", fontWeight: 900,
+              border: "2px solid white",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              padding: "0 3px",
             }}>
               {badge > 9 ? "9+" : badge}
             </span>
