@@ -1,195 +1,194 @@
-// app/layout.tsx — GLOBAL AUTHORITY SEO v5
-// Production-level global SEO, OpenGraph, Schema.org, hreflang
-// Editorial magazine global trust signals
+// app/layout.tsx
 
-import type { Metadata, Viewport } from "next";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
-import { Chatbot } from "@/components/chatbot";
+import type { Metadata, Viewport } from "next"
+import { Inter, Playfair_Display } from "next/font/google"
+import "./globals.css"
+import { ClientLayout } from "../components/client-layout"
+import Script from "next/script"
+
+import {
+  getAlternatesForLayout,
+  getOrganizationJsonLd,
+  getWebsiteJsonLd,
+} from "@/lib/domain"
+
+import { getDomainContext } from "@/lib/domain.server"
+// FIXED: Import only createReadClient for layout data fetching
+import { createReadClient } from "@/lib/supabase/server"
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+})
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+})
 
 export const viewport: Viewport = {
+  themeColor: "#F3EFE5",
   width: "device-width",
   initialScale: 1,
-  themeColor: "#1a0a0a",
-};
+}
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://upforge.org"),
-  title: {
-    default: "UpForge — The World's Startup Registry of Record",
-    template: "%s | UpForge — Global Startup Registry",
-  },
-  description:
-    "UpForge is the world's first independent global startup registry. 5,000+ startups verified across 50+ countries, each assigned a permanent UFRN™ identifier. Cited by Harvard, IIM, and Stanford researchers. Free forever.",
-  keywords: [
-    "global startup registry",
-    "verified startup database",
-    "UFRN startup number",
-    "startup registry 2026",
-    "indian unicorns list",
-    "startup verification",
-    "UpForge registry",
-    "startup credibility",
-    "global startup database",
-    "startup identity verification",
-    "upforge.org",
-    "upforge.in",
-  ].join(", "),
-  authors: [{ name: "UpForge Editorial Team", url: "https://upforge.org/about" }],
-  creator: "UpForge",
-  publisher: "UpForge",
-  category: "Business & Finance",
-  classification: "Startup Registry",
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+async function getLatestStartupDate(): Promise<string> {
+  try {
+    // FIXED: Use createReadClient. It is synchronous and safe for 
+    // layouts/static generation.
+    const supabase = createReadClient()
+
+    const { data } = await supabase
+      .from("startups")
+      .select("updated_at")
+      .eq("status", "approved")
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .single()
+
+    if (data?.updated_at) {
+      return new Date(data.updated_at).toISOString()
+    }
+  } catch (error) {
+    // Silent catch is standard for layouts during build time
+  }
+
+  return new Date().toISOString()
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const baseUrl = "https://www.upforge.org"
+  const alternates = getAlternatesForLayout("/")
+
+  return {
+    metadataBase: new URL(baseUrl),
+    title: {
+      default: "UpForge — Global Startup Registry & Emerging Market Intelligence 2026",
+      template: "%s | UpForge",
+    },
+    description: "UpForge is the world's independent verified startup registry. Discover global startups, unicorn founders, funding intelligence, and emerging market insights.",
+    applicationName: "UpForge",
+    keywords: [
+      "global startup registry",
+      "startup database worldwide",
+      "verified startups directory",
+      "Indian startup registry",
+      "AI startups database",
+      "fintech startups global",
+      "emerging market startups",
+      "UFRN lookup",
+    ],
+    authors: [{ name: "UpForge Editorial", url: `${baseUrl}/about` }],
+    creator: "UpForge",
+    publisher: "UpForge",
+    alternates,
+    verification: { google: "YOUR_GLOBAL_ORG_VERIFICATION_TAG" },
+    icons: {
+      icon: [
+        { url: "/favicon.ico", sizes: "any" },
+        { url: "/icon.svg", type: "image/svg+xml" },
+      ],
+      apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+    },
+    manifest: "/site.webmanifest",
+    referrer: "origin-when-cross-origin",
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      url: baseUrl,
+      siteName: "UpForge",
+      title: "UpForge — Global Startup Registry & Emerging Market Intelligence 2026",
+      description: "Discover verified startups globally. Founder profiles, funding intelligence, and sector analysis.",
+      images: [{ url: `${baseUrl}/og/global-registry.png`, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      site: "@upforge_in",
+      creator: "@upforge_in",
+      title: "UpForge — Global Startup Registry",
+      images: [`${baseUrl}/og/global-registry.png`],
+    },
+    robots: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-  alternates: {
-    canonical: "https://upforge.org",
-    languages: {
-      "en-US": "https://upforge.org",
-      "en-IN": "https://upforge.in",
-      "en-GB": "https://upforge.org",
-    },
-  },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    alternateLocale: ["en_IN", "en_GB"],
-    url: "https://upforge.org",
-    siteName: "UpForge — Global Startup Registry",
-    title: "UpForge — The World's Startup Registry of Record",
-    description:
-      "5,000+ startups verified across 50+ countries. Every startup assigned a permanent UFRN™. The editorial standard for global startup credibility.",
-    images: [
-      {
-        url: "https://upforge.org/og-default.png",
-        width: 1200,
-        height: 630,
-        alt: "UpForge — Global Startup Registry of Record",
-        type: "image/png",
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-snippet": -1,
+        "max-image-preview": "large",
+        "max-video-preview": -1,
       },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    site: "@upforge_in",
-    creator: "@upforge_in",
-    title: "UpForge — The World's Startup Registry of Record",
-    description:
-      "5,000+ startups verified globally. UFRN™ — the global standard for startup identity. Free forever.",
-    images: ["https://upforge.org/og-default.png"],
-  },
-  verification: {
-    google: "your-google-site-verification-token",
-    // yandex: "your-yandex-token",
-    // bing: "your-bing-token",
-  },
-  icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-    ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
-    other: [{ rel: "mask-icon", url: "/safari-pinned-tab.svg", color: "#8b1a1a" }],
-  },
-  manifest: "/site.webmanifest",
-  other: {
-    "msapplication-TileColor": "#1a0a0a",
-    "application-name": "UpForge",
-  },
-};
+    },
+  }
+}
 
-// Global structured data
-const GLOBAL_SCHEMA = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": "https://upforge.org/#organization",
-      name: "UpForge",
-      url: "https://upforge.org",
-      logo: {
-        "@type": "ImageObject",
-        url: "https://upforge.org/logo.jpg",
-        width: 512,
-        height: 512,
-      },
-      description: "The world's first independent global startup registry.",
-      sameAs: [
-        "https://www.linkedin.com/company/upforge-india",
-        "https://twitter.com/upforge_in",
-        "https://www.youtube.com/@upforge-ind",
-        "https://upforge.in",
-      ],
-      contactPoint: {
-        "@type": "ContactPoint",
-        contactType: "customer support",
-        url: "https://upforge.org/contact",
-        availableLanguage: ["English", "Hindi"],
-      },
-      foundingDate: "2024",
-      knowsAbout: ["Startups", "Venture Capital", "Entrepreneurship", "Startup Registry", "UFRN"],
-    },
-    {
-      "@type": "WebSite",
-      "@id": "https://upforge.org/#website",
-      url: "https://upforge.org",
-      name: "UpForge — Global Startup Registry",
-      description: "The world's first independent global startup registry of record.",
-      publisher: { "@id": "https://upforge.org/#organization" },
-      potentialAction: {
-        "@type": "SearchAction",
-        target: { "@type": "EntryPoint", urlTemplate: "https://upforge.org/search?q={search_term_string}" },
-        "query-input": "required name=search_term_string",
-      },
-    },
-    {
-      "@type": "WebPage",
-      "@id": "https://upforge.org/#webpage",
-      url: "https://upforge.org",
-      name: "UpForge — The World's Startup Registry of Record",
-      isPartOf: { "@id": "https://upforge.org/#website" },
-      about: { "@id": "https://upforge.org/#organization" },
-      description: "5,000+ startups verified globally with UFRN™ identifiers.",
-    },
-  ],
-};
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const ctx = await getDomainContext()
+  const latestDate = await getLatestStartupDate()
+  const organizationJsonLd = getOrganizationJsonLd(ctx)
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const websiteJsonLd = {
+    ...getWebsiteJsonLd(ctx),
+    potentialAction: {
+      "@type": "SearchAction",
+      target: "https://www.upforge.org/startups?q={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
+  }
+
+  const enrichedOrgJsonLd = {
+    ...organizationJsonLd,
+    dateModified: latestDate,
+  }
+
   return (
-    <html lang="en" dir="ltr">
+    <html
+      lang="en-US"
+      className={`${inter.variable} ${playfair.variable}`}
+      data-domain={ctx}
+      suppressHydrationWarning
+    >
       <head>
-        {/* Structured data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(GLOBAL_SCHEMA) }}
+        <Script
+          async
+          strategy="afterInteractive"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5377045438787332"
+          crossOrigin="anonymous"
         />
-        {/* Preconnect for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Hreflang */}
-        <link rel="alternate" hrefLang="en" href="https://upforge.org" />
-        <link rel="alternate" hrefLang="en-IN" href="https://upforge.in" />
-        <link rel="alternate" hrefLang="x-default" href="https://upforge.org" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(enrichedOrgJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
       </head>
-      <body style={{ margin: 0, padding: 0, background: "#faf7f2" }}>
-        <Navbar />
-        <main id="main-content" role="main" tabIndex={-1}>
+      <body className="bg-background text-foreground flex flex-col min-h-screen antialiased font-sans">
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-3J7Y3695TK"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-3J7Y3695TK');
+          `}
+        </Script>
+        <ClientLayout domainContext={ctx}>
           {children}
-        </main>
-        <Footer />
-        <Chatbot />
+        </ClientLayout>
       </body>
     </html>
-  );
+  )
 }
