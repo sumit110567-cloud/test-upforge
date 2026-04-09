@@ -1,3 +1,5 @@
+"use client";
+
 // app/indian-unicorns/page.tsx — GLOBAL AUTHORITY EDITORIAL v5
 // Upgraded: Better editorial design, trust signals, SEO, interactive filters
 // Matches homepage globe-hero aesthetic perfectly
