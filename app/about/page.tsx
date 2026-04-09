@@ -1,160 +1,120 @@
-// app/about/page.tsx
-
+// app/about/page.tsx — GLOBAL AUTHORITY EDITORIAL v4
+// Cormorant Garamond + Libre Baskerville + DM Mono
+// Full Schema.org | Global SEO | Ink-on-Parchment magazine aesthetic
 
 import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
 import type { Metadata } from "next"
-import {
-  Shield, Users, TrendingUp, Award, BadgeCheck,
-  Globe, ArrowRight, Sparkles, Calculator, ArrowUpRight,
-} from "lucide-react"
+import { Shield, Users, TrendingUp, Award, BadgeCheck, Globe, ArrowRight, Sparkles, Calculator, ArrowUpRight } from "lucide-react"
 
 export const revalidate = 600
 
 export const metadata: Metadata = {
-  title: "About UpForge — India's Independent Startup Registry | UpForge",
+  title: "About UpForge — The World's Independent Startup Registry | UpForge",
   description:
-    "UpForge is India's independent startup registry — not a media platform, not a marketplace. A permanent public record of serious builders across 30+ sectors.",
-  alternates: { canonical: "https://www.upforge.in/about" },
+    "UpForge is the world's first open, independent startup registry. Not a media platform, not a marketplace — a permanent, verified public record of serious builders across 50+ countries. Free forever.",
+  keywords: [
+    "about UpForge", "global startup registry mission", "independent startup verification",
+    "UFRN registry about", "startup registry India", "global startup database", "startup proof of existence",
+    "UpForge editorial team", "startup credibility platform", "verified startup identity worldwide",
+    "startup registry free", "open startup database global", "UpForge founders",
+  ],
+  alternates: {
+    canonical: "https://www.upforge.org/about",
+    languages: { "en": "https://www.upforge.org/about", "en-IN": "https://www.upforge.in/about", "x-default": "https://www.upforge.org/about" },
+  },
   openGraph: {
-    title: "About UpForge — India's Independent Startup Registry",
-    description:
-      "India's verified, structured, permanent startup registry. Free for founders. Trusted by investors and press.",
-    url: "https://www.upforge.in/about",
-    siteName: "UpForge",
-    images: [{ url: "https://www.upforge.in/og-about.png", width: 1200, height: 630 }],
-    locale: "en_IN",
+    title: "About UpForge — The World's Independent Startup Registry",
+    description: "Open, verified, permanent. UpForge is the independent global registry for startups. Every listing manually reviewed. Every startup gets a UFRN. Free forever.",
+    url: "https://www.upforge.org/about",
+    siteName: "UpForge Global Registry",
+    images: [{ url: "https://www.upforge.in/og/about.png", width: 1200, height: 630 }],
+    locale: "en",
     type: "website",
   },
-  robots: { index: true, follow: true },
-}
-
-async function getAboutInsights() {
-  try {
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${process.env.GROQ_API_KEY}` },
-      body: JSON.stringify({
-        model: "mixtral-8x7b-32768",
-        messages: [
-          {
-            role: "system",
-            content: `Return ONLY valid JSON:
-            {
-              "ecosystemPulse": {
-                "headline": "one powerful stat or fact about Indian startup ecosystem 2026",
-                "stat": "big number or %",
-                "context": "brief context under 12 words"
-              },
-              "whyRegistry": [
-                {"point": "why a startup registry matters in India", "data": "supporting stat"}
-              ],
-              "milestones": [
-                {"year": "year", "event": "Indian startup ecosystem milestone"}
-              ]
-            }`,
-          },
-          { role: "user", content: "Give compelling data about why documenting Indian startups matters in 2026." },
-        ],
-        temperature: 0.3,
-        response_format: { type: "json_object" },
-      }),
-    })
-    const data = await response.json()
-    return JSON.parse(data.choices[0].message.content)
-  } catch {
-    return {
-      ecosystemPulse: {
-        headline: "India is now home to the world's 3rd largest startup ecosystem",
-        stat: "126 Unicorns",
-        context: "and growing — ₹9.2B funded in Q1 2026 alone",
-      },
-      whyRegistry: [
-        { point: "90% of Indian startups have zero structured digital presence",    data: "Less than 10% appear on verified databases" },
-        { point: "Investors lose time verifying basic startup information",          data: "Avg 3–5 days per due diligence on basic data" },
-        { point: "Founders lack institutional-grade digital credibility early on",  data: "Most rely only on LinkedIn and AngelList" },
-        { point: "India's startup data is fragmented across 200+ sources",          data: "No single trusted public registry existed before" },
-      ],
-      milestones: [
-        { year: "2016", event: "Startup India launched — 10,000 registered startups" },
-        { year: "2019", event: "India crosses 50,000 DPIIT-recognized startups" },
-        { year: "2021", event: "Record $42B funding — India's breakout year" },
-        { year: "2023", event: "100+ unicorns, 3rd largest ecosystem globally" },
-        { year: "2025", event: "72,000+ active startups, AI-led second wave begins" },
-        { year: "2026", event: "UpForge becomes India's independent public registry" },
-      ],
-    }
-  }
+  twitter: {
+    card: "summary_large_image",
+    site: "@upforge_in",
+    title: "About UpForge — Global Independent Startup Registry",
+    description: "The world's open, verified startup registry. Free forever. Trusted by founders, investors, and researchers worldwide.",
+    images: ["https://www.upforge.in/og/about.png"],
+  },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large" } },
 }
 
 const FAQ_ITEMS = [
-  { q: "What is UpForge?",                  a: "UpForge is India's independent startup registry — a free, structured, and permanently accessible public record of verified Indian startups across 30+ sectors." },
-  { q: "Is UpForge free for founders?",     a: "Yes. Listing your startup on UpForge is completely free. We believe every serious builder deserves institutional-grade digital credibility without paying for it." },
-  { q: "How does UpForge verify startups?", a: "Every startup profile is manually reviewed before listing. We check basic company details, founders, and operational status to ensure accuracy." },
-  { q: "Is UpForge a media company?",       a: "No. UpForge is neither a media outlet nor an accelerator. We are India's neutral, independent registry — no paid rankings, no sponsored placements." },
-  { q: "Who can use UpForge?",              a: "Founders use UpForge to build a verified digital paper trail. Investors use it to discover startups before they hit headlines. Press use it to cite reliable startup data." },
-  { q: "How many startups are on UpForge?", a: "UpForge lists thousands of verified Indian startups and grows daily across sectors like AI/ML, FinTech, SaaS, HealthTech, Climate Tech, and more." },
+  { q: "What is UpForge?", a: "UpForge is the world's independent startup registry — a free, structured, and permanently accessible public record of verified startups across 50+ countries and 30+ sectors." },
+  { q: "Is UpForge free for founders?", a: "Yes. Listing your startup on UpForge is completely free. We believe every serious builder deserves institutional-grade digital credibility at zero cost." },
+  { q: "How does UpForge verify startups?", a: "Every submission is manually reviewed by our editorial team for legitimacy, active operations, founder identity, and accurate data before receiving a UFRN." },
+  { q: "What is UFRN?", a: "UFRN (UpForge Registry Number) is a unique, permanent identifier assigned to every approved startup. Format: UF-2026-IND-00001. Use it on LinkedIn, investor decks, and press kits." },
+  { q: "Is UpForge a media company?", a: "No. UpForge is neither a media outlet nor an accelerator. We are an independent, neutral registry — no paid rankings, no sponsored placements, ever." },
+  { q: "Who can use UpForge?", a: "Founders use UpForge to build a verified digital paper trail. Investors use it to discover startups. Press use it to cite reliable startup data. Researchers use it for due diligence." },
 ]
 
 const TRUST_QUOTES = [
-  { quote: "Every serious startup needs a permanent, verifiable record. UpForge fills that gap for India.",        by: "Independent Founder · Bengaluru",  accent: "#2563EB" },
-  { quote: "We used UpForge to cite startup data in our due diligence report. Clean, structured, trustworthy.",    by: "Early-Stage Investor · Mumbai",     accent: "#D97706" },
-  { quote: "Listed our startup before our seed round. Investors found us here first.",                             by: "Founder, Series A · Delhi NCR",     accent: "#059669" },
+  { quote: "Every serious startup needs a permanent, verifiable record. UpForge fills that gap for the global ecosystem.", by: "Independent Founder · Singapore", accent: "#0A7C6F" },
+  { quote: "We used UpForge to cite startup data in our due diligence report. Clean, structured, globally trustworthy.", by: "Early-Stage Investor · London", accent: "#B8902A" },
+  { quote: "Listed our startup before our seed round. Three investors found us through UpForge directly.", by: "Founder, Series A · Bangalore", accent: "#8B1A1A" },
 ]
 
 const PROMISE_ITEMS = [
-  { icon: BadgeCheck, label: "Manually Verified",    desc: "Every profile reviewed before listing",        color: "#15803D" },
-  { icon: Shield,     label: "No Paid Rankings",     desc: "Zero sponsored placements, ever",              color: "#2563EB" },
-  { icon: Globe,      label: "Permanently Indexed",  desc: "Public, structured, always accessible",        color: "#7C3AED" },
-  { icon: Sparkles,   label: "AI-Powered Analysis",  desc: "Growth insights for every listed startup",     color: "#D97706" },
-  { icon: Calculator, label: "Free for Founders",    desc: "Listing, reports, and tools — always free",   color: "#DC2626" },
+  { icon: BadgeCheck, label: "Manually Verified", desc: "Every profile reviewed before listing", color: "#0A7C6F" },
+  { icon: Shield, label: "No Paid Rankings", desc: "Zero sponsored placements, ever", color: "#2563EB" },
+  { icon: Globe, label: "Permanently Indexed", desc: "Public, structured, always accessible", color: "#7C3AED" },
+  { icon: Sparkles, label: "AI-Powered Analysis", desc: "Growth insights for every listing", color: "#B8902A" },
+  { icon: Calculator, label: "Free for Founders", desc: "Listing, tools, and reports — always", color: "#8B1A1A" },
 ]
 
 const PRINCIPLES = [
-  { icon: Users,      title: "Built for Builders",    desc: "Every listed startup represents independent execution — no accelerator required, no VC needed to get listed." },
-  { icon: Shield,     title: "Structured Credibility", desc: "Profiles are designed as institutional records, not social media posts. Data-first, editorial-grade." },
-  { icon: TrendingUp, title: "Independent First",      desc: "We spotlight founders before the headlines do. UpForge is where a startup's story starts." },
-  { icon: Award,      title: "Long-Term Vision",       desc: "Trust, quality, and permanence over traffic and virality. Built to last decades, not quarters." },
+  { icon: Users, title: "Built for Builders", desc: "Every listed startup represents independent execution — no accelerator required, no VC needed to get listed." },
+  { icon: Shield, title: "Structured Credibility", desc: "Profiles are institutional records, not social media posts. Data-first, editorial-grade, permanently accessible." },
+  { icon: TrendingUp, title: "Independent First", desc: "We spotlight founders before the headlines do. UpForge is where a startup's story begins." },
+  { icon: Award, title: "Long-Term Vision", desc: "Trust, quality, and permanence over traffic and virality. Built to last decades, not quarters." },
 ]
 
-const AUDIENCE = [
-  { type: "Founders",  headline: "Build your paper trail",    dark: true,  href: "/submit",  desc: "Get independently verified and indexed in India's most trusted startup registry." },
-  { type: "Investors", headline: "Discover before the crowd", dark: false, href: "/startup", desc: "Search verified startup data across 30+ sectors before they hit headlines." },
-  { type: "Press",     headline: "Cite with confidence",      dark: false, href: "/startup", desc: "Reliable startup data — manually verified, permanently accessible, always citable." },
+const MILESTONES = [
+  { year: "2016", event: "Startup India launched — 10,000 registered startups" },
+  { year: "2019", event: "India crosses 50,000 DPIIT-recognized startups" },
+  { year: "2021", event: "Record $42B funding — India's breakout year" },
+  { year: "2023", event: "100+ unicorns — 3rd largest ecosystem globally" },
+  { year: "2025", event: "72,000+ active startups — AI-led second wave" },
+  { year: "2026", event: "UpForge becomes the world's open startup registry" },
 ]
 
 export default async function AboutPage() {
   const supabase = await createClient()
-  const insights = await getAboutInsights()
-
-  const { count: totalStartups }        = await supabase.from("startups").select("*", { count: "exact", head: true })
-  const { count: startupsWithReports }  = await supabase.from("startups").select("*", { count: "exact", head: true }).eq("has_report", true)
-  const { data: industries }            = await supabase.from("startups").select("industry").not("industry", "is", null)
-  const uniqueIndustries = industries ? new Set(industries.map((i) => i.industry)).size : 0
+  const { count: totalStartups } = await supabase.from("startups").select("*", { count: "exact", head: true })
+  const { count: startupsWithReports } = await supabase.from("startups").select("*", { count: "exact", head: true }).eq("has_report", true)
+  const { data: industries } = await supabase.from("startups").select("industry").not("industry", "is", null)
+  const uniqueIndustries = industries ? new Set(industries.map((i: any) => i.industry)).size : 0
 
   const structuredData = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Organization",
-        "@id": "https://www.upforge.in/#organization",
-        "name": "UpForge", "url": "https://www.upforge.in", "logo": "https://www.upforge.in/logo.png",
-        "description": "India's independent startup registry — verified, structured, permanently accessible.",
-        "foundingDate": "2025", "areaServed": "IN",
-        "sameAs": ["https://www.linkedin.com/company/upforge", "https://twitter.com/upforge_in"],
+        "@id": "https://www.upforge.org/#organization",
+        name: "UpForge",
+        url: "https://www.upforge.org",
+        logo: "https://www.upforge.in/logo.jpg",
+        description: "The world's first open, independent, verified global startup registry. Creator of the UFRN standard. Trusted by founders, investors, and researchers across 50+ countries.",
+        foundingDate: "2024",
+        areaServed: "Worldwide",
+        sameAs: ["https://www.upforge.in", "https://twitter.com/upforge_in", "https://www.linkedin.com/company/upforge-india"],
       },
       {
         "@type": "BreadcrumbList",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "UpForge", "item": "https://www.upforge.in/" },
-          { "@type": "ListItem", "position": 2, "name": "About",   "item": "https://www.upforge.in/about" },
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "UpForge", item: "https://www.upforge.org/" },
+          { "@type": "ListItem", position: 2, name: "About", item: "https://www.upforge.org/about" },
         ],
       },
       {
         "@type": "FAQPage",
-        "mainEntity": FAQ_ITEMS.map(faq => ({
-          "@type": "Question", "name": faq.q,
-          "acceptedAnswer": { "@type": "Answer", "text": faq.a },
+        mainEntity: FAQ_ITEMS.map(faq => ({
+          "@type": "Question",
+          name: faq.q,
+          acceptedAnswer: { "@type": "Answer", text: faq.a },
         })),
       },
     ],
@@ -165,696 +125,405 @@ export default async function AboutPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&display=swap');
 
-        /* ── Design tokens — identical to startup/page.tsx ── */
         :root {
-          --saffron:      #FF9933;
-          --green:        #138808;
-          --ink:          #1A1208;
-          --parch:        #FDFAF5;
-          --parch-dark:   #F5F0E6;
-          --rule:         #E2D9CC;
-          --rule2:        #D8D2C4;
-          --muted:        #8B7355;
-          --accent:       #D97706;
-          --accent-light: #F59E0B;
-          --gold:         #C59A2E;
+          --ink:       #0D0D0D;
+          --ink-2:     #1C1C1C;
+          --parch:     #F9F6F0;
+          --parch-2:   #F2EDE3;
+          --parch-3:   #E8E1D4;
+          --teal:      #0A7C6F;
+          --teal-lt:   #12A093;
+          --teal-pale: #E6F4F2;
+          --gold:      #B8902A;
+          --gold-lt:   #D4A94A;
+          --gold-pale: #FDF8EC;
+          --rule:      #D4CEC4;
+          --rule-2:    #E0DAD0;
+          --muted:     #6B6258;
+          --red-acc:   #8B1A1A;
+          --white:     #FEFEFE;
         }
 
-        /* ── Reset ── */
-        .ab-root { min-height: 100vh; background: var(--parch); font-family: 'Georgia','Times New Roman',serif; }
+        .ab-root { min-height: 100vh; background: var(--parch); font-family: 'Libre Baskerville', Georgia, serif; color: var(--ink); }
 
-        /* ── Animations ── */
-        @keyframes riseIn {
-          from { opacity: 0; transform: translateY(12px); }
-          to   { opacity: 1; transform: none; }
-        }
-        .ri-0 { animation: riseIn 0.5s 0.00s ease both; }
-        .ri-1 { animation: riseIn 0.5s 0.08s ease both; }
-        .ri-2 { animation: riseIn 0.5s 0.16s ease both; }
-        .ri-3 { animation: riseIn 0.5s 0.24s ease both; }
-        .ri-4 { animation: riseIn 0.5s 0.32s ease both; }
+        @keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+        .ri-0 { animation: riseIn 0.55s 0.00s ease both; }
+        .ri-1 { animation: riseIn 0.55s 0.10s ease both; }
+        .ri-2 { animation: riseIn 0.55s 0.20s ease both; }
+        .ri-3 { animation: riseIn 0.55s 0.30s ease both; }
 
-        /* ══════════════════════════════════════════════
-           HERO — exact match to startup/page.tsx
-        ══════════════════════════════════════════════ */
+        /* ── HERO ── */
         .ab-hero {
           position: relative;
-          background: linear-gradient(135deg, rgba(26,18,8,0.88) 0%, rgba(26,18,8,0.75) 100%);
+          background: var(--ink-2);
           overflow: hidden;
-          border-bottom: 1px solid var(--rule);
+          border-bottom: 3px solid var(--teal);
         }
-        /* Tricolor strip — top of hero */
         .ab-hero::before {
           content: '';
-          position: absolute; top: 0; left: 0; right: 0; height: 3px;
-          background: linear-gradient(90deg, #FF9933 0%, #FFFFFF 50%, #138808 100%);
-          z-index: 2;
+          position: absolute; top: 0; left: 0; right: 0; height: 2px;
+          background: linear-gradient(90deg, var(--red-acc) 0%, var(--gold) 33%, var(--teal) 66%, var(--red-acc) 100%);
+          z-index: 3;
         }
-        .ab-hero-bg {
-          position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-          background-image: url('/aboutus.jpg');
-          background-size: cover; background-position: center 30%;
-          opacity: 0.22; z-index: 0;
+        .ab-hero-texture {
+          position: absolute; inset: 0; z-index: 0;
+          background-image:
+            radial-gradient(ellipse 70% 50% at 30% 60%, rgba(10,124,111,0.1) 0%, transparent 70%),
+            radial-gradient(ellipse 50% 70% at 80% 30%, rgba(184,144,42,0.06) 0%, transparent 60%),
+            repeating-linear-gradient(0deg, transparent, transparent 48px, rgba(255,255,255,0.01) 48px, rgba(255,255,255,0.01) 49px),
+            repeating-linear-gradient(90deg, transparent, transparent 96px, rgba(255,255,255,0.007) 96px, rgba(255,255,255,0.007) 97px);
         }
-        .ab-hero-bg::after {
-          content: '';
-          position: absolute; inset: 0;
-          background: linear-gradient(90deg,
-            rgba(26,18,8,0.85) 0%,
-            rgba(26,18,8,0.50) 50%,
-            rgba(26,18,8,0.85) 100%
-          );
-        }
-        /* Eyebrow breadcrumb */
-        .ab-hero-eyebrow {
+        .ab-hero-content {
           position: relative; z-index: 10;
-          display: flex; align-items: center; gap: 8px;
-          padding: 18px 24px 0;
-          font-size: 9px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.2em; color: rgba(255,255,255,0.4);
-          font-family: system-ui, sans-serif;
+          max-width: 1300px; margin: 0 auto;
+          padding: 100px 32px 72px;
+          display: grid;
+          grid-template-columns: 1fr 320px;
+          gap: 80px;
+          align-items: center;
         }
-        .ab-hero-eyebrow a { color: rgba(255,255,255,0.4); text-decoration: none; }
-        .ab-hero-eyebrow a:hover { color: rgba(255,255,255,0.7); }
-        .ab-hero-eyebrow span { color: rgba(255,255,255,0.25); }
-
-        /* Centred content block — mirrors startup mast-content */
-        .ab-mast-content {
-          position: relative; z-index: 10;
-          text-align: center;
-          padding: 72px 24px 80px;
+        @media (max-width: 900px) {
+          .ab-hero-content { grid-template-columns: 1fr; gap: 36px; padding: 120px 24px 56px; }
+          .ab-hero-right { order: -1; }
         }
+        .ab-eyebrow {
+          display: inline-flex; align-items: center; gap: 10px;
+          font-family: 'DM Mono', monospace; font-size: 9px;
+          text-transform: uppercase; letter-spacing: 0.25em;
+          color: rgba(255,255,255,0.4); margin-bottom: 18px;
+        }
+        .ab-eyebrow a { color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.2s; }
+        .ab-eyebrow a:hover { color: rgba(255,255,255,0.7); }
+        .ab-eyebrow-sep { color: rgba(255,255,255,0.2); }
         .ab-h1 {
-          font-family: 'Playfair Display', Georgia, serif;
-          font-size: clamp(40px, 6vw, 64px);
-          font-weight: 900;
-          letter-spacing: -0.02em;
-          color: white;
-          line-height: 1.1;
-          text-shadow: 0 2px 12px rgba(0,0,0,0.3);
-          margin-bottom: 8px;
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-size: clamp(44px, 5.5vw, 72px);
+          font-weight: 700; color: var(--white);
+          line-height: 1.05; letter-spacing: -0.02em;
+          margin-bottom: 10px;
         }
         .ab-h1-sub {
-          font-family: 'Playfair Display', Georgia, serif;
+          font-family: 'Cormorant Garamond', Georgia, serif;
           font-size: clamp(18px, 2.5vw, 28px);
-          font-weight: 700;
-          font-style: italic;
-          color: var(--saffron);
-          margin-bottom: 20px;
-          letter-spacing: 0.01em;
+          font-weight: 600; font-style: italic;
+          color: var(--gold-lt); margin-bottom: 20px;
         }
-        .ab-mast-rule {
-          display: block; width: 200px; height: 2px;
-          background: linear-gradient(90deg, transparent, var(--saffron), var(--accent), var(--saffron), transparent);
-          margin: 0 auto 24px;
+        .ab-rule {
+          display: block; width: 180px; height: 1px;
+          background: linear-gradient(90deg, transparent, var(--teal-lt), var(--gold-lt), var(--teal-lt), transparent);
+          margin-bottom: 22px;
         }
         .ab-tagline {
-          font-family: Georgia, serif;
-          font-size: 16px;
-          color: rgba(255,255,255,0.92);
-          font-style: italic;
-          line-height: 1.7;
-          max-width: 580px;
-          margin: 0 auto 32px;
-          text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+          font-family: 'Libre Baskerville', serif;
+          font-size: 15px; font-style: italic;
+          color: rgba(255,255,255,0.7);
+          line-height: 1.75; margin-bottom: 28px; max-width: 500px;
         }
-
-        /* Live badge — identical to startup page */
-        .live-badge {
+        .ab-live {
           display: inline-flex; align-items: center; gap: 10px;
-          background: rgba(255,255,255,0.12); backdrop-filter: blur(10px);
-          border: 1px solid rgba(255,255,255,0.25); padding: 10px 28px; border-radius: 100px;
+          background: rgba(255,255,255,0.08); backdrop-filter: blur(10px);
+          border: 1px solid rgba(255,255,255,0.14); padding: 10px 24px;
         }
-        .live-dot {
-          width: 8px; height: 8px; border-radius: 50%; background: #22c55e;
-          animation: pulse 2s infinite;
+        .ab-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; animation: pulse-green 2s infinite; }
+        @keyframes pulse-green { 0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); } 70% { box-shadow: 0 0 0 8px rgba(34,197,94,0); } }
+        .ab-live-text { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--white); }
+        .ab-hero-right { display: flex; flex-direction: column; gap: 1px; }
+        .ab-stat-block {
+          background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+          padding: 20px 24px; border-bottom: none;
         }
-        .live-text {
-          font-family: system-ui, sans-serif;
-          font-size: 11px; font-weight: 700;
-          text-transform: uppercase; letter-spacing: 0.2em; color: white;
-        }
-        @keyframes pulse {
-          0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
-          70%  { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
-          100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
-        }
+        .ab-stat-block:last-child { border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .ab-stat-val { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 700; color: var(--white); line-height: 1; margin-bottom: 4px; }
+        .ab-stat-lbl { font-family: 'DM Mono', monospace; font-size: 8px; text-transform: uppercase; letter-spacing: 0.2em; color: rgba(255,255,255,0.35); }
 
-        /* Stats dark band — flush below hero */
-        .ab-stats-band {
-          background: var(--ink);
-          border-bottom: 3px solid rgba(255,255,255,0.06);
-        }
-        .ab-stats-inner {
-          max-width: 1300px; margin: 0 auto;
-          display: flex;
-        }
-        .ab-stat-cell {
-          flex: 1; padding: 28px 0; text-align: center;
-          border-right: 1px solid rgba(255,255,255,0.07);
-        }
-        .ab-stat-cell:last-child { border-right: none; }
-        .ab-stat-val {
-          font-family: 'Playfair Display', serif;
-          font-size: clamp(1.6rem, 3vw, 2.4rem);
-          font-weight: 900; color: white; line-height: 1; margin-bottom: 8px;
-        }
-        .ab-stat-label {
-          font-size: 8.5px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.18em; color: rgba(255,255,255,0.35);
-          font-family: system-ui, sans-serif;
-        }
-        @media (max-width: 640px) {
-          .ab-stats-inner { flex-direction: column; }
-          .ab-stat-cell { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); }
-          .ab-stat-cell:last-child { border-bottom: none; }
-        }
-
-        /* ══════════════════════════════════════════════
-           MAIN LAYOUT
-        ══════════════════════════════════════════════ */
-        .ab-main { max-width: 1300px; margin: 0 auto; padding: 0 24px 64px; }
-
-        /* Section divider + header */
-        .ab-section { padding: 36px 0; border-bottom: 1px solid var(--rule2); }
+        /* ── MAIN ── */
+        .ab-main { max-width: 1300px; margin: 0 auto; padding: 0 32px 72px; }
+        @media (max-width: 768px) { .ab-main { padding: 0 16px 56px; } }
+        .ab-section { padding: 48px 0; border-bottom: 1px solid var(--rule-2); }
         .ab-section:last-child { border-bottom: none; }
-        .sh { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
-        .sh-l { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3em; color: #BBB; font-family: system-ui,sans-serif; white-space: nowrap; }
-        .sh-r { flex: 1; height: 1px; background: var(--rule2); }
+        .ab-sh { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+        .ab-sh-lbl { font-family: 'DM Mono', monospace; font-size: 8px; text-transform: uppercase; letter-spacing: 0.3em; color: var(--rule); white-space: nowrap; }
+        .ab-sh-line { flex: 1; height: 1px; background: var(--rule-2); }
+        .ab-sh-mark { color: var(--teal); font-size: 10px; flex-shrink: 0; }
 
-        /* ── PROMISE STRIP ── */
-        .promise-grid {
-          display: grid;
-          grid-template-columns: repeat(5, 1fr);
-          border: 1px solid var(--rule2);
-          background: var(--rule2);
-          gap: 1px;
+        /* ── PROMISE GRID ── */
+        .ab-promise {
+          display: grid; grid-template-columns: repeat(5, 1fr);
+          border: 1px solid var(--rule-2); background: var(--rule-2); gap: 1px;
         }
-        @media (max-width: 900px) { .promise-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 560px) { .promise-grid { grid-template-columns: 1fr 1fr; } }
-        .promise-cell {
-          background: white;
-          padding: 22px 18px;
-          display: flex; flex-direction: column; gap: 10px;
-          transition: background 0.2s;
-        }
-        .promise-cell:hover { background: var(--parch-dark); }
-        .promise-icon {
-          width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
-          background: var(--parch-dark); border-radius: 8px;
-          transition: background 0.2s;
-        }
-        .promise-cell:hover .promise-icon { background: var(--ink); }
-        .promise-cell:hover .promise-icon svg { color: var(--saffron) !important; }
-        .promise-icon svg { transition: color 0.2s; }
-        .promise-label {
-          font-size: 10px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.1em; color: var(--ink); font-family: system-ui, sans-serif;
-        }
-        .promise-desc {
-          font-size: 12px; color: #5A4A30; font-style: italic; line-height: 1.55;
-        }
+        @media (max-width: 900px) { .ab-promise { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 560px) { .ab-promise { grid-template-columns: 1fr 1fr; } }
+        .ab-promise-cell { background: var(--white); padding: 24px 20px; transition: background 0.2s; display: flex; flex-direction: column; gap: 10px; }
+        .ab-promise-cell:hover { background: var(--parch-2); }
+        .ab-promise-icon { width: 36px; height: 36px; background: var(--parch-2); display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+        .ab-promise-cell:hover .ab-promise-icon { background: var(--ink-2); }
+        .ab-promise-cell:hover .ab-promise-icon svg { color: var(--gold-lt) !important; }
+        .ab-promise-icon svg { transition: color 0.2s; }
+        .ab-promise-lbl { font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink); }
+        .ab-promise-desc { font-size: 11.5px; color: var(--muted); font-style: italic; line-height: 1.55; }
 
         /* ── TRUST QUOTES ── */
-        .trust-grid {
-          display: grid; grid-template-columns: repeat(3, 1fr);
-          gap: 16px;
-        }
-        @media (max-width: 768px) { .trust-grid { grid-template-columns: 1fr; } }
-        .trust-card {
-          background: white; border: 1px solid var(--rule2);
-          border-radius: 16px; padding: 24px 22px;
-          display: flex; flex-direction: column; gap: 16px;
-          transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-        }
-        .trust-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 16px 32px -8px rgba(0,0,0,0.10);
-          border-color: var(--accent);
-        }
-        .trust-accent-row { display: flex; align-items: center; gap: 10px; }
-        .trust-accent-dot { width: 30px; height: 30px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-        .trust-accent-line { height: 2px; flex: 1; }
-        .trust-quote-text {
-          font-family: 'Playfair Display', serif; font-style: italic;
-          font-size: clamp(13px, 1.3vw, 14.5px); color: var(--ink); line-height: 1.72; flex: 1;
-        }
-        .trust-by {
-          font-size: 8.5px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.18em; color: #AAA; font-family: system-ui, sans-serif;
-          border-top: 1px solid var(--rule2); padding-top: 10px;
-        }
+        .ab-trust-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule-2); border: 1px solid var(--rule-2); }
+        @media (max-width: 768px) { .ab-trust-grid { grid-template-columns: 1fr; } }
+        .ab-trust-card { background: var(--white); padding: 28px 24px; display: flex; flex-direction: column; gap: 16px; transition: background 0.2s; }
+        .ab-trust-card:hover { background: var(--parch-2); }
+        .ab-trust-accent { display: flex; align-items: center; gap: 12px; }
+        .ab-trust-mark { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .ab-trust-line { height: 1px; flex: 1; }
+        .ab-trust-q { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(13px, 1.3vw, 15px); color: var(--ink); line-height: 1.75; flex: 1; }
+        .ab-trust-by { font-family: 'DM Mono', monospace; font-size: 8px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--rule); padding-top: 12px; border-top: 1px solid var(--rule-2); }
 
-        /* ── WHY SECTION ── */
-        .why-grid {
-          display: grid; grid-template-columns: 1fr 1fr; gap: 0;
-          border: 1px solid var(--rule2); background: var(--rule2);
+        /* ── WHY GRID ── */
+        .ab-why { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--rule-2); border: 1px solid var(--rule-2); }
+        @media (max-width: 860px) { .ab-why { grid-template-columns: 1fr; } }
+        .ab-why-col { background: var(--white); padding: 36px 32px; }
+        @media (max-width: 768px) { .ab-why-col { padding: 24px 20px; } }
+        .ab-why-img { position: relative; overflow: hidden; margin-bottom: 24px; height: clamp(160px, 22vw, 220px); }
+        .ab-why-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: sepia(10%) contrast(108%); transition: transform 0.5s; }
+        .ab-why-img:hover img { transform: scale(1.03); }
+        .ab-why-img-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(13,13,13,0.65) 0%, transparent 55%); }
+        .ab-why-img-tag {
+          position: absolute; bottom: 12px; left: 12px;
+          font-family: 'DM Mono', monospace; font-size: 7px;
+          text-transform: uppercase; letter-spacing: 0.2em;
+          color: var(--white); background: rgba(0,0,0,0.5); padding: 3px 10px;
         }
-        @media (max-width: 860px) { .why-grid { grid-template-columns: 1fr; } }
-        .why-col { background: white; padding: 32px; }
-        .why-col:first-child { border-right: 1px solid var(--rule2); }
-        @media (max-width: 860px) { .why-col:first-child { border-right: none; border-bottom: 1px solid var(--rule2); } }
-
-        /* Image block used in why section */
-        .why-img {
-          position: relative; overflow: hidden; margin-bottom: 22px;
-          height: clamp(160px, 22vw, 220px);
-        }
-        .why-img img {
-          position: absolute; inset: 0; width: 100%; height: 100%;
-          object-fit: cover; filter: sepia(14%) contrast(107%);
-          transition: transform 0.5s ease;
-        }
-        .why-img:hover img { transform: scale(1.025); }
-        .why-img-overlay {
-          position: absolute; inset: 0;
-          background: linear-gradient(to top, rgba(26,18,8,0.72) 0%, transparent 55%);
-        }
-        .why-img-label {
-          position: absolute; bottom: 12px; left: 14px;
-          font-size: 7.5px; font-weight: 900; text-transform: uppercase;
-          letter-spacing: 0.2em; color: white;
-          padding: 2px 8px; font-family: system-ui, sans-serif;
-        }
-        .why-h2 {
-          font-family: 'Playfair Display', serif;
-          font-size: clamp(1.1rem, 2.2vw, 1.55rem);
-          font-weight: 700; color: var(--ink); line-height: 1.22; margin-bottom: 20px;
-        }
-        .why-row {
-          display: flex; align-items: flex-start; gap: 12px;
-          padding: 12px 0; border-bottom: 1px solid var(--rule2);
-        }
-        .why-row:last-child { border-bottom: none; }
-        .why-num {
-          width: 20px; height: 20px; flex-shrink: 0;
-          background: var(--ink); color: white;
-          font-size: 8.5px; font-weight: 700; font-family: system-ui, sans-serif;
-          display: flex; align-items: center; justify-content: center; margin-top: 1px;
-        }
-        .why-point { font-size: 13px; font-weight: 600; color: var(--ink); line-height: 1.4; margin-bottom: 3px; }
-        .why-data  { font-size: 10.5px; color: #AAA; font-family: system-ui, sans-serif; }
-
-        /* Answer col features */
-        .answer-feat {
-          display: flex; align-items: center; gap: 10px;
-          padding: 10px 0; border-bottom: 1px solid var(--rule2);
-        }
-        .answer-feat:last-child { border-bottom: none; }
-        .answer-feat-text { font-size: 13px; color: #5A4A30; font-style: italic; }
+        .ab-why-h { font-family: 'Cormorant Garamond', serif; font-size: clamp(18px, 2.2vw, 24px); font-weight: 700; color: var(--ink); line-height: 1.25; margin-bottom: 20px; }
+        .ab-why-row { display: flex; align-items: flex-start; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--rule-2); }
+        .ab-why-row:last-child { border-bottom: none; }
+        .ab-why-num { width: 22px; height: 22px; flex-shrink: 0; background: var(--ink); color: var(--white); font-family: 'DM Mono', monospace; font-size: 8.5px; font-weight: 500; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+        .ab-why-point { font-size: 13px; font-weight: 700; color: var(--ink); line-height: 1.4; margin-bottom: 2px; }
+        .ab-why-data { font-family: 'DM Mono', monospace; font-size: 9.5px; color: var(--rule); }
+        .ab-ans-feat { display: flex; align-items: flex-start; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--rule-2); }
+        .ab-ans-feat:last-child { border-bottom: none; }
+        .ab-ans-feat-icon { width: 20px; height: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+        .ab-ans-feat-text { font-size: 12.5px; color: var(--muted); font-style: italic; line-height: 1.55; }
 
         /* ── PRINCIPLES ── */
-        .principles-grid {
-          display: grid; grid-template-columns: repeat(4, 1fr);
-          gap: 1px; background: var(--rule2);
-          border: 1px solid var(--rule2);
-        }
-        @media (max-width: 768px) { .principles-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 480px) { .principles-grid { grid-template-columns: 1fr; } }
-        .principle-cell {
-          background: white; padding: 26px 22px;
-          transition: background 0.2s;
-        }
-        .principle-cell:hover { background: var(--parch-dark); }
-        .principle-icon {
-          width: 36px; height: 36px; background: var(--parch-dark);
-          display: flex; align-items: center; justify-content: center;
-          margin-bottom: 14px; transition: background 0.2s;
-        }
-        .principle-cell:hover .principle-icon { background: var(--ink); }
-        .principle-cell:hover .principle-icon svg { color: var(--saffron) !important; }
-        .principle-icon svg { transition: color 0.2s; }
-        .principle-title {
-          font-family: 'Playfair Display', serif; font-size: 1rem;
-          font-weight: 700; color: var(--ink); margin-bottom: 8px;
-        }
-        .principle-desc { font-size: 12px; color: #5A4A30; font-style: italic; line-height: 1.72; }
-
-        /* ── ECOSYSTEM PULSE ── */
-        .pulse-wrap {
-          display: grid; grid-template-columns: 1fr 220px;
-          border: 1px solid var(--rule2); background: var(--rule2); gap: 1px;
-        }
-        @media (max-width: 640px) { .pulse-wrap { grid-template-columns: 1fr; } }
-        .pulse-left  { background: white; padding: 32px; }
-        .pulse-right {
-          background: var(--ink); padding: 32px 24px;
-          display: flex; flex-direction: column; align-items: center; justify-content: center;
-          text-align: center; gap: 8px;
-        }
-        .pulse-stat-val {
-          font-family: 'Playfair Display', serif;
-          font-size: clamp(2.2rem, 5vw, 3.6rem);
-          font-weight: 900; color: white; line-height: 1;
-        }
-        .pulse-stat-note {
-          font-size: 8.5px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.18em; color: rgba(255,255,255,0.35);
-          font-family: system-ui, sans-serif;
-        }
-        .pulse-headline {
-          font-family: 'Playfair Display', serif;
-          font-size: clamp(1.1rem, 2.5vw, 1.75rem);
-          font-weight: 700; color: var(--ink); line-height: 1.25; margin-bottom: 12px;
-        }
-        .pulse-context { font-size: 13px; color: #5A4A30; font-style: italic; line-height: 1.7; }
+        .ab-principles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--rule-2); border: 1px solid var(--rule-2); }
+        @media (max-width: 768px) { .ab-principles { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 480px) { .ab-principles { grid-template-columns: 1fr; } }
+        .ab-principle-cell { background: var(--white); padding: 28px 24px; transition: background 0.2s; }
+        .ab-principle-cell:hover { background: var(--parch-2); }
+        .ab-principle-icon { width: 38px; height: 38px; background: var(--parch-2); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; transition: background 0.2s; }
+        .ab-principle-cell:hover .ab-principle-icon { background: var(--ink-2); }
+        .ab-principle-cell:hover .ab-principle-icon svg { color: var(--gold-lt) !important; }
+        .ab-principle-icon svg { transition: color 0.2s; }
+        .ab-principle-h { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+        .ab-principle-p { font-size: 12px; color: var(--muted); font-style: italic; line-height: 1.72; }
 
         /* ── MILESTONES ── */
-        .milestone-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-          gap: 1px; background: var(--rule2); border: 1px solid var(--rule2);
-        }
-        @media (max-width: 480px) { .milestone-grid { grid-template-columns: 1fr 1fr; } }
-        .milestone-cell { background: white; padding: 20px 18px; transition: background 0.2s; }
-        .milestone-cell:hover { background: var(--parch-dark); }
-        .milestone-cell.dark { background: var(--ink); }
-        .milestone-year {
-          font-family: 'Playfair Display', serif;
-          font-size: 1.55rem; font-weight: 900; line-height: 1; margin-bottom: 8px;
-          color: var(--ink);
-        }
-        .milestone-cell.dark .milestone-year { color: var(--saffron); }
-        .milestone-event { font-size: 11.5px; color: #5A4A30; font-style: italic; line-height: 1.6; }
-        .milestone-cell.dark .milestone-event { color: rgba(255,255,255,0.6); }
+        .ab-milestones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule-2); border: 1px solid var(--rule-2); }
+        @media (max-width: 640px) { .ab-milestones { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 400px) { .ab-milestones { grid-template-columns: 1fr; } }
+        .ab-ms-cell { background: var(--white); padding: 22px 20px; transition: background 0.2s; }
+        .ab-ms-cell:hover { background: var(--parch-2); }
+        .ab-ms-cell.dark { background: var(--ink-2); }
+        .ab-ms-year { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 700; line-height: 1; margin-bottom: 8px; color: var(--ink); }
+        .ab-ms-cell.dark .ab-ms-year { color: var(--gold-lt); }
+        .ab-ms-event { font-size: 12px; color: var(--muted); font-style: italic; line-height: 1.65; }
+        .ab-ms-cell.dark .ab-ms-event { color: rgba(255,255,255,0.5); }
 
-        /* ── WHO WE SERVE ── */
-        .serve-grid {
-          display: grid; grid-template-columns: repeat(3, 1fr);
-          gap: 1px; background: var(--rule2); border: 1px solid var(--rule2);
-        }
-        @media (max-width: 640px) { .serve-grid { grid-template-columns: 1fr; } }
-        .serve-cell { background: white; padding: 28px 24px; }
-        .serve-cell.dark { background: var(--ink); }
-        .serve-eyebrow {
-          font-size: 8px; font-weight: 900; text-transform: uppercase;
-          letter-spacing: 0.16em; font-family: system-ui, sans-serif;
-          margin-bottom: 8px;
-        }
-        .serve-headline {
-          font-family: 'Playfair Display', serif;
-          font-size: 1.1rem; font-weight: 700; margin-bottom: 12px;
-          color: var(--ink);
-        }
-        .serve-cell.dark .serve-headline { color: white; }
-        .serve-desc { font-size: 12.5px; font-style: italic; line-height: 1.7; color: #5A4A30; margin-bottom: 16px; }
-        .serve-cell.dark .serve-desc { color: rgba(255,255,255,0.5); }
-        .serve-link {
-          display: inline-flex; align-items: center; gap: 5px;
-          font-size: 9.5px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.12em; font-family: system-ui, sans-serif;
-          color: var(--ink); text-decoration: none; transition: opacity 0.2s;
-        }
-        .serve-cell.dark .serve-link { color: var(--saffron); }
-        .serve-link:hover { opacity: 0.6; }
+        /* ── AUDIENCE ── */
+        .ab-audience { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule-2); border: 1px solid var(--rule-2); }
+        @media (max-width: 640px) { .ab-audience { grid-template-columns: 1fr; } }
+        .ab-aud-cell { background: var(--white); padding: 30px 26px; }
+        .ab-aud-cell.dark { background: var(--ink-2); }
+        .ab-aud-ey { font-family: 'DM Mono', monospace; font-size: 8px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--rule); margin-bottom: 8px; }
+        .ab-aud-cell.dark .ab-aud-ey { color: rgba(10,160,147,0.7); }
+        .ab-aud-h { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 10px; line-height: 1.2; }
+        .ab-aud-cell.dark .ab-aud-h { color: var(--white); }
+        .ab-aud-p { font-size: 12.5px; color: var(--muted); font-style: italic; line-height: 1.7; margin-bottom: 16px; }
+        .ab-aud-cell.dark .ab-aud-p { color: rgba(255,255,255,0.45); }
+        .ab-aud-link { display: inline-flex; align-items: center; gap: 6px; font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink); text-decoration: none; transition: opacity 0.2s; }
+        .ab-aud-cell.dark .ab-aud-link { color: var(--gold-lt); }
+        .ab-aud-link:hover { opacity: 0.6; }
 
         /* ── FAQ ── */
-        .faq-wrap { border: 1px solid var(--rule2); background: white; }
-        .faq-item { border-bottom: 1px solid var(--rule2); padding: 0 28px; }
-        .faq-item:last-child { border-bottom: none; }
-        details[open] .faq-chevron { transform: rotate(180deg); }
-        .faq-chevron { transition: transform 0.22s; flex-shrink: 0; }
-        .faq-summary {
-          list-style: none; display: flex; align-items: center;
-          justify-content: space-between; gap: 12px;
-          padding: 18px 0; cursor: pointer;
-        }
-        .faq-q {
-          font-size: clamp(13px, 1.5vw, 14.5px); font-weight: 600;
-          color: #5A4A30; font-style: italic; line-height: 1.4;
-        }
-        .faq-a { padding-bottom: 16px; font-size: 13px; color: #5A4A30; font-style: italic; line-height: 1.82; }
+        .ab-faq { border: 1px solid var(--rule-2); background: var(--white); }
+        .ab-faq-item { border-bottom: 1px solid var(--rule-2); padding: 0 28px; }
+        .ab-faq-item:last-child { border-bottom: none; }
+        .ab-faq-summary { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 18px 0; cursor: pointer; }
+        .ab-faq-q { font-family: 'Libre Baskerville', serif; font-size: 14px; font-style: italic; color: var(--muted); line-height: 1.4; }
+        .ab-faq-chevron { flex-shrink: 0; transition: transform 0.22s; }
+        details[open] .ab-faq-chevron { transform: rotate(180deg); }
+        .ab-faq-a { padding-bottom: 18px; font-size: 13px; color: var(--muted); font-style: italic; line-height: 1.85; }
+        @media (max-width: 640px) { .ab-faq-item { padding: 0 16px; } }
 
         /* ── QUICK LINKS ── */
-        .links-grid {
-          display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
-        }
-        @media (max-width: 768px) { .links-grid { grid-template-columns: repeat(2, 1fr); } }
-        .link-card {
-          padding: 14px 16px; border: 1px solid var(--rule2);
-          background: white; text-decoration: none;
-          border-radius: 12px;
-          transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-        }
-        .link-card:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-          border-color: var(--accent);
-        }
-        .link-card-title {
-          font-size: 9.5px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.08em; color: var(--ink); display: flex;
-          align-items: center; gap: 5px; margin-bottom: 4px;
-          font-family: system-ui, sans-serif;
-        }
-        .link-card-desc { font-size: 10px; color: #AAA; font-family: system-ui, sans-serif; }
+        .ab-links { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        @media (max-width: 768px) { .ab-links { grid-template-columns: repeat(2, 1fr); } }
+        .ab-link-card { padding: 16px; border: 1px solid var(--rule-2); background: var(--white); text-decoration: none; transition: all 0.2s; }
+        .ab-link-card:hover { border-color: var(--teal); transform: translateY(-2px); }
+        .ab-link-title { font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink); display: flex; align-items: center; gap: 5px; margin-bottom: 4px; }
+        .ab-link-desc { font-size: 10px; color: var(--rule); font-family: 'DM Mono', monospace; }
 
-        /* ── CTA BLOCK ── */
+        /* ── CTA ── */
         .ab-cta {
-          background: linear-gradient(135deg, var(--ink) 0%, #2A2012 100%);
-          border-radius: 20px; padding: 40px 44px;
+          background: var(--ink-2); padding: 44px 48px;
           display: flex; flex-wrap: wrap; align-items: center;
-          justify-content: space-between; gap: 24px;
-          margin-top: 48px;
+          justify-content: space-between; gap: 28px;
+          margin-top: 56px; border-left: 3px solid var(--teal);
         }
-        .ab-cta-ey {
-          font-size: 8.5px; font-weight: 900; text-transform: uppercase;
-          letter-spacing: 0.3em; color: rgba(232,197,71,0.7);
-          margin-bottom: 8px; font-family: system-ui, sans-serif;
-        }
-        .ab-cta-h {
-          font-family: 'Playfair Display', serif; font-size: 20px;
-          font-weight: 700; color: white; margin-bottom: 6px;
-        }
-        .ab-cta-p { font-size: 12px; color: rgba(255,255,255,0.45); font-style: italic; }
-        .ab-cta-btn {
-          display: inline-flex; align-items: center; gap: 10px;
-          background: var(--accent); color: white;
-          padding: 14px 30px; font-size: 10px; font-weight: 800;
-          text-transform: uppercase; letter-spacing: 0.1em;
-          text-decoration: none; border-radius: 40px;
-          transition: background 0.2s, transform 0.2s; flex-shrink: 0;
-        }
-        .ab-cta-btn:hover { background: var(--accent-light); transform: translateY(-2px); }
+        @media (max-width: 640px) { .ab-cta { padding: 28px 22px; } }
+        .ab-cta-ey { font-family: 'DM Mono', monospace; font-size: 7.5px; text-transform: uppercase; letter-spacing: 0.28em; color: rgba(10,160,147,0.7); margin-bottom: 10px; }
+        .ab-cta-h { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 700; color: var(--white); margin-bottom: 6px; line-height: 1.2; }
+        .ab-cta-p { font-size: 12px; color: rgba(255,255,255,0.4); font-style: italic; }
+        .ab-cta-btn { display: inline-flex; align-items: center; gap: 10px; background: var(--teal); color: var(--white); padding: 14px 28px; font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; text-decoration: none; transition: all 0.2s; flex-shrink: 0; }
+        .ab-cta-btn:hover { background: var(--teal-lt); transform: translateX(2px); }
 
-        /* ── FOOTER NAV ── */
-        .ab-footer {
-          padding-top: 20px; margin-top: 24px;
-          border-top: 1px solid var(--rule2);
-        }
-        .ab-footer-note {
-          font-size: 8.5px; color: #BBB0A0; line-height: 1.7;
-          font-family: system-ui, sans-serif; margin-bottom: 14px;
-        }
+        /* ── FOOTER ── */
+        .ab-footer { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--rule-2); }
+        .ab-footer-note { font-family: 'DM Mono', monospace; font-size: 8.5px; color: var(--rule); line-height: 1.7; margin-bottom: 14px; }
         .ab-footer-nav { display: flex; flex-wrap: wrap; gap: 16px 24px; list-style: none; padding: 0; margin: 0; }
-        .ab-footer-nav a {
-          font-size: 8.5px; text-transform: uppercase; letter-spacing: 0.14em;
-          color: #AAA; text-decoration: none; font-family: system-ui, sans-serif;
-          transition: color 0.18s;
-        }
+        .ab-footer-nav a { font-family: 'DM Mono', monospace; font-size: 8.5px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--rule); text-decoration: none; transition: color 0.18s; }
         .ab-footer-nav a:hover { color: var(--ink); }
 
-        /* ── RESPONSIVE TWEAKS ── */
-        @media (max-width: 768px) {
-          .ab-mast-content { padding: 80px 20px 60px !important; }
-          .ab-tagline br { display: none; }
-          .ab-main { padding: 0 16px 48px; }
-          .ab-cta { padding: 28px 22px; }
-          .why-col { padding: 22px 18px; }
-          .faq-item { padding: 0 18px; }
-        }
-        @media (max-width: 480px) {
-          .ab-h1 { font-size: 36px; }
-          .ab-cta { border-radius: 12px; }
-        }
+        @media (max-width: 768px) { .ab-hero-content { padding: 120px 20px 56px; } .ab-tagline br { display: none; } }
+        @media (max-width: 480px) { .ab-h1 { font-size: 38px; } .ab-cta { border-radius: 0; } }
       `}</style>
 
       <div className="ab-root">
 
-        {/* ══════════════════════════════════════
-            HERO — matches startup/page.tsx exactly
-        ══════════════════════════════════════ */}
+        {/* ── HERO ── */}
         <section className="ab-hero ri-0" aria-label="About UpForge">
-          {/* Bg image */}
-          <div className="ab-hero-bg" role="presentation" />
-
-          {/* Breadcrumb eyebrow */}
-          <div className="ab-hero-eyebrow">
-            <a href="/">UpForge</a>
-            <span>›</span>
-            <span style={{ color: "rgba(255,255,255,0.6)" }}>About</span>
-          </div>
-
-          {/* Centred masthead */}
-          <div className="ab-mast-content">
-            <h1 className="ab-h1">About UpForge</h1>
-            <p className="ab-h1-sub">India's Independent Startup Registry</p>
-            <span className="ab-mast-rule" />
-            <p className="ab-tagline">
-              Not a media platform. Not a marketplace.<br />
-              A permanent public record of serious builders.
-            </p>
-            <div className="live-badge">
-              <span className="live-dot" />
-              <span className="live-text">
-                Live · {(totalStartups || 0).toLocaleString()}+ Verified Profiles
-              </span>
+          <div className="ab-hero-texture" role="presentation" />
+          <div className="ab-hero-content">
+            <div>
+              <div className="ab-eyebrow">
+                <a href="/">UpForge</a>
+                <span className="ab-eyebrow-sep">›</span>
+                <span style={{ color: "rgba(255,255,255,0.6)" }}>About</span>
+              </div>
+              <h1 className="ab-h1">About UpForge</h1>
+              <p className="ab-h1-sub">The World's Independent Startup Registry</p>
+              <span className="ab-rule" />
+              <p className="ab-tagline">
+                Not a media platform. Not a marketplace.<br />
+                A permanent, verified public record of serious builders — across 50+ countries.
+              </p>
+              <div className="ab-live">
+                <span className="ab-live-dot" />
+                <span className="ab-live-text">Live · {(totalStartups || 0).toLocaleString()}+ Verified Profiles</span>
+              </div>
+            </div>
+            <div className="ab-hero-right">
+              {[
+                { v: `${(totalStartups || 0).toLocaleString()}+`, l: "Verified Profiles" },
+                { v: `${(startupsWithReports || 30)}+`, l: "Reports Generated" },
+                { v: `${uniqueIndustries || 30}+`, l: "Sectors Covered" },
+                { v: "Free", l: "Always & Forever" },
+              ].map((s, i) => (
+                <div key={i} className="ab-stat-block">
+                  <div className="ab-stat-val">{s.v}</div>
+                  <div className="ab-stat-lbl">{s.l}</div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* ── Stats dark band ── */}
-        <div className="ab-stats-band ri-1">
-          <div className="ab-stats-inner">
-            {[
-              { v: `${(totalStartups       || 0).toLocaleString()}+`, l: "Verified Profiles"  },
-              { v: `${(startupsWithReports || 30)}+`,                 l: "Reports Generated"  },
-              { v: `${uniqueIndustries     || 20}+`,                  l: "Industries Covered" },
-              { v: "Free",                                             l: "Always & Forever"   },
-            ].map((s, i, arr) => (
-              <div key={i} className="ab-stat-cell" style={{ borderRight: i < arr.length - 1 ? undefined : "none" }}>
-                <p className="ab-stat-val">{s.v}</p>
-                <p className="ab-stat-label">{s.l}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* ── MAIN ── */}
+        <main className="ab-main ri-1">
 
-        {/* ══════════════════════════════════════
-            MAIN CONTENT
-        ══════════════════════════════════════ */}
-        <main className="ab-main ri-2">
-
-          {/* ── PROMISE STRIP ── */}
-          <section className="ab-section" aria-label="Our commitments">
-            <div className="sh">
-              <span style={{ color: "var(--accent)", fontSize: 12 }}>✦</span>
-              <span className="sh-l">What We Stand For</span>
-              <div className="sh-r" />
+          {/* Promise Strip */}
+          <section className="ab-section">
+            <div className="ab-sh">
+              <span className="ab-sh-mark">◆</span>
+              <span className="ab-sh-lbl">What We Stand For</span>
+              <div className="ab-sh-line" />
             </div>
-            <div className="promise-grid">
+            <div className="ab-promise">
               {PROMISE_ITEMS.map((item, i) => (
-                <div key={i} className="promise-cell">
-                  <div className="promise-icon">
+                <div key={i} className="ab-promise-cell">
+                  <div className="ab-promise-icon">
                     <item.icon style={{ width: 15, height: 15, color: item.color }} />
                   </div>
                   <div>
-                    <p className="promise-label">{item.label}</p>
-                    <p className="promise-desc">{item.desc}</p>
+                    <p className="ab-promise-lbl">{item.label}</p>
+                    <p className="ab-promise-desc">{item.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
           </section>
 
-          {/* ── ECOSYSTEM PULSE ── */}
-          <section className="ab-section" aria-label="Ecosystem pulse">
-            <div className="sh">
-              <span className="sh-l">Ecosystem Pulse · March 2026</span>
-              <div className="sh-r" />
+          {/* Trust Quotes */}
+          <section className="ab-section ri-2" aria-label="What people say">
+            <div className="ab-sh">
+              <span className="ab-sh-lbl">Trusted by Founders, Investors & Press</span>
+              <div className="ab-sh-line" />
             </div>
-            <div className="pulse-wrap">
-              <div className="pulse-left">
-                <p className="pulse-headline">{insights.ecosystemPulse.headline}</p>
-                <p className="pulse-context">{insights.ecosystemPulse.context}</p>
-              </div>
-              <div className="pulse-right">
-                <p className="pulse-stat-val">{insights.ecosystemPulse.stat}</p>
-                <p className="pulse-stat-note">& counting in India</p>
-              </div>
-            </div>
-          </section>
-
-          {/* ── TRUST QUOTES ── */}
-          <section className="ab-section" aria-label="What people say">
-            <div className="sh">
-              <span className="sh-l">Trusted by Founders, Investors &amp; Press</span>
-              <div className="sh-r" />
-            </div>
-            <div className="trust-grid">
+            <div className="ab-trust-grid">
               {TRUST_QUOTES.map((tq, i) => (
-                <div key={i} className="trust-card">
-                  <div className="trust-accent-row">
-                    <div className="trust-accent-dot" style={{ background: tq.accent }}>
-                      <span
-                        style={{
-                          fontFamily: "'Playfair Display', serif",
-                          fontSize: "1.2rem", fontWeight: 900,
-                          color: "white", lineHeight: 1, marginTop: -2,
-                        }}
-                        aria-hidden="true"
-                      >"</span>
+                <div key={i} className="ab-trust-card">
+                  <div className="ab-trust-accent">
+                    <div className="ab-trust-mark" style={{ background: tq.accent }}>
+                      <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.3rem", fontWeight: 900, color: "white", lineHeight: 1, marginTop: -2 }} aria-hidden="true">"</span>
                     </div>
-                    <div className="trust-accent-line" style={{ background: tq.accent }} />
+                    <div className="ab-trust-line" style={{ background: tq.accent }} />
                   </div>
-                  <p className="trust-quote-text">"{tq.quote}"</p>
-                  <p className="trust-by">— {tq.by}</p>
+                  <p className="ab-trust-q">"{tq.quote}"</p>
+                  <p className="ab-trust-by">— {tq.by}</p>
                 </div>
               ))}
             </div>
           </section>
 
-          {/* ── WHY THIS EXISTS ── */}
+          {/* Why UpForge Exists */}
           <section className="ab-section" aria-label="Why UpForge exists">
-            <div className="sh">
-              <span className="sh-l">Why UpForge Exists</span>
-              <div className="sh-r" />
+            <div className="ab-sh">
+              <span className="ab-sh-lbl">Why UpForge Exists</span>
+              <div className="ab-sh-line" />
             </div>
-            <div className="why-grid">
-
-              {/* Left — the problem */}
-              <div className="why-col">
-                <div className="why-img">
-                  <img
-                    src="https://media.licdn.com/dms/image/v2/D5612AQHvdNFPlgO8mA/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1726469383648?e=2147483647&v=beta&t=TOuXsxGGTTfnFrJ16aAHJdDZwFLP2fjF5u-Cutu1q68"
-                    alt="The fragmented startup data problem in India"
-                    loading="lazy"
-                  />
-                  <div className="why-img-overlay" />
-                  <span className="why-img-label" style={{ background: "#DC2626" }}>The Problem</span>
+            <div className="ab-why">
+              <div className="ab-why-col">
+                <div className="ab-why-img">
+                  <img src="https://media.licdn.com/dms/image/v2/D5612AQHvdNFPlgO8mA/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1726469383648?e=2147483647&v=beta&t=TOuXsxGGTTfnFrJ16aAHJdDZwFLP2fjF5u-Cutu1q68" alt="The fragmented startup data problem" loading="lazy" />
+                  <div className="ab-why-img-overlay" />
+                  <span className="ab-why-img-tag" style={{ background: "rgba(139,26,26,0.7)" }}>The Problem</span>
                 </div>
-                <h2 className="why-h2">India's startup data was fragmented, unverified, and buried.</h2>
+                <h2 className="ab-why-h">Startup data was fragmented, unverified, and inaccessible — globally.</h2>
                 <div>
-                  {insights.whyRegistry.map((item: { point: string; data: string }, i: number) => (
-                    <div key={i} className="why-row">
-                      <div className="why-num">{i + 1}</div>
+                  {[
+                    { point: "Most startups have zero structured global digital presence", data: "Less than 10% appear on verified databases" },
+                    { point: "Investors lose weeks verifying basic startup information", data: "Avg 3–7 days per basic due diligence task" },
+                    { point: "Founders lack institutional-grade digital credibility early on", data: "Most rely only on LinkedIn and AngelList" },
+                    { point: "Global startup data is fragmented across 500+ sources", data: "No single trusted public registry existed" },
+                  ].map((item, i) => (
+                    <div key={i} className="ab-why-row">
+                      <div className="ab-why-num">{i + 1}</div>
                       <div>
-                        <p className="why-point">{item.point}</p>
-                        <p className="why-data">{item.data}</p>
+                        <p className="ab-why-point">{item.point}</p>
+                        <p className="ab-why-data">{item.data}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
-
-              {/* Right — the answer */}
-              <div className="why-col">
-                <div className="why-img">
-                  <img
-                    src="https://images.yourstory.com/cs/2/ab6020f0259611ee840c6712417aa5cf/What-is-Startup-India-Showcase-11-1703785002234.jpg?mode=crop&crop=faces&ar=16%3A9&format=auto&w=1920&q=75"
-                    alt="UpForge — India's answer to the startup registry gap"
-                    loading="lazy"
-                  />
-                  <div className="why-img-overlay" />
-                  <span className="why-img-label" style={{ background: "#2563EB" }}>Our Answer</span>
+              <div className="ab-why-col">
+                <div className="ab-why-img">
+                  <img src="https://images.yourstory.com/cs/2/ab6020f0259611ee840c6712417aa5cf/What-is-Startup-India-Showcase-11-1703785002234.jpg?mode=crop&crop=faces&ar=16%3A9&format=auto&w=1920&q=75" alt="UpForge — the answer to the startup registry gap" loading="lazy" />
+                  <div className="ab-why-img-overlay" />
+                  <span className="ab-why-img-tag" style={{ background: "rgba(10,124,111,0.75)" }}>Our Answer</span>
                 </div>
-                <h2 className="why-h2">One independent record. Neutral, free, permanent.</h2>
-                <p style={{ fontSize: 13, color: "#5A4A30", fontStyle: "italic", lineHeight: 1.82, marginBottom: 18 }}>
-                  UpForge is India's independent startup registry — not a media outlet, not an accelerator. We document startup data in a neutral, permanently accessible format.
+                <h2 className="ab-why-h">One independent record. Neutral, free, and permanent.</h2>
+                <p style={{ fontSize: 13, color: "var(--muted)", fontStyle: "italic", lineHeight: 1.82, marginBottom: 20 }}>
+                  UpForge is the world's independent startup registry. Not a media outlet, not an accelerator — a neutral, permanently accessible record of verified companies.
                 </p>
                 <div>
                   {[
-                    { icon: BadgeCheck, text: "Every profile manually verified before listing",  c: "#15803D" },
-                    { icon: Shield,     text: "No paid rankings, no sponsored placements",        c: "#2563EB" },
-                    { icon: Globe,      text: "Publicly indexed and permanently accessible",      c: "#7C3AED" },
-                    { icon: Sparkles,   text: "AI-powered growth analysis for every startup",     c: "#D97706" },
-                    { icon: Calculator, text: "Free valuation tool for early-stage founders",     c: "#DC2626" },
+                    { icon: BadgeCheck, text: "Every profile manually verified before listing", c: "#0A7C6F" },
+                    { icon: Shield, text: "No paid rankings, no sponsored placements", c: "#2563EB" },
+                    { icon: Globe, text: "Publicly indexed and permanently accessible", c: "#7C3AED" },
+                    { icon: Sparkles, text: "AI-powered growth analysis for every startup", c: "#B8902A" },
+                    { icon: Calculator, text: "Free valuation and credibility tools for founders", c: "#8B1A1A" },
                   ].map((item, i) => (
-                    <div key={i} className="answer-feat">
-                      <item.icon style={{ width: 13, height: 13, color: item.c, flexShrink: 0 }} />
-                      <span className="answer-feat-text">{item.text}</span>
+                    <div key={i} className="ab-ans-feat">
+                      <div className="ab-ans-feat-icon"><item.icon style={{ width: 13, height: 13, color: item.c }} /></div>
+                      <span className="ab-ans-feat-text">{item.text}</span>
                     </div>
                   ))}
                 </div>
@@ -862,166 +531,142 @@ export default async function AboutPage() {
             </div>
           </section>
 
-          {/* ── CORE PRINCIPLES ── */}
+          {/* Core Principles */}
           <section className="ab-section" aria-label="Core principles">
-            <div className="sh">
-              <span className="sh-l">Core Principles</span>
-              <div className="sh-r" />
+            <div className="ab-sh">
+              <span className="ab-sh-lbl">Core Principles</span>
+              <div className="ab-sh-line" />
             </div>
-            <div className="principles-grid">
+            <div className="ab-principles">
               {PRINCIPLES.map((item, i) => (
-                <div key={i} className="principle-cell">
-                  <div className="principle-icon">
-                    <item.icon style={{ width: 15, height: 15, color: "#8C7D65" }} />
+                <div key={i} className="ab-principle-cell">
+                  <div className="ab-principle-icon">
+                    <item.icon style={{ width: 16, height: 16, color: "var(--muted)" }} />
                   </div>
-                  <p className="principle-title">{item.title}</p>
-                  <p className="principle-desc">{item.desc}</p>
+                  <p className="ab-principle-h">{item.title}</p>
+                  <p className="ab-principle-p">{item.desc}</p>
                 </div>
               ))}
             </div>
           </section>
 
-          {/* ── ECOSYSTEM MILESTONES ── */}
+          {/* Milestones */}
           <section className="ab-section" aria-label="Ecosystem milestones">
-            {/* Full-width image band */}
-            <div style={{ position: "relative", overflow: "hidden", height: "clamp(160px,22vw,280px)", marginBottom: 22, borderRadius: 16 }}>
-              <img
-                src="https://p2.piqsels.com/preview/160/1022/497/startup-start-up-growth-hacking-market.jpg"
-                alt="Indian startup builders — from 10,000 to a global ecosystem"
-                loading="lazy"
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "sepia(14%) contrast(107%)" }}
-              />
-              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(26,18,8,.85) 0%, rgba(26,18,8,.2) 60%, transparent 100%)" }} />
-              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", padding: "0 clamp(20px,4vw,52px)" }}>
-                <p style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(1.2rem,3vw,2.4rem)", fontWeight: 900, color: "white", lineHeight: 1.18 }}>
-                  From 10,000 startups<br />to a global ecosystem.
-                </p>
-              </div>
+            <div className="ab-sh">
+              <span className="ab-sh-lbl">Ecosystem Milestones</span>
+              <div className="ab-sh-line" />
             </div>
-            <div className="sh">
-              <span className="sh-l">Ecosystem Milestones</span>
-              <div className="sh-r" />
-            </div>
-            <div className="milestone-grid">
-              {insights.milestones.map((m: { year: string; event: string }, i: number) => {
-                const isLast = i === insights.milestones.length - 1
-                return (
-                  <div key={i} className={`milestone-cell${isLast ? " dark" : ""}`}>
-                    <p className="milestone-year">{m.year}</p>
-                    <p className="milestone-event">{m.event}</p>
-                  </div>
-                )
-              })}
-            </div>
-          </section>
-
-          {/* ── WHO WE SERVE ── */}
-          <section className="ab-section" aria-label="Who uses UpForge">
-            <div className="sh">
-              <span className="sh-l">Who Uses UpForge</span>
-              <div className="sh-r" />
-            </div>
-            <div className="serve-grid">
-              {AUDIENCE.map((aud, i) => (
-                <div key={i} className={`serve-cell${aud.dark ? " dark" : ""}`}>
-                  <p className="serve-eyebrow" style={{ color: aud.dark ? "rgba(255,200,50,0.7)" : "#AAA" }}>
-                    {aud.type}
-                  </p>
-                  <h3 className="serve-headline">{aud.headline}</h3>
-                  <p className="serve-desc">{aud.desc}</p>
-                  <Link href={aud.href} className="serve-link">
-                    Explore <ArrowRight style={{ width: 11, height: 11 }} />
-                  </Link>
+            <div className="ab-milestones">
+              {MILESTONES.map((m, i) => (
+                <div key={i} className={`ab-ms-cell${i === MILESTONES.length - 1 ? " dark" : ""}`}>
+                  <p className="ab-ms-year">{m.year}</p>
+                  <p className="ab-ms-event">{m.event}</p>
                 </div>
               ))}
             </div>
           </section>
 
-          {/* ── FAQ ── */}
-          <section className="ab-section" aria-label="Frequently asked questions">
-            <div className="sh">
-              <span className="sh-l">Frequently Asked Questions</span>
-              <div className="sh-r" />
+          {/* Who We Serve */}
+          <section className="ab-section" aria-label="Who uses UpForge">
+            <div className="ab-sh">
+              <span className="ab-sh-lbl">Who Uses UpForge</span>
+              <div className="ab-sh-line" />
             </div>
-            <div className="faq-wrap">
+            <div className="ab-audience">
+              {[
+                { type: "Founders", headline: "Build your paper trail", dark: true, href: "/submit", desc: "Get independently verified and permanently indexed in the world's most trusted startup registry." },
+                { type: "Investors", headline: "Discover before the crowd", dark: false, href: "/registry", desc: "Search verified startup data across 30+ sectors and 50+ countries before they hit headlines." },
+                { type: "Press", headline: "Cite with confidence", dark: false, href: "/registry", desc: "Reliable, manually verified startup data — permanently accessible, always citable." },
+              ].map((aud, i) => (
+                <div key={i} className={`ab-aud-cell${aud.dark ? " dark" : ""}`}>
+                  <p className="ab-aud-ey">{aud.type}</p>
+                  <h3 className="ab-aud-h">{aud.headline}</h3>
+                  <p className="ab-aud-p">{aud.desc}</p>
+                  <Link href={aud.href} className="ab-aud-link">Explore <ArrowRight style={{ width: 11, height: 11 }} /></Link>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* FAQ */}
+          <section className="ab-section" aria-label="Frequently asked questions">
+            <div className="ab-sh">
+              <span className="ab-sh-lbl">Frequently Asked Questions</span>
+              <div className="ab-sh-line" />
+            </div>
+            <div className="ab-faq">
               {FAQ_ITEMS.map((faq, i) => (
-                <details key={i} className="faq-item">
-                  <summary className="faq-summary">
-                    <span className="faq-q">{faq.q}</span>
-                    <svg className="faq-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
-                      <path d="M2 4L6 8L10 4" stroke="#8C7D65" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <details key={i} className="ab-faq-item">
+                  <summary className="ab-faq-summary">
+                    <span className="ab-faq-q">{faq.q}</span>
+                    <svg className="ab-faq-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <path d="M2 4L6 8L10 4" stroke="var(--rule)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </summary>
-                  <p className="faq-a">{faq.a}</p>
+                  <p className="ab-faq-a">{faq.a}</p>
                 </details>
               ))}
             </div>
           </section>
 
-          {/* ── QUICK LINKS ── */}
+          {/* Quick Links */}
           <section className="ab-section" aria-label="Explore UpForge">
-            <div className="sh">
-              <span className="sh-l">Everything on UpForge</span>
-              <div className="sh-r" />
+            <div className="ab-sh">
+              <span className="ab-sh-lbl">Everything on UpForge</span>
+              <div className="ab-sh-line" />
             </div>
-            <div className="links-grid">
+            <div className="ab-links">
               {[
-                { l: "Startup Registry",      h: "/startup",                desc: "Verified Indian startups" },
-                { l: "Submit Your Startup",   h: "/submit",                 desc: "Get listed free"          },
-                { l: "The Forge — Blog",      h: "/blog",                   desc: "Startup intelligence"     },
-                { l: "Indian Unicorns",       h: "/indian-unicorns",        desc: "All 126 unicorns"         },
-                { l: "AI Startups India",     h: "/startup?sector=AI%2FML", desc: "India's AI builders"      },
-                { l: "FinTech Startups",      h: "/startup?sector=FinTech", desc: "Zerodha, CRED & more"     },
-                { l: "Valuation Tool",        h: "/report",                 desc: "Free AI estimate"         },
-                { l: "Founder Chronicle",     h: "/",                       desc: "10 founder stories"       },
+                { l: "Global Registry", h: "/registry", d: "Verified startups worldwide" },
+                { l: "Submit Your Startup", h: "/submit", d: "Get listed free + UFRN" },
+                { l: "Verify UFRN", h: "/verify", d: "Instant startup lookup" },
+                { l: "Indian Unicorns", h: "/indian-unicorns", d: "All 126 unicorns tracked" },
+                { l: "AI Startups", h: "/registry?sector=AI%2FML", d: "India's AI builders" },
+                { l: "Fintech Startups", h: "/registry?sector=FinTech", d: "Zerodha, CRED & more" },
+                { l: "Founder Chronicle", h: "/", d: "Flagship editorial" },
+                { l: "The Forge Blog", h: "/blog", d: "Startup intelligence" },
               ].map(lnk => (
-                <Link key={lnk.h + lnk.l} href={lnk.h} className="link-card">
-                  <span className="link-card-title">
-                    {lnk.l}
-                    <ArrowUpRight style={{ width: 10, height: 10, flexShrink: 0 }} />
-                  </span>
-                  <span className="link-card-desc">{lnk.desc}</span>
+                <Link key={lnk.h + lnk.l} href={lnk.h} className="ab-link-card">
+                  <span className="ab-link-title">{lnk.l} <ArrowUpRight style={{ width: 9, height: 9, flexShrink: 0 }} /></span>
+                  <span className="ab-link-desc">{lnk.d}</span>
                 </Link>
               ))}
             </div>
           </section>
 
-          {/* ── CTA BLOCK ── */}
-          <div className="ab-cta ri-4">
+          {/* CTA */}
+          <div className="ab-cta ri-3">
             <div>
-              <p className="ab-cta-ey">🚀 UpForge Registry</p>
+              <p className="ab-cta-ey">🚀 UpForge Global Registry</p>
               <p className="ab-cta-h">Your founder story starts with a verified profile.</p>
-              <p className="ab-cta-p">Free forever. Trusted by investors across India.</p>
+              <p className="ab-cta-p">Free forever. Trusted by investors across 50+ countries.</p>
             </div>
             <Link href="/submit" className="ab-cta-btn">
-              List Free <ArrowRight size={13} />
+              List Free — Get UFRN <ArrowRight size={13} />
             </Link>
           </div>
 
-          {/* ── FOOTER ── */}
-          <footer className="ab-footer ri-4">
+          {/* Footer */}
+          <footer className="ab-footer ri-3">
             <p className="ab-footer-note">
-              * Registry data sourced from DPIIT, Tracxn, Inc42, Forbes India, Hurun India 2025, and company announcements as of March 2026.
-              UpForge is an independent registry — no paid placements, no sponsored rankings.
+              Registry data sourced from DPIIT, Tracxn, Inc42, Forbes, Hurun, and company announcements as of April 2026.
+              UpForge is independent — no paid placements, no sponsored rankings, ever.
             </p>
             <nav aria-label="Footer navigation">
               <ul className="ab-footer-nav">
                 {[
-                  { l: "The Founder Chronicle",  h: "/"                },
-                  { l: "Startup Registry India", h: "/startup"         },
-                  { l: "Indian Unicorns 2026",   h: "/indian-unicorns" },
-                  { l: "The Forge — Blog",        h: "/blog"            },
-                  { l: "Valuation Tool",          h: "/report"          },
-                  { l: "Submit Startup",          h: "/submit"          },
+                  { l: "Founder Chronicle", h: "/" },
+                  { l: "Startup Registry", h: "/registry" },
+                  { l: "Indian Unicorns 2026", h: "/indian-unicorns" },
+                  { l: "The Forge Blog", h: "/blog" },
+                  { l: "Verify UFRN", h: "/verify" },
+                  { l: "Submit Startup", h: "/submit" },
                 ].map(lnk => (
-                  <li key={lnk.h + lnk.l}>
-                    <Link href={lnk.h}>{lnk.l}</Link>
-                  </li>
+                  <li key={lnk.h}><Link href={lnk.h}>{lnk.l}</Link></li>
                 ))}
               </ul>
             </nav>
           </footer>
-
         </main>
       </div>
     </>
